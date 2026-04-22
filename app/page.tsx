@@ -2,7 +2,6 @@ import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { SupportFab } from '@/components/SupportFab';
 import { HomeHero } from '@/components/HomeHero';
-import { SearchResult } from '@/components/SearchResult';
 import { PlatformStats } from '@/components/PlatformStats';
 import { RecentReports } from '@/components/RecentReports';
 import { ProcessSteps } from '@/components/ProcessSteps';
@@ -19,7 +18,6 @@ export default function HomePage({ searchParams }: { searchParams: SearchParams 
 
       <main>
         <HomeHero initialType={type} initialQuery={query} />
-        {query && <SearchResult query={query} />}
         <PlatformStats />
         <RecentReports />
         <ProcessSteps />

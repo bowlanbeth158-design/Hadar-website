@@ -1,8 +1,11 @@
 import Link from 'next/link';
-import { Siren } from 'lucide-react';
+import { Bell, Siren } from 'lucide-react';
 import { Logo } from './Logo';
-import { LoginButton } from './LoginButton';
-import { LanguageCurrencySwitcher } from './LanguageCurrencySwitcher';
+import { LanguageSwitcher } from './LanguageSwitcher';
+import { CurrencySwitcher } from './CurrencySwitcher';
+import { UserMenu } from './UserMenu';
+
+const ALERT_COUNT = 8;
 
 export function Header() {
   return (
@@ -12,7 +15,7 @@ export function Header() {
       </div>
 
       <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur border-b border-gray-200">
-        <nav className="mx-auto max-w-7xl flex items-center justify-between gap-6 px-4 md:px-6 py-3">
+        <nav className="mx-auto max-w-7xl flex items-center justify-between gap-4 px-4 md:px-6 py-3">
           <Link href="/" aria-label="Retour à l'accueil Hadar.ma" className="shrink-0">
             <Logo size="md" />
           </Link>
@@ -29,19 +32,27 @@ export function Header() {
               </Link>
             </li>
             <li>
-              <Link href="/statistiques" className="hover:text-brand-blue transition-colors">
-                Statistiques
+              <Link
+                href="/mes-alertes"
+                className="relative inline-flex items-center gap-1.5 hover:text-brand-blue transition-colors"
+              >
+                Mes alertes
+                <span className="relative inline-flex">
+                  <Bell className="h-4 w-4" aria-hidden />
+                  {ALERT_COUNT > 0 && (
+                    <span
+                      aria-label={`${ALERT_COUNT} nouvelles alertes`}
+                      className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1"
+                    >
+                      {ALERT_COUNT > 9 ? '9+' : ALERT_COUNT}
+                    </span>
+                  )}
+                </span>
               </Link>
             </li>
           </ul>
 
-          <div className="flex items-center gap-3">
-            <div className="hidden sm:block">
-              <LanguageCurrencySwitcher />
-            </div>
-
-            <LoginButton />
-
+          <div className="flex items-center gap-2 md:gap-3">
             <Link
               href="/signaler"
               className="inline-flex items-center gap-1.5 rounded-pill bg-red-500 hover:bg-red-700 text-white px-4 py-2 text-sm font-semibold shadow-sm transition-colors"
@@ -49,6 +60,15 @@ export function Header() {
               <Siren className="h-4 w-4" aria-hidden />
               Signaler
             </Link>
+
+            <div className="hidden sm:flex items-center gap-1 border-l border-gray-200 pl-2">
+              <LanguageSwitcher />
+              <CurrencySwitcher />
+            </div>
+
+            <div className="hidden sm:block border-l border-gray-200 pl-2">
+              <UserMenu />
+            </div>
           </div>
         </nav>
       </header>

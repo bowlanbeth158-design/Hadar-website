@@ -21,6 +21,8 @@ import { PageLayout } from '@/components/PageLayout';
 import { BackButton } from '@/components/BackButton';
 import { PageHeading } from '@/components/PageHeading';
 import { StatsPeriodTabs } from '@/components/StatsPeriodTabs';
+import { AnimatedCounter } from '@/components/AnimatedCounter';
+import { AnimatedDonut } from '@/components/AnimatedDonut';
 
 export const metadata: Metadata = {
   title: 'Statistiques de la plateforme',
@@ -103,39 +105,6 @@ const STATUS: {
 // Donut evolution value (center %)
 const EVOLUTION_PCT = 12;
 
-function DonutChart({ value }: { value: number }) {
-  const radius = 42;
-  const circumference = 2 * Math.PI * radius;
-  const dash = (value / 100) * circumference;
-  return (
-    <svg viewBox="0 0 100 100" className="h-40 w-40" role="img" aria-label={`${value}% d'évolution`}>
-      <circle cx="50" cy="50" r={radius} fill="none" stroke="#FCE7E7" strokeWidth="10" />
-      <circle
-        cx="50"
-        cy="50"
-        r={radius}
-        fill="none"
-        stroke="#EE4444"
-        strokeWidth="10"
-        strokeLinecap="round"
-        strokeDasharray={`${dash} ${circumference - dash}`}
-        transform="rotate(-90 50 50)"
-      />
-      <text
-        x="50"
-        y="56"
-        textAnchor="middle"
-        fontSize="22"
-        fontWeight="bold"
-        fill="#EE4444"
-        fontFamily="var(--font-poppins), sans-serif"
-      >
-        {value}%
-      </text>
-    </svg>
-  );
-}
-
 export default function Page() {
   const processingPct = 65;
 
@@ -160,7 +129,9 @@ export default function Page() {
             className={`${s.gradient} ${s.glow} text-white rounded-2xl p-5 flex items-center justify-between`}
           >
             <div>
-              <p className="text-3xl font-bold">{s.value}</p>
+              <p className="text-3xl font-bold">
+                <AnimatedCounter value={s.value} />
+              </p>
               <p className="text-sm font-medium opacity-90 mt-1">{s.label}</p>
             </div>
             <s.Icon className="h-9 w-9 opacity-70" aria-hidden />
@@ -258,18 +229,18 @@ export default function Page() {
               <div>
                 <p className="text-sm text-gray-500">+{EVOLUTION_PCT}% vs semaine dernière</p>
                 <span className="mt-1 inline-flex items-center rounded-pill bg-red-500 text-white font-bold px-4 py-1.5 text-sm shadow-glow-red">
-                  1 900
+                  <AnimatedCounter value="1 900" />
                 </span>
               </div>
               <div>
                 <p className="text-sm text-gray-500">+45% aujourd&apos;hui</p>
                 <span className="mt-1 inline-flex items-center rounded-pill bg-red-500 text-white font-bold px-4 py-1.5 text-sm shadow-glow-red">
-                  345
+                  <AnimatedCounter value="345" />
                 </span>
               </div>
             </div>
             <div className="flex justify-center">
-              <DonutChart value={EVOLUTION_PCT} />
+              <AnimatedDonut value={EVOLUTION_PCT} />
             </div>
           </div>
         </div>
@@ -286,7 +257,9 @@ export default function Page() {
               className={`inline-flex items-center gap-2 rounded-pill ${s.color} ${s.textColor} ${s.glow} px-4 py-2 text-sm font-semibold`}
             >
               <Siren className="h-4 w-4" aria-hidden />
-              <span className="text-base font-bold">{s.value}</span>
+              <span className="text-base font-bold">
+                <AnimatedCounter value={s.value} />
+              </span>
               <span className="text-xs opacity-90">{s.label}</span>
             </div>
           ))}

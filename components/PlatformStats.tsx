@@ -9,6 +9,7 @@ import {
   ArrowUpRight,
   type LucideIcon,
 } from 'lucide-react';
+import { AnimatedCounter } from './AnimatedCounter';
 
 const KPI_STATS: {
   label: string;
@@ -38,7 +39,9 @@ export function PlatformStats() {
             className={`${s.gradient} ${s.glow} text-white rounded-2xl p-5 flex items-center justify-between`}
           >
             <div>
-              <p className="text-3xl font-bold">{s.value}</p>
+              <p className="text-3xl font-bold">
+                <AnimatedCounter value={s.value} />
+              </p>
               <p className="text-sm font-medium opacity-90 mt-1">{s.label}</p>
             </div>
             <s.Icon className="h-9 w-9 opacity-70" aria-hidden />

@@ -30,6 +30,9 @@
 16. **Dropdown « Mes alertes » — avec alertes** (max 4 visibles, lien « Voir tous les détails » en bas)
 17. **Page « Mes alertes »** complète (déclenchée par « Voir tous les détails » du popover)
 
+### Batch 8 — « Mon profil »
+18. **Page « Mon profil »** (Mon compte → dropdown → Mon profil) — édition identité + mot de passe, badges utilisateur, taux de validation
+
 ### Batch 5 — Pages légales (footer)
 8. **Conditions générales d'utilisation** → `design/legal/01-conditions-generales-utilisation.md`
 9. **Données personnelles & cookies** → `design/legal/02-donnees-personnelles-cookies.md`
@@ -654,6 +657,143 @@ Lorsqu'un signalement passe en statut `PUBLISHED` (après modération) :
 - Si déjà abonné → bouton devient `🔕 Ne plus suivre`
 
 Confirmer la position exacte du bouton « Suivre » dans la maquette à venir.
+
+---
+
+## Page « Mon profil »
+
+**Trigger** : nav `Mon compte` → dropdown → `Mon profil` → route `/mon-profil` (auth obligatoire).
+
+### Layout
+
+- Bouton pill `← Retour`
+- Watermark logo H
+
+#### Section identité (header de la page)
+- Avatar circulaire (placeholder si non défini)
+- Nom complet : `Prénom NOM` (NOM en majuscules)
+- Badge utilisateur (voir taxonomie ci-dessous) avec étoiles ★ représentant le niveau
+- `Taux de validation : X %`
+
+#### Bandeau 4 KPI cards (mêmes composants que les stats home, scope = utilisateur courant)
+| Card | Couleur | Données |
+|---|---|---|
+| Signalements envoyés | Rouge | total signalements créés par l'utilisateur (tous statuts) |
+| Signalements publiés | Vert | sous-ensemble en statut `PUBLISHED` |
+| Vérifications réalisées | Bleu ciel | total recherches effectuées par l'utilisateur |
+| Dernier signalement | Orange | horodatage relatif (« Il y a 2 h ») |
+
+#### Section « Informations personnelles »
+- Champ `Prénom`
+- Champ `Nom de famille`
+- Champ `Numéro de téléphone` (avec hint « Inclure l'indicatif pays (ex : 212…), sans 0 ni +»)
+  > ⚠️ **Anomalie maquette** : le champ a actuellement le label « Type de contact » et son contenu affiche un email — c'est probablement une erreur. Le hint indique clairement un téléphone. À renommer en `Numéro de téléphone` côté UI.
+- Champ `Adresse e-mail`
+- Bouton vert `✅ Enregistrer les modifications`
+
+#### Section « Mot de passe »
+- Sous-titre : « Pour votre sécurité, utilisez un mot de passe unique et sécurisé. »
+- Champ `Mot de passe actuel` (vérification re-auth obligatoire)
+- Champ `Nouveau mot de passe`
+- Champ `Confirmer le nouveau mot de passe`
+- Bouton bleu `🔄 Mettre à jour le mot de passe`
+
+#### Footer
+- Note : « Vos informations sont protégées et traitées de manière confidentielle. »
+
+### Taxonomie des badges utilisateur (spec officielle propriétaire)
+
+| Badge | Code | Étoiles | Critère |
+|---|---|---|---|
+| Nouveau membre | `nouveau_membre` | — | 0 signalement validé |
+| Contributeur | `contributeur` | ★ | 1 à 2 signalements validés |
+| Contributeur actif | `contributeur_actif` | ★★ | 3 à 5 signalements validés |
+| Contributeur fiable | `contributeur_fiable` | ★★★ | 6 à 9 signalements validés **avec preuves** |
+| Membre de confiance | `membre_de_confiance` | ★★★★ | 10+ signalements validés, **avec preuves régulières**, **sans abus détecté** |
+
+> **Règle complémentaire confirmée** : les badges sont calculés **en priorité sur les signalements validés** (statut `PUBLISHED`), pas sur le total envoyé.
+
+> ⚠️ **Note** : la maquette affiche « Contributeur régulier ★★★★ » qui n'est plus dans la taxonomie officielle. À remplacer par la nouvelle liste ci-dessus côté UI.
+
+#### Fonction de calcul (référence)
+```ts
+function computeUserBadge(args: {
+  validatedReports: number;
+  withEvidenceCount: number;     // # signalements validés contenant au moins 1 preuve
+  abuseDetected: boolean;        // signalements rejetés pour abus dans les 90 derniers jours
+}): UserBadge {
+  const { validatedReports, withEvidenceCount, abuseDetected } = args;
+  if (validatedReports === 0) return 'nouveau_membre';
+  if (validatedReports >= 10 && withEvidenceCount >= 5 && !abuseDetected) return 'membre_de_confiance';
+  if (validatedReports >= 6 && withEvidenceCount >= 3) return 'contributeur_fiable';
+  if (validatedReports >= 3) return 'contributeur_actif';
+  return 'contributeur';
+}
+```
+
+### Taux de validation (spec officielle propriétaire)
+
+```
+tauxValidation = signalementsValides / signalementsEnvoyés × 100
+```
+
+- Si `signalementsEnvoyés == 0` → afficher « N/A » (pas d'historique)
+- Arrondi à l'entier (`100 %`, `83 %`, etc.)
+- **Calculé côté serveur** (pas côté client) à partir de la table `Report` filtrée par `authorId`
+
+### Statuts d'un signalement (5 statuts — spec propriétaire)
+
+> Le propriétaire mentionne 5 statuts mais ne les a pas encore listés. **Hypothèse de travail** (à valider) :
+
+| # | Statut | Code | Description |
+|---|---|---|---|
+| 1 | Soumis | `SUBMITTED` | Vient d'être envoyé par l'utilisateur, en attente d'examen |
+| 2 | En cours d'examen | `UNDER_REVIEW` | Pris en charge par un modérateur |
+| 3 | Publié | `PUBLISHED` | Validé et visible publiquement (compte dans le « taux de validation ») |
+| 4 | Refusé | `REJECTED` | Refusé pour non-conformité aux règles (avec motif) |
+| 5 | Archivé / Supprimé | `ARCHIVED` | Retiré sur demande (auteur ou personne concernée) |
+
+**À confirmer avec le propriétaire** : ces 5 valeurs sont-elles correctes ? (Notamment `ARCHIVED` vs `DELETED` — soft delete ou hard delete ?)
+
+### Sécurité critique pour cette page
+
+#### Édition des informations personnelles
+1. **Auth + CSRF token** sur tous les POST/PATCH
+2. **Re-authentication** avant toute modification sensible (déjà respecté pour le password — étendre à l'email)
+3. **Changement d'email** = workflow vérification :
+   - L'email **ne change pas immédiatement**
+   - Envoi d'un mail de confirmation au **nouveau** + notification à l'**ancien** (anti-takeover)
+   - Le changement n'est effectif qu'après clic sur le lien (token signé, 24 h max)
+4. **Changement de téléphone** : validation E.164 via libphonenumber, optionnel : code OTP par SMS pour confirmer (si on intègre un provider SMS plus tard)
+5. **Validation Zod** stricte côté serveur pour chaque champ (longueur min/max, regex)
+6. **Rate-limit** : max 5 modifications profil / heure, max 10 / jour
+7. **Audit log** : chaque modification enregistrée (qui, quand, ancien → nouveau ; jamais le mot de passe en clair évidemment)
+
+#### Changement de mot de passe
+1. **Vérification du mot de passe actuel obligatoire** (déjà dans la maquette ✅)
+2. **Politique mot de passe** :
+   - Minimum **12 caractères**
+   - Mix recommandé (majuscule + minuscule + chiffre + symbole) — **mais privilégier la longueur** sur la complexité
+   - Vérification contre **HaveIBeenPwned** (k-anonymity API : on n'envoie que les 5 premiers caractères du SHA-1)
+   - Pas identique à l'ancien
+   - Pas l'email/prénom/nom de l'utilisateur
+3. **Hashing** : **argon2id** (paramètres OWASP 2024 : `memoryCost: 19456, timeCost: 2, parallelism: 1`)
+4. **Après changement** :
+   - **Invalider toutes les autres sessions** (les tokens existants deviennent invalides ; l'utilisateur reste connecté seulement sur la session courante)
+   - **Email de notification** envoyé à l'utilisateur : « Votre mot de passe a été changé le X depuis l'IP Y. Si ce n'est pas vous, [lien de récupération] »
+5. **Rate-limit strict** : 3 tentatives sur « current password » par heure ; lockout 30 min si échec répété
+6. **Audit log** : changement enregistré (timestamp, IP, User-Agent — pas le hash)
+
+### Manquant dans la maquette (à compléter ultérieurement)
+
+1. **2FA / TOTP** : option à ajouter dans la section sécurité (recommandé pour compte à risque). Pas visible — à clarifier avec le propriétaire si on prévoit ou pas pour le MVP.
+2. **Suppression du compte** : obligation RGPD / CNDP (droit à l'effacement). À ajouter en bas de la page profil :
+   - Bouton rouge `🗑 Supprimer mon compte` → modal de confirmation avec re-auth + saisie « SUPPRIMER » → soft delete 30 j puis purge ; les signalements publiés deviennent anonymes (auteur dissocié)
+3. **Téléchargement des données personnelles** (droit à la portabilité) : bouton `📥 Télécharger mes données` → archive ZIP (JSON + preuves)
+4. **Sessions actives** : liste des sessions ouvertes avec possibilité de déconnecter (un par un ou « Déconnecter toutes les autres sessions »)
+5. **Préférences** :
+   - Langue (FR / EN, futur AR ?)
+   - Devise (MAD / EUR / USD)
 
 ---
 

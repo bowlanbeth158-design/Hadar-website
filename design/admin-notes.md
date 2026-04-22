@@ -1037,6 +1037,370 @@ END
 
 ---
 
+## Écran 10 — Assistant `/admin/assistant` *(Support Hub)*
+
+> **Statut** : spec draft v1 sans maquette, validée à haut niveau par le propriétaire (avril 2026). Inspirée d'Intercom / Crisp / Zendesk Messaging.
+>
+> **Objectif** : une **seule page** qui regroupe (a) la configuration du chatbot et (b) le traitement des tickets/conversations utilisateurs — côté Super-admin/Admin/Support.
+
+### Layout général
+- Sidebar : item `Assistant` actif
+- Titre H1 `Assistant`
+- Top bar standard (search, chat 34, cloche 8, pill Admin, avatar)
+- **2 tabs horizontaux** (pill navy quand actif) :
+  1. `Tickets` *(actif par défaut — c'est l'écran de travail quotidien)*
+  2. `Chatbot` *(configuration)*
+- Boutons haut-droite : `🔄 Rafraîchir` (standard)
+
+---
+
+### Tab A — Tickets (Inbox unifié)
+
+**Layout 3 colonnes** (pattern SaaS messaging standard) :
+
+**Colonne 1 — Liste des conversations (gauche, ~320 px)**
+- Barre de recherche en haut (`Rechercher un ticket…`)
+- **Filtres** (pills horizontaux scrollables) :
+  - `Tous` · `Non assignés` · `Mes tickets` · `Mentions` · `Résolus` · `Archivés`
+- **Liste** : chaque item = card compacte
+  - Avatar + nom/ID user
+  - Extrait de la dernière ligne du dernier message
+  - Pills : statut (couleur) + priorité (point) + tags
+  - Horodatage dernier message (ex : `il y a 5 min`)
+  - Badge rouge si non-lu
+- **Tri** par défaut : dernier message en haut
+- Scroll infini
+
+**Colonne 2 — Thread actif (milieu, flex)**
+- **Header** : nom user + badge statut + priorité + menu kebab `⋮`
+  - Actions kebab : `Assigner à…` / `Changer la priorité` / `Tagger` / `Fusionner` / `Archiver`
+- **Thread de messages** (scrollable, avec timestamps) :
+  - Messages du user (alignés gauche, fond bleu clair `#DBE5F3`)
+  - Messages du bot (alignés gauche, fond orange clair `#FFF5A3`, icône robot)
+  - Messages support humain (alignés droite, fond navy `#00327D`, texte blanc)
+  - **Notes internes** (bandeau jaune pâle `#FFF5A3`, visible uniquement par l'équipe — jamais au user)
+- **Zone de saisie** (bas) :
+  - Textarea + toolbar (gras/italique/lien/liste/fichier/emoji)
+  - Bouton `Répondre` (vert) + bouton `Note interne` (jaune)
+  - Raccourci : `/` déclenche le menu des **réponses pré-rédigées** (canned responses)
+  - Bouton `📎 Joindre fichier`
+  - Sous l'input : case « Marquer comme résolu après envoi »
+
+**Colonne 3 — Fiche user + contexte (droite, ~320 px)**
+- Avatar + nom + rôle (user/actif/bloqué)
+- Contacts : email, téléphone
+- Meta : date d'inscription, dernière activité, langue
+- **Actions rapides** (mêmes que la page Utilisateurs) : `Voir profil` · `Réinitialiser mot de passe` · `Bloquer` · `Supprimer`
+- **Historique** : `8 tickets précédents` (liste repliée, clic → ouvre la conv)
+- **Signalements liés** : `3 signalements` (clic → liste filtrée sur cet user)
+- **Tags du ticket** : pills éditables
+- **SLA** : pill coloré (vert si dans les temps, rouge si dépassé)
+
+### Modèle de données (pseudo-schema)
+
+```ts
+Ticket {
+  id
+  userId (ref User)
+  status: 'open' | 'in_progress' | 'waiting_user' | 'resolved' | 'closed'
+  priority: 'low' | 'medium' | 'high' | 'urgent'
+  category: 'technical' | 'account' | 'moderation' | 'other'
+  assignedMemberId? (ref Member)
+  tags: string[]
+  subject?: string
+  slaDueAt?: Date
+  csatScore?: 1..5
+  csatComment?: string
+  createdAt, updatedAt, closedAt?
+  messages: Message[]
+  internalNotes: Note[]
+}
+
+Message {
+  id, ticketId
+  authorType: 'user' | 'bot' | 'member'
+  authorId
+  body (rich text), attachments
+  createdAt
+}
+```
+
+### Fonctionnalités clés
+
+| Feature | Description | MVP ? |
+|---|---|---|
+| **5 statuts** | `Ouvert` → `En cours` → `En attente user` / `Résolu` → `Fermé` | ✅ |
+| **4 priorités** | Basse / Moyenne / Haute / Urgente (couleurs : vert/gris/orange/rouge) | ✅ |
+| **Catégories** | Technique / Compte / Modération / Autre | ✅ |
+| **Assignation** | Manuelle (dropdown membres) ou auto (règles par catégorie) | ✅ manu / 🔜 auto |
+| **Notes internes** | Jamais visibles au user, jaune pâle | ✅ |
+| **Tags** | Libres, création à la volée | ✅ |
+| **SLA** | Alerte si pas de réponse en `X` h (configurable par priorité) | ✅ |
+| **Historique user** | Tous les tickets passés du user visibles | ✅ |
+| **Macros** | Actions combinées (répondre + tagger + fermer) | 🔜 v2 |
+| **CSAT** | Email post-clôture avec widget 1-5 ⭐ + commentaire | ✅ |
+| **Réponses pré-rédigées** | Canned responses avec variables `{{user.firstName}}` | ✅ |
+| **Fusion de tickets** | Merger 2 tickets du même user en un seul | 🔜 v2 |
+| **Détection sentiment** | IA colore les tickets négatifs → priorisation auto | 🔜 v3 |
+| **Analytics** | Temps de réponse moyen, résolution, CSAT, top tags | ✅ (onglet dédié v2) |
+
+### Notifications support
+- Top bar badge 💬 = **nombre de tickets non assignés + mentions directes** (pas tous les messages)
+- Notif desktop (navigateur) à activer/désactiver par membre
+- Notif email digest (optionnel, fréquence configurable)
+
+---
+
+### Tab B — Chatbot (configuration)
+
+Accessible uniquement par Admin/Super-admin (permission `assistant.configure`).
+
+**Sections empilées** (cards) :
+
+**1. État du bot**
+- Toggle master `Bot actif` (vert) / `Bot en pause` (gris) — permet de désactiver temporairement
+- Stats rapides : `2 345 conversations ce mois` · `89% résolues sans escalade` · `4.3 / 5 CSAT bot`
+
+**2. Base de connaissances**
+- Liste des articles FAQ alimentant le bot (CRUD : titre + contenu markdown + tags)
+- Import en lot : CSV / Markdown / lien vers FAQ publique (`/faq`)
+- **Scope** : le bot ne répond QUE sur la base de connaissances (pas d'hallucination → pattern RAG)
+- Bouton `Re-entraîner` après modifications (déclenche re-ingestion vectorielle)
+
+**3. Messages système**
+- `Message d'accueil` : texte affiché à l'ouverture du chat (FR + AR, éditable)
+- `Message de repli` : quand le bot ne sait pas répondre
+- `Message d'escalade` : quand le bot passe la main à un humain
+- `Heures ouvrées` : configurer quand le support humain est dispo → messages adaptés hors-horaire
+
+**4. Règles d'escalade**
+- Auto-escalade si :
+  - L'utilisateur tape « humain » / « agent » / « opérateur »
+  - Le bot échoue 2 fois d'affilée (ne trouve pas dans la base)
+  - Le sentiment détecté est très négatif
+- Configurable par toggle
+
+**5. Personnalité / ton**
+- Pills sélectionnables : `Formel` / `Amical` / `Chaleureux` / `Neutre`
+- Nom du bot (ex : `Hadar Bot` — affiché dans le chat)
+- Avatar du bot (upload image)
+
+**6. Réponses pré-rédigées (canned responses)**
+- Bibliothèque partagée bot + support humain
+- Recherche par raccourci `/`
+- Variables : `{{user.firstName}}`, `{{report.number}}`, `{{link.faq}}`
+- Tags pour classement
+
+**7. Multilingue**
+- FR + AR (mêmes messages, versions parallèles)
+- Détection auto de la langue du user (via profil + premier message)
+
+### Sécurité & performance chatbot
+1. **Rate limiting** par user (ex : 30 messages / 10 min) pour éviter le flood
+2. **Filtrage PII** en entrée : détection automatique d'emails/téléphones/CIN/RIB → remplacement par `***` avant log
+3. **Pas de données sensibles** exposées au modèle LLM (utiliser un proxy qui masque)
+4. **Log des conversations** avec rétention 90 j (puis archivage froid)
+5. **Audit log** des modifications de config chatbot
+6. **Bouton "Signaler ce message"** côté user (en cas de réponse inappropriée du bot)
+
+---
+
+## Écran 11 — Annonces `/admin/annonces` *(Broadcast Center)*
+
+> **Statut** : spec draft v1 sans maquette, validée à haut niveau par le propriétaire (avril 2026). Inspirée de Mailchimp / Brevo (Sendinblue) / OneSignal.
+>
+> **Objectif** : centraliser **toute la communication sortante** vers les utilisateurs — multi-canal (Email / WhatsApp / Telegram / bandeau in-app).
+
+### Layout général
+- Sidebar : item `Annonces` actif
+- Titre H1 `Annonces`
+- **5 tabs horizontaux** :
+  1. `Campagnes` *(actif par défaut)*
+  2. `Automations`
+  3. `Templates`
+  4. `Intégrations`
+  5. `Logs & Audit`
+- Boutons haut-droite : `📝 Nouvelle campagne` (CTA primary navy)
+
+---
+
+### Tab A — Campagnes (broadcasts ponctuels)
+
+**Liste des campagnes** (table) :
+| Col | Description |
+|---|---|
+| `Nom` | titre de la campagne |
+| `Canaux` | pills icônes (📧 💬 📱 🎯) selon canaux activés |
+| `Statut` | `Brouillon` / `Planifiée` / `En cours` / `Envoyée` / `Échec` |
+| `Audience` | ex : `Tous` · `8 500 users` |
+| `Envoyés / Délivrés / Ouverts / Cliqués` | KPI compacts |
+| `Planifiée pour` | date si planifiée |
+| `Action` | menu `⋮` — Voir / Dupliquer / Modifier / Supprimer |
+
+### Écran "Nouvelle campagne" (wizard 5 étapes)
+
+**Étape 1 — Informations**
+- Nom interne (jamais visible aux users)
+- Description (optionnelle, pour l'équipe)
+- Tags internes
+
+**Étape 2 — Canaux**
+- Cases à cocher multi-sélection :
+  - ☐ 📧 Email
+  - ☐ 💬 WhatsApp Channel
+  - ☐ 📱 Telegram Channel
+  - ☐ 🎯 Bandeau in-app (plateforme)
+- Pour chaque canal activé → prévisualisation contenu (étape suivante)
+
+**Étape 3 — Contenu**
+- Éditeur par canal (tabs si plusieurs) :
+  - **Email** : objet + preheader + corps (WYSIWYG ou Markdown) + boutons CTA
+  - **WhatsApp** : texte (1024 car max) + média optionnel + boutons quick-reply
+  - **Telegram** : texte Markdown + média + boutons inline
+  - **Bandeau in-app** : titre court + description + CTA + date début/fin
+- Support **variables** : `{{firstName}}`, `{{reportNumber}}`, `{{link.unsubscribe}}` (obligatoire email)
+- **Multilingue** : toggle FR / AR — contenu parallèle
+- **Prévisualisation mobile** (iPhone + Android) en temps réel
+
+**Étape 4 — Audience**
+- **Segment prédéfini** (dropdown) : `Tous les users` · `Users actifs 30j` · `Users à haut risque signalé` · `Users avec signalements publiés` · etc.
+- **Segment personnalisé** : builder de filtres (AND/OR)
+  - Filtres possibles : statut compte / date inscription / nombre signalements / niveau risque perçu / langue / fuseau / dernière activité
+- **Import CSV** : liste d'emails (avec vérif opt-in obligatoire)
+- **Exclure** : liste(s) à exclure (anti-doublon)
+- Affichage en temps réel : `N destinataires estimés`
+
+**Étape 5 — Planification & envoi**
+- Options :
+  - `Envoyer maintenant`
+  - `Planifier` → date + heure + fuseau
+  - `Envoi optimisé` → le système choisit l'heure par user (best open rate)
+- **A/B testing** (optionnel) : 2 variantes d'objet email → 10% test → gagnant envoyé aux 90%
+- **Récapitulatif** : canaux, audience, contenu, date
+- Bouton `Envoyer la campagne` → **modal de confirmation** (« Cette action enverra le message à N users. Irréversible. »)
+- Pour les envois > 1 000 destinataires : **approbation Super-admin requise** (cf §Conformité)
+
+---
+
+### Tab B — Automations (messages déclenchés par événement)
+
+Liste des automations actives / en pause, chacune définie par :
+- **Trigger** (événement) : `user.created` · `report.published` · `report.rejected` · `report.needsCorrection` · `user.inactive90d` · `risk.detected` · `login.unusual` · etc.
+- **Conditions** (optionnelles, filtres sur les données du trigger)
+- **Action** : envoi via 1+ canaux avec template donné
+- **Statut** : Actif / En pause
+
+**Automations proposées par défaut** (MVP) :
+| # | Trigger | Action | Canaux |
+|---|---|---|---|
+| 1 | `user.created` | Bienvenue + vérif email | Email |
+| 2 | `report.published` | Confirmation publication | Email + in-app |
+| 3 | `report.rejected` | Notif refus + motif | Email + in-app |
+| 4 | `report.needsCorrection` | Demande correction + motif (déjà spécifié §Écran 2) | Email + in-app |
+| 5 | `user.blocked` | Notif blocage + motif (déjà spécifié §Écran 6) | Email |
+| 6 | `user.inactive60d` | Relance douce « On ne vous a pas vu depuis 2 mois » | Email |
+| 7 | `risk.detected` *(opt-in)* | Alerte si un contact que l'user surveille passe à risque élevé | WhatsApp + in-app |
+| 8 | `login.unusual` | Alerte sécurité (IP/pays/device nouveau) | Email |
+
+**Éditeur** : même wizard que campagnes, mais canal et contenu pré-remplis.
+
+---
+
+### Tab C — Templates (bibliothèque)
+
+Liste des templates réutilisables par canal (Email / WhatsApp / Telegram / in-app).
+
+Pour chaque template :
+- Nom interne
+- Canal (pill icône)
+- Variables utilisées (détection auto)
+- Langues disponibles (FR / AR)
+- Actions : `Éditer` / `Dupliquer` / `Prévisualiser` / `Supprimer`
+
+**Variables globales disponibles** :
+- `{{user.firstName}}`, `{{user.lastName}}`, `{{user.email}}`, `{{user.phone}}`
+- `{{report.number}}`, `{{report.type}}`, `{{report.status}}`
+- `{{link.unsubscribe}}` (obligatoire email marketing), `{{link.login}}`, `{{link.faq}}`
+- `{{platform.name}}` = "Hadar.ma"
+
+---
+
+### Tab D — Intégrations (providers)
+
+Accessible uniquement au Super-admin (permission `admin.integrations` 🔒).
+
+**Card WhatsApp Business API (Meta Cloud API)**
+- Numéro vérifié (+212 …)
+- Access token (masqué, `Régénérer`)
+- Webhook URL Hadar (pour la réception)
+- Limite quotidienne (quota Meta)
+- Status : `Connecté` ✅ / `Erreur` ❌
+- Bouton `Tester l'envoi`
+
+**Card Telegram Bot**
+- Nom du bot (@hadar_ma_bot)
+- Bot token (masqué)
+- Channel ID (ex : `@hadar_channel`)
+- Status + bouton test
+
+**Card Email provider**
+- Provider (dropdown) : `SendGrid` / `Resend` / `Mailgun` / `SMTP custom`
+- API key (masquée)
+- From address (ex : `no-reply@hadar.ma`)
+- Vérifications domaine :
+  - SPF : ✅ / ❌
+  - DKIM : ✅ / ❌
+  - DMARC : ✅ / ❌
+- Status + bouton test
+
+**Card Bandeau in-app**
+- Pas d'intégration externe — piloté directement par la DB
+
+---
+
+### Tab E — Logs & Audit
+
+Table chronologique de tous les envois :
+| Horodatage | Campagne / Automation | Canal | User | Statut | Détails |
+|---|---|---|---|---|---|
+| `2026-04-22 14:32` | Campaign "Lancement" | Email | yahya@… | `Délivré` | Opens: 2 |
+| `2026-04-22 14:32` | Campaign "Lancement" | WhatsApp | +212… | `Échec` | `quota_exceeded` |
+
+Filtres : date / canal / statut / user.
+Export CSV.
+Rétention : 12 mois.
+
+---
+
+### 🛡️ Conformité & gouvernance Annonces
+
+1. **Consentement (opt-in)** : les envois **marketing** exigent un opt-in explicite du user (case cochée à l'inscription ou dans `Mes préférences`). Les envois **transactionnels** (confirmation signalement, reset password, etc.) ne l'exigent pas.
+2. **Désinscription (opt-out)** : lien `{{link.unsubscribe}}` obligatoire dans chaque email marketing. 1 clic = désinscription immédiate. WhatsApp : mot-clé `STOP`.
+3. **Frequency capping** : max **3 messages marketing / user / semaine** (configurable). Bypass possible pour les messages transactionnels urgents.
+4. **Workflow d'approbation** : toute campagne > 1 000 destinataires nécessite la validation d'un Super-admin (statut `En attente validation`).
+5. **Audit log** : qui a créé, modifié, envoyé chaque campagne (conservé 2 ans).
+6. **Blocklist** : liste des users ayant demandé à ne plus être contactés (RGPD). Impossible de les ajouter à un segment.
+7. **Respect quotas WhatsApp** : la Meta Cloud API a des tiers (1k / 10k / 100k / illimité) → alerter l'admin quand on approche le quota.
+
+---
+
+## Idées bonus proposées (à valider par priorité)
+
+| # | Idée | Valeur ajoutée | Priorité |
+|---|---|---|---|
+| 1 | **A/B testing** objets email | +15-25% taux d'ouverture typique | P1 |
+| 2 | **Calendrier visuel** des campagnes planifiées | Vue d'ensemble, anti-collision | P1 |
+| 3 | **API publique + webhooks** | Déclencher annonces depuis des systèmes externes | P3 |
+| 4 | **Macros support** (actions combinées) | +30% productivité support | P2 |
+| 5 | **Détection sentiment** tickets (positif/négatif) | Priorisation auto des tickets urgents | P3 |
+| 6 | **Analytics support** dédiés | Pilotage qualité, SLA, CSAT | P1 |
+| 7 | **App mobile PWA** pour support | Réactivité hors bureau | P2 |
+| 8 | **Import CSV** de contacts | Flexibilité segments | P2 |
+
+Légende priorité : **P1** = à intégrer dans le MVP · **P2** = v2 post-lancement · **P3** = backlog longue traîne.
+
+---
+
 ## Questions ouvertes (admin)
 
 - [ ] Format d'export (CSV / XLSX / PDF) ? Périmètre = uniquement les KPI visibles ou dump complet des signalements de la période ?
@@ -1098,6 +1462,24 @@ END
 - [ ] **Valider la matrice complète des permissions** ligne par ligne (~38 items) — défauts proposés OK ?
 - [ ] **Logs d'audit** : périmètre (toutes actions admin ? uniquement sensibles ?), durée de rétention, qui peut les voir ?
 - [ ] **Configuration plateforme** : liste précise des paramètres globaux éditables (mentions légales ? bandeau WhatsApp ? emails transactionnels ?) — à spécifier
+
+### Assistant (Support Hub)
+- [ ] Valider la **liste des catégories** de tickets (Technique / Compte / Modération / Autre) — en ajouter ?
+- [ ] Valider les **SLA par priorité** (ex : Urgente=1h · Haute=4h · Moyenne=24h · Basse=72h)
+- [ ] **Chatbot** : fournisseur LLM (Anthropic/OpenAI/autres) + coût estimé / mois
+- [ ] **Base de connaissances** : source initiale (FAQ existante déjà transcrite dans `design/legal/03-faq.md` ? autre ?)
+- [ ] **Horaires ouvrés** du support humain : à préciser (24/7 ? 9h-18h CAI ? weekends ?)
+- [ ] **Langues du chatbot** : FR uniquement pour le MVP, ou FR+AR dès le départ ?
+
+### Annonces (Broadcast Center)
+- [ ] **Provider email** choisi : SendGrid / Resend / Mailgun / autre ? (impact budget + onboarding)
+- [ ] **Compte WhatsApp Business** : numéro dédié déjà acheté ou à provisionner ?
+- [ ] **Bot Telegram** : channel existant (`@hadar_channel` ?) ou à créer ?
+- [ ] **Frequency capping** : valider la règle par défaut (max 3 messages marketing / user / semaine)
+- [ ] **Seuil d'approbation Super-admin** pour campagnes (1 000 destinataires proposé) — à confirmer
+- [ ] **Opt-in marketing** : case cochée par défaut à l'inscription (opt-out RGPD) ou décochée (opt-in explicite, plus strict) ?
+- [ ] **Automations MVP** : valider les 8 automations proposées (v1), prioriser lesquelles sont indispensables
+- [ ] **Priorités des 8 bonus ideas** : accepter les suggestions P1/P2/P3 ou redéfinir ?
 - [x] ~~Motif de décision obligatoire~~ → **Obligatoire uniquement pour `Non retenu`** (propriétaire). Concern UX levé pour `À corriger` (cf §Écran 3).
 - [ ] Pagination de la liste signalements (type + nombre par page) ?
 - [ ] Filtres liste signalements (tri par colonne + filtres multi-critères par canal/type/statut/user) ?

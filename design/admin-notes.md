@@ -866,7 +866,11 @@ Toutes les actions `account.*` et `security.*` (modifier son propre profil, 2FA,
 | `Refusé` | rouge `#EE4444` | 500 |
 | `À corriger` | navy `#0078BA` | 100 |
 
-> ⚠️ **Erreur de maquette** : les labels affichent `200%`, `1020%`, `500%`, `100%` (avec %). Ce sont des **comptages**, pas des pourcentages. À corriger dans la maquette et côté code.
+> ⚠️ **Affichage hybride (figé par le propriétaire, avril 2026)** : par défaut, les labels affichent le **nombre de signalements** (sans `%`). Au **click sur une barre**, le label bascule sur le **pourcentage** que cette catégorie représente dans le total.
+>
+> Exemple : un click sur la barre "Publié" (1020) affiche `56%` (1020 / 1820 du total de signalements). Nouveau click → retour au nombre absolu.
+>
+> Applicable aux 2 charts "Répartition" (page 1 + page 2). Les `200%` / `1020%` / etc. visibles dans la maquette sont des placeholders montrant uniquement le mode "%", alors que par défaut on affichera les nombres bruts.
 
 **Card 2 — "Variation des signalements"** (comparaison de 2 périodes)
 - Titre : `Variation des signalements`
@@ -929,7 +933,7 @@ END
 | Non conforme | jaune | 500 |
 | Usurpation | navy | 100 |
 
-> Même erreur de `%` dans les labels — à corriger.
+> Même affichage hybride que page 1 : **nombre par défaut**, **% au click** sur une barre.
 
 **Card 2 — "Évolution des signalements par type de problème"**
 - Type sélectionné par défaut : `Bloqué après paiement` (à confirmer)
@@ -1084,7 +1088,7 @@ END
 - [x] ~~Satisfaction / Rating~~ → **Widget 1-5 étoiles après chaque signalement** (propriétaire). Widget spec ajouté à `design-notes.md`.
 - [x] ~~Seuils des 4 niveaux de risque~~ → **Faible=0 · Vigilance=1-2 · Modéré=3-4 · Élevé≥5** (propriétaire).
 - [x] ~~Cards "Évolution" (pages 2 et 3)~~ → **Cliquable/dynamique** : clic sur un pill ou une barre du chart → card se met à jour (propriétaire).
-- [ ] **Labels `%` sur barres de comptage** (charts "Répartition" pages 1 et 2) → erreur maquette, à remplacer par nombres purs — à reconfirmer
+- [x] ~~Labels `%` sur barres~~ → **Affichage hybride** : nombre par défaut, pourcentage au click sur une barre (propriétaire). Applicable aux 2 charts "Répartition" (pages 1 et 2).
 - [ ] **Refresh auto** : intervalle (60 s proposé) + indicateur visuel pendant le fetch ?
 - [ ] **Exporter** : format (CSV / XLSX / PDF) + périmètre (page courante / toutes les pages / raw data) ?
 - [ ] **Typo maquette** : `Verifications` → `Vérifications` + `2025 période actuelle` → `2026 période actuelle`

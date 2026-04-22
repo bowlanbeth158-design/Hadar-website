@@ -451,9 +451,7 @@ Grid 2×2 de pills colorées (couleur assortie au type de canal) :
 | Modéré (orange) | 80 % |
 | Élevé (rouge) | 45 % |
 
-Échelle Y : 0–100 (ou auto-scale).
-
-> ⚠️ **À clarifier** : les valeurs affichées sont-elles des pourcentages (%) ou des nombres absolus ? L'axe Y (0–80) suggère « nombre » mais les labels au-dessus des barres affichent « % ». Choisir l'un OU l'autre, pas les deux.
+**Décision (confirmée par le propriétaire)** : afficher des **pourcentages**, axe Y `0 – 100 %` (pas les nombres absolus). Les labels au-dessus des barres restent au format `XX %`. La maquette sera corrigée côté UI pour retirer la graduation 0–80 numérique.
 
 ### Bloc 5 — Card « Évolution des signalements »
 - Texte gauche : `+12 % vs semaine dernière` → `1 900 signalements`
@@ -469,7 +467,14 @@ Grid 2×2 de pills colorées (couleur assortie au type de canal) :
 | Refusés | Gris | 655 |
 | Publiés | Vert | 1 245 |
 
-→ **Barre de progression horizontale** en bas (`65 %`) = ratio publiés/soumis (ou autre calcul à confirmer).
+→ **Barre de progression horizontale** en bas (`65 %`) = **taux de publication** = `publiés ÷ soumis` (confirmé par le propriétaire).
+
+### Filtres supplémentaires (ajout validé par le propriétaire)
+En complément des 4 filtres temporels, prévoir 2 filtres optionnels :
+- **Filtre par canal** (multi-select) : Téléphone · WhatsApp · Email · PayPal · Site web · Réseaux sociaux · RIB · Binance
+- **Filtre par type de problème** (multi-select) : Non livraison · Bloqué après paiement · Produit non conforme · Usurpation d'identité
+
+Position UI : sous les onglets temporels, dans une rangée discrète « Affiner : [Canal ▾] [Type de problème ▾] [Réinitialiser] ». Les filtres recombinent toutes les cards. Valeurs reflétées dans l'URL (`?period=today&canal=whatsapp,rib&problem=non_livraison`) pour permettre partage et navigation arrière.
 
 ### CTA bas de page
 2 boutons grands :
@@ -487,11 +492,14 @@ Grid 2×2 de pills colorées (couleur assortie au type de canal) :
    - Une ligne `StatsSnapshot` par combinaison (period, currency) → 4 périodes × 3 devises = 12 lignes seulement
    - ISR Next.js avec `revalidate: 60` → page servie depuis le CDN
 
-2. **Visibilité publique** :
-   - Stats agrégées **sans aucune PII** : OK pour publication ouverte (même non connecté)
+2. **Visibilité — réservée aux utilisateurs connectés** (confirmé par le propriétaire) :
+   - Route `/statistiques` protégée par middleware d'auth → redirection vers `/connexion?next=/statistiques` si non authentifié
+   - Le bouton « Voir plus » de l'accueil ouvre la modal de connexion si l'utilisateur n'est pas encore connecté, puis redirige vers la page une fois connecté
+   - Stats agrégées **sans aucune PII** : aucun contact / auteur / IP n'apparaît
    - **Risque d'inférence** : si une catégorie a très peu de signalements, le pourcentage peut leak un cas individuel
-   - Appliquer **k-anonymity** : ne pas afficher de bucket / ne pas trop arrondir si `n < 5` dans une catégorie (afficher « < 5 » plutôt qu'un pourcentage exact)
-   - Pas de filtre par contact ou auteur exposé sur cette page publique
+   - Appliquer **k-anonymity** : ne pas afficher de bucket si `n < 5` dans une catégorie (afficher « < 5 » plutôt qu'un pourcentage exact)
+   - Rate-limit par utilisateur (200 req/h) en plus du rate-limit IP
+   - Pas d'endpoint public retournant le JSON brut
 
 3. **Anti-scraping** :
    - Rate-limit global 60 req/min/IP sur cette route

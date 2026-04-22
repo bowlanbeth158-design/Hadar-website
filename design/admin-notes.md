@@ -256,17 +256,24 @@ Titre H2 **`Décision de modération`** centré (navy).
 **CTA final**
 - Bouton rouge plein `Refuser le signalement` (large, centré)
 
-### ⚠️ Question critique UX — pattern des boutons décision
-La maquette montre **3 boutons de décision + 1 CTA rouge "Refuser le signalement"**. Deux interprétations possibles :
+### ⚠️ Pattern des boutons décision — décision figée (Option A)
 
-**Hypothèse A (recommandée)** — Les 3 boutons sont des **sélecteurs de décision**. Le CTA en bas est l'action de **confirmation** dont le label/couleur change dynamiquement selon la sélection :
-- Si `Publié` sélectionné → CTA vert « Publier le signalement »
-- Si `Non retenu` sélectionné → CTA rouge « Refuser le signalement »
-- Si `À corriger` sélectionné → CTA navy « Demander correction »
+Les 3 boutons `Publié` / `Non retenu` / `À corriger` sont des **sélecteurs** (type radio). Ils marquent la décision choisie mais ne déclenchent aucune action.
 
-**Hypothèse B** — Les 3 boutons sont des raccourcis directs (click = application immédiate). Le bouton "Refuser" en bas serait alors redondant avec `Non retenu`.
+Le **CTA final en bas est l'action de confirmation**. Son label et sa couleur changent dynamiquement selon la décision sélectionnée :
 
-→ **À valider par le propriétaire**. L'hypothèse A est plus sûre UX (évite les erreurs irréversibles) et correspond au pattern SaaS standard.
+| Décision sélectionnée | CTA final | Couleur |
+|---|---|---|
+| `Publié` | **Publier le signalement** | vert `#22C45E` |
+| `Non retenu` | **Refuser le signalement** | rouge `#EE4444` |
+| `À corriger` | **Demander correction** | navy `#00327D` |
+
+**États du CTA** :
+- Désactivé (gris) tant qu'aucune décision n'est sélectionnée OU que le motif est vide
+- Activé (couleur pleine) dès que : décision choisie + motif rempli
+- Au click → modal de confirmation « Confirmer cette décision ? » (action irréversible ou semi-irréversible)
+
+**Pourquoi ce pattern** : évite les clics accidentels sur des décisions irréversibles, permet de relire/modifier le motif avant confirmation, pattern standard SaaS.
 
 ### Workflow d'audit
 Il faut tracer :
@@ -285,7 +292,7 @@ Il faut tracer :
 - [ ] Matrice de permissions par rôle (qui peut modérer, qui peut créer des membres, qui voit les stats sensibles…)
 - [ ] Langue de l'admin : FR uniquement, ou bilingue FR/AR comme côté utilisateur ?
 - [ ] Top bar search : périmètre exhaustif (signalements, utilisateurs, membres, annonces, messages chat, logs…) ? Ou sous-ensemble ?
-- [ ] **Pattern boutons décision modération** (hypothèse A ou B — cf §Écran 3) ?
+- [x] ~~Pattern boutons décision modération~~ → **Option A figée** : 3 sélecteurs + CTA dynamique (cf §Écran 3)
 - [ ] **Statut "À corriger"** : workflow user complet (notification, écran correction, resoumission) ?
 - [ ] **Motif de décision** obligatoire aussi pour `Publié`, ou uniquement pour `Non retenu` / `À corriger` ?
 - [ ] Pagination de la liste signalements (type + nombre par page) ?

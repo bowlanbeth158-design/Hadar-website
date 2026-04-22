@@ -466,14 +466,22 @@ Pills `‹ 1 2 3 ›` en bas à droite (page 2 active), même pattern que Membre
 
 ---
 
+### Cas d'usage admin (confirmés par le propriétaire)
+
+> La page Utilisateurs sert à la fois de **outil de support client** et de **outil de modération** :
+> - **Support** : un user a oublié son mot de passe → admin cherche par ID → clique `Réinitialiser` → un email de reset est envoyé à l'adresse de création
+> - **Modération** : un user enfreint les règles → admin clique `Bloquer` ou `Supprimer` → un email de notification est envoyé
+>
+> Les actions admin sont toujours **assorties d'un email automatique à l'adresse de création** du user.
+
 ### Actions admin (les 4 décisions, confirmées par le propriétaire)
 
-| Action | Couleur bouton | Quand cliquable | Effet | Notification user |
+| Action | Couleur bouton | Quand cliquable | Effet | Email user |
 |---|---|---|---|---|
-| `Voir ›` | navy `#00327D` | Toujours | Ouvre la fiche utilisateur (`/admin/utilisateurs/[id]`) | Aucune |
-| `Réinitialiser` | orange `#F29B11` | Statut ≠ `Supprimé` *(ou aussi Supprimé pour restauration ?)* | Envoie un email de reset password à l'utilisateur (lien signé, expiration 1h). Ne révèle rien à l'admin. | Email `Réinitialisez votre mot de passe Hadar` |
-| `Bloquer` / `Débloquer` | gris/noir → vert si déjà bloqué | Toujours | Bascule le statut entre `Actif`/`Inactif` ↔ `Bloqué`. Force la déconnexion immédiate des sessions actives. | Email `Votre compte a été suspendu` + motif (à demander) |
-| `Supprimer` | rouge `#EE4444` | Statut ≠ `Supprimé` | Soft-delete : statut `Supprimé`, anonymise email/téléphone/nom, conserve les signalements publiés | Email d'avertissement final (J-7 ?) puis confirmation de suppression |
+| `Voir ›` | navy `#00327D` | Toujours | Ouvre la fiche utilisateur (`/admin/utilisateurs/[id]`) | Aucun |
+| `Réinitialiser` | orange `#F29B11` | Statut ≠ `Supprimé` *(ou aussi Supprimé pour restauration ?)* | **Envoie un email de reset password** au user (lien signé, expiration 1 h). L'admin ne voit jamais le nouveau mot de passe. | `Réinitialisez votre mot de passe Hadar` |
+| `Bloquer` / `Débloquer` | gris/noir → vert si déjà bloqué | Toujours | Bascule le statut `Actif`/`Inactif` ↔ `Bloqué`. Force la déconnexion immédiate des sessions actives. | `Votre compte a été suspendu` + motif (à demander) |
+| `Supprimer` | rouge `#EE4444` | Statut ≠ `Supprimé` | Soft-delete : statut `Supprimé`, anonymise email/téléphone/nom, conserve les signalements publiés | Email d'avertissement final puis confirmation de suppression |
 
 ### Two patterns possibles pour la colonne Action (à trancher)
 
@@ -549,7 +557,7 @@ Si plusieurs users cochés ont des statuts mixtes (ex : 2 actifs + 1 bloqué), n
 
 ### Utilisateurs (usagers finaux)
 - [ ] **Pattern colonne Action** : bouton contextuel unique (maquette) **ou** menu déroulant kebab `⋮` avec les 4 actions (recommandé) ?
-- [ ] **`Réinitialiser`** : email de reset password envoyé au user (recommandé) — confirmer que l'admin ne peut PAS définir le mot de passe
+- [x] ~~`Réinitialiser`~~ → **Email de reset envoyé à l'adresse de création** (propriétaire). Admin ne voit jamais le password.
 - [ ] **`Bloquer`** : motif obligatoire ? Notification email au user ? Possibilité de débloquer ?
 - [ ] **`Supprimer`** : soft-delete + anonymisation (recommandé) **ou** hard-delete ? Délai de grâce avant effacement définitif ?
 - [ ] **Compte `Supprimé`** : que deviennent ses signalements `PUBLISHED` (conserver anonyme) ? `SUBMITTED`/`UNDER_REVIEW` (annuler) ?

@@ -242,12 +242,14 @@ colors: {
 
 ## Niveaux de risque (4 paliers — basés sur le nombre de signalements)
 
+> Seuils **figés par le propriétaire** (avril 2026). Couleurs alignées sur la charte officielle `brand.md`.
+
 | Niveau | Code | Couleur | Seuil | Message à afficher |
 |---|---|---|---|---|
-| 🟢 Faible | `faible` | vert `#16A34A` | 0 signalement | « Aucun signalement détecté. Vous pouvez continuer, tout en restant vigilant. » |
-| 🟡 Vigilance | `vigilance` | jaune `#FACC15` | 1 à 2 signalements | « Quelques signalements ont été enregistrés. Nous vous invitons à vérifier les informations avant de continuer. » |
-| 🟠 Modéré | `modere` | orange `#F97316` | 3 à 4 signalements | « Plusieurs signalements ont été enregistrés. La prudence est recommandée avant toute interaction. » |
-| 🔴 Élevé | `eleve` | rouge `#DC2626` | ≥ 5 signalements | « Un nombre important de signalements a été enregistré. Nous vous recommandons d'être particulièrement vigilant. » |
+| 🟢 Faible | `faible` | vert `#22C45E` | 0 signalement | « Aucun signalement détecté. Vous pouvez continuer, tout en restant vigilant. » |
+| 🟡 Vigilance | `vigilance` | jaune `#D8C100` | 1 à 2 signalements | « Quelques signalements ont été enregistrés. Nous vous invitons à vérifier les informations avant de continuer. » |
+| 🟠 Modéré | `modere` | orange `#F29B11` | 3 à 4 signalements | « Plusieurs signalements ont été enregistrés. La prudence est recommandée avant toute interaction. » |
+| 🔴 Élevé | `eleve` | rouge `#EE4444` | ≥ 5 signalements | « Un nombre important de signalements a été enregistré. Nous vous recommandons d'être particulièrement vigilant. » |
 
 ### Logique de calcul (pseudo-code)
 

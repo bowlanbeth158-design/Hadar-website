@@ -889,17 +889,35 @@ Toutes les actions `account.*` et `security.*` (modifier son propre profil, 2FA,
 | Modéré 4 > 3 | jaune | `670 (36%)` | contacts dans la tranche Modéré |
 | Elevé ≥ 5 | vert | `350 (20%)` | contacts dans la tranche Élevé |
 
-> ⚠️ **Notation ambiguë à clarifier** : `Vigilance 2 > 1`, `Modéré 4 > 3`, `Élevé ≥ 5`. Interprétation probable = **seuils cumulés par contact signalé** (nombre de signalements distincts reçus par un même contact pour tomber dans cette tranche).
->
-> **Règle d'unicité validée par le propriétaire** (avril 2026) :
-> - Un utilisateur peut signaler **1 contact unique** `(valeur + canal)` → OK
-> - Un utilisateur peut signaler **plusieurs contacts différents** → OK
-> - Un utilisateur ne peut **pas** signaler plusieurs fois **le même contact sur le même canal** → bloqué
-> - Exception : même valeur (ex: `+212 6 XX XX XX XX`) signalée sur **deux canaux différents** (ex: WhatsApp **ET** RIB bancaire) = 2 signalements distincts autorisés
->
-> **Clé d'unicité DB** : `UNIQUE (userId, contactValue, channel)` sur la table `Report`.
->
-> **Seuils exacts** : à confirmer (cf §Questions ouvertes).
+### Seuils exacts des 4 niveaux de risque (figés par le propriétaire, avril 2026)
+
+Le niveau de risque est attribué à un **contact** (valeur + canal) en fonction du nombre total de signalements **distincts** qu'il a reçus (cf règle d'unicité).
+
+| Niveau | Pastille | Signalements cumulés | Badge sur fiche contact |
+|---|---|---|---|
+| 🟢 `Faible` | vert `#22C45E` | `0` | pill pastel `Risque faible` (`#BAFFCC`) |
+| 🟡 `Vigilance` | jaune `#D8C100` | `1` ou `2` | pill pastel `Vigilance requise` (`#FFF5A3`) |
+| 🟠 `Modéré` | orange `#F29B11` | `3` ou `4` | pill pastel `Risque modéré` (`#FBD185`) |
+| 🔴 `Élevé` | rouge `#EE4444` | `5` ou plus (`≥ 5`) | pill pastel `Risque élevé` (`#F8B8B8`) |
+
+**Signification de la notation maquette** :
+- `Vigilance 2 > 1` = **1 à 2 signalements** (borne haute > borne basse)
+- `Modéré 4 > 3` = **3 à 4 signalements**
+- `Élevé ≥ 5` = **5 signalements ou plus**
+
+**Règle SQL / logique backend** (pseudocode) :
+```
+count := SELECT COUNT(*) FROM Report
+        WHERE contactValue = :x AND channel = :y AND status = 'PUBLISHED'
+level := CASE
+  WHEN count = 0 THEN 'FAIBLE'
+  WHEN count BETWEEN 1 AND 2 THEN 'VIGILANCE'
+  WHEN count BETWEEN 3 AND 4 THEN 'MODERE'
+  WHEN count >= 5 THEN 'ELEVE'
+END
+```
+
+**Partie user impactée** : la taxonomie 4 niveaux côté public doit utiliser exactement ces seuils (mettre à jour `design-notes.md` si besoin).
 
 **Charts (2 cards) :**
 
@@ -922,7 +940,9 @@ Toutes les actions `account.*` et `security.*` (modifier son propre profil, 2FA,
 
 **Q ouverte** : le type d'évolution affiché est-il sélectionnable (dropdown) ou figé ?
 
-> **Réponse propriétaire (à confirmer l'interprétation)** : « ils sont liés au signalement fait par l'utilisateur dans la page signalement ». Interprétation retenue : la card affiche **dynamiquement l'élément le plus signalé de la période** (top 1 automatique). Exemples : sur page 2 = type de problème le plus signalé ; sur page 3 = canal le plus signalé. À re-confirmer ci-dessous.
+> **Réponse propriétaire (figée)** : **cliquable, dynamique**. L'admin clique sur un **pill de type de problème** en haut (ou sur une **barre du chart**) → la card "Évolution" se met à jour pour afficher l'évolution de l'élément choisi (ex : clic sur "Bloqué" → voir l'évolution des signalements "Bloqué après paiement").
+>
+> Même comportement sur page 3 (canaux) : clic sur `WhatsApp` → évolution WhatsApp, clic sur `RIB` → évolution RIB.
 
 ---
 
@@ -1062,9 +1082,9 @@ Toutes les actions `account.*` et `security.*` (modifier son propre profil, 2FA,
 - [x] ~~Règle d'unicité signalement~~ → **1 user peut signaler 1 contact par canal, jamais 2× le même (user, valeur, canal)** (propriétaire). Clé DB `UNIQUE (userId, contactValue, channel)`.
 - [x] ~~Taux de conversion~~ → **`(Inscriptions / Visites) × 100`** (propriétaire). Calculé côté serveur.
 - [x] ~~Satisfaction / Rating~~ → **Widget 1-5 étoiles après chaque signalement** (propriétaire). Widget spec ajouté à `design-notes.md`.
-- [ ] **Seuils numériques exacts des 4 niveaux de risque** : définir les bornes (`Faible`, `Vigilance`, `Modéré`, `Élevé`) en nombre de signalements cumulés par contact
-- [ ] **Labels `%` sur barres de comptage** (pages 1 et 2) → erreur maquette, à corriger en nombres purs — à reconfirmer
-- [ ] **Cards "Évolution" (pages 2 et 3)** : top 1 auto (interprétation retenue) ou sélection manuelle (dropdown) ?
+- [x] ~~Seuils des 4 niveaux de risque~~ → **Faible=0 · Vigilance=1-2 · Modéré=3-4 · Élevé≥5** (propriétaire).
+- [x] ~~Cards "Évolution" (pages 2 et 3)~~ → **Cliquable/dynamique** : clic sur un pill ou une barre du chart → card se met à jour (propriétaire).
+- [ ] **Labels `%` sur barres de comptage** (charts "Répartition" pages 1 et 2) → erreur maquette, à remplacer par nombres purs — à reconfirmer
 - [ ] **Refresh auto** : intervalle (60 s proposé) + indicateur visuel pendant le fetch ?
 - [ ] **Exporter** : format (CSV / XLSX / PDF) + périmètre (page courante / toutes les pages / raw data) ?
 - [ ] **Typo maquette** : `Verifications` → `Vérifications` + `2025 période actuelle` → `2026 période actuelle`

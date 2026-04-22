@@ -23,6 +23,7 @@ export default async function Page() {
       <PageHeading
         title="Foire aux questions"
         subtitle="Les réponses aux questions les plus fréquentes sur Hadar.ma."
+        accent="gradient"
       />
       <FaqAccordion items={items} />
     </PageLayout>

@@ -385,25 +385,35 @@ Pills numérotés en bas à droite : `‹ 1 2 3 ›` — page 2 active (navy ple
 
 ## Rôles & permissions (matrice à compléter)
 
-3 rôles identifiés sur la maquette : `Admin`, `Modérateur`, `Support`.
+**4 rôles** (figé par le propriétaire, avril 2026) : `Super-admin`, `Admin`, `Modérateur`, `Support`.
 
-| Action | Admin | Modérateur | Support |
-|---|---|---|---|
-| Voir le dashboard | ✅ | ✅ | ✅ |
-| Modérer un signalement (Publié / Non retenu / À corriger) | ✅ | ✅ | ❌ |
-| Voir la liste des utilisateurs | ✅ | ✅ | ✅ |
-| Suspendre un utilisateur | ✅ | ❓ | ❌ |
-| Voir la liste des membres | ✅ | ❌ | ❌ |
-| Ajouter / modifier / supprimer un membre | ✅ | ❌ | ❌ |
-| Changer le rôle d'un membre | ✅ (super-admin uniquement ?) | ❌ | ❌ |
-| Publier une annonce | ✅ | ❓ | ❌ |
-| Accéder aux statistiques | ✅ | ✅ | ✅ |
-| Accéder à l'Assistant (chat support) | ✅ | ❓ | ✅ |
-| Modifier les paramètres globaux | ✅ | ❌ | ❌ |
+- **`Super-admin`** : 1 à 2 personnes max (propriétaire + CTO). Seul rôle à pouvoir exécuter les 5 actions ultra-sensibles (gestion des Admins, purge RGPD, matrice de permissions, config plateforme, intégrations). Sans ce rôle, n'importe quel Admin pourrait rétrograder un autre Admin ou casser la config — risque opérationnel.
+- **`Admin`** : équipe dirigeante Hadar. Tous les droits opérationnels sauf les 5 actions super-admin.
+- **`Modérateur`** : modération des signalements + gestion partielle des utilisateurs.
+- **`Support`** : lecture + réponse aux conversations Assistant + reset mot de passe user.
 
-**À faire valider par le propriétaire** — chaque ligne `❓` ou contradictoire doit être tranchée avant l'implémentation.
+Vue synthétique (détail complet : cf §Matrice complète des permissions) :
 
-> **Question** : faut-il un 4e rôle `Super-admin` (le seul à pouvoir gérer les Admins) ? Sinon, n'importe quel Admin peut se faire promouvoir / supprimer un autre Admin.
+| Action | Super-admin | Admin | Modérateur | Support |
+|---|---|---|---|---|
+| Voir le dashboard | ✅ | ✅ | ✅ | ✅ |
+| Modérer un signalement | ✅ | ✅ | ✅ | ❌ |
+| Voir la liste des utilisateurs | ✅ | ✅ | ✅ | ✅ |
+| Réinitialiser password user | ✅ | ✅ | ✅ | ✅ |
+| Bloquer un utilisateur | ✅ | ✅ | ✅ | ❌ |
+| Supprimer un utilisateur (soft) | ✅ | ✅ | ❌ | ❌ |
+| **Purger définitivement un user** | 🔒 ✅ | ❌ | ❌ | ❌ |
+| Voir la liste des membres | ✅ | ✅ | ❌ | ❌ |
+| Ajouter / modifier un membre | ✅ | ✅ | ❌ | ❌ |
+| **Changer le rôle d'un membre** | 🔒 ✅ | ❌ | ❌ | ❌ |
+| Publier une annonce | ✅ | ✅ | ❌ | ❌ |
+| Accéder aux stats | ✅ | ✅ | ✅ | ✅ |
+| Accéder à l'Assistant | ✅ | ✅ | ❌ | ✅ |
+| **Modifier la matrice des permissions** | 🔒 ✅ | ❌ | ❌ | ❌ |
+| **Modifier la configuration plateforme** | 🔒 ✅ | ❌ | ❌ | ❌ |
+| **Configurer les intégrations** (email, SMS…) | 🔒 ✅ | ❌ | ❌ | ❌ |
+
+Les lignes 🔒 sont **exclusives Super-admin** — non modifiables via le toggle admin.
 
 ### Statuts d'un membre
 
@@ -695,101 +705,103 @@ Pour la V1, on implémente uniquement le tab **Rôles & permissions**.
 
 ### Tab "Rôles & permissions"
 
-**UI** : une section par rôle (`Admin`, `Modérateur`, `Support`), chaque permission avec un toggle (on/off).
+**UI** : une section par rôle (`Super-admin`, `Admin`, `Modérateur`, `Support` — 4 sections au total), chaque permission avec un toggle (on/off).
 - Badge jaune en tête de section avec le nom du rôle
 - Grid responsive des permissions : pill `Nom permission` + toggle à droite
 - Bouton bas : `Enregistrer les modifications` (vert, désactivé tant qu'aucun changement)
 - Logique : sauvegarde en une fois pour éviter les ventilations partielles
 
-**Rôle `Admin`** : un seul toggle master `Tous les accès activés` (vert par défaut). Pas de granularité. Si on veut un contrôle fin sur un Admin, on peut introduire plus tard un rôle `Super-admin` distinct.
+**Rôle `Super-admin`** (figé par le propriétaire, avril 2026) : un seul toggle master `Tous les accès activés` (vert par défaut, **non désactivable** — garde-fou). Seul rôle à pouvoir exécuter les 5 permissions 🔒 exclusives. Limité à 1-2 personnes (propriétaire + CTO).
 
-**Rôles `Modérateur` et `Support`** : toggles individuels pour chaque permission de la matrice ci-dessous.
+**Rôle `Admin`** : toggles individuels sur toutes les permissions **sauf les 5 exclusives Super-admin** (lignes 🔒 masquées ou grisées et verrouillées).
+
+**Rôles `Modérateur` et `Support`** : toggles individuels sur les permissions non-sensibles (pas de lignes 🔒 visibles).
 
 ---
 
 ## Matrice complète des permissions
 
-> Liste exhaustive des actions possibles dans l'admin. À **valider ligne par ligne avec le propriétaire**. Chaque permission est un toggle dans l'écran Administration > Rôles & permissions.
+> Liste exhaustive des actions possibles dans l'admin. **4 rôles** (Super-admin figé par le propriétaire, avril 2026). Chaque permission est un toggle dans l'écran Administration > Rôles & permissions, **sauf les lignes 🔒** qui sont exclusives Super-admin et non éditables.
 
-**Légende** : ✅ activé par défaut · ❌ désactivé par défaut · 🔒 super-admin uniquement (si on introduit ce rôle)
+**Légende** : ✅ activé par défaut · ❌ désactivé par défaut · 🔒 exclusif Super-admin (toggle non éditable)
 
 ### Domaine : Dashboard
-| Code permission | Description | Admin | Modérateur | Support |
-|---|---|---|---|---|
-| `dashboard.view` | Accéder au tableau de bord `/admin` | ✅ | ✅ | ✅ |
-| `dashboard.export` | Exporter les KPI du dashboard | ✅ | ❌ | ❌ |
-| `search.global` | Utiliser la recherche globale (top bar) | ✅ | ✅ | ✅ |
+| Code permission | Description | Super-admin | Admin | Modérateur | Support |
+|---|---|---|---|---|---|
+| `dashboard.view` | Accéder au tableau de bord `/admin` | ✅ | ✅ | ✅ | ✅ |
+| `dashboard.export` | Exporter les KPI du dashboard | ✅ | ✅ | ❌ | ❌ |
+| `search.global` | Utiliser la recherche globale (top bar) | ✅ | ✅ | ✅ | ✅ |
 
 ### Domaine : Signalements
-| Code permission | Description | Admin | Modérateur | Support |
-|---|---|---|---|---|
-| `reports.list` | Voir la liste `/admin/signalements` | ✅ | ✅ | ✅ |
-| `reports.view` | Voir le détail d'un signalement | ✅ | ✅ | ✅ |
-| `reports.moderate` | Appliquer une décision `Publié` / `Non retenu` / `À corriger` | ✅ | ✅ | ❌ |
-| `reports.export` | Exporter la liste filtrée | ✅ | ✅ | ❌ |
-| `reports.reassign` | Réassigner à un autre modérateur | ✅ | ❌ | ❌ |
-| `reports.viewAudit` | Voir l'historique de modération d'un signalement | ✅ | ✅ | ❌ |
+| Code permission | Description | Super-admin | Admin | Modérateur | Support |
+|---|---|---|---|---|---|
+| `reports.list` | Voir la liste `/admin/signalements` | ✅ | ✅ | ✅ | ✅ |
+| `reports.view` | Voir le détail d'un signalement | ✅ | ✅ | ✅ | ✅ |
+| `reports.moderate` | Appliquer `Publié` / `Non retenu` / `À corriger` | ✅ | ✅ | ✅ | ❌ |
+| `reports.export` | Exporter la liste filtrée | ✅ | ✅ | ✅ | ❌ |
+| `reports.reassign` | Réassigner à un autre modérateur | ✅ | ✅ | ❌ | ❌ |
+| `reports.viewAudit` | Voir l'historique de modération d'un signalement | ✅ | ✅ | ✅ | ❌ |
 
 ### Domaine : Membres (équipe interne)
-| Code permission | Description | Admin | Modérateur | Support |
-|---|---|---|---|---|
-| `members.list` | Voir la liste `/admin/membres` | ✅ | ❌ | ❌ |
-| `members.view` | Voir le détail d'un membre | ✅ | ❌ | ❌ |
-| `members.create` | Ajouter un nouveau membre | ✅ | ❌ | ❌ |
-| `members.edit` | Modifier nom/email/téléphone d'un membre | ✅ | ❌ | ❌ |
-| `members.changeRole` | Changer le rôle d'un membre | 🔒 Super-admin | ❌ | ❌ |
-| `members.changeStatus` | Actif / Inactif / Suspendu | ✅ | ❌ | ❌ |
-| `members.delete` | Supprimer un membre | ✅ | ❌ | ❌ |
+| Code permission | Description | Super-admin | Admin | Modérateur | Support |
+|---|---|---|---|---|---|
+| `members.list` | Voir la liste `/admin/membres` | ✅ | ✅ | ❌ | ❌ |
+| `members.view` | Voir le détail d'un membre | ✅ | ✅ | ❌ | ❌ |
+| `members.create` | Ajouter un nouveau membre | ✅ | ✅ | ❌ | ❌ |
+| `members.edit` | Modifier nom/email/téléphone d'un membre | ✅ | ✅ | ❌ | ❌ |
+| `members.changeRole` 🔒 | Changer le rôle d'un membre | ✅ | ❌ | ❌ | ❌ |
+| `members.changeStatus` | Actif / Inactif / Suspendu | ✅ | ✅ | ❌ | ❌ |
+| `members.delete` | Supprimer un membre | ✅ | ✅ | ❌ | ❌ |
 
 ### Domaine : Utilisateurs (usagers finaux)
-| Code permission | Description | Admin | Modérateur | Support |
-|---|---|---|---|---|
-| `users.list` | Voir la liste `/admin/utilisateurs` | ✅ | ✅ | ✅ |
-| `users.view` | Voir le profil d'un utilisateur | ✅ | ✅ | ✅ |
-| `users.resetPassword` | Déclencher un email de reset password | ✅ | ✅ | ✅ |
-| `users.block` | Bloquer un utilisateur (avec motif) | ✅ | ✅ | ❌ |
-| `users.unblock` | Débloquer un utilisateur | ✅ | ✅ | ❌ |
-| `users.softDelete` | Supprimer (soft-delete avec restauration possible) | ✅ | ❌ | ❌ |
-| `users.restore` | Restaurer un compte supprimé | ✅ | ❌ | ❌ |
-| `users.hardDelete` | Purger définitivement (droit à l'oubli CNDP) | 🔒 Super-admin | ❌ | ❌ |
-| `users.export` | Exporter la liste filtrée | ✅ | ❌ | ❌ |
-| `users.bulkActions` | Exécuter des actions en lot | ✅ | ❌ | ❌ |
+| Code permission | Description | Super-admin | Admin | Modérateur | Support |
+|---|---|---|---|---|---|
+| `users.list` | Voir la liste `/admin/utilisateurs` | ✅ | ✅ | ✅ | ✅ |
+| `users.view` | Voir le profil d'un utilisateur | ✅ | ✅ | ✅ | ✅ |
+| `users.resetPassword` | Déclencher un email de reset password | ✅ | ✅ | ✅ | ✅ |
+| `users.block` | Bloquer un utilisateur (avec motif) | ✅ | ✅ | ✅ | ❌ |
+| `users.unblock` | Débloquer un utilisateur | ✅ | ✅ | ✅ | ❌ |
+| `users.softDelete` | Supprimer (soft-delete avec restauration possible) | ✅ | ✅ | ❌ | ❌ |
+| `users.restore` | Restaurer un compte supprimé | ✅ | ✅ | ❌ | ❌ |
+| `users.hardDelete` 🔒 | Purger définitivement (droit à l'oubli CNDP) | ✅ | ❌ | ❌ | ❌ |
+| `users.export` | Exporter la liste filtrée | ✅ | ✅ | ❌ | ❌ |
+| `users.bulkActions` | Exécuter des actions en lot | ✅ | ✅ | ❌ | ❌ |
 
 ### Domaine : Statistiques
-| Code permission | Description | Admin | Modérateur | Support |
-|---|---|---|---|---|
-| `stats.view` | Accéder à `/admin/statistiques` | ✅ | ✅ | ✅ |
-| `stats.viewSensitive` | Voir les stats sensibles (montants, identifiants) | ✅ | ✅ | ❌ |
-| `stats.export` | Exporter les rapports statistiques | ✅ | ❌ | ❌ |
+| Code permission | Description | Super-admin | Admin | Modérateur | Support |
+|---|---|---|---|---|---|
+| `stats.view` | Accéder à `/admin/statistiques` | ✅ | ✅ | ✅ | ✅ |
+| `stats.viewSensitive` | Voir les stats sensibles (montants, identifiants) | ✅ | ✅ | ✅ | ❌ |
+| `stats.export` | Exporter les rapports statistiques | ✅ | ✅ | ❌ | ❌ |
 
 ### Domaine : Annonces
-| Code permission | Description | Admin | Modérateur | Support |
-|---|---|---|---|---|
-| `announcements.list` | Voir la liste des annonces | ✅ | ✅ | ✅ |
-| `announcements.create` | Créer une annonce / bandeau plateforme | ✅ | ❌ | ❌ |
-| `announcements.edit` | Modifier une annonce | ✅ | ❌ | ❌ |
-| `announcements.publish` | Publier / dépublier | ✅ | ❌ | ❌ |
-| `announcements.delete` | Supprimer | ✅ | ❌ | ❌ |
+| Code permission | Description | Super-admin | Admin | Modérateur | Support |
+|---|---|---|---|---|---|
+| `announcements.list` | Voir la liste des annonces | ✅ | ✅ | ✅ | ✅ |
+| `announcements.create` | Créer une annonce / bandeau plateforme | ✅ | ✅ | ❌ | ❌ |
+| `announcements.edit` | Modifier une annonce | ✅ | ✅ | ❌ | ❌ |
+| `announcements.publish` | Publier / dépublier | ✅ | ✅ | ❌ | ❌ |
+| `announcements.delete` | Supprimer | ✅ | ✅ | ❌ | ❌ |
 
 ### Domaine : Assistant (chat support)
-| Code permission | Description | Admin | Modérateur | Support |
-|---|---|---|---|---|
-| `assistant.view` | Voir la liste des conversations | ✅ | ❌ | ✅ |
-| `assistant.reply` | Répondre à une conversation | ✅ | ❌ | ✅ |
-| `assistant.assign` | Assigner / réassigner une conversation | ✅ | ❌ | ✅ |
-| `assistant.close` | Clôturer une conversation | ✅ | ❌ | ✅ |
-| `assistant.viewInternal` | Voir les notes internes | ✅ | ❌ | ✅ |
-| `assistant.addInternal` | Ajouter une note interne | ✅ | ❌ | ✅ |
-| `assistant.configure` | Configurer réponses pré-rédigées / tags / chatbot | ✅ | ❌ | ❌ |
+| Code permission | Description | Super-admin | Admin | Modérateur | Support |
+|---|---|---|---|---|---|
+| `assistant.view` | Voir la liste des conversations | ✅ | ✅ | ❌ | ✅ |
+| `assistant.reply` | Répondre à une conversation | ✅ | ✅ | ❌ | ✅ |
+| `assistant.assign` | Assigner / réassigner une conversation | ✅ | ✅ | ❌ | ✅ |
+| `assistant.close` | Clôturer une conversation | ✅ | ✅ | ❌ | ✅ |
+| `assistant.viewInternal` | Voir les notes internes | ✅ | ✅ | ❌ | ✅ |
+| `assistant.addInternal` | Ajouter une note interne | ✅ | ✅ | ❌ | ✅ |
+| `assistant.configure` | Configurer réponses pré-rédigées / tags / chatbot | ✅ | ✅ | ❌ | ❌ |
 
 ### Domaine : Administration (global)
-| Code permission | Description | Admin | Modérateur | Support |
-|---|---|---|---|---|
-| `admin.view` | Accéder au menu `/admin/administration` | ✅ | ❌ | ❌ |
-| `admin.rolesEdit` | Modifier la matrice de permissions | 🔒 Super-admin | ❌ | ❌ |
-| `admin.viewAuditLog` | Voir les logs d'audit de la plateforme | ✅ | ❌ | ❌ |
-| `admin.platformSettings` | Modifier les paramètres globaux plateforme | 🔒 Super-admin | ❌ | ❌ |
-| `admin.integrations` | Configurer les intégrations (email, SMS, etc.) | 🔒 Super-admin | ❌ | ❌ |
+| Code permission | Description | Super-admin | Admin | Modérateur | Support |
+|---|---|---|---|---|---|
+| `admin.view` | Accéder au menu `/admin/administration` | ✅ | ✅ | ❌ | ❌ |
+| `admin.rolesEdit` 🔒 | Modifier la matrice de permissions | ✅ | ❌ | ❌ | ❌ |
+| `admin.viewAuditLog` | Voir les logs d'audit de la plateforme | ✅ | ✅ | ❌ | ❌ |
+| `admin.platformSettings` 🔒 | Modifier les paramètres globaux plateforme | ✅ | ❌ | ❌ | ❌ |
+| `admin.integrations` 🔒 | Configurer les intégrations (email, SMS, etc.) | ✅ | ❌ | ❌ | ❌ |
 
 ### Domaine : Paramètres personnels
 Toutes les actions `account.*` et `security.*` (modifier son propre profil, 2FA, historique connexions) sont **automatiquement accordées à tous les rôles** pour leur propre compte — pas de toggle.
@@ -798,21 +810,21 @@ Toutes les actions `account.*` et `security.*` (modifier son propre profil, 2FA,
 
 ### Totaux
 
-- **Permissions globales** : ~38 permissions
-- **Permissions super-admin uniquement** : 5 (changeRole, hardDelete, rolesEdit, platformSettings, integrations)
+- **Permissions globales** : 38 permissions
+- **Permissions exclusives Super-admin 🔒** : 5 (`members.changeRole`, `users.hardDelete`, `admin.rolesEdit`, `admin.platformSettings`, `admin.integrations`)
 - **Permissions par défaut** :
-  - Admin : toutes ✅ (master toggle)
-  - Modérateur : 14 permissions ✅
-  - Support : 11 permissions ✅
+  - Super-admin : 38 / 38 (master toggle `Tous les accès`)
+  - Admin : 33 / 38 (tout sauf les 5 🔒)
+  - Modérateur : 14 / 38
+  - Support : 11 / 38
 
-### Proposition d'introduction d'un rôle `Super-admin`
+### Règles de sécurité inter-rôles
 
-Pour protéger les actions les plus sensibles (gestion des Admins, purge définitive RGPD, config plateforme), **fortement recommandé** d'introduire un 4e rôle `Super-admin` :
-- 1 seule personne (ou très peu) : le propriétaire / CTO
-- Seul à pouvoir : promouvoir/rétrograder un Admin, purger définitivement un user, modifier la matrice de permissions, configurer les intégrations
-- Sinon : n'importe quel Admin peut se promouvoir Super-admin ou supprimer un autre Admin — risque opérationnel
-
-→ **À valider avec le propriétaire**. Si validé, le tab `Rôles & permissions` de l'écran Administration comportera 4 sections au lieu de 3.
+1. **Un Admin ne peut jamais devenir Super-admin** via `members.changeRole` → cette action est exclusive Super-admin
+2. **Un Super-admin ne peut pas se supprimer lui-même** si c'est le dernier Super-admin actif (garde-fou système)
+3. **Au moins 1 Super-admin actif** à tout moment (garde-fou système, même règle)
+4. **Toute promotion/rétrogradation** trace dans l'audit log (qui, quand, quel membre, ancien/nouveau rôle, motif obligatoire)
+5. **Re-authentication** (password ou 2FA) exigée avant toute action Super-admin sensible
 
 ---
 
@@ -862,7 +874,7 @@ Pour protéger les actions les plus sensibles (gestion des Admins, purge défini
 - [ ] **Fuseau horaire** : global plateforme (tous les timestamps stockés en UTC, affichés dans la TZ choisie) ou par user ?
 
 ### Administration / Permissions (nouvelles)
-- [ ] **Rôle `Super-admin`** : introduire ce 4e rôle pour protéger les actions ultra-sensibles (cf §Matrice) ?
+- [x] ~~Rôle `Super-admin`~~ → **Validé par le propriétaire** (avril 2026). 4 rôles officiels : Super-admin / Admin / Modérateur / Support. Matrice + garde-fous documentés.
 - [ ] **Valider la matrice complète des permissions** ligne par ligne (~38 items) — défauts proposés OK ?
 - [ ] **Logs d'audit** : périmètre (toutes actions admin ? uniquement sensibles ?), durée de rétention, qui peut les voir ?
 - [ ] **Configuration plateforme** : liste précise des paramètres globaux éditables (mentions légales ? bandeau WhatsApp ? emails transactionnels ?) — à spécifier

@@ -22,6 +22,9 @@
 ### Batch 4 — Page « Comment ça marche »
 7. **Écran « Comment ça marche »** (déclenché par le lien `Comment ça marche` dans la nav)
 
+### Batch 6 — Page Statistiques détaillées
+14. **Écran « Statistiques de la plateforme »** (déclenché par le bouton « Voir plus » sous les stats de l'accueil, et par le lien « Statistiques » du footer)
+
 ### Batch 5 — Pages légales (footer)
 8. **Conditions générales d'utilisation** → `design/legal/01-conditions-generales-utilisation.md`
 9. **Données personnelles & cookies** → `design/legal/02-donnees-personnelles-cookies.md`
@@ -391,6 +394,115 @@ Champs éditables par carte (rôle `ADMIN` uniquement) :
    - **Audit log** de chaque édition (qui, quand, ancien/nouveau contenu)
    - CSRF token sur le formulaire d'édition
 4. **Cache & ISR** : page mise en cache (ex. revalidation Next.js ISR à chaque édition admin) pour limiter les hits DB et améliorer perf.
+
+---
+
+## Page « Statistiques de la plateforme » (détail)
+
+**Trigger** : bouton `↗ Voir plus` sous la section stats de l'accueil, ou lien « Statistiques » dans le footer → route `/statistiques`.
+
+### Layout
+- Bouton pill `← Retour`
+- Titre H1 navy : « Statistiques de la plateforme »
+- Sous-titre gris : « Analysez l'évolution et les tendances des signalements sur la plateforme. »
+
+### Filtres temporels (4 onglets / pills, sélection unique)
+- `Aujourd'hui` (active par défaut)
+- `Hier`
+- `Derniers 7 jours`
+- `Derniers 30 jours`
+
+> Tous les blocs ci-dessous se recalculent selon la plage sélectionnée.
+
+### Bloc 1 — 6 cards KPI (mêmes que sur l'accueil mais filtrées par période)
+Reprend exactement le même composant que `<StatsGrid />` de la page d'accueil (Utilisateurs actifs · Signalements enregistrés · Contacts signalés · Vérifications réalisées · Montant signalé · Dernier signalement).
+
+### Bloc 2 — Card « Types de problèmes signalés »
+Liste verticale avec barres de progression horizontales :
+
+| Catégorie | Exemple % |
+|---|---|
+| Non livraison | 50 % |
+| Blocage après paiement | 25 % |
+| Produit non conforme | 15 % |
+| Usurpation d'identité | 5 % |
+
+→ Composant `<ProgressList items=[{label, percent, icon}] />` réutilisable.
+
+### Bloc 3 — Card « Canaux plus signalés »
+Grid 2×2 de pills colorées (couleur assortie au type de canal) :
+
+| Canal | Couleur | Exemple % |
+|---|---|---|
+| RIB | Orange/jaune | 35 % |
+| WhatsApp | Vert | 17 % |
+| Réseaux sociaux | Violet | 15 % |
+| Site web | Bleu ciel | 7 % |
+
+> Liste à étendre dynamiquement selon les top N canaux signalés (téléphone, email, PayPal, Binance peuvent apparaître si majoritaires).
+
+### Bloc 4 — Card « Niveau d'activité des signalements »
+**Bar chart vertical** affichant la répartition par niveau de risque (les 4 niveaux définis plus haut) :
+
+| Niveau | Exemple |
+|---|---|
+| Faible (bleu) | 10 % |
+| Vigilance (jaune/vert) | 30 % |
+| Modéré (orange) | 80 % |
+| Élevé (rouge) | 45 % |
+
+Échelle Y : 0–100 (ou auto-scale).
+
+> ⚠️ **À clarifier** : les valeurs affichées sont-elles des pourcentages (%) ou des nombres absolus ? L'axe Y (0–80) suggère « nombre » mais les labels au-dessus des barres affichent « % ». Choisir l'un OU l'autre, pas les deux.
+
+### Bloc 5 — Card « Évolution des signalements »
+- Texte gauche : `+12 % vs semaine dernière` → `1 900 signalements`
+- Texte gauche : `+45 % aujourd'hui` → `345 signalements`
+- **Donut chart** à droite avec `12 %` au centre (en rouge), arc rouge représentant la croissance
+
+### Bloc 6 — Card « Statut des signalements »
+3 KPI alignés horizontalement avec icône gyrophare colorée :
+
+| Statut | Couleur | Exemple |
+|---|---|---|
+| Soumis (= en attente de modération) | Orange | 1 900 |
+| Refusés | Gris | 655 |
+| Publiés | Vert | 1 245 |
+
+→ **Barre de progression horizontale** en bas (`65 %`) = ratio publiés/soumis (ou autre calcul à confirmer).
+
+### CTA bas de page
+2 boutons grands :
+- Bleu navy : `🛡 Vérifier un contact` → `/` (accueil avec focus sur la barre de recherche)
+- Rouge : `🚨 Signaler un contact` → `/signaler`
+
+### Disclaimer
+« Les données présentées sont issues de signalements publiés et sont fournies à titre indicatif. **Aucune donnée personnelle n'est affichée.** »
+
+### Sécurité & performance pour cette page
+
+1. **Cache d'agrégats critique** :
+   - Aucun `COUNT(*)` en live à chaque hit — la page peut recevoir beaucoup de trafic
+   - **Vues matérialisées** PostgreSQL **ou** table `StatsSnapshot` rafraîchie par cron (toutes les 15 min suffit largement)
+   - Une ligne `StatsSnapshot` par combinaison (period, currency) → 4 périodes × 3 devises = 12 lignes seulement
+   - ISR Next.js avec `revalidate: 60` → page servie depuis le CDN
+
+2. **Visibilité publique** :
+   - Stats agrégées **sans aucune PII** : OK pour publication ouverte (même non connecté)
+   - **Risque d'inférence** : si une catégorie a très peu de signalements, le pourcentage peut leak un cas individuel
+   - Appliquer **k-anonymity** : ne pas afficher de bucket / ne pas trop arrondir si `n < 5` dans une catégorie (afficher « < 5 » plutôt qu'un pourcentage exact)
+   - Pas de filtre par contact ou auteur exposé sur cette page publique
+
+3. **Anti-scraping** :
+   - Rate-limit global 60 req/min/IP sur cette route
+   - Fingerprinting léger (Cloudflare ou équivalent) pour éviter aspirations massives
+   - JSON brut des stats jamais exposé sans rate-limit (pas d'endpoint `/api/stats.json` public sans throttle)
+
+4. **Bibliothèque charts** : **Recharts** (SVG, accessible, SSR-friendly, pas de tracking tiers, léger) — éviter Chart.js (Canvas, moins accessible) ou les libs hébergées par des tiers.
+
+5. **Timezone** : tous les calculs « Aujourd'hui » / « Hier » faits en **UTC+1 (Maroc)** côté serveur, pas selon le navigateur du visiteur (sinon les chiffres varient pour rien).
+
+6. **Devise pour « Montant signalé »** : convertie selon la devise courante de l'utilisateur (cf. section Devises) — affichage uniquement, le stockage reste en devise d'origine.
 
 ---
 

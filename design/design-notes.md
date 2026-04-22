@@ -22,7 +22,17 @@
 ### Batch 4 — Page « Comment ça marche »
 7. **Écran « Comment ça marche »** (déclenché par le lien `Comment ça marche` dans la nav)
 
-Batches à venir : espace utilisateur (mes alertes, mes signalements, profil), modération, responsive mobile, pages légales, inscription, reset password, détail d'un signalement, etc.
+### Batch 5 — Pages légales (footer)
+8. **Conditions générales d'utilisation** → `design/legal/01-conditions-generales-utilisation.md`
+9. **Données personnelles & cookies** → `design/legal/02-donnees-personnelles-cookies.md`
+10. **FAQ** → `design/legal/03-faq.md`
+11. **Politique de confidentialité** → `design/legal/04-politique-confidentialite.md`
+12. **Qui sommes-nous** → `design/legal/05-qui-sommes-nous.md`
+13. **Règles de publication** → `design/legal/06-regles-publication.md`
+
+Voir `design/legal/README.md` pour le mapping route, le composant générique, le workflow d'édition admin et les questions ouvertes (CGU « Contenus interdits » dupliqué, mentions CNDP).
+
+Batches à venir : espace utilisateur (mes alertes, mes signalements, profil), modération, responsive mobile, inscription, reset password, détail d'un signalement, résultat de recherche avec signalements, etc.
 
 ---
 

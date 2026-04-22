@@ -5,14 +5,21 @@
 
 ---
 
-## Écrans reçus (batch 1 — UX utilisateur de base)
+## Écrans reçus
 
+### Batch 1 — UX utilisateur de base
 1. **Accueil public** (non connecté)
 2. **Modal de connexion** (overlay)
 3. **Accueil connecté**
 4. **Résultat de recherche** (exemple WhatsApp — aucun signalement détecté)
 
-Batches à venir : espace utilisateur (mes signalements, profil), formulaire de signalement, modération, responsive mobile, etc.
+### Batch 2 — Niveaux de risque
+5. Spec texte des 4 niveaux de risque (voir section dédiée)
+
+### Batch 3 — Formulaire de signalement
+6. **Écran « Signaler un contact ou un profil »** (déclenché par le bouton rouge « Signaler » dans la nav)
+
+Batches à venir : espace utilisateur (mes alertes, mes signalements, profil), modération, responsive mobile, pages légales, inscription, reset password, détail d'un signalement, etc.
 
 ---
 
@@ -222,6 +229,83 @@ function computeRiskLevel(reportCount: number): RiskLevel {
   - Vigilance → fond jaune clair, texte jaune foncé (« Signalements détectés »)
   - Modéré → fond orange clair, texte orange foncé (« Plusieurs signalements »)
   - Élevé → fond rouge clair, texte rouge foncé (« Signalements nombreux »)
+
+---
+
+## Formulaire de signalement (écran dédié)
+
+**Trigger** : clic sur le bouton rouge `Signaler` de la nav → route dédiée (ex. `/signaler`).
+
+**Layout** :
+- Bouton pill `← Retour` en haut à gauche
+- Watermark : grand logo H en bouclier en arrière-plan droit (opacité faible)
+- Titre H1 centré **rouge** (`#DC2626`) : « Signaler un contact ou un profil »
+- Sous-titre gris centré : « Votre signalement aide à protéger d'autres utilisateurs. »
+
+### Champs (dans l'ordre d'affichage)
+
+| # | Champ | Requis | Type UI | Notes |
+|---|---|---|---|---|
+| 1 | **Type de contact** | ✅ | 8 pills en grid 4×2 (sélection unique) | Même liste que les filtres de recherche (Téléphone, WhatsApp, Email, PayPal, Site web, Réseaux sociaux, RIB, Binance). Active = fond navy + texte blanc. |
+| 2 | **Information à signaler** | ✅ | Input texte large | Placeholder dynamique selon type (ex. « Ex : 212 6 00 00 00 00 » pour téléphone, email pour Email, etc.). Bordure rouge si invalide. |
+| 3 | **Type de problème** | ✅ | 4 pills en ligne (sélection unique) | `Non livraison` · `Bloqué après paiement` · `Produit non conforme` · `Usurpation d'identité`. Active = fond navy + texte blanc. |
+| 4 | Montant estimé | ⬜ | Input texte + suffixe MAD | Placeholder « Ex : 5 000 MAD ». Champ optionnel. |
+| 5 | Description | ⬜ | Textarea | « Décrivez brièvement la situation (informations factuelles uniquement) ». Compteur « 200–300 caractères max ». Hint rouge permanent sous le champ : « Merci de décrire la situation de manière factuelle. Évitez les jugements ou accusations. » |
+| 6 | Preuves | ⬜ | Dropzone (drag & drop + file picker) | « Ajouter une preuve (fortement recommandé) ». Placeholder : « Choisir un fichier ou glisser ici (capture d'écran, reçu, conversation…) ». Icône poubelle pour retirer. |
+
+### Validation finale
+
+- Checkbox requise : « Je confirme que les informations fournies respectent les règles de la plateforme. »
+- Bouton primary rouge : `📢 Envoyer le signalement`
+- Note bas : « Les informations fournies sont utilisées uniquement dans le cadre du signalement et restent confidentielles. »
+
+### Règles de validation (Zod — côté client **et** serveur)
+
+```ts
+const reportSchema = z.object({
+  contactType: z.enum(['telephone','whatsapp','email','paypal','site_web','reseaux_sociaux','rib','binance']),
+  contactValue: z.string().min(3).max(256), // raffiné par type (regex) via z.discriminatedUnion
+  problemType: z.enum(['non_livraison','bloque_apres_paiement','produit_non_conforme','usurpation_identite']),
+  estimatedAmount: z.number().int().nonnegative().max(10_000_000).optional(),
+  description: z.string().max(300).optional(),
+  evidenceFileIds: z.array(z.string().uuid()).max(5).optional(),
+  rulesAccepted: z.literal(true),
+});
+```
+
+### Sécurité spécifique à ce formulaire (CRITIQUE)
+
+1. **Auth obligatoire** — aucune soumission anonyme (évite spam et responsabilise). L'UI reflète déjà que l'utilisateur est connecté (« Mon compte »).
+2. **Rate-limit par utilisateur** : max 5 signalements / heure, 20 / jour (ajustable).
+3. **CAPTCHA** (Cloudflare Turnstile) sur la soumission pour bloquer les bots même authentifiés.
+4. **Upload de preuves — défense en profondeur** :
+   - Whitelist MIME stricte : `image/jpeg`, `image/png`, `image/webp`, `application/pdf` uniquement
+   - Vérification des **magic bytes** côté serveur (pas juste l'extension ou le header `Content-Type`)
+   - Taille max : **10 MB** par fichier, **5 fichiers max**
+   - **Nettoyage EXIF** des images (pas de géolocalisation/appareil en clair)
+   - **Jamais d'exécution** : pas de SVG, pas de HTML, pas de JS, pas de PDF avec JS/forms actifs
+   - Stockage **hors webroot** (ou bucket S3 privé avec URLs pré-signées à expiration courte)
+   - Noms de fichiers **régénérés** (UUID), le nom original conservé en metadata DB
+   - **Scan antivirus** avant mise à disposition (ClamAV ou équivalent)
+   - Accès aux preuves **restreint** aux modérateurs et à l'auteur (pas de lien public)
+5. **Contenu texte — anti-diffamation / abus** :
+   - Longueur stricte (≤ 300 chars)
+   - Filtre de mots-clés injurieux / données personnelles évidentes (emails, CB, etc.) côté serveur
+   - `Content-Type` et encodage UTF-8 imposés, nettoyage des caractères de contrôle
+3. **Modération obligatoire** — tout signalement créé en statut `PENDING`, invisible jusqu'à approbation manuelle par un modérateur.
+4. **Hashage du contactValue** :
+   - Stocker **en plus** du clair un hash SHA-256 `hmac(secret, normalized(contactValue))`
+   - Permet la recherche exacte rapide sans exposer tous les contacts en clair si la DB fuit
+   - Le clair reste stocké (obligatoire pour afficher le contact signalé dans l'UI) mais chiffré au repos (column-level encryption ou full-disk + `pgcrypto` pour les plus sensibles)
+5. **Audit log** immuable :
+   - Qui a signalé (user_id), quand, hash du contact, IP (si légalement autorisé), User-Agent
+   - Toute action de modération (approve/reject/edit) loggée
+6. **CSRF** : token double-submit ou `SameSite=Strict` sur session cookies + en-tête `Origin` vérifié.
+7. **Normalisation avant hash + avant stockage** :
+   - Téléphone : passer par libphonenumber → format E.164 (`+2126XXXXXXXX`)
+   - Email : lowercase + trim
+   - URL : lowercase host, strip tracking params (utm_*), forcer https si possible
+   - RIB : retirer espaces/tirets
 
 ---
 

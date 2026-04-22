@@ -53,38 +53,49 @@ Batches à venir : espace utilisateur (mes alertes, mes signalements, profil), m
 
 ---
 
-## Palette de couleurs (détectée sur maquettes)
+## Palette de couleurs — charte officielle
 
-| Rôle | Couleur approx. | Usage |
+> 📘 **Source de vérité : [`design/brand.md`](./brand.md)** (planches "Brand Colors" + "Components" livrées par le propriétaire en avril 2026).
+> La section ci-dessous en est un résumé. En cas de divergence, `brand.md` prévaut.
+
+### Primary
+| Rôle | HEX | Usage |
 |---|---|---|
-| Bleu principal (navy) | `#0B2C5C` → `#0F3880` | Titres H1/H2, logo, bandeau top, footer, boutons primaires actifs |
-| Bleu accent | `#1E5FC1` | Stat « Utilisateurs actifs », liens |
-| Bleu ciel | `#29B6F6` / `#0EA5E9` | Stat « Vérifications réalisées » |
-| Rouge | `#DC2626` / `#E53E3E` | Bouton « Signaler », stat rouge, badge notification |
-| Vert (success) | `#22C55E` / `#16A34A` | Bouton « Vérifier maintenant », pill « Aucun signalement détecté », feu vert risque faible |
-| Vert foncé | `#15803D` | Stat « Montant signalé » |
-| Violet | `#8B5CF6` / `#A78BFA` | Stat « Contacts signalés », step 2 « Examen » |
-| Orange | `#F59E0B` / `#FB923C` | Stat « Dernier signalement », bouton flottant « Support », step 3 « Modération » |
-| Jaune | `#FACC15` | Feu tricolore risque modéré |
-| Gris texte | `#6B7280` | Textes secondaires |
-| Gris bordure | `#E5E7EB` | Bordures input / cards |
-| Fond page | dégradé `#EAF2FB` → `#FFFFFF` | Arrière-plan dégradé bleu très clair |
-| Blanc | `#FFFFFF` | Cards, modal |
+| Bleu principal | `#0078BA` | Boutons primaires, liens, accents |
+| Bleu navy | `#00327D` | Titres H1/H2, header/footer, logo |
+| Bleu très clair | `#DBE5F3` | Fonds alternés, hover doux |
+| Blanc | `#FFFFFF` | Fond par défaut |
+
+### Secondary (gris)
+`#989898` · `#A4A4A4` · `#E1E1E1` · `#F7F9FB`
+
+### Accent (familles saturée + pastel)
+| Rouge | `#EE4444` / `#C0272D` / pastel `#F8B8B8` |
+| Vert | `#22C45E` / `#009145` / pastel `#BAFFCC` |
+| Orange | `#F29B11` / `#FFB500` / pastel `#FBD185` |
+| Jaune | `#D8C100` / `#FBED21` / pastel `#FFF5A3` |
+| Bleu ciel | `#00BFEE` / `#29AAE1` |
+| Violet | `#8652FB` / `#BCA6F9` |
+
+### Dégradés (cards KPI, alertes, timeline)
+Définis dans `brand.md` §3. 13 dégradés normalisés : 6 "Statistique", 4 "Alertes notification", 3 "État de signalement". Direction par défaut 135°.
 
 ### Variables Tailwind cibles (à mettre dans `tailwind.config.ts`)
 
+Voir le bloc complet prêt à copier dans `brand.md` §7 (tokens `colors` + `backgroundImage` pour les dégradés).
+
+Résumé :
+
 ```ts
 colors: {
-  brand: {
-    navy:   '#0B2C5C',  // primary dark
-    blue:   '#1E5FC1',  // primary
-    sky:    '#0EA5E9',
-    red:    '#DC2626',
-    green:  '#16A34A',
-    violet: '#8B5CF6',
-    orange: '#F59E0B',
-    yellow: '#FACC15',
-  },
+  brand: { navy: '#00327D', blue: '#0078BA', sky: '#DBE5F3' },
+  red:    { 100: '#F8B8B8', 500: '#EE4444', 700: '#C0272D' },
+  green:  { 100: '#BAFFCC', 500: '#22C45E', 700: '#009145' },
+  orange: { 100: '#FBD185', 500: '#F29B11', 600: '#FFB500' },
+  yellow: { 100: '#FFF5A3', 300: '#FBED21', 500: '#D8C100' },
+  sky:    { 400: '#29AAE1', 500: '#00BFEE' },
+  violet: { 200: '#BCA6F9', 500: '#8652FB' },
+  // + gray 50/200/400/500
 }
 ```
 

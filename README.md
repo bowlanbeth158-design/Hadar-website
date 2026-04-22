@@ -92,7 +92,7 @@ La sécurité est posée dès les fondations (voir `next.config.mjs` pour les he
 
 ## Contribuer
 
-Travail sur la branche `claude/continue-project-dJHA7`. Messages de commit : **conventional commits** (`feat:`, `fix:`, `docs:`, `chore:`).
+Travail sur la branche `main`. Messages de commit : **conventional commits** (`feat:`, `fix:`, `docs:`, `chore:`).
 
 ---
 

@@ -25,6 +25,11 @@
 ### Batch 6 — Page Statistiques détaillées
 14. **Écran « Statistiques de la plateforme »** (déclenché par le bouton « Voir plus » sous les stats de l'accueil, et par le lien « Statistiques » du footer)
 
+### Batch 7 — « Mes alertes »
+15. **Dropdown « Mes alertes » — état vide** (popover déclenché par le clic sur le lien `Mes alertes` de la nav)
+16. **Dropdown « Mes alertes » — avec alertes** (max 4 visibles, lien « Voir tous les détails » en bas)
+17. **Page « Mes alertes »** complète (déclenchée par « Voir tous les détails » du popover)
+
 ### Batch 5 — Pages légales (footer)
 8. **Conditions générales d'utilisation** → `design/legal/01-conditions-generales-utilisation.md`
 9. **Données personnelles & cookies** → `design/legal/02-donnees-personnelles-cookies.md`
@@ -511,6 +516,144 @@ Position UI : sous les onglets temporels, dans une rangée discrète « Affiner 
 5. **Timezone** : tous les calculs « Aujourd'hui » / « Hier » faits en **UTC+1 (Maroc)** côté serveur, pas selon le navigateur du visiteur (sinon les chiffres varient pour rien).
 
 6. **Devise pour « Montant signalé »** : convertie selon la devise courante de l'utilisateur (cf. section Devises) — affichage uniquement, le stockage reste en devise d'origine.
+
+---
+
+## Mes alertes (popover + page complète)
+
+**Logique** : un utilisateur connecté peut **suivre** un contact (depuis la page de résultat de recherche). À chaque nouveau signalement publié sur un contact suivi, une alerte est générée et apparaît dans son centre d'alertes.
+
+### Badge dans la nav
+- Le lien `Mes alertes` de la nav affiche un badge cloche **rouge** avec un compteur = **nombre de nouvelles alertes** (statut `NEW`, pas encore lues, hors archivées)
+- Le badge se met à jour en temps réel (polling SWR toutes les 60 s ou Server-Sent Events)
+
+### Popover (dropdown depuis la nav)
+
+Layout :
+- Header :
+  - Titre `Mes alertes` à gauche
+  - À droite : `Gérer mes alertes ⚙` → ouvre un mini-panneau avec 2 toggles :
+    - `Activer notifications` (in-app)
+    - `Recevoir par email`
+- Liste : **max 4 alertes** affichées en mode compact
+- Footer : bouton `⌄⌄ Voir tous les détails` → navigue vers `/mes-alertes`
+
+**État vide** :
+- Icône cloche barrée
+- Titre : « Aucune alerte pour le moment »
+- Sous-texte : « Suivez un contact après une recherche pour recevoir les nouvelles mises à jour. »
+
+**État avec alertes** : chaque carte compact affiche :
+- Icône type de canal + valeur (téléphone, URL, RIB masqué, email, etc.)
+- Texte standard : « Un nouveau signalement a été publié. »
+- Footer : `🕐 Il y a X heures/jour` + lien `Voir les détails` (vers le détail du contact ou du signalement)
+
+### Page complète `/mes-alertes`
+
+Layout :
+- Bouton pill `← Retour`
+- Titre H1 navy : « Mes alertes »
+- Sous-titre : « Suivez les contacts et recevez les mises à jour. »
+- En haut à droite : `Gérer mes alertes ⚙` + panneau toggles (mêmes que dans le popover)
+- Watermark logo H
+
+**Onglets / pills filtres** (sélection unique, avec compteurs) :
+- `Toutes (N)` (active par défaut)
+- `Nouvelles (N)` — non lues
+- `Archivées (N)`
+
+**Carte alerte (mode étendu)** :
+- **Bordure colorée à gauche** = niveau de risque du contact :
+  - 🟢 Vert = Faible
+  - 🟡 Jaune = Vigilance
+  - 🟠 Orange = Modéré
+  - 🔴 Rouge = Élevé
+- Ligne 1 : icône canal + valeur du contact (ex. `📞 212 600 00 00 00`, `🌐 www.example.com`, `💳 50XX XXXX XXXX XX86`, `✉️ user@example.com`)
+- Ligne 2 : texte « Un nouveau signalement a été publié. »
+- Ligne 3 : `🕐 Il y a X heures` + lien `Voir les détails`
+- Menu **trois points `…`** en haut à droite → popup avec :
+  - `📥 Archiver`
+  - `🗑 Supprimer` (icône rouge)
+- **Détail expandé** (visible si l'utilisateur clique sur la carte ou si niveau = Élevé par défaut) :
+  - Bandeau coloré (cadre rouge si Élevé) avec :
+    - « 5 signalements enregistrés »
+    - « Dernier signalement : il y a 2 heures »
+  - 4 mini KPI cards (les 4 catégories de problèmes avec compteur par catégorie pour ce contact)
+
+**Pagination** : bouton chevron `⌄` en bas pour charger plus (infinite scroll ou « Charger plus »).
+
+### Masquage des données sensibles dans l'affichage
+Le RIB est affiché sous forme **masquée** (`50XX XXXX XXXX XX86`) — bonne pratique déjà respectée dans la maquette. À appliquer aussi pour :
+- Carte bancaire (si jamais on en accepte) : 4 premiers + 4 derniers
+- Téléphone : pas de masquage (le contact lui-même est l'objet du signalement)
+- Email : pas de masquage non plus
+
+### Modèle de données
+
+```prisma
+model AlertSubscription {
+  id           String      @id @default(cuid())
+  userId       String
+  contactHash  String      // HMAC du contact normalisé
+  contactType  ContactType
+  contactValue String      // affichage (RIB masqué, etc.) — chiffré au repos
+  createdAt    DateTime    @default(now())
+  user         User        @relation(fields: [userId], references: [id])
+  alerts       Alert[]
+  @@unique([userId, contactHash])
+  @@index([contactHash])
+}
+
+model Alert {
+  id              String        @id @default(cuid())
+  subscriptionId  String
+  reportId        String        // signalement déclencheur
+  status          AlertStatus   @default(NEW)  // NEW | READ | ARCHIVED | DELETED
+  createdAt       DateTime      @default(now())
+  readAt          DateTime?
+  archivedAt      DateTime?
+  subscription    AlertSubscription @relation(fields: [subscriptionId], references: [id])
+  @@index([subscriptionId, status, createdAt])
+}
+
+model UserNotificationPrefs {
+  userId        String  @id
+  inAppEnabled  Boolean @default(true)
+  emailEnabled  Boolean @default(false)  // double opt-in requis
+  emailVerifiedForAlertsAt DateTime?
+}
+```
+
+### Trigger : génération automatique d'alertes
+Lorsqu'un signalement passe en statut `PUBLISHED` (après modération) :
+1. Hash le `contactValue` du nouveau signalement (HMAC normalisé)
+2. SELECT toutes les `AlertSubscription` matchant ce `contactHash`
+3. Pour chaque subscription → INSERT `Alert(status: NEW)`
+4. Si `emailEnabled` ET `emailVerifiedForAlertsAt` non null : enqueue email (worker async)
+5. **Throttle email** : 1 email max toutes les 6 h par subscription (groupe les notifs)
+
+### Sécurité spécifique « Mes alertes »
+
+1. **Auth obligatoire** sur le popover et la page (`/mes-alertes` + endpoints `/api/alerts/*`)
+2. **Isolation stricte** : un utilisateur ne voit **jamais** les alertes/abonnements d'un autre. Toujours filtrer par `userId = session.userId` côté serveur (jamais faire confiance au client).
+3. **Email opt-in** :
+   - **Double opt-in** : activer `emailEnabled` envoie un email de vérification avec token signé (JWT court, 24 h) ; tant que `emailVerifiedForAlertsAt` n'est pas set, aucun email d'alerte n'est envoyé
+   - **Lien de désabonnement** dans chaque email (token signé permettant 1-clic unsubscribe sans login — RFC 8058)
+   - Throttle 6 h par subscription pour éviter le spam
+4. **Limite anti-abus** :
+   - Max **100 abonnements actifs** par utilisateur (configurable via admin)
+   - Max **20 nouvelles subscriptions / jour** par utilisateur
+5. **Suppression vs archivage** :
+   - `Archiver` : statut `ARCHIVED`, reste visible dans l'onglet « Archivées »
+   - `Supprimer` : **soft delete** (statut `DELETED`, masqué de toutes les listes mais conservé en DB pendant 30 jours pour audit/rollback) ; purge réelle après 30 j
+6. **Privacy des préférences** : les préférences notification ne sont **jamais** exposées via l'API publique (réservées à l'utilisateur lui-même via `/api/me/notifications`)
+
+### Mécanisme « Suivre un contact » (à confirmer avec le propriétaire)
+**Hypothèse** : sur la page de résultat de recherche (à recevoir), un bouton `🔔 Suivre ce contact` apparaît à côté du résultat. Le clic crée une `AlertSubscription`. À ce moment-là :
+- Si non connecté → ouvre la modal de connexion d'abord
+- Si déjà abonné → bouton devient `🔕 Ne plus suivre`
+
+Confirmer la position exacte du bouton « Suivre » dans la maquette à venir.
 
 ---
 

@@ -31,11 +31,11 @@ const KPI_STATS: { label: string; value: string; gradient: string; Icon: LucideI
 
 export function PlatformStats() {
   return (
-    <section className="mx-auto max-w-7xl px-4 md:px-6 py-8 md:py-10">
+    <section className="mx-auto max-w-7xl px-4 md:px-6 py-4 md:py-6">
       <h2 className="text-2xl md:text-3xl font-bold bg-grad-stat-navy bg-clip-text text-transparent text-center">
         Statistiques de la plateforme
       </h2>
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {KPI_STATS.map((s) => (
           <div
             key={s.label}
@@ -49,7 +49,7 @@ export function PlatformStats() {
           </div>
         ))}
       </div>
-      <div className="mt-6 flex justify-center">
+      <div className="mt-4 flex justify-center">
         <Link
           href="/statistiques"
           className="inline-flex items-center gap-1.5 rounded-pill border border-brand-navy text-brand-navy px-5 py-2 text-sm font-semibold hover:bg-brand-navy hover:text-white transition-colors"
@@ -58,7 +58,7 @@ export function PlatformStats() {
           <ArrowUpRight className="h-4 w-4" aria-hidden />
         </Link>
       </div>
-      <p className="mt-4 text-xs text-gray-400 text-center max-w-3xl mx-auto">
+      <p className="mt-3 text-xs text-gray-400 text-center max-w-3xl mx-auto">
         Les informations affichées sont basées sur les signalements et les expériences des
         utilisateurs, vérifiées lorsque cela est possible, et fournies à titre indicatif
         uniquement.

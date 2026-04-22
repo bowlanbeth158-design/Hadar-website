@@ -41,12 +41,12 @@ const DEMO_REPORTS = [
 
 export function RecentReports() {
   return (
-    <section className="mx-auto max-w-7xl px-4 md:px-6 py-8 md:py-10">
+    <section className="mx-auto max-w-7xl px-4 md:px-6 py-4 md:py-6">
       <h2 className="text-2xl md:text-3xl font-bold bg-grad-stat-navy bg-clip-text text-transparent text-center">
         Signalements récents de la communauté
       </h2>
 
-      <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {DEMO_REPORTS.map((r) => (
           <article
             key={r.id}
@@ -86,7 +86,7 @@ export function RecentReports() {
         ))}
       </div>
 
-      <p className="mt-6 text-xs text-gray-400 text-center max-w-3xl mx-auto">
+      <p className="mt-4 text-xs text-gray-400 text-center max-w-3xl mx-auto">
         Les contenus sont examinés avant publication et peuvent être modifiés ou supprimés
         s&apos;ils ne respectent pas nos règles.
       </p>

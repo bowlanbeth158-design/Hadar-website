@@ -247,11 +247,14 @@ Titre H2 **`Décision de modération`** centré (navy).
 - 🔴 `Non retenu` — fond rouge `#EE4444`
 - 🔵 `À corriger` — fond navy `#00327D`
 
-**Input "Motif de décision"**
+**Input "Motif de décision"** (décision figée par le propriétaire)
 - Input texte large (single-line dans la maquette ; **à passer en textarea** pour plus de confort)
 - Placeholder : `Motif de décision`
-- **Obligatoire** : helper text sous le champ « Ce champ est obligatoire pour confirmer la décision »
-- Apparaît/requis quelle que soit la décision (même pour Publié ?)
+- **Obligatoire uniquement pour `Non retenu`**
+- Optionnel pour `Publié` (aucun motif attendu, publication simple)
+- Optionnel pour `À corriger` (mais **fortement recommandé** côté produit — sans motif, l'utilisateur ne sait pas quoi corriger)
+
+> ⚠️ **Alerte UX à remonter au propriétaire** : pour `À corriger`, si aucun motif n'est saisi, l'utilisateur recevra une demande de correction sans savoir quoi corriger. Proposition : rendre le motif **obligatoire pour `Non retenu` ET `À corriger`**, optionnel pour `Publié`. À trancher.
 
 **CTA final**
 - Bouton rouge plein `Refuser le signalement` (large, centré)
@@ -294,7 +297,7 @@ Il faut tracer :
 - [ ] Top bar search : périmètre exhaustif (signalements, utilisateurs, membres, annonces, messages chat, logs…) ? Ou sous-ensemble ?
 - [x] ~~Pattern boutons décision modération~~ → **Option A figée** : 3 sélecteurs + CTA dynamique (cf §Écran 3)
 - [ ] **Statut "À corriger"** : workflow user complet (notification, écran correction, resoumission) ?
-- [ ] **Motif de décision** obligatoire aussi pour `Publié`, ou uniquement pour `Non retenu` / `À corriger` ?
+- [x] ~~Motif de décision obligatoire~~ → **Obligatoire uniquement pour `Non retenu`** (propriétaire). Concern UX levé pour `À corriger` (cf §Écran 3).
 - [ ] Pagination de la liste signalements (type + nombre par page) ?
 - [ ] Filtres liste signalements (tri par colonne + filtres multi-critères par canal/type/statut/user) ?
 - [ ] **Breadcrumb ou bouton Retour** sur page détail signalement ?

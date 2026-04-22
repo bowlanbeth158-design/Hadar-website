@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Megaphone, UploadCloud } from 'lucide-react';
 import { PageLayout } from '@/components/PageLayout';
 import { BackButton } from '@/components/BackButton';
 import { PageHeading } from '@/components/PageHeading';
@@ -127,6 +128,7 @@ export default function Page() {
             Preuves <span className="text-gray-400 font-normal">(fortement recommandé)</span>
           </label>
           <div className="rounded-xl border-2 border-dashed border-gray-200 bg-gray-50 px-4 py-8 text-center text-sm text-gray-500">
+            <UploadCloud className="mx-auto h-8 w-8 mb-2 text-gray-400" aria-hidden />
             <p>Choisir un fichier ou glisser ici (capture, reçu, conversation…)</p>
             <p className="mt-1 text-xs">JPG · PNG · WEBP · MP4 · WEBM · MOV — 5 fichiers max</p>
           </div>
@@ -142,9 +144,10 @@ export default function Page() {
         <button
           type="submit"
           disabled
-          className="w-full rounded-pill bg-red-500 text-white px-5 py-3 text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full inline-flex items-center justify-center gap-2 rounded-pill bg-red-500 text-white px-5 py-3 text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          📢 Envoyer le signalement
+          <Megaphone className="h-4 w-4" aria-hidden />
+          Envoyer le signalement
         </button>
 
         <p className="text-xs text-gray-400 text-center">

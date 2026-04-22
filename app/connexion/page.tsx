@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { CheckCircle2 } from 'lucide-react';
 import { AuthCard } from '@/components/AuthCard';
+import { GoogleIcon } from '@/components/GoogleIcon';
 
 export const metadata: Metadata = {
   title: 'Se connecter',
@@ -29,14 +31,16 @@ export default function Page() {
       }
     >
       <div className="flex items-center justify-center gap-2 rounded-pill bg-green-100 text-green-700 px-3 py-1.5 text-xs font-medium mb-6">
-        <span aria-hidden>✓</span> Plateforme sécurisée · +1200 signalements
+        <CheckCircle2 className="h-3.5 w-3.5" aria-hidden />
+        Plateforme sécurisée · +1200 signalements
       </div>
 
       <button
         type="button"
         className="w-full rounded-pill border border-gray-200 bg-white text-brand-navy px-5 py-2.5 text-sm font-semibold hover:border-brand-blue transition-colors flex items-center justify-center gap-2"
       >
-        <span aria-hidden>G</span> Continuer avec Google
+        <GoogleIcon className="h-4 w-4" />
+        Continuer avec Google
       </button>
 
       <div className="my-5 flex items-center gap-3 text-xs text-gray-400">

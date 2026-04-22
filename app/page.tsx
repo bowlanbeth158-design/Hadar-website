@@ -1,57 +1,95 @@
+import Link from 'next/link';
+import {
+  Phone,
+  MessageCircle,
+  Mail,
+  CreditCard,
+  Globe,
+  AtSign,
+  Wallet,
+  Coins,
+  Search,
+  Mic,
+  Users,
+  Siren,
+  Smartphone,
+  ShieldCheck,
+  Clock,
+  ArrowUpRight,
+  Gavel,
+  CheckCircle2,
+  type LucideIcon,
+} from 'lucide-react';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { SupportFab } from '@/components/SupportFab';
 
-const CONTACT_FILTERS = [
-  { id: 'telephone', label: 'Téléphone', icon: '📞' },
-  { id: 'whatsapp', label: 'WhatsApp', icon: '🟢' },
-  { id: 'email', label: 'Email', icon: '✉️' },
-  { id: 'rib', label: 'RIB', icon: '💳' },
-  { id: 'site_web', label: 'Site web', icon: '🌐' },
-  { id: 'reseaux_sociaux', label: 'Réseaux sociaux', icon: '📡' },
-  { id: 'paypal', label: 'PayPal', icon: '🅿️' },
-  { id: 'binance', label: 'Binance', icon: '🔶' },
-] as const;
+const CONTACT_FILTERS: { id: string; label: string; Icon: LucideIcon }[] = [
+  { id: 'telephone', label: 'Téléphone', Icon: Phone },
+  { id: 'whatsapp', label: 'WhatsApp', Icon: MessageCircle },
+  { id: 'email', label: 'Email', Icon: Mail },
+  { id: 'rib', label: 'RIB', Icon: CreditCard },
+  { id: 'site_web', label: 'Site web', Icon: Globe },
+  { id: 'reseaux_sociaux', label: 'Réseaux sociaux', Icon: AtSign },
+  { id: 'paypal', label: 'PayPal', Icon: Wallet },
+  { id: 'binance', label: 'Binance', Icon: Coins },
+];
 
-const KPI_STATS = [
-  { label: 'Utilisateurs actifs', value: '12 593', gradient: 'bg-grad-stat-navy', icon: '👥' },
-  { label: 'Signalements enregistrés', value: '19 840', gradient: 'bg-grad-stat-red', icon: '🚨' },
-  { label: 'Contacts signalés', value: '9 594', gradient: 'bg-grad-stat-violet', icon: '📱' },
-  { label: 'Vérifications réalisées', value: '18 978', gradient: 'bg-grad-stat-sky', icon: '🛡️' },
-  { label: 'Montant signalé', value: '504 000 MAD', gradient: 'bg-grad-stat-green', icon: '💰' },
-  { label: 'Dernier signalement', value: 'il y a 2h', gradient: 'bg-grad-stat-orange', icon: '⏱️' },
-] as const;
+const KPI_STATS: { label: string; value: string; gradient: string; Icon: LucideIcon }[] = [
+  { label: 'Utilisateurs actifs', value: '12 593', gradient: 'bg-grad-stat-navy', Icon: Users },
+  { label: 'Signalements enregistrés', value: '19 840', gradient: 'bg-grad-stat-red', Icon: Siren },
+  { label: 'Contacts signalés', value: '9 594', gradient: 'bg-grad-stat-violet', Icon: Smartphone },
+  {
+    label: 'Vérifications réalisées',
+    value: '18 978',
+    gradient: 'bg-grad-stat-sky',
+    Icon: ShieldCheck,
+  },
+  { label: 'Montant signalé', value: '504 000 MAD', gradient: 'bg-grad-stat-green', Icon: Wallet },
+  {
+    label: 'Dernier signalement',
+    value: 'il y a 2h',
+    gradient: 'bg-grad-stat-orange',
+    Icon: Clock,
+  },
+];
 
-const STEPS = [
+const STEPS: {
+  n: number;
+  title: string;
+  description: string;
+  color: string;
+  Icon: LucideIcon;
+}[] = [
   {
     n: 1,
     title: 'Signalement',
     description: 'Un utilisateur partage un signalement sur un contact ou un moyen de paiement.',
     color: 'bg-brand-blue',
-    icon: '🚨',
+    Icon: Siren,
   },
   {
     n: 2,
     title: 'Examen',
     description: 'Le contenu est examiné selon les règles de la plateforme.',
     color: 'bg-violet-500',
-    icon: '🔍',
+    Icon: Search,
   },
   {
     n: 3,
     title: 'Modération',
     description: 'Le contenu peut être modifié ou supprimé si nécessaire.',
     color: 'bg-orange-500',
-    icon: '🛠️',
+    Icon: Gavel,
   },
   {
     n: 4,
     title: 'Publication',
     description: 'Les signalements conformes sont publiés sur la plateforme.',
     color: 'bg-green-500',
-    icon: '✅',
+    Icon: CheckCircle2,
   },
-] as const;
+];
 
 export default function HomePage() {
   return (
@@ -80,7 +118,7 @@ export default function HomePage() {
                     : 'inline-flex items-center gap-2 rounded-pill bg-white border border-gray-200 text-brand-navy px-4 py-2 text-sm font-medium hover:border-brand-blue transition-colors'
                 }
               >
-                <span aria-hidden>{f.icon}</span>
+                <f.Icon className="h-4 w-4" aria-hidden />
                 {f.label}
               </button>
             ))}
@@ -92,9 +130,7 @@ export default function HomePage() {
             method="get"
             className="mt-8 mx-auto max-w-3xl flex items-center gap-2 rounded-pill bg-white border border-gray-200 shadow-sm pl-5 pr-1 py-1"
           >
-            <span aria-hidden className="text-gray-400 text-lg">
-              🔍
-            </span>
+            <Search className="h-5 w-5 text-gray-400" aria-hidden />
             <input
               type="search"
               name="q"
@@ -107,7 +143,7 @@ export default function HomePage() {
               aria-label="Recherche vocale"
               className="p-2 text-gray-400 hover:text-brand-navy"
             >
-              🎤
+              <Mic className="h-5 w-5" aria-hidden />
             </button>
             <button
               type="submit"
@@ -132,19 +168,18 @@ export default function HomePage() {
                   <p className="text-3xl font-bold">{s.value}</p>
                   <p className="text-sm font-medium opacity-90 mt-1">{s.label}</p>
                 </div>
-                <span aria-hidden className="text-3xl opacity-80">
-                  {s.icon}
-                </span>
+                <s.Icon className="h-9 w-9 opacity-70" aria-hidden />
               </div>
             ))}
           </div>
           <div className="mt-6 flex justify-center">
-            <a
+            <Link
               href="/statistiques"
-              className="inline-flex items-center gap-2 rounded-pill border border-brand-navy text-brand-navy px-5 py-2 text-sm font-semibold hover:bg-brand-navy hover:text-white transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-pill border border-brand-navy text-brand-navy px-5 py-2 text-sm font-semibold hover:bg-brand-navy hover:text-white transition-colors"
             >
-              Voir plus ↗
-            </a>
+              Voir plus
+              <ArrowUpRight className="h-4 w-4" aria-hidden />
+            </Link>
           </div>
           <p className="mt-4 text-xs text-gray-400 text-center max-w-3xl mx-auto">
             Les informations affichées sont basées sur les signalements et les expériences des
@@ -170,10 +205,10 @@ export default function HomePage() {
                   {s.n}
                 </span>
                 <div
-                  className={`inline-flex items-center justify-center h-10 w-10 rounded-xl ${s.color} text-white text-lg`}
+                  className={`inline-flex items-center justify-center h-10 w-10 rounded-xl ${s.color} text-white`}
                   aria-hidden
                 >
-                  {s.icon}
+                  <s.Icon className="h-5 w-5" />
                 </div>
                 <p className="mt-3 text-xs font-semibold uppercase tracking-wide text-gray-400">
                   Step {s.n}

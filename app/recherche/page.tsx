@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { CheckCircle2 } from 'lucide-react';
 import { PageLayout } from '@/components/PageLayout';
 
 export const metadata: Metadata = {
@@ -30,7 +31,8 @@ export default function Page({ searchParams }: { searchParams: SearchParams }) {
 
         <div className="mt-10">
           <div className="inline-flex items-center gap-2 rounded-pill bg-green-100 text-green-700 px-4 py-2 text-sm font-semibold">
-            <span aria-hidden>✓</span> Aucun signalement détecté
+            <CheckCircle2 className="h-4 w-4" aria-hidden />
+            Aucun signalement détecté
           </div>
 
           <div className="mt-6 rounded-2xl bg-white border border-gray-200 p-6">

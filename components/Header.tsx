@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Siren, UserRound } from 'lucide-react';
 import { Logo } from './Logo';
 
 export function Header() {
@@ -35,26 +36,28 @@ export function Header() {
           <div className="flex items-center gap-3">
             <button
               type="button"
-              className="hidden sm:inline-flex items-center gap-1 text-xs font-medium text-brand-navy hover:text-brand-blue"
-              aria-label="Changer de langue"
+              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-brand-navy hover:text-brand-blue"
+              aria-label="Changer de langue et de devise"
             >
-              🇲🇦 <span>FR</span>
+              <span aria-hidden>🇲🇦</span>
+              <span>FR</span>
               <span className="text-gray-400">·</span>
               <span>MAD</span>
             </button>
 
             <Link
               href="/connexion"
-              className="hidden sm:inline-flex items-center gap-2 rounded-pill border border-brand-navy text-brand-navy px-4 py-1.5 text-sm font-semibold hover:bg-brand-navy hover:text-white transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 rounded-pill border border-brand-navy text-brand-navy px-4 py-1.5 text-sm font-semibold hover:bg-brand-navy hover:text-white transition-colors"
             >
+              <UserRound className="h-4 w-4" aria-hidden />
               Se connecter
             </Link>
 
             <Link
               href="/signaler"
-              className="inline-flex items-center gap-2 rounded-pill bg-red-500 hover:bg-red-700 text-white px-4 py-2 text-sm font-semibold shadow-sm transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-pill bg-red-500 hover:bg-red-700 text-white px-4 py-2 text-sm font-semibold shadow-sm transition-colors"
             >
-              <span aria-hidden>🚨</span>
+              <Siren className="h-4 w-4" aria-hidden />
               Signaler
             </Link>
           </div>

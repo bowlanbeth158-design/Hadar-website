@@ -1,5 +1,14 @@
 import Link from 'next/link';
+import { Mail } from 'lucide-react';
 import { Logo } from './Logo';
+import {
+  LinkedInIcon,
+  FacebookIcon,
+  InstagramIcon,
+  YouTubeIcon,
+  XIcon,
+  TikTokIcon,
+} from './SocialIcons';
 
 const LEGAL_LINKS = [
   { href: '/qui-sommes-nous', label: 'Qui sommes-nous ?' },
@@ -13,6 +22,15 @@ const POLICY_LINKS = [
   { href: '/politique-confidentialite', label: 'Politique de confidentialité' },
   { href: '/donnees-personnelles-cookies', label: 'Données personnelles & cookies' },
   { href: '/regles-publication', label: 'Règles de publication' },
+];
+
+const SOCIALS = [
+  { Icon: LinkedInIcon, label: 'LinkedIn' },
+  { Icon: FacebookIcon, label: 'Facebook' },
+  { Icon: InstagramIcon, label: 'Instagram' },
+  { Icon: TikTokIcon, label: 'TikTok' },
+  { Icon: XIcon, label: 'X' },
+  { Icon: YouTubeIcon, label: 'YouTube' },
 ];
 
 export function Footer() {
@@ -69,21 +87,21 @@ export function Footer() {
             href="mailto:support@hadar.ma"
             className="inline-flex items-center gap-2 text-sm text-white/90 hover:text-white"
           >
-            <span aria-hidden>✉️</span> support@hadar.ma
+            <Mail className="h-4 w-4" aria-hidden /> support@hadar.ma
           </a>
           <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-white/60">
             Suivez-nous
           </p>
           <div className="mt-2 flex gap-2">
-            {['LinkedIn', 'Facebook', 'Instagram', 'TikTok', 'X', 'YouTube'].map((n) => (
-              <span
-                key={n}
-                aria-label={n}
-                className="h-8 w-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-xs font-semibold cursor-pointer"
-                title={n}
+            {SOCIALS.map(({ Icon, label }) => (
+              <a
+                key={label}
+                href="#"
+                aria-label={label}
+                className="h-9 w-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
               >
-                {n[0]}
-              </span>
+                <Icon className="h-4 w-4" aria-hidden />
+              </a>
             ))}
           </div>
         </div>

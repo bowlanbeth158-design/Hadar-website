@@ -1,3 +1,5 @@
+import { LifeBuoy } from 'lucide-react';
+
 export function SupportFab() {
   return (
     <button
@@ -5,7 +7,7 @@ export function SupportFab() {
       aria-label="Contacter le support"
       className="fixed bottom-5 right-5 z-30 inline-flex items-center gap-2 rounded-pill bg-orange-500 hover:bg-orange-600 text-white px-5 py-3 text-sm font-semibold shadow-lg transition-colors"
     >
-      <span aria-hidden>💬</span>
+      <LifeBuoy className="h-4 w-4" aria-hidden />
       Support
     </button>
   );

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { AuthCard } from '@/components/AuthCard';
+import { GoogleIcon } from '@/components/GoogleIcon';
 
 export const metadata: Metadata = {
   title: 'Créer un compte',
@@ -24,7 +25,8 @@ export default function Page() {
         type="button"
         className="w-full rounded-pill border border-gray-200 bg-white text-brand-navy px-5 py-2.5 text-sm font-semibold hover:border-brand-blue transition-colors flex items-center justify-center gap-2"
       >
-        <span aria-hidden>G</span> S&apos;inscrire avec Google
+        <GoogleIcon className="h-4 w-4" />
+        S&apos;inscrire avec Google
       </button>
 
       <div className="my-5 flex items-center gap-3 text-xs text-gray-400">

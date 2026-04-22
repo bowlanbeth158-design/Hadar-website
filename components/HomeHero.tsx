@@ -33,12 +33,19 @@ const CONTACT_TYPES: ContactType[] = [
   { id: 'binance', label: 'Binance', Icon: Coins, placeholder: 'Ex : identifiant ou email' },
 ];
 
-export function HomeHero() {
-  const [selected, setSelected] = useState<string>(CONTACT_TYPES[0]!.id);
+type Props = {
+  initialType?: string;
+  initialQuery?: string;
+};
+
+export function HomeHero({ initialType, initialQuery = '' }: Props) {
+  const defaultType =
+    initialType && CONTACT_TYPES.some((c) => c.id === initialType) ? initialType : CONTACT_TYPES[0]!.id;
+  const [selected, setSelected] = useState<string>(defaultType);
   const active = CONTACT_TYPES.find((c) => c.id === selected) ?? CONTACT_TYPES[0]!;
 
   return (
-    <section className="mx-auto max-w-5xl px-4 md:px-6 pt-12 md:pt-20 pb-10 text-center">
+    <section className="mx-auto max-w-5xl px-4 md:px-6 pt-12 md:pt-20 pb-6 text-center">
       <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-brand-navy">
         Avant d&apos;acheter, vérifiez.
       </h1>
@@ -76,7 +83,7 @@ export function HomeHero() {
 
       <form
         role="search"
-        action="/recherche"
+        action="/"
         method="get"
         className="mt-8 mx-auto max-w-3xl flex items-center gap-2 rounded-pill bg-white border border-gray-200 shadow-sm pl-5 pr-1 py-1"
       >
@@ -85,6 +92,7 @@ export function HomeHero() {
         <input
           type="search"
           name="q"
+          defaultValue={initialQuery}
           placeholder={active.placeholder}
           aria-label={`Rechercher un ${active.label.toLowerCase()}`}
           className="flex-1 bg-transparent outline-none text-brand-navy placeholder:text-gray-400 py-2 text-base"

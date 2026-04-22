@@ -415,6 +415,113 @@ Pills numérotés en bas à droite : `‹ 1 2 3 ›` — page 2 active (navy ple
 
 ---
 
+---
+
+## Écran 6 — Utilisateurs (liste) `/admin/utilisateurs`
+
+> Rappel : **Utilisateurs = usagers finaux** de la plateforme (ceux qui signalent / vérifient). Distincts des Membres (équipe interne).
+
+### Header de page
+- Titre H1 `Utilisateurs` (navy)
+- Actions droite : `🔄 Rafraîchir` + `⬇ Exporter` (mêmes que Dashboard)
+- **Pas de bouton "Ajouter"** → les utilisateurs s'inscrivent eux-mêmes côté public, l'admin ne crée pas de compte user
+
+### Card principale (fond blanc)
+
+**Toolbar (en haut de la card)**
+- Gauche : icône **filtre** (entonnoir jaune) + badge `10` (jaune, chevron down)
+- À côté : bouton `Selectionner tous` (pill outline) — sélectionne tous les utilisateurs visibles sur la page courante (à confirmer : page courante OU tous les résultats du filtre)
+- À côté : dropdown **`Actions ▼`** (pill outline) — ouvre un menu avec les **4 actions en lot** applicables aux utilisateurs cochés
+- Droite : barre de recherche secondaire (loupe)
+
+### Table utilisateurs
+
+| Col | Label | Contenu | Notes |
+|---|---|---|---|
+| 1 | `Select` | Checkbox | Sélection ligne par ligne ; coché = surbrillance bleue |
+| 2 | `ID` | `#01`, `#18`, `#16`… | Identifiant interne |
+| 3 | `Nom` | `Yahya MOUSSAOUI` | Prénom + NOM |
+| 4 | `Email` | `yahya.moussaoui@gmail.com` | |
+| 5 | `Téléphone` | `0675487955` | Format MSISDN local |
+| 6 | `Date d'inscription` | `13/04/26  23:12:05` | |
+| 7 | `Dernière activité` | `13/04/26  23:12:05` | |
+| 8 | `Statut` | Actif / Inactif / Bloqué / Supprimé | Texte coloré (vert/navy/navy/rouge) |
+| 9 | `Action` | Bouton coloré contextuel | cf §Actions ci-dessous |
+
+### Pagination
+Pills `‹ 1 2 3 ›` en bas à droite (page 2 active), même pattern que Membres.
+
+---
+
+### Statuts utilisateur (4 valeurs)
+
+| Statut | Couleur | Connexion possible ? | Visible publiquement ? | Signification |
+|---|---|---|---|---|
+| `Actif` | vert `#22C45E` | ✅ | ✅ | Compte normal |
+| `Inactif` | navy `#00327D` | ✅ (mais inactivité longue) | ✅ | Compte sans activité depuis X jours (auto-flag) |
+| `Bloqué` | navy/gris | ❌ + message à la connexion | ❌ (signalements masqués) | Sanction admin (violation des règles) |
+| `Supprimé` | rouge `#EE4444` | ❌ | ❌ | Soft-delete (à confirmer hard vs soft) |
+
+> **Règle légale** : un compte `Supprimé` doit conserver les signalements publiés (sinon perte de l'historique de modération) mais anonymiser les données personnelles (RGPD article 17). À détailler.
+
+---
+
+### Actions admin (les 4 décisions, confirmées par le propriétaire)
+
+| Action | Couleur bouton | Quand cliquable | Effet | Notification user |
+|---|---|---|---|---|
+| `Voir ›` | navy `#00327D` | Toujours | Ouvre la fiche utilisateur (`/admin/utilisateurs/[id]`) | Aucune |
+| `Réinitialiser` | orange `#F29B11` | Statut ≠ `Supprimé` *(ou aussi Supprimé pour restauration ?)* | Envoie un email de reset password à l'utilisateur (lien signé, expiration 1h). Ne révèle rien à l'admin. | Email `Réinitialisez votre mot de passe Hadar` |
+| `Bloquer` / `Débloquer` | gris/noir → vert si déjà bloqué | Toujours | Bascule le statut entre `Actif`/`Inactif` ↔ `Bloqué`. Force la déconnexion immédiate des sessions actives. | Email `Votre compte a été suspendu` + motif (à demander) |
+| `Supprimer` | rouge `#EE4444` | Statut ≠ `Supprimé` | Soft-delete : statut `Supprimé`, anonymise email/téléphone/nom, conserve les signalements publiés | Email d'avertissement final (J-7 ?) puis confirmation de suppression |
+
+### Two patterns possibles pour la colonne Action (à trancher)
+
+**Pattern 1 — bouton contextuel unique (lecture maquette littérale)**
+La maquette affiche 1 seul bouton par ligne, dont le label/couleur change selon une logique métier :
+- Yahya (Actif) → `Réinitialiser`
+- Ossama (Inactif) → `Supprimer`
+- Hamid (Bloqué) → `Bloquer` *(incohérent — devrait être `Débloquer`)*
+- Rabi3 (Actif) → `Voir ›`
+- Hakim (Supprimé) → `Réinitialiser`
+- Ronaldo (Actif) → `Supprimer`
+
+→ Cette logique n'est pas claire (Yahya et Rabi3 sont tous deux Actif mais ont des actions différentes). Probablement une erreur de la maquette ou un placeholder.
+
+**Pattern 2 — menu déroulant kebab `⋮` par ligne (recommandé)**
+Chaque ligne a un bouton menu (`⋮` ou `Actions ▼`) qui déroule les **4 actions** :
+- `Voir ›` (toujours)
+- `Réinitialiser le mot de passe` (toujours sauf si `Supprimé`)
+- `Bloquer` ou `Débloquer` (libellé contextuel selon statut)
+- `Supprimer` ou `Restaurer` (libellé contextuel)
+
+L'item est désactivé si l'action n'a pas de sens dans le contexte (ex : `Supprimer` désactivé si déjà `Supprimé`).
+
+→ **Pattern 2 recommandé** : cohérent, prévisible, pas d'ambiguïté. Le pattern 1 force l'admin à se demander pourquoi telle ligne a tel bouton.
+
+### Bulk actions (dropdown `Actions ▼` en haut)
+S'applique aux lignes **cochées**. Mêmes 4 actions, mais :
+- `Voir` : non applicable en bulk → grisé
+- `Réinitialiser` : OK (envoie l'email à chaque user coché)
+- `Bloquer` / `Débloquer` : OK avec confirmation
+- `Supprimer` : OK avec **double confirmation** (action critique)
+
+Si plusieurs users cochés ont des statuts mixtes (ex : 2 actifs + 1 bloqué), n'afficher que les actions cohérentes pour tous (ex : pas de "Bloquer" si l'un est déjà bloqué).
+
+---
+
+### Sécurité critique pour cette page
+
+1. **Réinitialiser** ne révèle JAMAIS le nouveau mot de passe à l'admin ; envoie uniquement un email de reset au user
+2. **Bloquer / Supprimer** = action sensible → log dans audit trail (qui, quand, quel user, motif)
+3. **Suppression** = soft-delete par défaut + workflow d'effacement définitif après délai légal (CNDP 30 jours ?)
+4. **Anonymisation** au moment de la suppression : `email = "deleted-{id}@hadar.ma"`, `phone = null`, `firstName = "Utilisateur"`, `lastName = "supprimé"` ; conserver `id`, `createdAt`, signalements `PUBLISHED`
+5. **Re-authentication** requise avant `Bloquer` / `Supprimer` en bulk (au-dessus de N lignes)
+6. **Rate-limiting** sur les bulk actions (anti-erreur)
+7. **Sessions** : un user `Bloqué` ou `Supprimé` est immédiatement déconnecté de tous ses devices (révocation des refresh tokens)
+
+---
+
 ## Questions ouvertes (admin)
 
 - [ ] Format d'export (CSV / XLSX / PDF) ? Périmètre = uniquement les KPI visibles ou dump complet des signalements de la période ?
@@ -439,6 +546,16 @@ Pills numérotés en bas à droite : `‹ 1 2 3 ›` — page 2 active (navy ple
 - [ ] **Différence Inactif / Suspendu** : confirmer les sémantiques (cf tableau §Statuts d'un membre)
 - [ ] **Super-admin séparé d'Admin** ? (qui peut gérer les Admins)
 - [ ] **Matrice de permissions** : valider chaque ligne ❓ (cf §Rôles & permissions)
+
+### Utilisateurs (usagers finaux)
+- [ ] **Pattern colonne Action** : bouton contextuel unique (maquette) **ou** menu déroulant kebab `⋮` avec les 4 actions (recommandé) ?
+- [ ] **`Réinitialiser`** : email de reset password envoyé au user (recommandé) — confirmer que l'admin ne peut PAS définir le mot de passe
+- [ ] **`Bloquer`** : motif obligatoire ? Notification email au user ? Possibilité de débloquer ?
+- [ ] **`Supprimer`** : soft-delete + anonymisation (recommandé) **ou** hard-delete ? Délai de grâce avant effacement définitif ?
+- [ ] **Compte `Supprimé`** : que deviennent ses signalements `PUBLISHED` (conserver anonyme) ? `SUBMITTED`/`UNDER_REVIEW` (annuler) ?
+- [ ] **`Sélectionner tous`** : sélectionne tous les users de la page courante uniquement, ou tous les résultats du filtre ?
+- [ ] **Click ID ou Nom** ouvre la fiche détail, ou seulement le bouton `Voir ›` est cliquable (cohérence avec Signalements §Écran 2) ?
+- [ ] **Statut `Inactif`** auto-flag après combien de jours sans activité ? (proposition : 90 jours)
 - [x] ~~Motif de décision obligatoire~~ → **Obligatoire uniquement pour `Non retenu`** (propriétaire). Concern UX levé pour `À corriger` (cf §Écran 3).
 - [ ] Pagination de la liste signalements (type + nombre par page) ?
 - [ ] Filtres liste signalements (tri par colonne + filtres multi-critères par canal/type/statut/user) ?

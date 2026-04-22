@@ -557,6 +557,142 @@ Les actions sanction **`Bloquer`** et **`Supprimer`** exigent un **motif obligat
 
 ---
 
+---
+
+## Écran 7 — Paramètres `/admin/parametres`
+
+> **Typo à corriger partout** : la maquette affiche "Parametres" (titre + sidebar). Le bon libellé est **"Paramètres"** (avec accent aigu). Le code et les traductions respecteront l'orthographe correcte.
+
+### Layout global
+- Sidebar : item `Paramètres` actif (pill jaune, item ancré en bas)
+- Titre H1 `Paramètres` (navy)
+- **4 tabs horizontaux** (pills) sous le titre :
+  1. `Compte` (actif par défaut)
+  2. `Sécurité`
+  3. `Rôle`
+  4. `Général`
+- État actif : gradient navy (`#0078BA` → `#00327D`), texte blanc
+- État inactif : fond bleu très clair `#DBE5F3`, texte navy
+
+> **Remarque architecture** : les tabs `Compte`, `Sécurité`, `Général` sont des **préférences personnelles** du membre connecté. Le tab `Rôle` est en revanche de la **configuration globale** (permissions par rôle) qui n'a pas sa place dans des préférences perso. À terme, il faudrait séparer dans un menu "Administration" réservé au super-admin. Pour la V1 on respecte la maquette, en restreignant l'accès au tab `Rôle` aux Admins uniquement (voir matrice §Rôles & permissions).
+
+---
+
+### Tab 1 — Compte
+
+**Header profil (haut de la zone contenu)**
+- Avatar rond (grand, ~80 px) — placeholder silhouette si pas de photo
+- Nom complet (H3 navy) : `Mohamed ossama Moussaoui`
+- Rôle en sous-ligne (bleu ciel `#0078BA`) : `Admin`
+
+**Card 1 — Informations personnelles** (fond `#F7F9FB`, radius 16 px)
+- Titre H3 navy : `Informations personnelles`
+- Sous-titre gris : « Gérez vos informations personnelles en toute sécurité. »
+- Grid 2 colonnes :
+  - `Prénom` (input) — ex : `Mohamed ossama`
+  - `Nom de famille` (input) — ex : `MOUSSAOUI`
+- Pleine largeur :
+  - `Numéro de portable` (input) — ex : `212698000000`
+    - Helper sous l'input : « Inclure l'indicatif pays (ex : 212…), sans 0 ni + »
+    - Format attendu : **E.164 sans le `+`** (ex : `212698765432`)
+  - `Adresse e-mail` (input) — ex : `mohamedossama.mossaoui@gmail.com`
+- Bouton bas-droit : `✅ Enregistrer les modifications` (pill vert `#22C45E`, icône check)
+
+**Card 2 — Mot de passe** (fond `#F7F9FB`, à droite de la card 1)
+- Titre H3 navy : `Mot de passe`
+- Sous-titre gris : « Pour votre sécurité, utilisez un mot de passe unique et sécurisé. »
+- 3 inputs password avec icône œil (toggle visibilité) :
+  - `Mot de passe actuel`
+  - `Nouveau mot de passe`
+  - `Confirmer le nouveau mot de passe`
+- Bouton bas-droit : `🔄 Mettre à jour le mot de passe` (pill navy `#00327D`, icône refresh)
+
+**Sécurité du formulaire**
+- Tous les inputs password **masqués par défaut** (attention : la maquette montre le 3e visible — c'est un placeholder à sécuriser)
+- Re-authentication exigée avant le changement d'email (envoi d'un lien de confirmation au nouveau + notif à l'ancien)
+- Changement de téléphone : validation E.164 stricte côté serveur
+- Validation nouveau mot de passe :
+  - Min 12 caractères
+  - Complexité : maj + min + chiffre + symbole
+  - Blocklist des passwords connus (haveibeenpwned)
+  - `newPassword !== currentPassword`
+  - `newPassword === confirmPassword`
+- Après changement du mot de passe : déconnexion de toutes les autres sessions (sauf celle en cours)
+
+---
+
+### Tab 2 — Sécurité
+
+Illustration décorative : bouclier `H` en filigrane à droite (watermark opacité ~10%).
+
+**3 accordions empilés** (fond bleu très clair, chevron `⌄` à droite) :
+
+**Accordion 1 — `Activer / désactiver 2FA (double authentification)`** *(ouvert par défaut)*
+- 3 pills oranges gradient (`#F29B11` → `#FFB500`) côte à côte :
+  - `Application` (ex : Google Authenticator, Authy)
+  - `SMS` (OTP par SMS)
+  - `Email` (OTP par email)
+- Chaque pill cliquable active/désactive la méthode correspondante
+- État actif : fond orange plein ; inactif : outline orange
+- **Question ouverte** : on peut activer plusieurs méthodes simultanément (recommandé, fallback) ou une seule ?
+
+**Accordion 2 — `Historique des connexions`** *(fermé par défaut)*
+À l'ouverture : table des N dernières connexions avec :
+- Date/heure
+- IP
+- Localisation approximative (ville/pays via GeoIP)
+- Navigateur + OS (parse User-Agent)
+- Résultat (réussie / échec / bloquée)
+- Action « Révoquer cette session » (si session active)
+
+**Accordion 3 — `Déconnexion de tous les appareils`** *(fermé)*
+À l'ouverture : bouton rouge `Se déconnecter partout` → révoque **tous les refresh tokens** (sauf la session courante, optionnellement). Modal de confirmation avant exécution.
+
+---
+
+### Tab 3 — Rôle (configuration des permissions)
+
+> ⚠️ **Accès restreint** : cet onglet modifie la matrice de permissions globale de la plateforme → **Admin uniquement** (ou super-admin si on introduit ce rôle). Les Modérateurs / Support n'y ont pas accès.
+
+**3 sections, une par rôle**, chacune avec :
+- Badge jaune avec le nom du rôle (`Admin`, `Modérateur`, `Support`)
+- Liste de permissions, chaque permission = pill + toggle
+
+**Section Admin**
+- Toggle unique `Tous les accès activés` (vert, activé par défaut) — super-admin équivalent
+- Pas de granularité fine : l'Admin a tous les droits
+
+**Section Modérateur**
+3 toggles (tous désactivés par défaut dans la maquette — probablement juste affichage) :
+- `Voir signalements`
+- `Traiter signalements`
+- `Décider` *(= appliquer une décision de modération Publié/Non retenu/À corriger)*
+
+**Section Support**
+2 toggles :
+- `Voir signalements`
+- `Voir utilisateurs`
+
+> **Remarque** : cette liste est **incomplète** pour couvrir toutes les actions possibles. Permissions à ajouter selon la matrice §Rôles & permissions : bloquer/supprimer user, réinitialiser password user, voir membres, gérer membres, voir stats, publier annonces, accès assistant, etc. À enrichir avec le propriétaire.
+
+---
+
+### Tab 4 — Général
+
+3 dropdowns horizontaux (pill orange en header, valeur en dessous dans pill bleu clair) :
+
+| Paramètre | Icône | Valeur par défaut | Options attendues |
+|---|---|---|---|
+| `Langue` | 🌍 globe | `Francais` | `Français`, `العربية` (arabe), `English` (à confirmer) |
+| `Fuseau horaire` | 🕐 horloge | `Casablanca Maroc` | `Africa/Casablanca`, autres TZ IANA |
+| `Format date` | 📅 calendrier | `23 : 23 : 22` *(semble être HH:MM:SS, pas un format date)* | À clarifier — proposition : `DD/MM/YYYY`, `MM/DD/YYYY`, `YYYY-MM-DD` |
+
+> **À corriger dans la maquette** : le champ "Format date" affiche `23 : 23 : 22` qui est un timestamp, pas un format. Les options réelles doivent être des formats type `DD/MM/YYYY`.
+
+> **Langue Admin** : la partie utilisateur sera bilingue FR/AR. L'admin aussi, ou FR only ?
+
+---
+
 ## Questions ouvertes (admin)
 
 - [ ] Format d'export (CSV / XLSX / PDF) ? Périmètre = uniquement les KPI visibles ou dump complet des signalements de la période ?
@@ -591,6 +727,17 @@ Les actions sanction **`Bloquer`** et **`Supprimer`** exigent un **motif obligat
 - [ ] **`Sélectionner tous`** : sélectionne tous les users de la page courante uniquement, ou tous les résultats du filtre ?
 - [ ] **Click ID ou Nom** ouvre la fiche détail, ou seulement le bouton `Voir ›` est cliquable (cohérence avec Signalements §Écran 2) ?
 - [ ] **Statut `Inactif`** auto-flag après combien de jours sans activité ? (proposition : 90 jours)
+
+### Paramètres
+- [ ] **Typo "Parametres"** dans la maquette (sidebar + titre) → à corriger en `Paramètres` partout
+- [ ] **Architecture tab `Rôle`** : le mélanger avec les préférences perso (Compte/Sécurité/Général) ou le déplacer dans un menu "Administration" dédié ?
+- [ ] **Matrice complète des permissions** : les 3/2 permissions affichées dans le tab Rôle sont insuffisantes. Enrichir avec toutes les actions possibles (bloquer user, publier annonces, etc.)
+- [ ] **2FA** : activer plusieurs méthodes en même temps (recommandé) ou une seule ?
+- [ ] **Historique connexions** : nombre de lignes à afficher, durée de rétention ?
+- [ ] **Format date (tab Général)** : options concrètes à proposer (la maquette montre un timestamp incorrect)
+- [ ] **Langue Admin** : FR uniquement ou bilingue FR/AR comme la partie user ?
+- [ ] **Fuseau horaire** : global platforme (tous les timestamps stockés en UTC, affichés dans la TZ choisie) ou par user ?
+- [ ] **Access control du tab `Rôle`** : Admin uniquement confirmé ?
 - [x] ~~Motif de décision obligatoire~~ → **Obligatoire uniquement pour `Non retenu`** (propriétaire). Concern UX levé pour `À corriger` (cf §Écran 3).
 - [ ] Pagination de la liste signalements (type + nombre par page) ?
 - [ ] Filtres liste signalements (tri par colonne + filtres multi-critères par canal/type/statut/user) ?

@@ -147,6 +147,136 @@ Ligne centrée : `© 2026 HADAR — Tous droits réservés` (gris clair)
 
 ---
 
+---
+
+## Écran 2 — Signalements (liste) `/admin/signalements`
+
+### Header
+- Titre H1 `Signalements` (navy)
+- Actions droite : `Rafraîchir` + `Exporter` (mêmes boutons que dashboard)
+- Filtres temporels identiques (Aujourd'hui / Hier / 7j / 30j / 365j / Personnalisé)
+
+### Row KPI — 4 cards gradient avec mini progress bar
+Chaque card a une **mini progress bar colorée AU-DESSUS** (hauteur ~4 px) + un `%` à droite qui indique sa part dans le total.
+
+| Card | Gradient | Valeur | Label | Icône | % barre |
+|---|---|---|---|---|---|
+| En cours | `stat.orange` (#F29B11 → #FFB500) | `2` | En cours | horloge ↻ | `40%` (barre orange) |
+| Publié | `stat.green` (#22C45E → #009145) | `1` | Publié | stack | `20%` (barre verte) |
+| Non retenu | `stat.red` (#EE4444 → #C0272D) | `1` | Non retenu | X cercle | `20%` (barre rouge) |
+| À corriger | `stat.navy` (#0078BA → #00327D) | `1` | À corriger | crayon édition | `20%` (barre bleue) |
+
+### ⚠️ 4 statuts de signalement (taxonomie complète)
+La modération a **4 issues possibles** :
+
+| Statut | Couleur | Signification |
+|---|---|---|
+| `En cours` | orange | En file d'attente / en cours d'examen par un modérateur |
+| `Publié` | vert | Validé → visible publiquement sur la plateforme |
+| `Non retenu` | rouge | Refusé définitivement → non publié (motif obligatoire) |
+| `À corriger` | navy | Renvoyé à l'utilisateur pour complétion / correction (motif obligatoire) |
+
+> **Conséquence côté user (à ajouter à `design-notes.md`)** : le statut `À corriger` implique un aller-retour admin → user. L'utilisateur doit :
+> 1. Recevoir une notification ("Votre signalement #2454 nécessite des corrections — voir le motif")
+> 2. Pouvoir ouvrir le signalement en mode édition avec le motif de l'admin affiché
+> 3. Resoumettre → repasse en `En cours`
+
+### Table liste (colonnes)
+| Col | Type | Exemple | Notes |
+|---|---|---|---|
+| `ID` | texte | `#2454` | Lien vers le détail |
+| `Contact` | texte | WhatsApp, RIB, Email, Téléphone, Site web, PayPal… | Canal signalé |
+| `Type Problème` | texte | Non livraison, Bloqué, Non conforme, Usurpation | Taxonomie user |
+| `Montant` | texte | `500 MAD` | Devise explicite ; à adapter si user a choisi une autre devise |
+| `Date & heure` | texte | `13/04/26  23:12:05` | Format `DD/MM/YY  HH:MM:SS` |
+| `Statut` | pill coloré cliquable | pill orange/vert/rouge/navy + chevron `›` | Click → écran détail §Écran 3 |
+
+**Comportement ligne** : toute la ligne est cliquable (ou au moins l'ID + le Statut) → ouvre l'écran détail.
+
+### Pagination
+Non visible sur la maquette actuelle — à confirmer :
+- Pagination numérotée ? Scroll infini ? Bouton "Charger plus" ?
+- Nombre de lignes par page (25 / 50 / 100) ?
+
+### Tri et filtres additionnels
+- Non visibles sur la maquette — à confirmer avec le propriétaire si :
+  - Tri par colonne (date, montant) ?
+  - Filtres multi-critères (par canal / par type / par statut / par user) ?
+
+---
+
+## Écran 3 — Détail signalement `/admin/signalements/[id]`
+
+### Header
+- Titre H1 `Signalements` (même que liste ; **breadcrumb à ajouter** : `Signalements / #2454`)
+- Actions droite : `Rafraîchir` + `Exporter`
+- **Suggestion** : ajouter un bouton `← Retour à la liste` avant le titre
+
+### Ligne récap (sous le titre)
+Ligne d'info structurée, séparée par des `|` fins :
+```
+#2454 - Signalement | En cours | ID Utilisateur : 345 651 | Date : 13 avril 2026-23:12
+```
+- `#2454` : identifiant
+- `En cours` : statut courant (pourrait être un pill coloré plutôt que texte brut)
+- `ID Utilisateur : 345 651` : **lien** → ouvre la fiche user (`/admin/utilisateurs/345651`)
+- `Date` : date/heure de soumission
+
+### Row principale — 3 colonnes
+Cards arrondies (radius ~16 px), fond gris très clair (`#F7F9FB`).
+
+**Colonne 1 — INFOS PRINCIPALES**
+- Type de contact : `WhatsApp`
+- Type de problème : `Non livraison`
+- Montant : `500 MAD`
+
+**Colonne 2 — DESCRIPTION**
+- Texte libre de l'utilisateur (zone scrollable si long)
+- Ex : « Paiement effectué le 10/04, aucune réponse depuis. Le vendeur ne répond plus… »
+
+**Colonne 3 — PREUVES**
+- Vignettes des fichiers joints (image, document, pj générique)
+- Click → ouvre viewer plein écran
+- Actions à prévoir : `Télécharger`, `Zoomer` (idem écran user)
+
+### Section "Décision de modération"
+Titre H2 **`Décision de modération`** centré (navy).
+
+**3 boutons pills** (sélecteurs de décision) :
+- 🟢 `Publié` — fond vert `#22C45E`
+- 🔴 `Non retenu` — fond rouge `#EE4444`
+- 🔵 `À corriger` — fond navy `#00327D`
+
+**Input "Motif de décision"**
+- Input texte large (single-line dans la maquette ; **à passer en textarea** pour plus de confort)
+- Placeholder : `Motif de décision`
+- **Obligatoire** : helper text sous le champ « Ce champ est obligatoire pour confirmer la décision »
+- Apparaît/requis quelle que soit la décision (même pour Publié ?)
+
+**CTA final**
+- Bouton rouge plein `Refuser le signalement` (large, centré)
+
+### ⚠️ Question critique UX — pattern des boutons décision
+La maquette montre **3 boutons de décision + 1 CTA rouge "Refuser le signalement"**. Deux interprétations possibles :
+
+**Hypothèse A (recommandée)** — Les 3 boutons sont des **sélecteurs de décision**. Le CTA en bas est l'action de **confirmation** dont le label/couleur change dynamiquement selon la sélection :
+- Si `Publié` sélectionné → CTA vert « Publier le signalement »
+- Si `Non retenu` sélectionné → CTA rouge « Refuser le signalement »
+- Si `À corriger` sélectionné → CTA navy « Demander correction »
+
+**Hypothèse B** — Les 3 boutons sont des raccourcis directs (click = application immédiate). Le bouton "Refuser" en bas serait alors redondant avec `Non retenu`.
+
+→ **À valider par le propriétaire**. L'hypothèse A est plus sûre UX (évite les erreurs irréversibles) et correspond au pattern SaaS standard.
+
+### Workflow d'audit
+Il faut tracer :
+- Modérateur qui a pris la décision (`moderatedBy`)
+- Date de décision (`moderatedAt`)
+- Motif de décision (`moderationReason`)
+- Historique complet si plusieurs aller-retours (user → admin → user via `À corriger`)
+
+---
+
 ## Questions ouvertes (admin)
 
 - [ ] Format d'export (CSV / XLSX / PDF) ? Périmètre = uniquement les KPI visibles ou dump complet des signalements de la période ?
@@ -155,3 +285,9 @@ Ligne centrée : `© 2026 HADAR — Tous droits réservés` (gris clair)
 - [ ] Matrice de permissions par rôle (qui peut modérer, qui peut créer des membres, qui voit les stats sensibles…)
 - [ ] Langue de l'admin : FR uniquement, ou bilingue FR/AR comme côté utilisateur ?
 - [ ] Top bar search : périmètre exhaustif (signalements, utilisateurs, membres, annonces, messages chat, logs…) ? Ou sous-ensemble ?
+- [ ] **Pattern boutons décision modération** (hypothèse A ou B — cf §Écran 3) ?
+- [ ] **Statut "À corriger"** : workflow user complet (notification, écran correction, resoumission) ?
+- [ ] **Motif de décision** obligatoire aussi pour `Publié`, ou uniquement pour `Non retenu` / `À corriger` ?
+- [ ] Pagination de la liste signalements (type + nombre par page) ?
+- [ ] Filtres liste signalements (tri par colonne + filtres multi-critères par canal/type/statut/user) ?
+- [ ] **Breadcrumb ou bouton Retour** sur page détail signalement ?

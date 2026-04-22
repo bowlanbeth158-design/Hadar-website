@@ -828,6 +828,173 @@ Toutes les actions `account.*` et `security.*` (modifier son propre profil, 2FA,
 
 ---
 
+## Écran 9 — Statistiques `/admin/statistiques`
+
+> **Structure** : 4 pages glissantes accessibles par **pill tabs** (haut) **et** **pagination** `‹ 1 2 3 4 ›` (bas). Pattern double pour navigation directe (tabs) + séquentielle (pagination, swipe mobile).
+
+### Éléments communs aux 4 pages
+- **Filtre temporel** (pills horizontaux) : `Aujourd'hui` / `Hier` / `7 jours` / `30 jours` / `365 jours` *(actif par défaut)* / `Personnalisé`
+- **Boutons haut-droite** : `🔄 Rafraîchir` + `⬇ Exporter` (navy plein)
+- **Pill tabs** (navy plein actif, outline inactif) :
+  1. `Vue globale`
+  2. `Analyse des problèmes`
+  3. `Analyse des canaux`
+  4. `Expérience utilisateur`
+- **Row KPI globaux** (affiché en haut de chaque page 1, 2, 3) :
+  - Violet `stat.violet` — `1 820` Total signalements
+  - Vert `stat.green` — `1 300` Signalements traités
+  - Rouge `stat.red` — `71 %` Taux de traitement
+  - Orange `stat.orange` — `36 : 35 : 10` Temps moyen de traitement
+  - Chaque card : delta gris clair sous la card `-10% vs période précédente`
+- **Timestamp "Dernière mise à jour : il y a 2 min"** sous les charts → refresh auto (fréquence à définir, proposition : 60 s)
+- **Pagination** `‹ 1 2 3 4 ›` en bas à droite (page courante en navy plein)
+- **Footer** : `© 2026 HADAR — Tous droits réservés`
+
+---
+
+### Page 1 — Vue globale
+
+**KPI globaux** (row 1, cf éléments communs)
+
+**Charts (2 cards côte à côte) :**
+
+**Card 1 — "Répartition"** (bar chart 4 barres, une par statut de signalement)
+| Barre | Couleur | Valeur |
+|---|---|---|
+| `Encours` | orange `#F29B11` | 200 |
+| `Publié` | vert `#22C45E` | 1020 |
+| `Refusé` | rouge `#EE4444` | 500 |
+| `À corriger` | navy `#0078BA` | 100 |
+
+> ⚠️ **Erreur de maquette** : les labels affichent `200%`, `1020%`, `500%`, `100%` (avec %). Ce sont des **comptages**, pas des pourcentages. À corriger dans la maquette et côté code.
+
+**Card 2 — "Variation des signalements"** (comparaison de 2 périodes)
+- Titre : `Variation des signalements`
+- Sous-titre : `Comparaison avec la période précédente`
+- Barre 1 : `2025 [ période précédente ] : 2 120 signalements` (rouge)
+- Barre 2 : `2026 [ période actuelle ] : 1 820 signalements` (vert)
+- Badge navy en bas-droite : `-14% vs période précédente`
+
+---
+
+### Page 2 — Analyse des problèmes
+
+**KPI globaux** (row 1)
+
+**Row 2 — KPI par niveau de risque** (4 cards gradient alignées) :
+| Card | Couleur | Valeur | Label |
+|---|---|---|---|
+| Intensité des signalements | rouge/orange (gradient) | `3,35` | moyenne de signalements par contact |
+| Vigilance 2 > 1 | bleu ciel | `800 (44%)` | contacts dans la tranche Vigilance |
+| Modéré 4 > 3 | jaune | `670 (36%)` | contacts dans la tranche Modéré |
+| Elevé ≥ 5 | vert | `350 (20%)` | contacts dans la tranche Élevé |
+
+> ⚠️ **Notation ambiguë à clarifier** : `Vigilance 2 > 1`, `Modéré 4 > 3`, `Élevé ≥ 5`. Interprétation probable = **seuils de comptage** (nombre de signalements cumulés par contact pour tomber dans cette tranche de risque). À valider avec le propriétaire. Ça doit recouper la taxonomie "4 niveaux de risque" de la partie user (§design-notes).
+
+**Charts (2 cards) :**
+
+**Card 1 — "Répartition des problèmes"** (bar chart 4 barres, une par type)
+| Barre | Couleur | Valeur |
+|---|---|---|
+| Non livraison | orange | 200 |
+| Bloqué | rouge | 1020 |
+| Non conforme | jaune | 500 |
+| Usurpation | navy | 100 |
+
+> Même erreur de `%` dans les labels — à corriger.
+
+**Card 2 — "Évolution des signalements par type de problème"**
+- Type sélectionné par défaut : `Bloqué après paiement` (à confirmer)
+- Sous-titre : `{type} — évolution sur la période`
+- Barre 1 : `2025 [ période précédente ] : 1 370` (rouge)
+- Barre 2 : `2026 [ période actuelle ] : 1 020` (vert)
+- Badge : `-25% vs période précédente`
+
+**Q ouverte** : le type d'évolution affiché est-il sélectionnable (dropdown) ou figé ?
+
+---
+
+### Page 3 — Analyse des canaux
+
+**KPI globaux** (row 1) + **Row 2 KPI risques** (identique à page 2)
+
+**Row 3 — Pills canaux** (8 pills horizontaux avec chiffre + %) :
+| Canal | Chiffre | % |
+|---|---|---|
+| Téléphone | 101 | 44% |
+| WhatsApp | 600 | 44% |
+| Email | 44 | 44% |
+| RIB | 46 | 44% |
+| Site web | 168 | 44% |
+| Réseaux sociaux | 300 | 44% |
+| Binance | 120 | 44% |
+| PayPal | 101 | 44% |
+
+> ⚠️ Le `44%` identique partout est un placeholder. La valeur réelle doit être la part de ce canal dans le total. Pills cliquables : au click, actualise la Card 2 "Évolution" avec le canal choisi.
+
+**Charts (2 cards) :**
+
+**Card 1 — "Distribution des signalements par canal"** (bar chart 8 barres, icônes canal sous l'axe X)
+- Valeurs : Téléphone 101 · WhatsApp 600 · Email 46 · RIB 168 · Site web ... · Réseaux sociaux 300 · Binance 120 · PayPal 35
+- Couleur uniforme bleu ciel
+
+**Card 2 — "Évolution des signalements par canal"**
+- Canal sélectionné par défaut : WhatsApp (à confirmer)
+- Sous-titre : `{canal} — évolution sur la période`
+- Barre 1 : `2025 [ période précédente ] : 850` (rouge)
+- Barre 2 : `2026 [ période actuelle ] : 600` (vert) *(maquette montre "2025" — typo à corriger)*
+- Badge : `-25% vs période précédente`
+
+---
+
+### Page 4 — Expérience utilisateur
+
+**Row 1 — 4 KPI UX différents** (remplace les KPI globaux des pages 1-3) :
+| Card | Couleur | Valeur | Label |
+|---|---|---|---|
+| Visites | bleu ciel `#00BFEE` | `15 000` | Visites |
+| Inscriptions | vert `#22C45E` | `8 500` | Inscriptions |
+| Utilisateurs actifs | rouge `#EE4444` | `950` | Utilisateurs actifs |
+| Taux de conversion | orange `#F29B11` | `500` | Taux de conversion |
+
+> ⚠️ **Q ouverte** : `Taux de conversion = 500` → pas un % et unité non précisée. Probablement un placeholder. Devrait être un % (ex : `57%` de visites converties en inscriptions) ou un nombre absolu. À clarifier.
+
+**Charts (2 cards) :**
+
+**Card 1 — "Répartition des usages — Signalements Vs Vérifications"** (2 barres horizontales stackées)
+- `300 - 31%` (violet) → signalements
+- `650 - 69%` (navy) → vérifications
+
+**Card 2 — "Temps moyen par usage — Signalements Vs Verifications"** (2 barres horizontales)
+- `5 min 23 sec` (violet) → temps moyen pour un signalement
+- `2 min 13 sec` (navy) → temps moyen pour une vérification
+
+> Typo maquette : `Verifications` sans accent. À corriger en `Vérifications`.
+
+**Row bas — 4 cards pastel violet** (métriques de satisfaction) :
+| Card | Valeur | Label |
+|---|---|---|
+| Score de satisfaction | `4.2 / 5` | Score de satisfaction |
+| Taux de satisfaction | `84%` | Taux de satisfaction |
+| Taux d'insatisfaction | `16%` | Taux d'insatisfaction |
+| Taux de retour | `62%` | Taux de retour |
+
+> ⚠️ **Q ouverte** : d'où viennent ces scores (rating explicite via un widget ? NPS ? Satisfaction auto-calculée ?). À spécifier la source pour pouvoir l'implémenter.
+
+---
+
+### Observations techniques transverses
+
+1. **Row KPI global répété** : les 4 KPI (1820/1300/71%/36:35:10) sont présents **sur les pages 1-2-3** mais pas page 4 (UX a ses propres KPI). Cohérent : sur la page UX, on mesure l'audience, pas la modération.
+2. **Labels `%` sur barres de comptage** : erreur répétée dans plusieurs charts. À corriger côté design + code.
+3. **"2025 période actuelle"** : erreur de date (on est en 2026). À corriger.
+4. **"Verifications"** sans accent : à corriger en "Vérifications".
+5. **Filtre temporel** : doit recalculer **toutes** les stats de la page au changement (requête backend paramétrée par `period`).
+6. **Refresh auto** (`il y a 2 min`) : proposition intervalle 60 s en arrière-plan. Indicateur visuel pendant le fetch.
+7. **Exporter** : format CSV ou PDF ? Périmètre = page courante ou l'ensemble des 4 pages ?
+
+---
+
 ## Questions ouvertes (admin)
 
 - [ ] Format d'export (CSV / XLSX / PDF) ? Périmètre = uniquement les KPI visibles ou dump complet des signalements de la période ?
@@ -872,6 +1039,16 @@ Toutes les actions `account.*` et `security.*` (modifier son propre profil, 2FA,
 - [ ] **Historique connexions** : nombre de lignes à afficher, durée de rétention ?
 - [ ] **Langue Admin** : FR uniquement ou bilingue FR/AR comme la partie user ?
 - [ ] **Fuseau horaire** : global plateforme (tous les timestamps stockés en UTC, affichés dans la TZ choisie) ou par user ?
+
+### Statistiques
+- [ ] **Notation seuils risque** : confirmer la sémantique de `Vigilance 2 > 1`, `Modéré 4 > 3`, `Élevé ≥ 5` (hypothèse : seuils de cumul par contact) — aligner avec la taxonomie 4 niveaux de la partie user
+- [ ] **Labels `%` sur barres de comptage** (pages 1 et 2) → erreur maquette, à corriger en nombres purs
+- [ ] **Type de problème / canal dans les cards "Évolution"** : sélectionnable via dropdown, ou figé par défaut ?
+- [ ] **Taux de conversion = 500** (page 4) → unité/placeholder à clarifier (% ou nombre absolu ?)
+- [ ] **Satisfaction / Rating** (page 4 cards pastel) : source des métriques (widget NPS ? rating après signalement ? auto-calculé ?)
+- [ ] **Refresh auto** : intervalle (60 s proposé) + indicateur visuel pendant le fetch ?
+- [ ] **Exporter** : format (CSV / XLSX / PDF) + périmètre (page courante / toutes les pages / raw data) ?
+- [ ] **Typo maquette** : `Verifications` → `Vérifications` + `2025 période actuelle` → `2026 période actuelle`
 
 ### Administration / Permissions (nouvelles)
 - [x] ~~Rôle `Super-admin`~~ → **Validé par le propriétaire** (avril 2026). 4 rôles officiels : Super-admin / Admin / Modérateur / Support. Matrice + garde-fous documentés.

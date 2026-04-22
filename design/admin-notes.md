@@ -292,6 +292,129 @@ Il faut tracer :
 
 ---
 
+---
+
+## Écran 4 — Membres de l'équipe (liste) `/admin/membres`
+
+### Header de page
+- Titre H1 `Membres de l'équipe` (navy)
+- Actions droite : 2 pills navy plein
+  - `👤+ Ajouter un nouvel utilisateur` → ouvre la modal §Écran 5 en mode création
+  - `✏️ Modifier` → comportement à clarifier (cf §Questions ouvertes)
+
+### Card principale (fond blanc, radius 16 px)
+
+**En-tête de la card :**
+- Gauche : icône **filtre** (entonnoir jaune `#FFB500`) + badge `10` (jaune) avec chevron down → ouvre les options de filtre (par rôle, statut, dernière activité…)
+  - À confirmer : `10` = nombre de résultats par page **ou** nombre de filtres actifs ?
+- Droite : barre de recherche secondaire (pill blanc avec loupe) — recherche dans la liste membres uniquement (différente de la recherche globale du top bar)
+
+**Table membres**
+| Col | Label dans maquette | Contenu réel | Notes |
+|---|---|---|---|
+| 1 | ID | `#01`, `#02`, `#03` | Identifiant interne |
+| 2 | Nom | `Yahya MOUSSAOUI` | Prénom + NOM |
+| 3 | Email | `yahya.moussaoui@gmail.com` | |
+| 4 | **Statut** *(label maquette)* | Admin / Modérateur / Support | **En fait : Rôle** — labels permutés dans la maquette |
+| 5 | **Rôle** *(label maquette)* | Actif / Inactif / Suspendu | **En fait : Statut** — labels permutés dans la maquette |
+| 6 | Dernière activité | `13/04/26  23:12:05` | Format `DD/MM/YY  HH:MM:SS` |
+| 7 | Statut *(action)* | bouton `Voir ›` navy plein | Click → ouvre la modal §Écran 5 en mode édition |
+
+> ⚠️ **À corriger dans la maquette** : les en-têtes des colonnes 4 et 5 sont permutés. À code, on respectera la **sémantique** (col 4 = "Rôle", col 5 = "Statut"), pas le label graphique de la maquette.
+
+### Pagination
+Pills numérotés en bas à droite : `‹ 1 2 3 ›` — page 2 active (navy plein), pages inactives (navy outline).
+
+### Footer
+`© 2026 HADAR — Tous droits réservés` (centré)
+
+---
+
+## Écran 5 — Modal "Ajouter / Modifier un utilisateur"
+
+### Conteneur
+- Modal centrée à l'écran, fond contenu opacifié derrière
+- Pill header navy `Ajouter un utilisateur` (ou `Modifier un utilisateur` selon le mode — à valider)
+- Card fond bleu très clair `#DBE5F3`, radius ~16 px
+
+### Section "Informations"
+4 inputs verticaux, fond blanc, label au-dessus :
+- **Nom Complet** (texte)
+- **Numéro de téléphone** (texte, format E.164 recommandé)
+- **Email** (texte, validation regex)
+- **Mot de passe** (password) → **⚠️ voir alerte sécurité §Questions ouvertes**
+
+### Section "Rôle"
+3 toggles horizontaux (label au-dessus, switch dessous) :
+- `Admin` (off)
+- `Modérateur` (on — vert `#22C45E`)
+- `Support` (off)
+
+> ⚠️ **Pattern UI à revoir** : un membre n'a logiquement qu'**un seul rôle**. Des toggles permettent d'en activer plusieurs simultanément, ce qui crée des états invalides. Recommandation : remplacer par des **radio buttons** ou un **dropdown unique**. À valider avec le propriétaire (cf §Questions ouvertes).
+
+### Section "Statut"
+3 toggles horizontaux :
+- `Actif` (off?)
+- `Inactif`
+- `Suspendu`
+
+> ⚠️ **Même remarque** : statuts mutuellement exclusifs → préférer radios.
+
+### Boutons d'action (3, en bas)
+- ❌ `Annuler` — pill navy plein, icône X cercle → ferme la modal sans sauvegarder
+- ✅ `Valider` — pill vert plein, icône check → enregistre (création ou édition)
+- 🗑️ `Supprimer` — pill rouge plein, icône poubelle → **ne devrait apparaître qu'en mode édition** (à confirmer)
+
+### Modes de la modal (proposition)
+| Mode | Trigger | Champs préremplis ? | Bouton Supprimer visible ? |
+|---|---|---|---|
+| Création | Click `Ajouter un nouvel utilisateur` | Non | Non |
+| Édition | Click `Voir ›` sur une ligne de la table | Oui | Oui |
+
+### Sécurité critique pour cette modal
+1. **Mot de passe NE DEVRAIT PAS être saisi par l'admin** (cf §Questions ouvertes) — recommandation forte : remplacer par un lien d'activation envoyé par email au nouveau membre
+2. **Modification du rôle** = action sensible → log dans audit trail (qui a changé qui, ancien/nouveau rôle, horodatage)
+3. **Suppression** = soft-delete par défaut (`deletedAt`), avec préservation de l'historique (qui a modéré quoi)
+4. **Re-authentication** requise pour : changer un Admin en Modérateur, supprimer un membre, changer le statut en `Suspendu`
+5. **Validation Zod stricte** côté serveur : email format, téléphone E.164, password complexity (si on garde)
+6. **Rate limiting** sur l'endpoint de création (max N créations par heure par admin)
+
+---
+
+## Rôles & permissions (matrice à compléter)
+
+3 rôles identifiés sur la maquette : `Admin`, `Modérateur`, `Support`.
+
+| Action | Admin | Modérateur | Support |
+|---|---|---|---|
+| Voir le dashboard | ✅ | ✅ | ✅ |
+| Modérer un signalement (Publié / Non retenu / À corriger) | ✅ | ✅ | ❌ |
+| Voir la liste des utilisateurs | ✅ | ✅ | ✅ |
+| Suspendre un utilisateur | ✅ | ❓ | ❌ |
+| Voir la liste des membres | ✅ | ❌ | ❌ |
+| Ajouter / modifier / supprimer un membre | ✅ | ❌ | ❌ |
+| Changer le rôle d'un membre | ✅ (super-admin uniquement ?) | ❌ | ❌ |
+| Publier une annonce | ✅ | ❓ | ❌ |
+| Accéder aux statistiques | ✅ | ✅ | ✅ |
+| Accéder à l'Assistant (chat support) | ✅ | ❓ | ✅ |
+| Modifier les paramètres globaux | ✅ | ❌ | ❌ |
+
+**À faire valider par le propriétaire** — chaque ligne `❓` ou contradictoire doit être tranchée avant l'implémentation.
+
+> **Question** : faut-il un 4e rôle `Super-admin` (le seul à pouvoir gérer les Admins) ? Sinon, n'importe quel Admin peut se faire promouvoir / supprimer un autre Admin.
+
+### Statuts d'un membre
+
+| Statut | Connexion possible ? | Visible dans la liste ? | Reçoit des notifs ? |
+|---|---|---|---|
+| `Actif` | ✅ | ✅ | ✅ |
+| `Inactif` | ❌ | ✅ (grisé) | ❌ |
+| `Suspendu` | ❌ + message d'erreur explicite à la connexion | ✅ (badge rouge) | ❌ |
+
+> Différence `Inactif` vs `Suspendu` à valider : `Inactif` = désactivé temporairement (compte mis en pause par le membre lui-même ou par défaut) · `Suspendu` = sanction administrative explicite après un incident.
+
+---
+
 ## Questions ouvertes (admin)
 
 - [ ] Format d'export (CSV / XLSX / PDF) ? Périmètre = uniquement les KPI visibles ou dump complet des signalements de la période ?
@@ -303,6 +426,19 @@ Il faut tracer :
 - [x] ~~Pattern boutons décision modération~~ → **Option A figée** : 3 sélecteurs + CTA dynamique (cf §Écran 3)
 - [x] ~~Statut "À corriger" workflow user~~ → **Notification cloche + email + écran d'édition + resoumission → repasse En cours** (cf §Écran 2)
 - [x] ~~Click ligne table signalements~~ → **Uniquement le pill statut à droite est cliquable** (cf §Écran 2)
+
+### Membres / Rôles
+- [ ] **Mot de passe créé par l'admin (sécurité)** — recommandation forte : remplacer par lien d'activation envoyé au membre. À trancher.
+- [ ] **Rôle = sélection unique ou multiple** ? (Toggles → multi par défaut, recommandé : radios → unique)
+- [ ] **Statut = sélection unique** confirmée ? (radios)
+- [ ] **Bouton "Modifier" en haut de page Membres** (à côté de "Ajouter") — quel comportement ? Édition du membre sélectionné ? Édition multiple ? Action redondante avec le `Voir ›` de chaque ligne ?
+- [ ] **Bouton "Supprimer" dans la modal** — uniquement en mode édition, ou aussi en création (et dans ce cas, pour faire quoi) ?
+- [ ] **Terminologie "Membre" vs "Utilisateur"** dans les boutons → harmoniser ("Ajouter un membre" pour la page Membres) ?
+- [ ] **Labels colonnes "Statut" / "Rôle"** permutés dans la maquette → confirmer le bon ordre à coder
+- [ ] **Filtre `10` sur la liste Membres** : nombre par page, ou nombre de filtres actifs ?
+- [ ] **Différence Inactif / Suspendu** : confirmer les sémantiques (cf tableau §Statuts d'un membre)
+- [ ] **Super-admin séparé d'Admin** ? (qui peut gérer les Admins)
+- [ ] **Matrice de permissions** : valider chaque ligne ❓ (cf §Rôles & permissions)
 - [x] ~~Motif de décision obligatoire~~ → **Obligatoire uniquement pour `Non retenu`** (propriétaire). Concern UX levé pour `À corriger` (cf §Écran 3).
 - [ ] Pagination de la liste signalements (type + nombre par page) ?
 - [ ] Filtres liste signalements (tri par colonne + filtres multi-critères par canal/type/statut/user) ?

@@ -483,29 +483,20 @@ Pills `‹ 1 2 3 ›` en bas à droite (page 2 active), même pattern que Membre
 | `Bloquer` / `Débloquer` | gris/noir → vert si déjà bloqué | Toujours | Bascule le statut `Actif`/`Inactif` ↔ `Bloqué`. Force la déconnexion immédiate des sessions actives. | `Votre compte a été suspendu` + motif (à demander) |
 | `Supprimer` | rouge `#EE4444` | Statut ≠ `Supprimé` | Soft-delete : statut `Supprimé`, anonymise email/téléphone/nom, conserve les signalements publiés | Email d'avertissement final puis confirmation de suppression |
 
-### Two patterns possibles pour la colonne Action (à trancher)
+### Pattern colonne Action — figé par le propriétaire
 
-**Pattern 1 — bouton contextuel unique (lecture maquette littérale)**
-La maquette affiche 1 seul bouton par ligne, dont le label/couleur change selon une logique métier :
-- Yahya (Actif) → `Réinitialiser`
-- Ossama (Inactif) → `Supprimer`
-- Hamid (Bloqué) → `Bloquer` *(incohérent — devrait être `Débloquer`)*
-- Rabi3 (Actif) → `Voir ›`
-- Hakim (Supprimé) → `Réinitialiser`
-- Ronaldo (Actif) → `Supprimer`
+> **Décision** : la maquette affiche des libellés "exemple" différents par ligne pour illustrer les couleurs possibles. À l'implémentation, **chaque ligne a un bouton unique cliquable qui ouvre un menu déroulant avec les 4 actions**.
 
-→ Cette logique n'est pas claire (Yahya et Rabi3 sont tous deux Actif mais ont des actions différentes). Probablement une erreur de la maquette ou un placeholder.
-
-**Pattern 2 — menu déroulant kebab `⋮` par ligne (recommandé)**
-Chaque ligne a un bouton menu (`⋮` ou `Actions ▼`) qui déroule les **4 actions** :
-- `Voir ›` (toujours)
-- `Réinitialiser le mot de passe` (toujours sauf si `Supprimé`)
-- `Bloquer` ou `Débloquer` (libellé contextuel selon statut)
-- `Supprimer` ou `Restaurer` (libellé contextuel)
-
-L'item est désactivé si l'action n'a pas de sens dans le contexte (ex : `Supprimer` désactivé si déjà `Supprimé`).
-
-→ **Pattern 2 recommandé** : cohérent, prévisible, pas d'ambiguïté. Le pattern 1 force l'admin à se demander pourquoi telle ligne a tel bouton.
+**Spec :**
+- Bouton par ligne : pill navy (par défaut) avec icône `⋮` ou label `Actions ▼` + chevron
+- Au click → menu déroulant ancré sur le bouton avec les **4 items** :
+  1. `Voir le profil` — ouvre `/admin/utilisateurs/[id]`
+  2. `Réinitialiser le mot de passe` — envoie email de reset (désactivé si `Supprimé`)
+  3. `Bloquer` ou `Débloquer` — libellé contextuel selon le statut courant
+  4. `Supprimer` ou `Restaurer` — libellé contextuel selon le statut courant
+- Items désactivés (gris) quand l'action n'a pas de sens (ex : `Supprimer` quand déjà `Supprimé`)
+- Le menu se ferme au click extérieur ou Escape
+- Action destructive (`Supprimer`, `Bloquer`) → modal de confirmation avant exécution
 
 ### Bulk actions (dropdown `Actions ▼` en haut)
 S'applique aux lignes **cochées**. Mêmes 4 actions, mais :
@@ -556,7 +547,7 @@ Si plusieurs users cochés ont des statuts mixtes (ex : 2 actifs + 1 bloqué), n
 - [ ] **Matrice de permissions** : valider chaque ligne ❓ (cf §Rôles & permissions)
 
 ### Utilisateurs (usagers finaux)
-- [ ] **Pattern colonne Action** : bouton contextuel unique (maquette) **ou** menu déroulant kebab `⋮` avec les 4 actions (recommandé) ?
+- [x] ~~Pattern colonne Action~~ → **Menu déroulant avec 4 actions par ligne** (propriétaire). La maquette est exemplaire.
 - [x] ~~`Réinitialiser`~~ → **Email de reset envoyé à l'adresse de création** (propriétaire). Admin ne voit jamais le password.
 - [ ] **`Bloquer`** : motif obligatoire ? Notification email au user ? Possibilité de débloquer ?
 - [ ] **`Supprimer`** : soft-delete + anonymisation (recommandé) **ou** hard-delete ? Délai de grâce avant effacement définitif ?

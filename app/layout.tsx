@@ -1,5 +1,20 @@
 import type { Metadata, Viewport } from 'next';
+import { Poppins, Cairo } from 'next/font/google';
 import './globals.css';
+
+const poppins = Poppins({
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-poppins',
+  display: 'swap',
+});
+
+const cairo = Cairo({
+  subsets: ['arabic', 'latin'],
+  weight: ['400', '500', '600', '700'],
+  variable: '--font-cairo',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://hadar.ma'),
@@ -32,8 +47,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" dir="ltr">
-      <body className="min-h-screen antialiased bg-page-gradient">{children}</body>
+    <html lang="fr" dir="ltr" className={`${poppins.variable} ${cairo.variable}`}>
+      <body className="min-h-screen antialiased bg-page-gradient font-sans">{children}</body>
     </html>
   );
 }

@@ -620,10 +620,17 @@ model Alert {
 }
 
 model UserNotificationPrefs {
-  userId        String  @id
-  inAppEnabled  Boolean @default(true)
-  emailEnabled  Boolean @default(false)  // double opt-in requis
+  userId                   String          @id
+  inAppEnabled             Boolean         @default(true)
+  emailEnabled             Boolean         @default(false) // double opt-in requis
+  emailFrequency           EmailFrequency  @default(INSTANT) // INSTANT | DAILY | WEEKLY
   emailVerifiedForAlertsAt DateTime?
+}
+
+enum EmailFrequency {
+  INSTANT
+  DAILY
+  WEEKLY
 }
 ```
 
@@ -632,8 +639,18 @@ Lorsqu'un signalement passe en statut `PUBLISHED` (après modération) :
 1. Hash le `contactValue` du nouveau signalement (HMAC normalisé)
 2. SELECT toutes les `AlertSubscription` matchant ce `contactHash`
 3. Pour chaque subscription → INSERT `Alert(status: NEW)`
-4. Si `emailEnabled` ET `emailVerifiedForAlertsAt` non null : enqueue email (worker async)
-5. **Throttle email** : 1 email max toutes les 6 h par subscription (groupe les notifs)
+4. Si `emailEnabled` ET `emailVerifiedForAlertsAt` non null : enqueue email selon la **fréquence** choisie par l'utilisateur
+
+### Fréquence des emails d'alerte (spec propriétaire)
+L'utilisateur choisit dans ses préférences notifications :
+
+| Option | Code | Comportement |
+|---|---|---|
+| Immédiat | `INSTANT` | Email envoyé dès qu'un nouveau signalement est publié sur un contact suivi (avec throttle technique min 5 min entre 2 emails) — **valeur par défaut** |
+| Résumé quotidien | `DAILY` | Worker cron à 09:00 (Africa/Casablanca) groupe toutes les nouvelles alertes de la journée précédente en un seul email |
+| Résumé hebdomadaire | `WEEKLY` | Worker cron lundi 09:00 groupe toutes les nouvelles alertes de la semaine en un seul email |
+
+Tous les emails restent **opt-in** (toggle « Recevoir par email » à activer + double opt-in sur l'adresse). Le bouton « Se désabonner en 1 clic » reste présent dans chaque email (RFC 8058).
 
 ### Sécurité spécifique « Mes alertes »
 
@@ -644,19 +661,19 @@ Lorsqu'un signalement passe en statut `PUBLISHED` (après modération) :
    - **Lien de désabonnement** dans chaque email (token signé permettant 1-clic unsubscribe sans login — RFC 8058)
    - Throttle 6 h par subscription pour éviter le spam
 4. **Limite anti-abus** :
-   - Max **100 abonnements actifs** par utilisateur (configurable via admin)
-   - Max **20 nouvelles subscriptions / jour** par utilisateur
+   - **Pas de limite** sur le nombre d'abonnements actifs par utilisateur (décision propriétaire)
+   - **Throttle technique uniquement** (anti-bot) : max **20 nouvelles subscriptions / jour** par utilisateur — pas pour brider l'usage légitime mais pour bloquer les scripts d'aspiration
+   - Surveillance : si un compte dépasse 1 000 abonnements, alerte côté admin pour vérifier qu'il ne s'agit pas d'un usage automatisé suspect
 5. **Suppression vs archivage** :
    - `Archiver` : statut `ARCHIVED`, reste visible dans l'onglet « Archivées »
    - `Supprimer` : **soft delete** (statut `DELETED`, masqué de toutes les listes mais conservé en DB pendant 30 jours pour audit/rollback) ; purge réelle après 30 j
 6. **Privacy des préférences** : les préférences notification ne sont **jamais** exposées via l'API publique (réservées à l'utilisateur lui-même via `/api/me/notifications`)
 
-### Mécanisme « Suivre un contact » (à confirmer avec le propriétaire)
-**Hypothèse** : sur la page de résultat de recherche (à recevoir), un bouton `🔔 Suivre ce contact` apparaît à côté du résultat. Le clic crée une `AlertSubscription`. À ce moment-là :
-- Si non connecté → ouvre la modal de connexion d'abord
-- Si déjà abonné → bouton devient `🔕 Ne plus suivre`
-
-Confirmer la position exacte du bouton « Suivre » dans la maquette à venir.
+### Mécanisme « Suivre un contact » (confirmé propriétaire)
+Sur la page de résultat de recherche (à recevoir en maquette), un bouton `🔔 Suivre ce contact` apparaît à côté du résultat. Le clic crée une `AlertSubscription`. Comportement :
+- Si non connecté → ouvre la modal de connexion d'abord, puis exécute l'abonnement après login
+- Si déjà abonné → bouton devient `🔕 Ne plus suivre` (toggle)
+- Position UI exacte à confirmer une fois la maquette « résultat avec signalements » reçue.
 
 ---
 
@@ -741,9 +758,7 @@ tauxValidation = signalementsValides / signalementsEnvoyés × 100
 - Arrondi à l'entier (`100 %`, `83 %`, etc.)
 - **Calculé côté serveur** (pas côté client) à partir de la table `Report` filtrée par `authorId`
 
-### Statuts d'un signalement (5 statuts — spec propriétaire)
-
-> Le propriétaire mentionne 5 statuts mais ne les a pas encore listés. **Hypothèse de travail** (à valider) :
+### Statuts d'un signalement (5 statuts — spec officielle propriétaire ✅)
 
 | # | Statut | Code | Description |
 |---|---|---|---|
@@ -751,9 +766,25 @@ tauxValidation = signalementsValides / signalementsEnvoyés × 100
 | 2 | En cours d'examen | `UNDER_REVIEW` | Pris en charge par un modérateur |
 | 3 | Publié | `PUBLISHED` | Validé et visible publiquement (compte dans le « taux de validation ») |
 | 4 | Refusé | `REJECTED` | Refusé pour non-conformité aux règles (avec motif) |
-| 5 | Archivé / Supprimé | `ARCHIVED` | Retiré sur demande (auteur ou personne concernée) |
+| 5 | Archivé | `ARCHIVED` | Retiré sur demande (auteur ou personne concernée) |
 
-**À confirmer avec le propriétaire** : ces 5 valeurs sont-elles correctes ? (Notamment `ARCHIVED` vs `DELETED` — soft delete ou hard delete ?)
+```prisma
+enum ReportStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  PUBLISHED
+  REJECTED
+  ARCHIVED
+}
+```
+
+Transitions autorisées :
+- `SUBMITTED` → `UNDER_REVIEW` (modérateur prend en charge)
+- `UNDER_REVIEW` → `PUBLISHED` (validation)
+- `UNDER_REVIEW` → `REJECTED` (refus avec motif)
+- `PUBLISHED` → `ARCHIVED` (sur demande, par auteur ou modérateur)
+- `REJECTED` → `ARCHIVED` (modérateur)
+- Toute transition est loggée dans l'audit log avec horodatage et acteur.
 
 ### Sécurité critique pour cette page
 
@@ -786,14 +817,27 @@ tauxValidation = signalementsValides / signalementsEnvoyés × 100
 
 ### Manquant dans la maquette (à compléter ultérieurement)
 
-1. **2FA / TOTP** : option à ajouter dans la section sécurité (recommandé pour compte à risque). Pas visible — à clarifier avec le propriétaire si on prévoit ou pas pour le MVP.
-2. **Suppression du compte** : obligation RGPD / CNDP (droit à l'effacement). À ajouter en bas de la page profil :
-   - Bouton rouge `🗑 Supprimer mon compte` → modal de confirmation avec re-auth + saisie « SUPPRIMER » → soft delete 30 j puis purge ; les signalements publiés deviennent anonymes (auteur dissocié)
-3. **Téléchargement des données personnelles** (droit à la portabilité) : bouton `📥 Télécharger mes données` → archive ZIP (JSON + preuves)
+1. **2FA / TOTP** : option à ajouter dans la section sécurité (recommandé pour comptes à risque). Pas visible — à clarifier avec le propriétaire si on prévoit pour le MVP.
+2. **Suppression du compte** ✅ — confirmé propriétaire, à ajouter en bas de la page profil :
+   - Bouton rouge `🗑 Supprimer mon compte` (séparé visuellement du reste, dans une « zone danger »)
+   - **Modal de confirmation** :
+     - Re-saisie du mot de passe actuel (re-auth)
+     - Saisie littérale du mot `SUPPRIMER` dans un input
+     - Checkbox : « Je comprends que cette action est irréversible »
+   - **Workflow** :
+     - **Soft delete 30 jours** : compte désactivé, login impossible, mais données conservées pour permettre annulation (lien dans l'email de confirmation « Annuler la suppression »)
+     - Au bout de 30 jours : **purge définitive** des données personnelles (email, nom, téléphone, hash mot de passe, sessions, préférences, abonnements alertes)
+     - Les **signalements publiés sont conservés** mais l'`authorId` est dissocié (mis à `NULL`) — ils restent affichés en « Utilisateur anonyme » comme c'est déjà le cas publiquement
+     - Les **signalements en attente / refusés** sont supprimés
+     - Les **preuves uploadées** liées aux signalements supprimés sont purgées du stockage
+   - **Email de confirmation** envoyé immédiatement avec lien d'annulation (token signé, valable 30 jours)
+   - **Audit log** : événement `account.deletion_requested` puis `account.purged`
+   - Décision finale du propriétaire à venir sur la durée exacte (« on décide après ») — 30 j proposé par défaut
+3. **Téléchargement des données personnelles** ❌ — **non prévu** (décision propriétaire). À noter : le RGPD impose le droit à la portabilité (Art. 20) ; si la plateforme accueille des utilisateurs européens, cela pourrait poser un problème légal à terme — à réévaluer avec un juriste.
 4. **Sessions actives** : liste des sessions ouvertes avec possibilité de déconnecter (un par un ou « Déconnecter toutes les autres sessions »)
 5. **Préférences** :
    - Langue (FR / EN, futur AR ?)
-   - Devise (MAD / EUR / USD)
+   - Devise (MAD / EUR / USD) — déjà géré via le sélecteur header, pourrait avoir un miroir ici aussi
 
 ---
 

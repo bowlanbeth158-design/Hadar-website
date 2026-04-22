@@ -481,7 +481,8 @@ Pills `‹ 1 2 3 ›` en bas à droite (page 2 active), même pattern que Membre
 | `Voir ›` | navy `#00327D` | Toujours | Ouvre la fiche utilisateur (`/admin/utilisateurs/[id]`) | Aucun |
 | `Réinitialiser` | orange `#F29B11` | Statut ≠ `Supprimé` *(ou aussi Supprimé pour restauration ?)* | **Envoie un email de reset password** au user (lien signé, expiration 1 h). L'admin ne voit jamais le nouveau mot de passe. | `Réinitialisez votre mot de passe Hadar` |
 | `Bloquer` / `Débloquer` | gris/noir → vert si déjà bloqué | Toujours | Bascule le statut `Actif`/`Inactif` ↔ `Bloqué`. Force la déconnexion immédiate des sessions actives. | `Votre compte a été suspendu` + motif (à demander) |
-| `Supprimer` | rouge `#EE4444` | Statut ≠ `Supprimé` | Soft-delete : statut `Supprimé`, anonymise email/téléphone/nom, conserve les signalements publiés | Email d'avertissement final puis confirmation de suppression |
+| `Supprimer` | rouge `#EE4444` | Statut ≠ `Supprimé` | **Soft-delete avec récupération admin** : du point de vue user = suppression définitive (impossible de se reconnecter, données invisibles publiquement). Côté admin : données préservées en base, restaurables via `Restaurer`. | Email de confirmation de suppression |
+| `Restaurer` | vert `#22C45E` | Statut == `Supprimé` uniquement | Réactive le compte avec ses données d'origine (use case : user qui s'excuse et demande à revenir). Statut repasse `Actif`. | Email `Votre compte Hadar a été restauré` |
 
 ### Pattern colonne Action — figé par le propriétaire
 
@@ -509,12 +510,28 @@ Si plusieurs users cochés ont des statuts mixtes (ex : 2 actifs + 1 bloqué), n
 
 ---
 
+### Spec suppression / restauration (figée par le propriétaire)
+
+**Côté utilisateur** (vue depuis le user supprimé) :
+- Plus possible de se connecter (email + mot de passe rejetés avec message neutre type "Identifiants invalides")
+- Sessions actives révoquées immédiatement (tous les devices)
+- Profil public + signalements affichés en mode `Utilisateur supprimé` (nom anonymisé en lecture publique)
+- Email de confirmation de suppression envoyé à l'adresse de création
+
+**Côté admin / base de données** :
+- Soft-delete : flag `deletedAt = now()`, statut `SUPPRIMÉ`, mais **données originales conservées** (email, téléphone, nom)
+- Apparaît toujours dans la liste `/admin/utilisateurs` avec statut `Supprimé` (rouge)
+- Action `Restaurer` disponible dans le menu dropdown → réactive le compte intégralement (use case : user qui présente ses excuses et demande à revenir)
+- Aucun délai automatique d'effacement définitif (rétention indéfinie tant que l'admin n'a pas explicitement purgé)
+
+> ⚠️ **Note RGPD à valider** : la rétention indéfinie des données après suppression peut être en tension avec le droit à l'effacement (CNDP/GDPR art. 17). Recommandation : ajouter une action séparée `Purger définitivement` (super-admin uniquement) accessible après un délai configurable (ex : 90 jours après le soft-delete), pour respecter les éventuelles demandes formelles de droit à l'oubli. À trancher avec le propriétaire.
+
 ### Sécurité critique pour cette page
 
 1. **Réinitialiser** ne révèle JAMAIS le nouveau mot de passe à l'admin ; envoie uniquement un email de reset au user
 2. **Bloquer / Supprimer** = action sensible → log dans audit trail (qui, quand, quel user, motif)
-3. **Suppression** = soft-delete par défaut + workflow d'effacement définitif après délai légal (CNDP 30 jours ?)
-4. **Anonymisation** au moment de la suppression : `email = "deleted-{id}@hadar.ma"`, `phone = null`, `firstName = "Utilisateur"`, `lastName = "supprimé"` ; conserver `id`, `createdAt`, signalements `PUBLISHED`
+3. **Restauration** = log dans audit trail également (qui a restauré, quand, quel motif)
+4. **Anonymisation publique uniquement** : sur les pages publiques (signalements visibles), un compte supprimé apparaît comme `Utilisateur supprimé`. En base, données conservées pour permettre `Restaurer`.
 5. **Re-authentication** requise avant `Bloquer` / `Supprimer` en bulk (au-dessus de N lignes)
 6. **Rate-limiting** sur les bulk actions (anti-erreur)
 7. **Sessions** : un user `Bloqué` ou `Supprimé` est immédiatement déconnecté de tous ses devices (révocation des refresh tokens)
@@ -550,7 +567,7 @@ Si plusieurs users cochés ont des statuts mixtes (ex : 2 actifs + 1 bloqué), n
 - [x] ~~Pattern colonne Action~~ → **Menu déroulant avec 4 actions par ligne** (propriétaire). La maquette est exemplaire.
 - [x] ~~`Réinitialiser`~~ → **Email de reset envoyé à l'adresse de création** (propriétaire). Admin ne voit jamais le password.
 - [ ] **`Bloquer`** : motif obligatoire ? Notification email au user ? Possibilité de débloquer ?
-- [ ] **`Supprimer`** : soft-delete + anonymisation (recommandé) **ou** hard-delete ? Délai de grâce avant effacement définitif ?
+- [x] ~~`Supprimer` stratégie~~ → **Soft-delete avec restauration admin possible** (propriétaire). Use case : user qui s'excuse. Action `Restaurer` ajoutée au menu dropdown. RGPD : action `Purger définitivement` à valider en complément.
 - [ ] **Compte `Supprimé`** : que deviennent ses signalements `PUBLISHED` (conserver anonyme) ? `SUBMITTED`/`UNDER_REVIEW` (annuler) ?
 - [ ] **`Sélectionner tous`** : sélectionne tous les users de la page courante uniquement, ou tous les résultats du filtre ?
 - [ ] **Click ID ou Nom** ouvre la fiche détail, ou seulement le bouton `Voir ›` est cliquable (cohérence avec Signalements §Écran 2) ?

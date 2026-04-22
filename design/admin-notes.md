@@ -526,6 +526,25 @@ Si plusieurs users cochés ont des statuts mixtes (ex : 2 actifs + 1 bloqué), n
 
 > ⚠️ **Note RGPD à valider** : la rétention indéfinie des données après suppression peut être en tension avec le droit à l'effacement (CNDP/GDPR art. 17). Recommandation : ajouter une action séparée `Purger définitivement` (super-admin uniquement) accessible après un délai configurable (ex : 90 jours après le soft-delete), pour respecter les éventuelles demandes formelles de droit à l'oubli. À trancher avec le propriétaire.
 
+### Motif obligatoire pour les sanctions (figé par le propriétaire)
+
+Les actions sanction **`Bloquer`** et **`Supprimer`** exigent un **motif obligatoire** saisi par l'admin. Le motif est :
+- Intégré dans l'email envoyé à l'utilisateur
+- Conservé dans l'audit trail (traçabilité interne)
+
+| Action | Motif obligatoire ? | Où apparaît-il ? |
+|---|---|---|
+| `Voir` | ❌ | — |
+| `Réinitialiser` | ❌ (action de support, pas de sanction) | — |
+| `Bloquer` / `Débloquer` | ✅ **oui, obligatoire** | Email user + audit log |
+| `Supprimer` | ✅ **oui, obligatoire** | Email user + audit log |
+| `Restaurer` | Optionnel (recommandé pour l'audit) | Audit log uniquement |
+
+**Écran du flux** : avant validation de la sanction, une modal s'ouvre avec :
+- Récap de l'action (ex : « Vous allez bloquer l'utilisateur Yahya MOUSSAOUI. »)
+- Textarea **Motif** (obligatoire, min 10 caractères)
+- Boutons : `Annuler` (gris) + CTA coloré (`Bloquer`/`Supprimer`) désactivé tant que le motif est vide
+
 ### Sécurité critique pour cette page
 
 1. **Réinitialiser** ne révèle JAMAIS le nouveau mot de passe à l'admin ; envoie uniquement un email de reset au user
@@ -566,7 +585,7 @@ Si plusieurs users cochés ont des statuts mixtes (ex : 2 actifs + 1 bloqué), n
 ### Utilisateurs (usagers finaux)
 - [x] ~~Pattern colonne Action~~ → **Menu déroulant avec 4 actions par ligne** (propriétaire). La maquette est exemplaire.
 - [x] ~~`Réinitialiser`~~ → **Email de reset envoyé à l'adresse de création** (propriétaire). Admin ne voit jamais le password.
-- [ ] **`Bloquer`** : motif obligatoire ? Notification email au user ? Possibilité de débloquer ?
+- [x] ~~`Bloquer` / `Supprimer` motif~~ → **Motif obligatoire pour les 2 sanctions** (propriétaire). Motif intégré dans l'email user + audit log. Modal de confirmation avec textarea.
 - [x] ~~`Supprimer` stratégie~~ → **Soft-delete avec restauration admin possible** (propriétaire). Use case : user qui s'excuse. Action `Restaurer` ajoutée au menu dropdown. RGPD : action `Purger définitivement` à valider en complément.
 - [ ] **Compte `Supprimé`** : que deviennent ses signalements `PUBLISHED` (conserver anonyme) ? `SUBMITTED`/`UNDER_REVIEW` (annuler) ?
 - [ ] **`Sélectionner tous`** : sélectionne tous les users de la page courante uniquement, ou tous les résultats du filtre ?

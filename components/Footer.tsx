@@ -94,14 +94,15 @@ export function Footer() {
           </p>
           <div className="mt-2 flex gap-2">
             {SOCIALS.map(({ Icon, label }) => (
-              <a
+              <span
                 key={label}
-                href="#"
-                aria-label={label}
-                className="h-9 w-9 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-colors"
+                role="img"
+                aria-label={`${label} — lien bientôt disponible`}
+                title={`${label} — bientôt`}
+                className="h-9 w-9 rounded-full bg-white/10 text-white/60 flex items-center justify-center cursor-not-allowed"
               >
                 <Icon className="h-4 w-4" aria-hidden />
-              </a>
+              </span>
             ))}
           </div>
         </div>

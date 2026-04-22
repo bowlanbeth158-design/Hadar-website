@@ -1,0 +1,225 @@
+// Hadar.ma — Prisma schema (initial)
+// Product decisions locked in design/design-notes.md and design/admin-notes.md.
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────────────────────────────────────
+
+/// End-user account statuses (admin-notes.md §Écran 6 Utilisateurs)
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+  DELETED
+}
+
+/// Team member roles (admin-notes.md §Rôles & permissions)
+enum MemberRole {
+  SUPER_ADMIN
+  ADMIN
+  MODERATOR
+  SUPPORT
+}
+
+enum MemberStatus {
+  ACTIVE
+  INACTIVE
+  SUSPENDED
+}
+
+/// Report lifecycle (design-notes.md §Statuts d'un signalement)
+enum ReportStatus {
+  SUBMITTED
+  UNDER_REVIEW
+  NEEDS_CORRECTION
+  PUBLISHED
+  REJECTED
+  ARCHIVED
+}
+
+/// Channel where the suspicious contact was encountered
+enum ReportChannel {
+  TELEPHONE
+  WHATSAPP
+  EMAIL
+  SITE_WEB
+  RESEAUX_SOCIAUX
+  PAYPAL
+  BINANCE
+  RIB
+  CIN
+}
+
+/// Categories of issues users can report
+enum ProblemType {
+  NON_LIVRAISON
+  BLOQUE_APRES_PAIEMENT
+  PRODUIT_NON_CONFORME
+  USURPATION_IDENTITE
+}
+
+/// 4-tier risk level derived from cumulative report count per contact
+enum RiskLevel {
+  FAIBLE
+  VIGILANCE
+  MODERE
+  ELEVE
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// End users (people who submit/verify reports)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model User {
+  id                String     @id @default(cuid())
+  email             String     @unique
+  phone             String?    @unique
+  firstName         String
+  lastName          String
+  passwordHash      String
+  emailVerifiedAt   DateTime?
+  phoneVerifiedAt   DateTime?
+  status            UserStatus @default(ACTIVE)
+  preferredLanguage String     @default("fr")
+  preferredCurrency String     @default("MAD")
+  // Auto-flag Inactif after N days of inactivity (see admin-notes.md open Qs)
+  lastActivityAt    DateTime?
+  // Soft-delete: admin can restore; see admin-notes.md §Spec suppression
+  deletedAt         DateTime?
+  // Sanction reason (for audit + user email when blocked/deleted)
+  sanctionReason    String?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  reports        Report[]
+  reportRatings  ReportRating[]
+
+  @@index([status])
+  @@index([lastActivityAt])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Internal team members
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Member {
+  id              String       @id @default(cuid())
+  email           String       @unique
+  phone           String?
+  firstName       String
+  lastName        String
+  passwordHash    String
+  role            MemberRole   @default(MODERATOR)
+  status          MemberStatus @default(ACTIVE)
+  twoFactorSecret String?
+  lastLoginAt     DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  moderatedReports Report[] @relation("ReportModerator")
+
+  @@index([role, status])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Reports (central entity)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Report {
+  id               String         @id @default(cuid())
+  authorId         String
+  author           User           @relation(fields: [authorId], references: [id], onDelete: Restrict)
+
+  // The suspicious contact being reported
+  channel          ReportChannel
+  contactValue     String         // raw value as entered
+  contactNormalized String        // normalized form (lowercased, digits-only for phones, etc.) used for search
+  problemType      ProblemType
+  estimatedAmount  Int?           // in minor currency units (centimes)
+  currency         String         @default("MAD")
+  description      String?        @db.Text
+
+  // Moderation
+  status           ReportStatus   @default(SUBMITTED)
+  moderatorId      String?
+  moderator        Member?        @relation("ReportModerator", fields: [moderatorId], references: [id])
+  moderationReason String?        @db.Text
+  moderatedAt      DateTime?
+
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  evidences ReportEvidence[]
+  rating    ReportRating?
+
+  // Uniqueness rule (admin-notes.md §Écran 9): one user cannot report the
+  // same (value, channel) tuple twice. Same value on two different channels
+  // is allowed (phone as WhatsApp + as RIB is two distinct reports).
+  @@unique([authorId, contactNormalized, channel])
+  @@index([contactNormalized, channel])
+  @@index([status, createdAt])
+  @@index([problemType])
+}
+
+model ReportEvidence {
+  id          String   @id @default(cuid())
+  reportId    String
+  report      Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  storageKey  String   // object storage key (DigitalOcean Spaces)
+  mimeType    String
+  sizeBytes   Int
+  originalName String?
+  createdAt   DateTime @default(now())
+
+  @@index([reportId])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Satisfaction rating widget (design-notes.md §Widget de rating)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model ReportRating {
+  id        String   @id @default(cuid())
+  reportId  String   @unique
+  report    Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  score     Int      // 1..5
+  comment   String?  @db.Text
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([score])
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Append-only audit log (admin-notes.md security sections)
+// ─────────────────────────────────────────────────────────────────────────────
+
+model AuditLog {
+  id           String   @id @default(cuid())
+  actorType    String   // 'user' | 'member' | 'system'
+  actorId      String?
+  action       String   // e.g. 'report.moderate', 'user.block', 'member.changeRole'
+  targetType   String?  // 'report' | 'user' | 'member' | ...
+  targetId     String?
+  reason       String?  @db.Text
+  metadata     Json?
+  ipAddress    String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+
+  @@index([actorType, actorId])
+  @@index([action, createdAt])
+  @@index([targetType, targetId])
+}

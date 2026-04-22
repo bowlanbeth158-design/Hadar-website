@@ -35,7 +35,9 @@
 
 ### Batch 9 — « Mes signalements »
 19. **Page liste « Mes signalements »** (Mon compte → dropdown → Mes signalements) — onglets par statut, cards avec bordure colorée + statut + type de problème
-20. **Page « Détail de signalement »** (clic sur « Voir les détails » d'un signalement de l'utilisateur) — résumé, infos fournies, description, preuves (modifiable), timeline horizontale, boutons Modifier/Supprimer
+20. **Page « Détail de signalement »** (clic sur « Voir les détails » d'un signalement de l'utilisateur) — résumé, infos fournies, description, preuves (modifiable tant que non publié), timeline horizontale, boutons Modifier/Supprimer
+
+✅ **Partie utilisateur terminée.** Prochaines étapes : charte graphique officielle puis maquettes admin.
 
 ### Batch 5 — Pages légales (footer)
 8. **Conditions générales d'utilisation** → `design/legal/01-conditions-generales-utilisation.md`
@@ -755,12 +757,17 @@ Chevron `⌄` pour charger plus (infinite scroll ou « Charger plus »).
 
 1. **Signalement envoyé** — `Signalé le DD mois YYYY à HH:mm` — point jaune rempli (passé)
 2. **En cours d'examen** — `Vérification des informations` — point orange rempli (état actuel)
-3. **Publié** — date estimée — point gris vide (futur)
+3. **Publié** — date de **validation** (mise par l'admin lors du passage à `PUBLISHED`) — point gris vide tant que non publié, vert plein une fois publié
 
-> ⚠️ La maquette affiche `Publié le 05 avril 2026 à 19:30` même quand le signalement n'est pas encore publié → c'est probablement une **estimation SLA** (« nous publions sous 5 h en moyenne »). À confirmer avec le propriétaire :
-> - **A** = afficher une SLA estimée (« publication estimée le X »)
-> - **B** = laisser le 3ᵉ point sans date tant que pas publié
-> - **C** = afficher la vraie date une fois publié, sinon « En attente »
+**Décision propriétaire ✅** : pas de date estimée / SLA pour l'étape « Publié ». La date est seulement renseignée lors de la validation effective par l'admin (= horodatage du passage à `PUBLISHED`). Tant que non publié → afficher « En attente » ou simplement laisser vide.
+
+#### Timestamps stockés en DB
+- `submittedAt` (création) — étape 1 du stepper
+- `reviewStartedAt` (passage à `UNDER_REVIEW`) — étape 2
+- `publishedAt` (passage à `PUBLISHED`) — étape 3
+- `rejectedAt` (passage à `REJECTED`)
+- `archivedAt` (passage à `ARCHIVED`)
+- `lastCorrectionRequestedAt` (passage à `NEEDS_CORRECTION`)
 
 #### Bandeau statut (orange large)
 - Texte adaptatif selon le statut :
@@ -777,15 +784,17 @@ Chevron `⌄` pour charger plus (infinite scroll ou « Charger plus »).
 > Votre signalement contribue à protéger la communauté.
 > Vos informations restent confidentielles. Seules nos équipes peuvent y accéder.
 
-### Règles d'édition (proposition à valider)
+### Règles d'édition (confirmées propriétaire ✅)
 
-| Statut | Modifier ? | Supprimer ? |
-|---|---|---|
-| `SUBMITTED` | ✅ tous champs | ✅ |
-| `UNDER_REVIEW` | ❌ (verrouillé pendant examen) | ⚠️ demande de retrait → modérateur |
-| `NEEDS_CORRECTION` | ✅ champs concernés (re-soumet en `UNDER_REVIEW`) | ✅ |
-| `PUBLISHED` | ❌ (mais peut demander archivage) | ⚠️ demande de retrait → modérateur |
-| `REJECTED` | ❌ | ✅ (passe en `ARCHIVED`) |
+**Principe** : tant que le signalement **n'est pas validé** (`PUBLISHED`), l'auteur peut **ajouter ou retirer une preuve**. Une fois validé → tout est verrouillé.
+
+| Statut | Modifier description / montant / type de problème | Ajouter / retirer une preuve | Supprimer le signalement |
+|---|---|---|---|
+| `SUBMITTED` | ✅ | ✅ | ✅ |
+| `UNDER_REVIEW` | ⚠️ verrouillé pendant l'examen | ✅ (avant validation) | ⚠️ demande de retrait |
+| `NEEDS_CORRECTION` | ✅ (re-soumet en `UNDER_REVIEW`) | ✅ | ✅ |
+| `PUBLISHED` | ❌ (validé — verrouillé) | ❌ (validé — verrouillé) | ⚠️ demande de retrait → modérateur |
+| `REJECTED` | ❌ | ❌ | ✅ (passe en `ARCHIVED`) |
 
 > Le **type de contact** et la **valeur du contact** ne sont **jamais éditables** après soumission (clé d'intégrité) — il faut supprimer et recréer un signalement.
 

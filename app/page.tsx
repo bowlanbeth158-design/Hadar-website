@@ -1,21 +1,13 @@
 import Link from 'next/link';
 import {
-  Phone,
-  MessageCircle,
-  Mail,
-  CreditCard,
-  Globe,
-  AtSign,
-  Wallet,
-  Coins,
-  Search,
-  Mic,
   Users,
   Siren,
   Smartphone,
   ShieldCheck,
+  Wallet,
   Clock,
   ArrowUpRight,
+  Search,
   Gavel,
   CheckCircle2,
   type LucideIcon,
@@ -23,17 +15,7 @@ import {
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { SupportFab } from '@/components/SupportFab';
-
-const CONTACT_FILTERS: { id: string; label: string; Icon: LucideIcon }[] = [
-  { id: 'telephone', label: 'Téléphone', Icon: Phone },
-  { id: 'whatsapp', label: 'WhatsApp', Icon: MessageCircle },
-  { id: 'email', label: 'Email', Icon: Mail },
-  { id: 'rib', label: 'RIB', Icon: CreditCard },
-  { id: 'site_web', label: 'Site web', Icon: Globe },
-  { id: 'reseaux_sociaux', label: 'Réseaux sociaux', Icon: AtSign },
-  { id: 'paypal', label: 'PayPal', Icon: Wallet },
-  { id: 'binance', label: 'Binance', Icon: Coins },
-];
+import { HomeHero } from '@/components/HomeHero';
 
 const KPI_STATS: { label: string; value: string; gradient: string; Icon: LucideIcon }[] = [
   { label: 'Utilisateurs actifs', value: '12 593', gradient: 'bg-grad-stat-navy', Icon: Users },
@@ -97,62 +79,7 @@ export default function HomePage() {
       <Header />
 
       <main>
-        <section className="mx-auto max-w-5xl px-4 md:px-6 pt-12 md:pt-20 pb-10 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-brand-navy">
-            Avant d&apos;acheter, vérifiez.
-          </h1>
-          <p className="mt-5 mx-auto max-w-2xl text-base md:text-lg text-gray-500">
-            Recherchez un numéro, un email, un site web ou un moyen de paiement pour vérifier s&apos;il
-            a déjà été signalé.
-          </p>
-
-          <div className="mt-8 flex flex-wrap justify-center gap-2 md:gap-3">
-            {CONTACT_FILTERS.map((f, i) => (
-              <button
-                key={f.id}
-                type="button"
-                aria-pressed={i === 0}
-                className={
-                  i === 0
-                    ? 'inline-flex items-center gap-2 rounded-pill bg-brand-navy text-white px-4 py-2 text-sm font-medium shadow-sm'
-                    : 'inline-flex items-center gap-2 rounded-pill bg-white border border-gray-200 text-brand-navy px-4 py-2 text-sm font-medium hover:border-brand-blue transition-colors'
-                }
-              >
-                <f.Icon className="h-4 w-4" aria-hidden />
-                {f.label}
-              </button>
-            ))}
-          </div>
-
-          <form
-            role="search"
-            action="/recherche"
-            method="get"
-            className="mt-8 mx-auto max-w-3xl flex items-center gap-2 rounded-pill bg-white border border-gray-200 shadow-sm pl-5 pr-1 py-1"
-          >
-            <Search className="h-5 w-5 text-gray-400" aria-hidden />
-            <input
-              type="search"
-              name="q"
-              placeholder="Ex : 212 6 00 00 00 00"
-              aria-label="Rechercher un contact à vérifier"
-              className="flex-1 bg-transparent outline-none text-brand-navy placeholder:text-gray-400 py-2 text-base"
-            />
-            <button
-              type="button"
-              aria-label="Recherche vocale"
-              className="p-2 text-gray-400 hover:text-brand-navy"
-            >
-              <Mic className="h-5 w-5" aria-hidden />
-            </button>
-            <button
-              type="submit"
-              className="rounded-pill bg-green-500 hover:bg-green-700 text-white font-semibold px-5 py-2.5 text-sm transition-colors"
-            >
-              Vérifier maintenant
-            </button>
-          </form>
-        </section>
+        <HomeHero />
 
         <section className="mx-auto max-w-7xl px-4 md:px-6 py-12 md:py-16">
           <h2 className="text-2xl md:text-3xl font-bold text-brand-navy text-center">

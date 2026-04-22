@@ -1,6 +1,7 @@
 import Link from 'next/link';
-import { Siren, UserRound } from 'lucide-react';
+import { Siren } from 'lucide-react';
 import { Logo } from './Logo';
+import { LoginButton } from './LoginButton';
 
 export function Header() {
   return (
@@ -45,13 +46,7 @@ export function Header() {
               <span>MAD</span>
             </button>
 
-            <Link
-              href="/connexion"
-              className="hidden sm:inline-flex items-center gap-1.5 rounded-pill border border-brand-navy text-brand-navy px-4 py-1.5 text-sm font-semibold hover:bg-brand-navy hover:text-white transition-colors"
-            >
-              <UserRound className="h-4 w-4" aria-hidden />
-              Se connecter
-            </Link>
+            <LoginButton />
 
             <Link
               href="/signaler"

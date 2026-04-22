@@ -50,7 +50,7 @@ export function HomeHero() {
       <div
         role="tablist"
         aria-label="Type de contact à rechercher"
-        className="mt-8 flex flex-wrap justify-center gap-2 md:gap-3"
+        className="mt-8 mx-auto max-w-4xl grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3"
       >
         {CONTACT_TYPES.map((f) => {
           const isActive = f.id === selected;
@@ -63,12 +63,12 @@ export function HomeHero() {
               onClick={() => setSelected(f.id)}
               className={
                 isActive
-                  ? 'inline-flex items-center gap-2 rounded-pill bg-brand-navy text-white px-4 py-2 text-sm font-medium shadow-sm'
-                  : 'inline-flex items-center gap-2 rounded-pill bg-white border border-gray-200 text-brand-navy px-4 py-2 text-sm font-medium hover:border-brand-blue transition-colors'
+                  ? 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-brand-navy text-white px-4 py-2.5 text-sm font-medium shadow-sm'
+                  : 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-white border border-gray-200 text-brand-navy px-4 py-2.5 text-sm font-medium hover:border-brand-blue transition-colors'
               }
             >
-              <f.Icon className="h-4 w-4" aria-hidden />
-              {f.label}
+              <f.Icon className="h-4 w-4 shrink-0" aria-hidden />
+              <span className="truncate">{f.label}</span>
             </button>
           );
         })}

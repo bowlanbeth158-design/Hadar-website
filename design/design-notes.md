@@ -904,9 +904,7 @@ tauxValidation = signalementsValides / signalementsEnvoyés × 100
 
 ### Statuts d'un signalement
 
-> ⚠️ **Conflit à résoudre** : Le propriétaire a confirmé 5 statuts (`SUBMITTED`, `UNDER_REVIEW`, `PUBLISHED`, `REJECTED`, `ARCHIVED`), **mais** la maquette « Mes signalements » introduit un nouveau statut **« À corriger »** non prévu, et n'affiche pas `ARCHIVED` dans les onglets utilisateur.
->
-> **Hypothèse retenue (à valider)** : `À corriger` est en fait un sous-état où le modérateur demande une modification à l'auteur avant publication ; `ARCHIVED` reste un statut backend (résultat d'une suppression / retrait) qui sort de la liste utilisateur.
+> ✅ **Résolu (conflit antérieur)** : les maquettes admin (avril 2026) confirment **5 statuts visibles à l'utilisateur** (`SUBMITTED`, `UNDER_REVIEW`, `NEEDS_CORRECTION`, `PUBLISHED`, `REJECTED`) + 1 statut backend (`ARCHIVED`). Le statut **`NEEDS_CORRECTION` (À corriger)** est officiel — il déclenche un aller-retour admin → user. Détails du workflow ci-dessous.
 
 #### Modèle proposé
 
@@ -945,6 +943,38 @@ SUBMITTED / UNDER_REVIEW / NEEDS_CORRECTION ──► ARCHIVED (suppression par 
 ```
 
 Toute transition est loggée dans l'audit log (horodatage + acteur + ancien/nouveau statut + motif si rejet).
+
+#### Workflow `NEEDS_CORRECTION` (À corriger) — détail user
+
+Déclenché quand l'admin sélectionne `À corriger` sur l'écran de modération admin (cf `admin-notes.md` §Écran 3).
+
+**1. Notifications envoyées à l'auteur** (immédiates)
+- **In-app** : badge cloche rouge sur la nav (`Mes alertes`) + badge sur l'onglet `À corriger` de la liste « Mes signalements »
+- **Email transactionnel** :
+  - Sujet : « Votre signalement #2454 nécessite des corrections »
+  - Corps : récap signalement + motif de l'admin + lien direct `/mes-signalements/2454/corriger`
+  - From : `noreply@hadar.ma` (ou `support@`)
+  - Template à valider avec le propriétaire
+
+**2. Écran de correction côté user** (`/mes-signalements/[id]/corriger`)
+- Encart en haut : fond bleu très clair `#DBE5F3`, bordure gauche navy `#00327D`, icône info
+  - Titre : « L'équipe Hadar a demandé des corrections »
+  - Texte : motif intégral écrit par l'admin
+  - Date de la demande
+- Formulaire pré-rempli avec les valeurs actuelles du signalement (mêmes champs que la création)
+- L'utilisateur peut modifier tous les champs sauf l'ID
+- Bouton primaire (vert) : `Soumettre les corrections`
+- Bouton secondaire : `Annuler` (revient à la liste sans modifier)
+
+**3. Transition de statut à la resoumission**
+- `NEEDS_CORRECTION` → `UNDER_REVIEW` (repasse en file de modération)
+- L'admin reçoit une notification : « Signalement #2454 corrigé et resoumis »
+- Trace dans l'audit log : ancien contenu / nouveau contenu / motif initial / horodatages
+
+**4. Affichage dans la liste « Mes signalements »**
+- Onglet dédié `À corriger (N)` (point bleu)
+- Card avec bordure gauche navy, badge `À corriger` sur le statut
+- CTA primaire de la card : `Corriger maintenant →`
 
 ### Sécurité critique pour cette page
 

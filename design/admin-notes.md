@@ -176,10 +176,15 @@ La modération a **4 issues possibles** :
 | `Non retenu` | rouge | Refusé définitivement → non publié (motif obligatoire) |
 | `À corriger` | navy | Renvoyé à l'utilisateur pour complétion / correction (motif obligatoire) |
 
-> **Conséquence côté user (à ajouter à `design-notes.md`)** : le statut `À corriger` implique un aller-retour admin → user. L'utilisateur doit :
-> 1. Recevoir une notification ("Votre signalement #2454 nécessite des corrections — voir le motif")
-> 2. Pouvoir ouvrir le signalement en mode édition avec le motif de l'admin affiché
-> 3. Resoumettre → repasse en `En cours`
+> **Workflow `À corriger` côté user** (figé par le propriétaire) :
+> 1. Quand l'admin sélectionne `À corriger` + clique le CTA, l'utilisateur reçoit :
+>    - Une **notification cloche rouge** dans son espace (badge sur "Mes alertes" / "Mes signalements")
+>    - Un **email** transactionnel
+> 2. L'utilisateur ouvre son signalement → le **motif de l'admin** est affiché en haut (encart navy clair)
+> 3. L'utilisateur peut éditer (mêmes champs que la création) puis resoumettre
+> 4. À la resoumission → le signalement repasse en `En cours` côté admin (et l'admin reçoit une notif "signalement #2454 corrigé et resoumis")
+>
+> Le détail UI côté user (encart motif, écran édition, CTA "Resoumettre") est documenté dans `design-notes.md` §"Mes signalements — workflow À corriger".
 
 ### Table liste (colonnes)
 | Col | Type | Exemple | Notes |
@@ -189,9 +194,9 @@ La modération a **4 issues possibles** :
 | `Type Problème` | texte | Non livraison, Bloqué, Non conforme, Usurpation | Taxonomie user |
 | `Montant` | texte | `500 MAD` | Devise explicite ; à adapter si user a choisi une autre devise |
 | `Date & heure` | texte | `13/04/26  23:12:05` | Format `DD/MM/YY  HH:MM:SS` |
-| `Statut` | pill coloré cliquable | pill orange/vert/rouge/navy + chevron `›` | Click → écran détail §Écran 3 |
+| `Statut` | pill coloré cliquable | pill orange/vert/rouge/navy + chevron `›` | **Seul élément cliquable** de la ligne → ouvre l'écran détail §Écran 3 |
 
-**Comportement ligne** : toute la ligne est cliquable (ou au moins l'ID + le Statut) → ouvre l'écran détail.
+**Comportement ligne** (figé par le propriétaire) : **seul le pill statut à droite est cliquable** (avec le chevron `›`). Le reste de la ligne (ID, Contact, Type, Montant, Date) est en lecture seule. Cela évite les ouvertures accidentelles et clarifie l'affordance.
 
 ### Pagination
 Non visible sur la maquette actuelle — à confirmer :
@@ -296,7 +301,8 @@ Il faut tracer :
 - [ ] Langue de l'admin : FR uniquement, ou bilingue FR/AR comme côté utilisateur ?
 - [ ] Top bar search : périmètre exhaustif (signalements, utilisateurs, membres, annonces, messages chat, logs…) ? Ou sous-ensemble ?
 - [x] ~~Pattern boutons décision modération~~ → **Option A figée** : 3 sélecteurs + CTA dynamique (cf §Écran 3)
-- [ ] **Statut "À corriger"** : workflow user complet (notification, écran correction, resoumission) ?
+- [x] ~~Statut "À corriger" workflow user~~ → **Notification cloche + email + écran d'édition + resoumission → repasse En cours** (cf §Écran 2)
+- [x] ~~Click ligne table signalements~~ → **Uniquement le pill statut à droite est cliquable** (cf §Écran 2)
 - [x] ~~Motif de décision obligatoire~~ → **Obligatoire uniquement pour `Non retenu`** (propriétaire). Concern UX levé pour `À corriger` (cf §Écran 3).
 - [ ] Pagination de la liste signalements (type + nombre par page) ?
 - [ ] Filtres liste signalements (tri par colonne + filtres multi-critères par canal/type/statut/user) ?

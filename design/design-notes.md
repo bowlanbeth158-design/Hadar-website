@@ -19,6 +19,9 @@
 ### Batch 3 — Formulaire de signalement
 6. **Écran « Signaler un contact ou un profil »** (déclenché par le bouton rouge « Signaler » dans la nav)
 
+### Batch 4 — Page « Comment ça marche »
+7. **Écran « Comment ça marche »** (déclenché par le lien `Comment ça marche` dans la nav)
+
 Batches à venir : espace utilisateur (mes alertes, mes signalements, profil), modération, responsive mobile, pages légales, inscription, reset password, détail d'un signalement, etc.
 
 ---
@@ -313,6 +316,71 @@ const reportSchema = z.object({
    - Email : lowercase + trim
    - URL : lowercase host, strip tracking params (utm_*), forcer https si possible
    - RIB : retirer espaces/tirets
+
+---
+
+## Page « Comment ça marche »
+
+**Trigger** : clic sur le lien `Comment ça marche` de la nav → route dédiée (ex. `/comment-ca-marche`).
+
+### Layout
+- Bouton pill `← Retour` en haut à gauche
+- Watermark logo H bouclier en arrière-plan droit
+- Titre H1 centré navy : « Restez en sécurité en 4 étapes »
+- Sous-titre gris centré : « Vérifiez, signalez, protégez et suivez en quelques clics »
+- **Grid 2×2 de cartes vidéo** (chaque carte a une bordure de couleur distincte) :
+
+| # | Titre | Couleur bordure & titre | Sujet |
+|---|---|---|---|
+| 1 | **Vérifiez** | Vert `#22C55E` | Comment vérifier un contact avant transaction |
+| 2 | **Signalez** | Rouge `#DC2626` | Comment signaler un contact suspect |
+| 3 | **Protégez** | Orange `#F97316` | Bonnes pratiques pour se protéger |
+| 4 | **Suivez** | Violet `#8B5CF6` | Suivre les alertes / la communauté |
+
+### Composant carte vidéo
+- Bordure colorée arrondie épaisse
+- Vignette (thumbnail) avec illustration + bouton play rouge YouTube en bas à gauche + durée en bas à droite (ex. `2:17`)
+- Titre coloré (assorti à la bordure)
+- Description courte (200–300 caractères max recommandé)
+- Au clic : lecture inline (modal lightbox plein écran avec lecteur)
+
+### CTA bas de page
+Phrase centrée navy bold : « Vérifiez avant d'agir et signalez pour protéger les autres. »
+
+### Décision (confirmée par le propriétaire) — 2 cartes au lancement
+- **Au lancement** : seules **2 cartes** affichées :
+  - **Vérifiez** (vert) — vidéo « Comment vérifier un contact »
+  - **Signalez** (rouge) — vidéo « Comment signaler un contact suspect »
+- Layout au lancement : **2 cartes côte à côte** (grid 2×1 desktop, 1×2 mobile)
+- Les cartes **Protégez** (orange) et **Suivez** (violet) restent prévues dans la palette / le système de design pour un ajout futur via l'espace admin (pas codées en dur — la page s'adapte automatiquement au nombre de vidéos publiées en DB)
+
+### Gestion via espace admin (CMS-style)
+**Confirmé par le propriétaire** : cette page est éditable depuis l'espace admin.
+
+Champs éditables par carte (rôle `ADMIN` uniquement) :
+- Titre
+- Description (texte court, 300 chars max)
+- Couleur (palette restreinte : vert / rouge / orange / violet / bleu / jaune)
+- Vignette (image uploadée — mêmes règles sécurité que les preuves)
+- Source vidéo : URL **YouTube**, **Vimeo** ou fichier MP4 hébergé
+- Ordre d'affichage
+- Statut : `published` / `draft`
+
+### Sécurité de la page « Comment ça marche »
+
+1. **Hébergement vidéo — choix recommandé** :
+   - Option **A (recommandée pour MVP)** : **YouTube unlisted** (lien non listé) ou **Vimeo Pro** → simple, scalable, pas de bande passante côté serveur, pas de stockage
+     - Embed via `<iframe>` avec `sandbox="allow-scripts allow-same-origin allow-presentation"`
+     - **Privacy mode** YouTube (`youtube-nocookie.com`) pour limiter le tracking
+   - Option **B (alternative)** : **self-hosted** → plus de contrôle, mais nécessite transcodage, CDN, protection hotlinking, plus coûteux
+2. **CSP** doit autoriser les domaines vidéo : `frame-src https://www.youtube-nocookie.com https://player.vimeo.com;`
+3. **Admin / édition de la page** :
+   - Auth + RBAC : seul rôle `ADMIN`
+   - Validation Zod stricte des URLs vidéo (whitelist domaines : `youtube.com`, `youtu.be`, `youtube-nocookie.com`, `vimeo.com`)
+   - Sanitization HTML des descriptions (DOMPurify si rich text, sinon texte brut + React échappe automatiquement)
+   - **Audit log** de chaque édition (qui, quand, ancien/nouveau contenu)
+   - CSRF token sur le formulaire d'édition
+4. **Cache & ISR** : page mise en cache (ex. revalidation Next.js ISR à chaque édition admin) pour limiter les hits DB et améliorer perf.
 
 ---
 

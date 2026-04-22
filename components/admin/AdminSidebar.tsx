@@ -39,7 +39,7 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
       href={item.href}
       className={
         active
-          ? 'flex items-center gap-3 rounded-pill bg-orange-500 text-white px-4 py-2.5 text-sm font-semibold'
+          ? 'flex items-center gap-3 rounded-pill bg-orange-500 text-white px-4 py-2.5 text-sm font-semibold shadow-glow-orange'
           : 'flex items-center gap-3 rounded-pill text-white/80 hover:bg-white/10 hover:text-white px-4 py-2.5 text-sm font-medium transition-colors'
       }
     >

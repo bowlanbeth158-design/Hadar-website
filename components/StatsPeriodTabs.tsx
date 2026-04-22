@@ -24,7 +24,7 @@ export function StatsPeriodTabs() {
             onClick={() => setActive(p)}
             className={
               isActive
-                ? 'rounded-pill bg-brand-navy text-white px-5 py-2 text-sm font-semibold shadow-sm'
+                ? 'rounded-pill bg-brand-navy text-white px-5 py-2 text-sm font-semibold shadow-glow-navy'
                 : 'rounded-pill bg-gray-100 text-gray-500 px-5 py-2 text-sm font-medium hover:bg-gray-200 transition-colors'
             }
           >

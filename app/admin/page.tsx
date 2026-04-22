@@ -19,11 +19,17 @@ export const metadata: Metadata = {
 
 const PERIODS = ['Aujourd’hui', 'Hier', '7 jours', '30 jours', '365 jours', 'Personnalisé'];
 
-const KPIS: { value: string; label: string; gradient: string; Icon: LucideIcon }[] = [
-  { value: '25', label: 'Total Signalements', gradient: 'bg-grad-stat-violet', Icon: Siren },
-  { value: '8', label: 'En attente', gradient: 'bg-grad-stat-orange', Icon: Clock },
-  { value: '13', label: 'Publiés', gradient: 'bg-grad-stat-green', Icon: Copy },
-  { value: '4', label: 'Refusés', gradient: 'bg-grad-stat-red', Icon: XCircle },
+const KPIS: {
+  value: string;
+  label: string;
+  gradient: string;
+  glow: string;
+  Icon: LucideIcon;
+}[] = [
+  { value: '25', label: 'Total Signalements', gradient: 'bg-grad-stat-violet', glow: 'shadow-glow-violet', Icon: Siren },
+  { value: '8', label: 'En attente', gradient: 'bg-grad-stat-orange', glow: 'shadow-glow-orange', Icon: Clock },
+  { value: '13', label: 'Publiés', gradient: 'bg-grad-stat-green', glow: 'shadow-glow-green', Icon: Copy },
+  { value: '4', label: 'Refusés', gradient: 'bg-grad-stat-red', glow: 'shadow-glow-red', Icon: XCircle },
 ];
 
 const PROBLEM_KPIS: { value: string; label: string; Icon: LucideIcon }[] = [
@@ -54,14 +60,14 @@ export default function Page() {
         <div className="flex items-center gap-2">
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-4 py-1.5 text-sm font-semibold transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-4 py-1.5 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
           >
             <RefreshCw className="h-4 w-4" aria-hidden />
             Rafraîchir
           </button>
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-4 py-1.5 text-sm font-semibold transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-4 py-1.5 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
           >
             <Download className="h-4 w-4" aria-hidden />
             Exporter
@@ -76,7 +82,7 @@ export default function Page() {
             type="button"
             className={
               i === 0
-                ? 'rounded-pill bg-brand-navy text-white px-4 py-1.5 text-sm font-medium'
+                ? 'rounded-pill bg-brand-navy text-white px-4 py-1.5 text-sm font-medium shadow-glow-navy'
                 : 'rounded-pill bg-brand-sky/60 text-brand-navy px-4 py-1.5 text-sm font-medium hover:bg-brand-sky'
             }
           >
@@ -89,7 +95,7 @@ export default function Page() {
         {KPIS.map((k) => (
           <div
             key={k.label}
-            className={`${k.gradient} text-white rounded-2xl p-5 shadow-sm flex items-center justify-between`}
+            className={`${k.gradient} ${k.glow} text-white rounded-2xl p-5 flex items-center justify-between`}
           >
             <div>
               <p className="text-4xl font-bold">{k.value}</p>
@@ -100,7 +106,7 @@ export default function Page() {
         ))}
       </div>
 
-      <section className="rounded-2xl bg-white border border-gray-200 p-5 mb-8">
+      <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-5 mb-8">
         <div className="flex items-center justify-between mb-3">
           <p className="text-sm font-semibold text-brand-navy">Taux de traitement</p>
           <p className="text-sm font-bold text-brand-navy">{processingRate}%</p>
@@ -120,7 +126,7 @@ export default function Page() {
         {PROBLEM_KPIS.map((p) => (
           <div
             key={p.label}
-            className="rounded-2xl bg-white border border-gray-200 p-5 flex items-center justify-between"
+            className="rounded-2xl bg-white border border-gray-200 p-5 flex items-center justify-between shadow-glow-soft"
           >
             <div>
               <p className="text-4xl font-bold text-brand-blue">{p.value}</p>
@@ -131,7 +137,7 @@ export default function Page() {
         ))}
       </div>
 
-      <section className="rounded-2xl bg-white border border-gray-200 p-5">
+      <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-5">
         <p className="text-sm font-semibold text-brand-navy mb-3">Taux de problème par canal</p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-5">
           {CHANNELS.map((c, i) => (

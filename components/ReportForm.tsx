@@ -34,7 +34,7 @@ export function ReportForm() {
 
   return (
     <form
-      className="mx-auto max-w-2xl space-y-8 rounded-2xl bg-white border border-gray-200 p-6 md:p-8"
+      className="mx-auto max-w-2xl space-y-8 rounded-2xl bg-white border border-gray-200 p-6 md:p-8 shadow-glow-soft"
       onSubmit={(e) => e.preventDefault()}
     >
       <fieldset>
@@ -52,7 +52,7 @@ export function ReportForm() {
                 onClick={() => setContactType(t.id)}
                 className={
                   isActive
-                    ? 'rounded-pill bg-brand-navy text-white px-4 py-1.5 text-sm font-medium'
+                    ? 'rounded-pill bg-brand-navy text-white px-4 py-1.5 text-sm font-medium shadow-glow-navy'
                     : 'rounded-pill bg-white border border-gray-200 text-brand-navy px-4 py-1.5 text-sm font-medium hover:border-brand-blue transition-colors'
                 }
               >
@@ -91,7 +91,7 @@ export function ReportForm() {
                 onClick={() => setProblemType(t.id)}
                 className={
                   isActive
-                    ? 'rounded-pill bg-brand-navy text-white px-4 py-1.5 text-sm font-medium'
+                    ? 'rounded-pill bg-brand-navy text-white px-4 py-1.5 text-sm font-medium shadow-glow-navy'
                     : 'rounded-pill bg-white border border-gray-200 text-brand-navy px-4 py-1.5 text-sm font-medium hover:border-brand-blue transition-colors'
                 }
               >
@@ -164,7 +164,7 @@ export function ReportForm() {
       <button
         type="submit"
         disabled={!canSubmit}
-        className="w-full inline-flex items-center justify-center gap-2 rounded-pill bg-red-500 text-white px-5 py-3 text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed enabled:hover:bg-red-700 transition-colors"
+        className="w-full inline-flex items-center justify-center gap-2 rounded-pill bg-red-500 text-white px-5 py-3 text-sm font-semibold shadow-glow-red disabled:opacity-60 disabled:cursor-not-allowed enabled:hover:bg-red-700 transition-all"
       >
         <Megaphone className="h-4 w-4" aria-hidden />
         Envoyer le signalement

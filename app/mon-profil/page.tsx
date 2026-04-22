@@ -24,7 +24,7 @@ export default function Page() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <aside className="lg:col-span-1 space-y-4">
-          <div className="rounded-2xl bg-white border border-gray-200 p-6 text-center">
+          <div className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6 text-center">
             <div className="mx-auto h-20 w-20 rounded-full bg-grad-stat-navy text-white flex items-center justify-center text-2xl font-bold">
               HM
             </div>
@@ -40,7 +40,7 @@ export default function Page() {
             </div>
           </div>
 
-          <div className="rounded-2xl bg-white border border-gray-200 p-6">
+          <div className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6">
             <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">
               Badges
             </p>
@@ -62,7 +62,7 @@ export default function Page() {
         </aside>
 
         <div className="lg:col-span-2 space-y-6">
-          <section className="rounded-2xl bg-white border border-gray-200 p-6">
+          <section className="rounded-2xl bg-white border border-gray-200 p-6 shadow-glow-soft">
             <h2 className="text-lg font-bold text-brand-navy mb-4">Informations personnelles</h2>
             <div className="grid sm:grid-cols-2 gap-4">
               <div>
@@ -96,13 +96,13 @@ export default function Page() {
             <button
               type="button"
               disabled
-              className="mt-5 inline-flex items-center rounded-pill bg-green-500 text-white px-5 py-2 text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
+              className="mt-5 inline-flex items-center rounded-pill bg-green-500 text-white px-5 py-2 text-sm font-semibold shadow-glow-green disabled:opacity-60 disabled:cursor-not-allowed"
             >
               Enregistrer les modifications
             </button>
           </section>
 
-          <section className="rounded-2xl bg-white border border-gray-200 p-6">
+          <section className="rounded-2xl bg-white border border-gray-200 p-6 shadow-glow-soft">
             <h2 className="text-lg font-bold text-brand-navy mb-4 flex items-center gap-2">
               <Lock className="h-5 w-5" aria-hidden />
               Sécurité
@@ -134,13 +134,13 @@ export default function Page() {
             <button
               type="button"
               disabled
-              className="mt-5 inline-flex items-center rounded-pill bg-brand-navy text-white px-5 py-2 text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
+              className="mt-5 inline-flex items-center rounded-pill bg-brand-navy text-white px-5 py-2 text-sm font-semibold shadow-glow-navy disabled:opacity-60 disabled:cursor-not-allowed"
             >
               Mettre à jour le mot de passe
             </button>
           </section>
 
-          <section className="rounded-2xl bg-red-50 border border-red-100 p-6">
+          <section className="rounded-2xl bg-red-50 border border-red-100 p-6 shadow-glow-red">
             <h2 className="text-lg font-bold text-red-700 mb-2 flex items-center gap-2">
               <Trash2 className="h-5 w-5" aria-hidden />
               Zone dangereuse
@@ -152,7 +152,7 @@ export default function Page() {
             <button
               type="button"
               disabled
-              className="inline-flex items-center gap-1.5 rounded-pill bg-red-500 text-white px-5 py-2 text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
+              className="inline-flex items-center gap-1.5 rounded-pill bg-red-500 text-white px-5 py-2 text-sm font-semibold shadow-glow-red disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <Trash2 className="h-4 w-4" aria-hidden />
               Supprimer mon compte

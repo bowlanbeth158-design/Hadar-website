@@ -50,7 +50,7 @@ export function RecentReports() {
         {DEMO_REPORTS.map((r) => (
           <article
             key={r.id}
-            className="rounded-2xl bg-white border border-gray-200 p-5 flex flex-col"
+            className="rounded-2xl bg-white border border-gray-200 p-5 flex flex-col shadow-glow-soft hover:shadow-glow-navy transition-all"
           >
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-2">

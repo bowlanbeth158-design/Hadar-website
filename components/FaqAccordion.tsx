@@ -13,7 +13,7 @@ export function FaqAccordion({ items }: Props) {
       {items.map((item) => (
         <details
           key={item.question}
-          className="group rounded-2xl border border-gray-200 bg-white open:border-brand-blue open:shadow-md transition-all"
+          className="group rounded-2xl border border-gray-200 bg-white shadow-glow-soft open:border-brand-blue open:shadow-glow-blue transition-all"
         >
           <summary className="flex items-center justify-between gap-3 px-5 py-4 cursor-pointer text-brand-navy font-semibold list-none [&::-webkit-details-marker]:hidden group-open:text-brand-blue">
             <span className="flex-1">{item.question}</span>

@@ -123,7 +123,7 @@ export default function Page() {
           return (
             <div
               key={r.id}
-              className={`rounded-2xl bg-white border border-gray-200 border-l-4 ${s.border} p-5`}
+              className={`rounded-2xl bg-white border border-gray-200 border-l-4 ${s.border} p-5 shadow-glow-soft hover:shadow-glow-navy transition-all`}
             >
               <div className="flex items-start justify-between gap-4 flex-wrap">
                 <div className="flex-1 min-w-0">
@@ -143,7 +143,7 @@ export default function Page() {
                 </div>
                 <Link
                   href={`/mes-signalements/${r.id}`}
-                  className="inline-flex items-center gap-1.5 rounded-pill border border-brand-navy text-brand-navy px-4 py-1.5 text-sm font-semibold hover:bg-brand-navy hover:text-white transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-pill border border-brand-navy text-brand-navy px-4 py-1.5 text-sm font-semibold hover:bg-brand-navy hover:text-white shadow-glow-soft hover:shadow-glow-navy transition-all"
                 >
                   <Eye className="h-4 w-4" aria-hidden />
                   Voir les détails

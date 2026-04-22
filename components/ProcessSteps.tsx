@@ -8,6 +8,7 @@ type Step = {
   borderTop: string;
   iconColor: string;
   dotColor: string;
+  glow: string;
 };
 
 const STEPS: Step[] = [
@@ -19,6 +20,7 @@ const STEPS: Step[] = [
     borderTop: 'border-t-brand-blue',
     iconColor: 'text-brand-blue',
     dotColor: 'bg-brand-blue',
+    glow: 'shadow-glow-blue',
   },
   {
     n: 2,
@@ -28,6 +30,7 @@ const STEPS: Step[] = [
     borderTop: 'border-t-violet-500',
     iconColor: 'text-violet-500',
     dotColor: 'bg-violet-500',
+    glow: 'shadow-glow-violet',
   },
   {
     n: 3,
@@ -37,6 +40,7 @@ const STEPS: Step[] = [
     borderTop: 'border-t-orange-500',
     iconColor: 'text-orange-500',
     dotColor: 'bg-orange-500',
+    glow: 'shadow-glow-orange',
   },
   {
     n: 4,
@@ -46,6 +50,7 @@ const STEPS: Step[] = [
     borderTop: 'border-t-green-500',
     iconColor: 'text-green-500',
     dotColor: 'bg-green-500',
+    glow: 'shadow-glow-green',
   },
 ];
 
@@ -63,7 +68,7 @@ export function ProcessSteps() {
             return (
               <div
                 key={s.n}
-                className={`relative rounded-2xl bg-white border border-gray-200 border-t-4 ${s.borderTop} p-6 overflow-visible`}
+                className={`relative rounded-2xl bg-white border border-gray-200 border-t-4 ${s.borderTop} ${s.glow} p-6 overflow-visible transition-all`}
               >
                 <span
                   aria-hidden

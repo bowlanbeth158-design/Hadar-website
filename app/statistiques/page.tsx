@@ -28,23 +28,19 @@ export const metadata: Metadata = {
     'Analysez l’évolution et les tendances des signalements sur Hadar.ma.',
 };
 
-const GLOBAL_STATS: { label: string; value: string; gradient: string; Icon: LucideIcon }[] = [
-  { label: 'Utilisateurs actifs', value: '2 500', gradient: 'bg-grad-stat-navy', Icon: Users },
-  { label: 'Signalements enregistrés', value: '1 245', gradient: 'bg-grad-stat-red', Icon: Siren },
-  { label: 'Contacts signalés', value: '346', gradient: 'bg-grad-stat-violet', Icon: Smartphone },
-  {
-    label: 'Vérifications réalisées',
-    value: '+15 000',
-    gradient: 'bg-grad-stat-sky',
-    Icon: ShieldCheck,
-  },
-  { label: 'Montant signalé', value: '420 000 MAD', gradient: 'bg-grad-stat-green', Icon: Wallet },
-  {
-    label: 'Dernier signalement',
-    value: 'il y a 2 h',
-    gradient: 'bg-grad-stat-orange',
-    Icon: Clock,
-  },
+const GLOBAL_STATS: {
+  label: string;
+  value: string;
+  gradient: string;
+  glow: string;
+  Icon: LucideIcon;
+}[] = [
+  { label: 'Utilisateurs actifs', value: '2 500', gradient: 'bg-grad-stat-navy', glow: 'shadow-glow-navy', Icon: Users },
+  { label: 'Signalements enregistrés', value: '1 245', gradient: 'bg-grad-stat-red', glow: 'shadow-glow-red', Icon: Siren },
+  { label: 'Contacts signalés', value: '346', gradient: 'bg-grad-stat-violet', glow: 'shadow-glow-violet', Icon: Smartphone },
+  { label: 'Vérifications réalisées', value: '+15 000', gradient: 'bg-grad-stat-sky', glow: 'shadow-glow-sky', Icon: ShieldCheck },
+  { label: 'Montant signalé', value: '420 000 MAD', gradient: 'bg-grad-stat-green', glow: 'shadow-glow-green', Icon: Wallet },
+  { label: 'Dernier signalement', value: 'il y a 2 h', gradient: 'bg-grad-stat-orange', glow: 'shadow-glow-orange', Icon: Clock },
 ];
 
 const PROBLEMS: { label: string; pct: number; Icon: LucideIcon }[] = [
@@ -92,10 +88,16 @@ const ACTIVITY: { label: string; pct: number; color: string }[] = [
   { label: 'Élevé', pct: 45, color: 'bg-red-500' },
 ];
 
-const STATUS: { label: string; value: string; color: string; textColor: string }[] = [
-  { label: 'Signalements soumis', value: '1 900', color: 'bg-orange-500', textColor: 'text-white' },
-  { label: 'Signalements refusés', value: '655', color: 'bg-gray-400', textColor: 'text-white' },
-  { label: 'Signalements publiés', value: '1 245', color: 'bg-green-500', textColor: 'text-white' },
+const STATUS: {
+  label: string;
+  value: string;
+  color: string;
+  textColor: string;
+  glow: string;
+}[] = [
+  { label: 'Signalements soumis', value: '1 900', color: 'bg-orange-500', textColor: 'text-white', glow: 'shadow-glow-orange' },
+  { label: 'Signalements refusés', value: '655', color: 'bg-gray-400', textColor: 'text-white', glow: 'shadow-glow-soft' },
+  { label: 'Signalements publiés', value: '1 245', color: 'bg-green-500', textColor: 'text-white', glow: 'shadow-glow-green' },
 ];
 
 // Donut evolution value (center %)
@@ -155,7 +157,7 @@ export default function Page() {
         {GLOBAL_STATS.map((s) => (
           <div
             key={s.label}
-            className={`${s.gradient} text-white rounded-2xl p-5 shadow-sm flex items-center justify-between`}
+            className={`${s.gradient} ${s.glow} text-white rounded-2xl p-5 flex items-center justify-between`}
           >
             <div>
               <p className="text-3xl font-bold">{s.value}</p>
@@ -167,7 +169,7 @@ export default function Page() {
       </section>
 
       <section className="mt-8 grid gap-4 lg:grid-cols-2">
-        <div className="rounded-2xl bg-white border border-gray-200 p-6">
+        <div className="rounded-2xl bg-white border border-gray-200 p-6 shadow-glow-soft">
           <h2 className="text-lg font-bold text-brand-navy mb-5">Types de problèmes signalés</h2>
           <ul className="space-y-4">
             {PROBLEMS.map((p) => (
@@ -190,25 +192,35 @@ export default function Page() {
           </ul>
         </div>
 
-        <div className="rounded-2xl bg-white border border-gray-200 p-6">
+        <div className="rounded-2xl bg-white border border-gray-200 p-6 shadow-glow-soft">
           <h2 className="text-lg font-bold text-brand-navy mb-5">Canaux plus signalés</h2>
           <div className="grid grid-cols-2 gap-3">
-            {CHANNELS.map((c) => (
-              <div
-                key={c.label}
-                className={`rounded-2xl bg-white border-2 ${c.accent} p-4`}
-              >
-                <div className="flex items-center gap-2 text-sm font-semibold text-brand-navy">
-                  <c.Icon className="h-4 w-4" aria-hidden />
-                  {c.label}
-                </div>
+            {CHANNELS.map((c) => {
+              const cardGlow =
+                c.badgeBg === 'bg-orange-500'
+                  ? 'shadow-glow-orange'
+                  : c.badgeBg === 'bg-green-500'
+                    ? 'shadow-glow-green'
+                    : c.badgeBg === 'bg-violet-500'
+                      ? 'shadow-glow-violet'
+                      : 'shadow-glow-blue';
+              return (
                 <div
-                  className={`mt-3 inline-flex items-center justify-center rounded-pill ${c.badgeBg} text-white text-sm font-bold px-3 py-1`}
+                  key={c.label}
+                  className={`rounded-2xl bg-white border-2 ${c.accent} ${cardGlow} p-4`}
                 >
-                  {c.pct}%
+                  <div className="flex items-center gap-2 text-sm font-semibold text-brand-navy">
+                    <c.Icon className="h-4 w-4" aria-hidden />
+                    {c.label}
+                  </div>
+                  <div
+                    className={`mt-3 inline-flex items-center justify-center rounded-pill ${c.badgeBg} text-white text-sm font-bold px-3 py-1`}
+                  >
+                    {c.pct}%
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -245,13 +257,13 @@ export default function Page() {
             <div className="space-y-4">
               <div>
                 <p className="text-sm text-gray-500">+{EVOLUTION_PCT}% vs semaine dernière</p>
-                <span className="mt-1 inline-flex items-center rounded-pill bg-red-500 text-white font-bold px-4 py-1.5 text-sm">
+                <span className="mt-1 inline-flex items-center rounded-pill bg-red-500 text-white font-bold px-4 py-1.5 text-sm shadow-glow-red">
                   1 900
                 </span>
               </div>
               <div>
                 <p className="text-sm text-gray-500">+45% aujourd&apos;hui</p>
-                <span className="mt-1 inline-flex items-center rounded-pill bg-red-500 text-white font-bold px-4 py-1.5 text-sm">
+                <span className="mt-1 inline-flex items-center rounded-pill bg-red-500 text-white font-bold px-4 py-1.5 text-sm shadow-glow-red">
                   345
                 </span>
               </div>
@@ -263,7 +275,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="mt-4 rounded-2xl bg-white border border-gray-200 p-6">
+      <section className="mt-4 rounded-2xl bg-white border border-gray-200 p-6 shadow-glow-soft">
         <h2 className="text-lg font-bold text-brand-navy text-center mb-5">
           Statut des signalements
         </h2>
@@ -271,7 +283,7 @@ export default function Page() {
           {STATUS.map((s) => (
             <div
               key={s.label}
-              className={`inline-flex items-center gap-2 rounded-pill ${s.color} ${s.textColor} px-4 py-2 text-sm font-semibold shadow-sm`}
+              className={`inline-flex items-center gap-2 rounded-pill ${s.color} ${s.textColor} ${s.glow} px-4 py-2 text-sm font-semibold`}
             >
               <Siren className="h-4 w-4" aria-hidden />
               <span className="text-base font-bold">{s.value}</span>
@@ -291,14 +303,14 @@ export default function Page() {
       <section className="mt-8 flex flex-wrap justify-center gap-3">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-6 py-3 text-sm font-semibold shadow-sm transition-colors"
+          className="inline-flex items-center gap-2 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-6 py-3 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
         >
           <ShieldCheck className="h-4 w-4" aria-hidden />
           Vérifier un contact
         </Link>
         <Link
           href="/signaler"
-          className="inline-flex items-center gap-2 rounded-pill bg-red-500 hover:bg-red-700 text-white px-6 py-3 text-sm font-semibold shadow-sm transition-colors"
+          className="inline-flex items-center gap-2 rounded-pill bg-red-500 hover:bg-red-700 text-white px-6 py-3 text-sm font-semibold shadow-glow-red transition-all"
         >
           <Siren className="h-4 w-4" aria-hidden />
           Signaler un contact

@@ -76,6 +76,18 @@ const config: Config = {
       borderRadius: {
         pill: '9999px',
       },
+      boxShadow: {
+        // Outer glows — brand.md color system applied as soft halos.
+        'glow-soft':   '0 6px 24px -6px rgb(0 50 125 / 0.18), 0 0 1px rgb(0 50 125 / 0.05)',
+        'glow-navy':   '0 10px 30px -8px rgb(0 50 125 / 0.40), 0 0 0 1px rgb(0 50 125 / 0.04)',
+        'glow-blue':   '0 10px 30px -8px rgb(0 120 186 / 0.40), 0 0 0 1px rgb(0 120 186 / 0.04)',
+        'glow-red':    '0 10px 30px -8px rgb(238 68 68 / 0.45), 0 0 0 1px rgb(238 68 68 / 0.05)',
+        'glow-green':  '0 10px 30px -8px rgb(34 196 94 / 0.45), 0 0 0 1px rgb(34 196 94 / 0.05)',
+        'glow-orange': '0 10px 30px -8px rgb(242 155 17 / 0.45), 0 0 0 1px rgb(242 155 17 / 0.05)',
+        'glow-violet': '0 10px 30px -8px rgb(134 82 251 / 0.45), 0 0 0 1px rgb(134 82 251 / 0.05)',
+        'glow-sky':    '0 10px 30px -8px rgb(0 191 238 / 0.45), 0 0 0 1px rgb(0 191 238 / 0.05)',
+        'glow-yellow': '0 10px 30px -8px rgb(216 193 0 / 0.45), 0 0 0 1px rgb(216 193 0 / 0.05)',
+      },
     },
   },
   plugins: [typography],

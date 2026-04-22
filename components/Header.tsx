@@ -55,7 +55,7 @@ export function Header() {
           <div className="flex items-center gap-2 md:gap-3">
             <Link
               href="/signaler"
-              className="inline-flex items-center gap-1.5 rounded-pill bg-red-500 hover:bg-red-700 text-white px-4 py-2 text-sm font-semibold shadow-sm transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-pill bg-red-500 hover:bg-red-700 text-white px-4 py-2 text-sm font-semibold shadow-glow-red transition-all"
             >
               <Siren className="h-4 w-4" aria-hidden />
               Signaler

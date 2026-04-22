@@ -10,23 +10,19 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
-const KPI_STATS: { label: string; value: string; gradient: string; Icon: LucideIcon }[] = [
-  { label: 'Utilisateurs actifs', value: '12 593', gradient: 'bg-grad-stat-navy', Icon: Users },
-  { label: 'Signalements enregistrés', value: '19 840', gradient: 'bg-grad-stat-red', Icon: Siren },
-  { label: 'Contacts signalés', value: '9 594', gradient: 'bg-grad-stat-violet', Icon: Smartphone },
-  {
-    label: 'Vérifications réalisées',
-    value: '18 978',
-    gradient: 'bg-grad-stat-sky',
-    Icon: ShieldCheck,
-  },
-  { label: 'Montant signalé', value: '504 000 MAD', gradient: 'bg-grad-stat-green', Icon: Wallet },
-  {
-    label: 'Dernier signalement',
-    value: 'il y a 2h',
-    gradient: 'bg-grad-stat-orange',
-    Icon: Clock,
-  },
+const KPI_STATS: {
+  label: string;
+  value: string;
+  gradient: string;
+  glow: string;
+  Icon: LucideIcon;
+}[] = [
+  { label: 'Utilisateurs actifs', value: '12 593', gradient: 'bg-grad-stat-navy', glow: 'shadow-glow-navy', Icon: Users },
+  { label: 'Signalements enregistrés', value: '19 840', gradient: 'bg-grad-stat-red', glow: 'shadow-glow-red', Icon: Siren },
+  { label: 'Contacts signalés', value: '9 594', gradient: 'bg-grad-stat-violet', glow: 'shadow-glow-violet', Icon: Smartphone },
+  { label: 'Vérifications réalisées', value: '18 978', gradient: 'bg-grad-stat-sky', glow: 'shadow-glow-sky', Icon: ShieldCheck },
+  { label: 'Montant signalé', value: '504 000 MAD', gradient: 'bg-grad-stat-green', glow: 'shadow-glow-green', Icon: Wallet },
+  { label: 'Dernier signalement', value: 'il y a 2h', gradient: 'bg-grad-stat-orange', glow: 'shadow-glow-orange', Icon: Clock },
 ];
 
 export function PlatformStats() {
@@ -39,7 +35,7 @@ export function PlatformStats() {
         {KPI_STATS.map((s) => (
           <div
             key={s.label}
-            className={`${s.gradient} text-white rounded-2xl p-5 shadow-sm flex items-center justify-between`}
+            className={`${s.gradient} ${s.glow} text-white rounded-2xl p-5 flex items-center justify-between`}
           >
             <div>
               <p className="text-3xl font-bold">{s.value}</p>
@@ -52,7 +48,7 @@ export function PlatformStats() {
       <div className="mt-4 flex justify-center">
         <Link
           href="/statistiques"
-          className="inline-flex items-center gap-1.5 rounded-pill border border-brand-navy text-brand-navy px-5 py-2 text-sm font-semibold hover:bg-brand-navy hover:text-white transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-pill border border-brand-navy text-brand-navy px-5 py-2 text-sm font-semibold hover:bg-brand-navy hover:text-white shadow-glow-soft hover:shadow-glow-navy transition-all"
         >
           Voir plus
           <ArrowUpRight className="h-4 w-4" aria-hidden />

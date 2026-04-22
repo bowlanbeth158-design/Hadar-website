@@ -109,7 +109,7 @@ export function NotificationSettingsModal() {
             onClick={() => setOpen(false)}
             className="absolute inset-0 bg-brand-navy/40 backdrop-blur-sm cursor-default"
           />
-          <div className="relative w-full max-w-lg rounded-2xl bg-white shadow-xl p-6 md:p-8">
+          <div className="relative w-full max-w-lg rounded-2xl bg-white shadow-glow-navy p-6 md:p-8">
             <button
               type="button"
               aria-label="Fermer"
@@ -174,7 +174,7 @@ export function NotificationSettingsModal() {
               <button
                 type="button"
                 onClick={save}
-                className="inline-flex items-center gap-1.5 rounded-pill bg-brand-blue hover:bg-brand-navy text-white px-5 py-2 text-sm font-semibold transition-colors"
+                className="inline-flex items-center gap-1.5 rounded-pill bg-brand-blue hover:bg-brand-navy text-white px-5 py-2 text-sm font-semibold shadow-glow-blue hover:shadow-glow-navy transition-all"
               >
                 {saved ? (
                   <>

@@ -67,7 +67,7 @@ export function SearchResult({ query }: Props) {
 
       <div className="flex justify-center mb-4">
         <div
-          className={`inline-flex items-center gap-2 rounded-pill ${cfg.pillBg} ${cfg.pillText} px-4 py-2 text-sm font-semibold`}
+          className={`inline-flex items-center gap-2 rounded-pill ${cfg.pillBg} ${cfg.pillText} px-4 py-2 text-sm font-semibold shadow-glow-green`}
         >
           <CheckCircle2 className="h-4 w-4" aria-hidden />
           {cfg.pillLabel}
@@ -95,7 +95,7 @@ export function SearchResult({ query }: Props) {
         {KPIS.map((kpi) => (
           <div
             key={kpi.label}
-            className="rounded-2xl bg-white border border-gray-200 p-5 text-center"
+            className="rounded-2xl bg-white border border-gray-200 p-5 text-center shadow-glow-soft"
           >
             <p className="text-4xl font-bold text-brand-navy">{kpi.count}</p>
             <p className="mt-1 text-sm text-gray-500">{kpi.label}</p>

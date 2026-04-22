@@ -66,7 +66,7 @@ export default function Page() {
         {DEMO_ALERTS.map((a) => (
           <div
             key={a.id}
-            className={`rounded-2xl bg-white border border-gray-200 border-l-4 ${a.riskColor} p-4 flex items-start gap-4`}
+            className={`rounded-2xl bg-white border border-gray-200 border-l-4 ${a.riskColor} p-4 flex items-start gap-4 shadow-glow-soft hover:shadow-glow-navy transition-all`}
           >
             <div className="h-10 w-10 rounded-xl bg-brand-sky flex items-center justify-center shrink-0">
               <a.Icon className="h-5 w-5 text-brand-navy" aria-hidden />

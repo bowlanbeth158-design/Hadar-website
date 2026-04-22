@@ -40,7 +40,7 @@ export default function Page({ params }: PageProps) {
       </h1>
       <p className="mt-2 text-sm text-gray-500">Téléphone — soumis le 20 avril 2026</p>
 
-      <div className="mt-8 rounded-2xl bg-white border border-gray-200 p-6">
+      <div className="mt-8 rounded-2xl bg-white border border-gray-200 p-6 shadow-glow-soft">
         <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-4">
           Timeline
         </h2>
@@ -76,7 +76,7 @@ export default function Page({ params }: PageProps) {
 
       <div className="mt-6 grid gap-6 md:grid-cols-3">
         <div className="md:col-span-2 space-y-6">
-          <section className="rounded-2xl bg-white border border-gray-200 p-6">
+          <section className="rounded-2xl bg-white border border-gray-200 p-6 shadow-glow-soft">
             <h2 className="text-lg font-bold text-brand-navy mb-3">Description</h2>
             <p className="text-sm text-gray-600 leading-relaxed">
               Commande effectuée le 1er avril, vendeur n&apos;a jamais livré le produit et ne répond
@@ -84,7 +84,7 @@ export default function Page({ params }: PageProps) {
             </p>
           </section>
 
-          <section className="rounded-2xl bg-white border border-gray-200 p-6">
+          <section className="rounded-2xl bg-white border border-gray-200 p-6 shadow-glow-soft">
             <h2 className="text-lg font-bold text-brand-navy mb-3">Preuves fournies</h2>
             <ul className="space-y-2">
               {['screenshot-whatsapp-01.png', 'recu-paiement.pdf', 'conversation-email.png'].map(
@@ -103,7 +103,7 @@ export default function Page({ params }: PageProps) {
         </div>
 
         <aside className="space-y-4">
-          <div className="rounded-2xl bg-white border border-gray-200 p-6">
+          <div className="rounded-2xl bg-white border border-gray-200 p-6 shadow-glow-soft">
             <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-3">
               Informations
             </h3>
@@ -129,14 +129,14 @@ export default function Page({ params }: PageProps) {
 
           <button
             type="button"
-            className="w-full inline-flex items-center justify-center gap-1.5 rounded-pill bg-brand-blue text-white px-5 py-2.5 text-sm font-semibold hover:bg-brand-navy transition-colors"
+            className="w-full inline-flex items-center justify-center gap-1.5 rounded-pill bg-brand-blue text-white px-5 py-2.5 text-sm font-semibold hover:bg-brand-navy shadow-glow-blue hover:shadow-glow-navy transition-all"
           >
             <Pencil className="h-4 w-4" aria-hidden />
             Modifier
           </button>
           <button
             type="button"
-            className="w-full inline-flex items-center justify-center gap-1.5 rounded-pill border border-red-500 text-red-500 px-5 py-2.5 text-sm font-semibold hover:bg-red-500 hover:text-white transition-colors"
+            className="w-full inline-flex items-center justify-center gap-1.5 rounded-pill border border-red-500 text-red-500 px-5 py-2.5 text-sm font-semibold hover:bg-red-500 hover:text-white shadow-glow-soft hover:shadow-glow-red transition-all"
           >
             <Trash2 className="h-4 w-4" aria-hidden />
             Supprimer

@@ -182,7 +182,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                 onClick={() => setSelected(f.id)}
                 className={
                   isActive
-                    ? 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-brand-navy text-white px-4 py-2.5 text-sm font-medium shadow-sm'
+                    ? 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-brand-navy text-white px-4 py-2.5 text-sm font-medium shadow-glow-navy'
                     : 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-white border border-gray-200 text-brand-navy px-4 py-2.5 text-sm font-medium hover:border-brand-blue transition-colors'
                 }
               >
@@ -198,7 +198,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
           action="/"
           method="get"
           onSubmit={handleSubmit}
-          className="mt-8 mx-auto max-w-3xl flex items-center gap-2 rounded-pill bg-white border border-gray-200 shadow-sm pl-5 pr-1 py-1"
+          className="mt-8 mx-auto max-w-3xl flex items-center gap-2 rounded-pill bg-white border border-gray-200 shadow-glow-soft pl-5 pr-1 py-1"
         >
           <Search className="h-5 w-5 text-gray-400" aria-hidden />
           <input type="hidden" name="type" value={selected} />
@@ -240,7 +240,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
           </button>
           <button
             type="submit"
-            className="rounded-pill bg-green-500 hover:bg-green-700 text-white font-semibold px-5 py-2.5 text-sm transition-colors"
+            className="rounded-pill bg-green-500 hover:bg-green-700 text-white font-semibold px-5 py-2.5 text-sm shadow-glow-green transition-all"
           >
             Vérifier maintenant
           </button>

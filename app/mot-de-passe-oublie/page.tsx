@@ -38,7 +38,7 @@ export default function Page() {
         <button
           type="submit"
           disabled
-          className="w-full rounded-pill bg-brand-blue text-white px-5 py-2.5 text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
+          className="w-full rounded-pill bg-brand-blue text-white px-5 py-2.5 text-sm font-semibold shadow-glow-blue disabled:opacity-60 disabled:cursor-not-allowed"
         >
           Envoyer le lien
         </button>

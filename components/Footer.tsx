@@ -17,6 +17,12 @@ const LEGAL_LINKS = [
   { href: '/faq', label: 'FAQ' },
 ];
 
+const ACCOUNT_LINKS = [
+  { href: '/mes-alertes', label: 'Mes alertes' },
+  { href: '/mes-signalements', label: 'Mes signalements' },
+  { href: '/mon-profil', label: 'Mon profil' },
+];
+
 const POLICY_LINKS = [
   { href: '/conditions-generales', label: "Conditions générales d'utilisation" },
   { href: '/politique-confidentialite', label: 'Politique de confidentialité' },
@@ -69,6 +75,16 @@ export function Footer() {
         </div>
 
         <div>
+          <h3 className="text-sm font-semibold mb-3">Mon compte</h3>
+          <ul className="space-y-2 text-sm text-white/80 mb-5">
+            {ACCOUNT_LINKS.map((l) => (
+              <li key={l.href}>
+                <Link href={l.href} className="hover:text-white">
+                  ▸ {l.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
           <h3 className="text-sm font-semibold mb-3">Informations légales</h3>
           <ul className="space-y-2 text-sm text-white/80">
             {POLICY_LINKS.map((l) => (

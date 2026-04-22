@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Siren } from 'lucide-react';
 import { Logo } from './Logo';
 import { LoginButton } from './LoginButton';
+import { LanguageCurrencySwitcher } from './LanguageCurrencySwitcher';
 
 export function Header() {
   return (
@@ -35,16 +36,9 @@ export function Header() {
           </ul>
 
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-brand-navy hover:text-brand-blue"
-              aria-label="Changer de langue et de devise"
-            >
-              <span aria-hidden>🇲🇦</span>
-              <span>FR</span>
-              <span className="text-gray-400">·</span>
-              <span>MAD</span>
-            </button>
+            <div className="hidden sm:block">
+              <LanguageCurrencySwitcher />
+            </div>
 
             <LoginButton />
 

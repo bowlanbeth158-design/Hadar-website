@@ -45,7 +45,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
   const active = CONTACT_TYPES.find((c) => c.id === selected) ?? CONTACT_TYPES[0]!;
 
   return (
-    <section className="mx-auto max-w-5xl px-4 md:px-6 pt-12 md:pt-20 pb-6 text-center">
+    <section className="mx-auto max-w-5xl px-4 md:px-6 pt-10 md:pt-14 pb-4 text-center">
       <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-brand-navy">
         Avant d&apos;acheter, vérifiez.
       </h1>

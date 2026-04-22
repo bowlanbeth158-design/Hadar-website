@@ -41,7 +41,7 @@ const DEMO_REPORTS = [
 
 export function RecentReports() {
   return (
-    <section className="mx-auto max-w-7xl px-4 md:px-6 py-12 md:py-16">
+    <section className="mx-auto max-w-7xl px-4 md:px-6 py-8 md:py-10">
       <h2 className="text-2xl md:text-3xl font-bold bg-grad-stat-navy bg-clip-text text-transparent text-center">
         Signalements récents de la communauté
       </h2>

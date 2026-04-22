@@ -100,10 +100,10 @@ colors: {
   - `Usurpation d'identité`
 
 ### Résultat recherche (quand une vérification est faite)
-- Pill vert « Aucun signalement détecté »
-- Ligne statut : `0 signalement • Aucun signalement récent • Risque faible` + **feu tricolore** (3 cercles : vert/jaune/rouge, un seul allumé)
-- Puis les 4 cards KPI ci-dessus avec les chiffres trouvés
-- Message bas : « Vous pouvez poursuivre vos vérifications pour prendre une décision éclairée. » (vert)
+- **Pill statut** (couleur selon niveau de risque) — ex. vert « Aucun signalement détecté »
+- Ligne statut : `{n} signalement(s) • {label fréquence} • Risque {niveau}` + **indicateur 4 paliers** (🟢🟡🟠🔴, seul le niveau courant est allumé)
+- Puis les 4 cards KPI par catégorie avec les chiffres trouvés (Non livraison, Bloqué après paiement, Produit non conforme, Usurpation d'identité)
+- Message bas adapté au niveau de risque (voir tableau « Niveaux de risque » plus bas)
 
 ### Section « Statistiques de la plateforme »
 - Titre H2 bleu navy centré
@@ -192,11 +192,36 @@ colors: {
 3. `produit_non_conforme` — Produit non conforme
 4. `usurpation_identite` — Usurpation d'identité
 
-## Niveaux de risque (feu tricolore)
+## Niveaux de risque (4 paliers — basés sur le nombre de signalements)
 
-- 🟢 `faible` (vert)
-- 🟡 `modere` (jaune)
-- 🔴 `eleve` (rouge)
+| Niveau | Code | Couleur | Seuil | Message à afficher |
+|---|---|---|---|---|
+| 🟢 Faible | `faible` | vert `#16A34A` | 0 signalement | « Aucun signalement détecté. Vous pouvez continuer, tout en restant vigilant. » |
+| 🟡 Vigilance | `vigilance` | jaune `#FACC15` | 1 à 2 signalements | « Quelques signalements ont été enregistrés. Nous vous invitons à vérifier les informations avant de continuer. » |
+| 🟠 Modéré | `modere` | orange `#F97316` | 3 à 4 signalements | « Plusieurs signalements ont été enregistrés. La prudence est recommandée avant toute interaction. » |
+| 🔴 Élevé | `eleve` | rouge `#DC2626` | ≥ 5 signalements | « Un nombre important de signalements a été enregistré. Nous vous recommandons d'être particulièrement vigilant. » |
+
+### Logique de calcul (pseudo-code)
+
+```ts
+function computeRiskLevel(reportCount: number): RiskLevel {
+  if (reportCount === 0) return 'faible';
+  if (reportCount <= 2) return 'vigilance';
+  if (reportCount <= 4) return 'modere';
+  return 'eleve';
+}
+```
+
+### Indicateur visuel
+
+- 4 cercles alignés dans le résultat de recherche (vert / jaune / orange / rouge)
+- Seul le cercle du niveau courant est « allumé » (couleur saturée + ombre) — les 3 autres sont pâles
+- Pill texte à côté : « Risque faible » / « Vigilance » / « Risque modéré » / « Risque élevé »
+- Le bandeau pill en haut du résultat change de couleur selon le niveau :
+  - Faible → fond vert clair, texte vert foncé (« Aucun signalement détecté »)
+  - Vigilance → fond jaune clair, texte jaune foncé (« Signalements détectés »)
+  - Modéré → fond orange clair, texte orange foncé (« Plusieurs signalements »)
+  - Élevé → fond rouge clair, texte rouge foncé (« Signalements nombreux »)
 
 ---
 

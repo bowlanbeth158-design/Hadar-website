@@ -249,7 +249,7 @@ function computeRiskLevel(reportCount: number): RiskLevel {
 | 1 | **Type de contact** | ✅ | 8 pills en grid 4×2 (sélection unique) | Même liste que les filtres de recherche (Téléphone, WhatsApp, Email, PayPal, Site web, Réseaux sociaux, RIB, Binance). Active = fond navy + texte blanc. |
 | 2 | **Information à signaler** | ✅ | Input texte large | Placeholder dynamique selon type (ex. « Ex : 212 6 00 00 00 00 » pour téléphone, email pour Email, etc.). Bordure rouge si invalide. |
 | 3 | **Type de problème** | ✅ | 4 pills en ligne (sélection unique) | `Non livraison` · `Bloqué après paiement` · `Produit non conforme` · `Usurpation d'identité`. Active = fond navy + texte blanc. |
-| 4 | Montant estimé | ⬜ | Input texte + suffixe MAD | Placeholder « Ex : 5 000 MAD ». Champ optionnel. |
+| 4 | Montant estimé | ⬜ | Input numérique + suffixe **devise courante** | Placeholder adapté à la devise active (ex. « Ex : 5 000 MAD », « Ex : 500 € », « Ex : 500 $ »). Champ optionnel. |
 | 5 | Description | ⬜ | Textarea | « Décrivez brièvement la situation (informations factuelles uniquement) ». Compteur « 200–300 caractères max ». Hint rouge permanent sous le champ : « Merci de décrire la situation de manière factuelle. Évitez les jugements ou accusations. » |
 | 6 | Preuves | ⬜ | Dropzone (drag & drop + file picker) | « Ajouter une preuve (fortement recommandé) ». Placeholder : « Choisir un fichier ou glisser ici (capture d'écran, reçu, conversation…) ». Icône poubelle pour retirer. |
 
@@ -279,15 +279,22 @@ const reportSchema = z.object({
 2. **Rate-limit par utilisateur** : max 5 signalements / heure, 20 / jour (ajustable).
 3. **CAPTCHA** (Cloudflare Turnstile) sur la soumission pour bloquer les bots même authentifiés.
 4. **Upload de preuves — défense en profondeur** :
-   - Whitelist MIME stricte : `image/jpeg`, `image/png`, `image/webp`, `application/pdf` uniquement
+   - **Types acceptés (confirmé par le propriétaire)** :
+     - Images : `image/jpeg`, `image/png`, `image/webp` (JPG / PNG / screenshots)
+     - Vidéos : `video/mp4`, `video/webm`, `video/quicktime` (.mov)
+     - ❌ Pas de SVG, HTML, PDF avec JS actif, exécutables, archives
    - Vérification des **magic bytes** côté serveur (pas juste l'extension ou le header `Content-Type`)
-   - Taille max : **10 MB** par fichier, **5 fichiers max**
+   - Taille max :
+     - Images : **10 MB** / fichier
+     - Vidéos : **100 MB** / fichier (durée max conseillée : 2 min)
+     - **5 fichiers max** au total par signalement
    - **Nettoyage EXIF** des images (pas de géolocalisation/appareil en clair)
-   - **Jamais d'exécution** : pas de SVG, pas de HTML, pas de JS, pas de PDF avec JS/forms actifs
-   - Stockage **hors webroot** (ou bucket S3 privé avec URLs pré-signées à expiration courte)
+   - **Transcodage vidéo côté serveur** (ffmpeg → H.264/WebM, strip métadonnées) avant mise à dispo — évite exploits codec et normalise les formats
+   - Stockage **hors webroot** (ou bucket S3 privé avec URLs pré-signées à expiration courte 5–15 min)
    - Noms de fichiers **régénérés** (UUID), le nom original conservé en metadata DB
-   - **Scan antivirus** avant mise à disposition (ClamAV ou équivalent)
+   - **Scan antivirus** (ClamAV) avant publication ; vidéos mises en quarantaine jusqu'à scan OK
    - Accès aux preuves **restreint** aux modérateurs et à l'auteur (pas de lien public)
+   - **Ne jamais servir les preuves** depuis le domaine principal (sous-domaine isolé type `cdn-private.hadar.ma` avec `Content-Disposition: attachment` si possible, ou en iframe sandboxée pour aperçu)
 5. **Contenu texte — anti-diffamation / abus** :
    - Longueur stricte (≤ 300 chars)
    - Filtre de mots-clés injurieux / données personnelles évidentes (emails, CB, etc.) côté serveur
@@ -306,6 +313,57 @@ const reportSchema = z.object({
    - Email : lowercase + trim
    - URL : lowercase host, strip tracking params (utm_*), forcer https si possible
    - RIB : retirer espaces/tirets
+
+---
+
+## Devises supportées
+
+**3 devises** : `MAD` (Dirham marocain) · `EUR` (€) · `USD` ($).
+
+### Règles
+- **Devise par défaut : MAD** (projet au Maroc)
+- L'utilisateur peut changer à tout moment via **un bouton persistant dans le header** (à côté du sélecteur de langue) — ce bouton reste visible sur toutes les pages
+- Le choix est **mémorisé** :
+  - Non connecté : localStorage
+  - Connecté : colonne `preferredCurrency` en DB (prime sur localStorage)
+- Tous les montants (formulaire signalement, stats « Montant signalé », détail signalement) utilisent la devise courante
+- **Stockage DB** :
+  - Colonne `amount` (INT, en plus petite unité : centimes MAD, cents EUR/USD) **+** `currency` (CHAR(3) ENUM `MAD|EUR|USD`)
+  - **Jamais de conversion à l'écriture** — on conserve la devise d'origine déclarée par l'utilisateur
+  - Conversion faite à l'affichage selon la devise courante (taux de change stocké en DB, mis à jour quotidiennement via API fiable)
+- Les conversions sont **indicatives** et affichent toujours : « ≈ 5 200 MAD (converti depuis 500 €) »
+
+### Sécurité
+- Taux de change : source fiable (ex. API Banque Centrale Maroc ou équivalent) ; **jamais de saisie manuelle par un utilisateur**
+- Validation montant : borne haute (`10 000 000` en plus petite unité) pour éviter overflow / abus
+- Type serveur strict : bigint, parsing via Zod (`z.coerce.number().int().nonnegative().max(10_000_000)`)
+
+---
+
+## Anonymisation & visibilité des signalements
+
+**Règle confirmée par le propriétaire** :
+
+| Audience | Ce qu'ils voient |
+|---|---|
+| **Public (visiteurs et autres utilisateurs)** | Toujours **« Utilisateur anonyme »** — jamais de lien vers l'auteur, jamais de nom, photo, ID, contact, IP |
+| **Équipe interne (admin / modérateur Hadar)** | Accès complet : identité de l'auteur, email, historique, IP, User-Agent, timestamps, preuves brutes |
+
+### Implémentation
+- DB : chaque `Report` garde `authorId` (FK vers `User`) — **jamais exposé via l'API publique**
+- API publique : le champ `authorId` est explicitement **stripé** dans le serializer public ; seul un champ dérivé `displayName: "Utilisateur anonyme"` est renvoyé
+- API admin (route séparée `/api/admin/*`, protégée par rôle `MODERATOR` ou `ADMIN`) : retourne l'objet complet
+- Front : le composant `ReportCard` n'appelle **jamais** l'API admin ; séparation stricte des endpoints
+- **Pas de notification automatique** qui pourrait leak l'auteur (pas d'email « X a signalé Y » envoyé à Y, etc.)
+- **Procédure interne de partage** (documenté ultérieurement par le propriétaire) — à clarifier : dans quels cas et comment l'équipe partage-t-elle des infos (ex. avec autorités) ?
+
+### Rôles utilisateurs (RBAC)
+
+```
+USER        → signaler, rechercher, voir signalements publics
+MODERATOR   → tout ce que USER peut + approuver/rejeter/éditer signalements, voir identités
+ADMIN       → tout ce que MODERATOR peut + gérer utilisateurs, configuration, taux de change, bannissement
+```
 
 ---
 

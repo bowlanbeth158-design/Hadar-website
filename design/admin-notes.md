@@ -889,7 +889,17 @@ Toutes les actions `account.*` et `security.*` (modifier son propre profil, 2FA,
 | Modéré 4 > 3 | jaune | `670 (36%)` | contacts dans la tranche Modéré |
 | Elevé ≥ 5 | vert | `350 (20%)` | contacts dans la tranche Élevé |
 
-> ⚠️ **Notation ambiguë à clarifier** : `Vigilance 2 > 1`, `Modéré 4 > 3`, `Élevé ≥ 5`. Interprétation probable = **seuils de comptage** (nombre de signalements cumulés par contact pour tomber dans cette tranche de risque). À valider avec le propriétaire. Ça doit recouper la taxonomie "4 niveaux de risque" de la partie user (§design-notes).
+> ⚠️ **Notation ambiguë à clarifier** : `Vigilance 2 > 1`, `Modéré 4 > 3`, `Élevé ≥ 5`. Interprétation probable = **seuils cumulés par contact signalé** (nombre de signalements distincts reçus par un même contact pour tomber dans cette tranche).
+>
+> **Règle d'unicité validée par le propriétaire** (avril 2026) :
+> - Un utilisateur peut signaler **1 contact unique** `(valeur + canal)` → OK
+> - Un utilisateur peut signaler **plusieurs contacts différents** → OK
+> - Un utilisateur ne peut **pas** signaler plusieurs fois **le même contact sur le même canal** → bloqué
+> - Exception : même valeur (ex: `+212 6 XX XX XX XX`) signalée sur **deux canaux différents** (ex: WhatsApp **ET** RIB bancaire) = 2 signalements distincts autorisés
+>
+> **Clé d'unicité DB** : `UNIQUE (userId, contactValue, channel)` sur la table `Report`.
+>
+> **Seuils exacts** : à confirmer (cf §Questions ouvertes).
 
 **Charts (2 cards) :**
 
@@ -911,6 +921,8 @@ Toutes les actions `account.*` et `security.*` (modifier son propre profil, 2FA,
 - Badge : `-25% vs période précédente`
 
 **Q ouverte** : le type d'évolution affiché est-il sélectionnable (dropdown) ou figé ?
+
+> **Réponse propriétaire (à confirmer l'interprétation)** : « ils sont liés au signalement fait par l'utilisateur dans la page signalement ». Interprétation retenue : la card affiche **dynamiquement l'élément le plus signalé de la période** (top 1 automatique). Exemples : sur page 2 = type de problème le plus signalé ; sur page 3 = canal le plus signalé. À re-confirmer ci-dessous.
 
 ---
 
@@ -955,9 +967,9 @@ Toutes les actions `account.*` et `security.*` (modifier son propre profil, 2FA,
 | Visites | bleu ciel `#00BFEE` | `15 000` | Visites |
 | Inscriptions | vert `#22C45E` | `8 500` | Inscriptions |
 | Utilisateurs actifs | rouge `#EE4444` | `950` | Utilisateurs actifs |
-| Taux de conversion | orange `#F29B11` | `500` | Taux de conversion |
+| Taux de conversion | orange `#F29B11` | `57%` *(calculé)* | Taux de conversion |
 
-> ⚠️ **Q ouverte** : `Taux de conversion = 500` → pas un % et unité non précisée. Probablement un placeholder. Devrait être un % (ex : `57%` de visites converties en inscriptions) ou un nombre absolu. À clarifier.
+> **Taux de conversion (figé par le propriétaire)** : `(Inscriptions / Visites) × 100`. Avec les valeurs de la maquette : `(8 500 / 15 000) × 100 = 56,67%` → arrondi `57%`. La valeur `500` de la maquette est un placeholder à remplacer par le calcul.
 
 **Charts (2 cards) :**
 
@@ -979,7 +991,13 @@ Toutes les actions `account.*` et `security.*` (modifier son propre profil, 2FA,
 | Taux d'insatisfaction | `16%` | Taux d'insatisfaction |
 | Taux de retour | `62%` | Taux de retour |
 
-> ⚠️ **Q ouverte** : d'où viennent ces scores (rating explicite via un widget ? NPS ? Satisfaction auto-calculée ?). À spécifier la source pour pouvoir l'implémenter.
+> **Source (figée par le propriétaire)** : **widget de notation 1 à 5 étoiles affiché après chaque signalement** côté user. Question type : « Notez votre expérience ». Les 4 cards sont calculées à partir des ratings :
+> - `Score de satisfaction` = moyenne des notes (ex : `4.2 / 5`)
+> - `Taux de satisfaction` = % de notes ≥ 4 étoiles (ex : `84%`)
+> - `Taux d'insatisfaction` = % de notes ≤ 2 étoiles (ex : `16%`)
+> - `Taux de retour` = % d'utilisateurs ayant signalé ≥ 2 fois (ex : `62%`)
+>
+> **À faire côté partie user** (ajout aux specs `design-notes.md`) : widget de rating 1-5 étoiles + question « Notez votre expérience » affiché après soumission d'un signalement, skippable (`Plus tard`), stocké dans la table `ReportRating`.
 
 ---
 
@@ -1041,11 +1059,12 @@ Toutes les actions `account.*` et `security.*` (modifier son propre profil, 2FA,
 - [ ] **Fuseau horaire** : global plateforme (tous les timestamps stockés en UTC, affichés dans la TZ choisie) ou par user ?
 
 ### Statistiques
-- [ ] **Notation seuils risque** : confirmer la sémantique de `Vigilance 2 > 1`, `Modéré 4 > 3`, `Élevé ≥ 5` (hypothèse : seuils de cumul par contact) — aligner avec la taxonomie 4 niveaux de la partie user
-- [ ] **Labels `%` sur barres de comptage** (pages 1 et 2) → erreur maquette, à corriger en nombres purs
-- [ ] **Type de problème / canal dans les cards "Évolution"** : sélectionnable via dropdown, ou figé par défaut ?
-- [ ] **Taux de conversion = 500** (page 4) → unité/placeholder à clarifier (% ou nombre absolu ?)
-- [ ] **Satisfaction / Rating** (page 4 cards pastel) : source des métriques (widget NPS ? rating après signalement ? auto-calculé ?)
+- [x] ~~Règle d'unicité signalement~~ → **1 user peut signaler 1 contact par canal, jamais 2× le même (user, valeur, canal)** (propriétaire). Clé DB `UNIQUE (userId, contactValue, channel)`.
+- [x] ~~Taux de conversion~~ → **`(Inscriptions / Visites) × 100`** (propriétaire). Calculé côté serveur.
+- [x] ~~Satisfaction / Rating~~ → **Widget 1-5 étoiles après chaque signalement** (propriétaire). Widget spec ajouté à `design-notes.md`.
+- [ ] **Seuils numériques exacts des 4 niveaux de risque** : définir les bornes (`Faible`, `Vigilance`, `Modéré`, `Élevé`) en nombre de signalements cumulés par contact
+- [ ] **Labels `%` sur barres de comptage** (pages 1 et 2) → erreur maquette, à corriger en nombres purs — à reconfirmer
+- [ ] **Cards "Évolution" (pages 2 et 3)** : top 1 auto (interprétation retenue) ou sélection manuelle (dropdown) ?
 - [ ] **Refresh auto** : intervalle (60 s proposé) + indicateur visuel pendant le fetch ?
 - [ ] **Exporter** : format (CSV / XLSX / PDF) + périmètre (page courante / toutes les pages / raw data) ?
 - [ ] **Typo maquette** : `Verifications` → `Vérifications` + `2025 période actuelle` → `2026 période actuelle`

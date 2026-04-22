@@ -300,6 +300,28 @@ function computeRiskLevel(reportCount: number): RiskLevel {
 - Bouton primary rouge : `📢 Envoyer le signalement`
 - Note bas : « Les informations fournies sont utilisées uniquement dans le cadre du signalement et restent confidentielles. »
 
+### Widget de rating (après soumission)
+
+> Ajouté avril 2026 (spec propriétaire). Source des stats satisfaction de l'écran admin `/admin/statistiques` page 4 (cf `admin-notes.md` §Écran 9 Page 4).
+
+**Déclencheur** : affiché immédiatement après soumission réussie d'un signalement, dans une modal ou un encart sous le message de confirmation.
+
+**Contenu** :
+- Titre : « Notez votre expérience »
+- Rating 1 à 5 étoiles (click pour sélectionner ; survol pour preview)
+- Textarea optionnelle : « Un commentaire ? » (max 500 caractères)
+- Bouton primary vert : `Envoyer ma note`
+- Lien secondaire : `Plus tard` (skip, l'utilisateur peut noter plus tard via `Mes signalements`)
+
+**Règles** :
+- Un seul rating par signalement (`UNIQUE (reportId)` sur table `ReportRating`)
+- Modifiable par l'utilisateur tant que le signalement n'est pas archivé
+- Alimente les 4 KPI admin :
+  - `Score de satisfaction` = moyenne globale (ex : `4.2 / 5`)
+  - `Taux de satisfaction` = % de notes `≥ 4`
+  - `Taux d'insatisfaction` = % de notes `≤ 2`
+  - `Taux de retour` = % d'utilisateurs ayant soumis ≥ 2 signalements sur la période
+
 ### Règles de validation (Zod — côté client **et** serveur)
 
 ```ts

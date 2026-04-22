@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import {
   Users,
   Siren,
@@ -6,159 +7,182 @@ import {
   ShieldCheck,
   Wallet,
   Clock,
-  TrendingUp,
-  Phone,
-  MessageCircle,
-  Mail,
   CreditCard,
-  Globe,
+  MessageCircle,
   AtSign,
-  Coins,
+  Globe,
+  PackageX,
+  Ban,
+  AlertTriangle,
+  VenetianMask,
   type LucideIcon,
 } from 'lucide-react';
 import { PageLayout } from '@/components/PageLayout';
 import { BackButton } from '@/components/BackButton';
 import { PageHeading } from '@/components/PageHeading';
+import { StatsPeriodTabs } from '@/components/StatsPeriodTabs';
 
 export const metadata: Metadata = {
   title: 'Statistiques de la plateforme',
   description:
-    'Statistiques détaillées de la plateforme Hadar.ma : signalements, vérifications, montants, utilisateurs.',
+    'Analysez l’évolution et les tendances des signalements sur Hadar.ma.',
 };
 
 const GLOBAL_STATS: { label: string; value: string; gradient: string; Icon: LucideIcon }[] = [
-  { label: 'Utilisateurs actifs', value: '12 593', gradient: 'bg-grad-stat-navy', Icon: Users },
-  { label: 'Signalements enregistrés', value: '19 840', gradient: 'bg-grad-stat-red', Icon: Siren },
-  { label: 'Contacts signalés', value: '9 594', gradient: 'bg-grad-stat-violet', Icon: Smartphone },
+  { label: 'Utilisateurs actifs', value: '2 500', gradient: 'bg-grad-stat-navy', Icon: Users },
+  { label: 'Signalements enregistrés', value: '1 245', gradient: 'bg-grad-stat-red', Icon: Siren },
+  { label: 'Contacts signalés', value: '346', gradient: 'bg-grad-stat-violet', Icon: Smartphone },
   {
     label: 'Vérifications réalisées',
-    value: '18 978',
+    value: '+15 000',
     gradient: 'bg-grad-stat-sky',
     Icon: ShieldCheck,
   },
-  { label: 'Montant signalé', value: '504 000 MAD', gradient: 'bg-grad-stat-green', Icon: Wallet },
+  { label: 'Montant signalé', value: '420 000 MAD', gradient: 'bg-grad-stat-green', Icon: Wallet },
   {
     label: 'Dernier signalement',
-    value: 'il y a 2h',
+    value: 'il y a 2 h',
     gradient: 'bg-grad-stat-orange',
     Icon: Clock,
   },
 ];
 
-const MONTHLY_EVOLUTION = [
-  { month: 'Nov', value: 42 },
-  { month: 'Déc', value: 55 },
-  { month: 'Jan', value: 61 },
-  { month: 'Fév', value: 73 },
-  { month: 'Mar', value: 82 },
-  { month: 'Avr', value: 95 },
+const PROBLEMS: { label: string; pct: number; Icon: LucideIcon }[] = [
+  { label: 'Non livraison', pct: 50, Icon: PackageX },
+  { label: 'Blocage après paiement', pct: 25, Icon: Ban },
+  { label: 'Produit non conforme', pct: 15, Icon: AlertTriangle },
+  { label: "Usurpation d'identité", pct: 5, Icon: VenetianMask },
 ];
 
-const PROBLEMS = [
-  { label: 'Non livraison', value: 38, color: 'bg-red-500' },
-  { label: 'Bloqué après paiement', value: 27, color: 'bg-orange-500' },
-  { label: 'Produit non conforme', value: 22, color: 'bg-yellow-500' },
-  { label: "Usurpation d'identité", value: 13, color: 'bg-violet-500' },
+const CHANNELS: { label: string; pct: number; Icon: LucideIcon; accent: string; badgeBg: string }[] = [
+  {
+    label: 'RIB',
+    pct: 35,
+    Icon: CreditCard,
+    accent: 'border-orange-500',
+    badgeBg: 'bg-orange-500',
+  },
+  {
+    label: 'WhatsApp',
+    pct: 17,
+    Icon: MessageCircle,
+    accent: 'border-green-500',
+    badgeBg: 'bg-green-500',
+  },
+  {
+    label: 'Réseaux sociaux',
+    pct: 15,
+    Icon: AtSign,
+    accent: 'border-violet-500',
+    badgeBg: 'bg-violet-500',
+  },
+  {
+    label: 'Site web',
+    pct: 7,
+    Icon: Globe,
+    accent: 'border-brand-blue',
+    badgeBg: 'bg-brand-blue',
+  },
 ];
 
-const CHANNELS: { label: string; value: number; Icon: LucideIcon }[] = [
-  { label: 'WhatsApp', value: 31, Icon: MessageCircle },
-  { label: 'Téléphone', value: 24, Icon: Phone },
-  { label: 'Site web', value: 17, Icon: Globe },
-  { label: 'Email', value: 12, Icon: Mail },
-  { label: 'Réseaux sociaux', value: 8, Icon: AtSign },
-  { label: 'RIB', value: 4, Icon: CreditCard },
-  { label: 'PayPal', value: 3, Icon: Wallet },
-  { label: 'Binance', value: 1, Icon: Coins },
+const ACTIVITY: { label: string; pct: number; color: string }[] = [
+  { label: 'Faible', pct: 10, color: 'bg-brand-blue' },
+  { label: 'Vigilance', pct: 30, color: 'bg-yellow-500' },
+  { label: 'Modéré', pct: 80, color: 'bg-orange-500' },
+  { label: 'Élevé', pct: 45, color: 'bg-red-500' },
 ];
 
-const SATISFACTION = [
-  { label: 'Score de satisfaction', value: '4.4 / 5', accent: 'text-green-600' },
-  { label: 'Taux de satisfaction', value: '82%', accent: 'text-brand-blue' },
-  { label: 'Taux d’insatisfaction', value: '6%', accent: 'text-red-500' },
-  { label: 'Taux de retour', value: '27%', accent: 'text-violet-500' },
+const STATUS: { label: string; value: string; color: string; textColor: string }[] = [
+  { label: 'Signalements soumis', value: '1 900', color: 'bg-orange-500', textColor: 'text-white' },
+  { label: 'Signalements refusés', value: '655', color: 'bg-gray-400', textColor: 'text-white' },
+  { label: 'Signalements publiés', value: '1 245', color: 'bg-green-500', textColor: 'text-white' },
 ];
+
+// Donut evolution value (center %)
+const EVOLUTION_PCT = 12;
+
+function DonutChart({ value }: { value: number }) {
+  const radius = 42;
+  const circumference = 2 * Math.PI * radius;
+  const dash = (value / 100) * circumference;
+  return (
+    <svg viewBox="0 0 100 100" className="h-40 w-40" role="img" aria-label={`${value}% d'évolution`}>
+      <circle cx="50" cy="50" r={radius} fill="none" stroke="#FCE7E7" strokeWidth="10" />
+      <circle
+        cx="50"
+        cy="50"
+        r={radius}
+        fill="none"
+        stroke="#EE4444"
+        strokeWidth="10"
+        strokeLinecap="round"
+        strokeDasharray={`${dash} ${circumference - dash}`}
+        transform="rotate(-90 50 50)"
+      />
+      <text
+        x="50"
+        y="56"
+        textAnchor="middle"
+        fontSize="22"
+        fontWeight="bold"
+        fill="#EE4444"
+        fontFamily="var(--font-poppins), sans-serif"
+      >
+        {value}%
+      </text>
+    </svg>
+  );
+}
 
 export default function Page() {
-  const maxEvo = Math.max(...MONTHLY_EVOLUTION.map((m) => m.value));
+  const processingPct = 65;
 
   return (
     <PageLayout>
-      <div className="mb-8">
+      <div className="mb-6">
         <BackButton />
       </div>
+
       <PageHeading
         title="Statistiques de la plateforme"
-        subtitle="Les chiffres clés mis à jour à partir des contributions de la communauté."
+        subtitle="Analysez l’évolution et les tendances des signalements sur la plateforme."
         accent="gradient"
       />
 
-      <section aria-label="Indicateurs globaux">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {GLOBAL_STATS.map((s) => (
-            <div
-              key={s.label}
-              className={`${s.gradient} text-white rounded-2xl p-6 shadow-sm flex items-center justify-between`}
-            >
-              <div>
-                <p className="text-3xl font-bold">{s.value}</p>
-                <p className="text-sm font-medium opacity-90 mt-1">{s.label}</p>
-              </div>
-              <s.Icon className="h-9 w-9 opacity-70" aria-hidden />
+      <StatsPeriodTabs />
+
+      <section aria-label="Indicateurs globaux" className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {GLOBAL_STATS.map((s) => (
+          <div
+            key={s.label}
+            className={`${s.gradient} text-white rounded-2xl p-5 shadow-sm flex items-center justify-between`}
+          >
+            <div>
+              <p className="text-3xl font-bold">{s.value}</p>
+              <p className="text-sm font-medium opacity-90 mt-1">{s.label}</p>
             </div>
-          ))}
-        </div>
-        <p className="mt-4 text-xs text-gray-400 text-center max-w-3xl mx-auto">
-          Les informations affichées sont basées sur les signalements et les expériences des
-          utilisateurs, vérifiées lorsque cela est possible, et fournies à titre indicatif
-          uniquement.
-        </p>
+            <s.Icon className="h-9 w-9 opacity-70" aria-hidden />
+          </div>
+        ))}
       </section>
 
-      <section className="mt-10 rounded-2xl bg-white border border-gray-200 p-6" aria-label="Évolution des signalements">
-        <div className="flex items-center justify-between mb-5">
-          <h2 className="text-lg font-bold text-brand-navy flex items-center gap-2">
-            <TrendingUp className="h-5 w-5 text-brand-blue" aria-hidden />
-            Évolution des signalements (6 derniers mois)
-          </h2>
-          <span className="text-xs font-semibold text-green-600">+126% sur la période</span>
-        </div>
-        <div className="flex items-end gap-3 h-48">
-          {MONTHLY_EVOLUTION.map((m) => {
-            const pct = Math.max((m.value / maxEvo) * 100, 6);
-            return (
-              <div key={m.month} className="flex-1 flex flex-col items-center gap-2">
-                <div className="relative w-full flex-1 flex items-end">
-                  <div
-                    className="w-full rounded-t-xl bg-grad-stat-navy relative"
-                    style={{ height: `${pct}%` }}
-                  >
-                    <span className="absolute -top-6 left-1/2 -translate-x-1/2 text-xs font-semibold text-brand-navy">
-                      {m.value}
-                    </span>
-                  </div>
-                </div>
-                <span className="text-xs font-medium text-gray-500">{m.month}</span>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      <section className="mt-10 grid gap-4 lg:grid-cols-2">
+      <section className="mt-8 grid gap-4 lg:grid-cols-2">
         <div className="rounded-2xl bg-white border border-gray-200 p-6">
-          <h2 className="text-lg font-bold text-brand-navy mb-5">Répartition par type de fraude</h2>
+          <h2 className="text-lg font-bold text-brand-navy mb-5">Types de problèmes signalés</h2>
           <ul className="space-y-4">
             {PROBLEMS.map((p) => (
               <li key={p.label}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-sm font-medium text-brand-navy">{p.label}</span>
-                  <span className="text-sm font-semibold text-brand-navy">{p.value}%</span>
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="inline-flex items-center gap-2 text-sm font-medium text-brand-navy">
+                    <p.Icon className="h-4 w-4 text-brand-navy" aria-hidden />
+                    {p.label}
+                  </span>
+                  <span className="text-sm font-bold text-brand-navy">{p.pct}%</span>
                 </div>
-                <div className="h-2 rounded-pill bg-gray-100 overflow-hidden">
+                <div className="h-1.5 rounded-pill bg-gray-100 overflow-hidden">
                   <div
-                    className={`h-full rounded-pill ${p.color}`}
-                    style={{ width: `${p.value}%` }}
+                    className="h-full rounded-pill bg-brand-blue"
+                    style={{ width: `${p.pct}%` }}
                   />
                 </div>
               </li>
@@ -167,49 +191,124 @@ export default function Page() {
         </div>
 
         <div className="rounded-2xl bg-white border border-gray-200 p-6">
-          <h2 className="text-lg font-bold text-brand-navy mb-5">Canaux les plus signalés</h2>
-          <ul className="space-y-3">
+          <h2 className="text-lg font-bold text-brand-navy mb-5">Canaux plus signalés</h2>
+          <div className="grid grid-cols-2 gap-3">
             {CHANNELS.map((c) => (
-              <li key={c.label} className="flex items-center gap-3">
-                <span className="h-8 w-8 rounded-lg bg-brand-sky flex items-center justify-center shrink-0">
-                  <c.Icon className="h-4 w-4 text-brand-navy" aria-hidden />
-                </span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between mb-1">
-                    <span className="text-sm font-medium text-brand-navy truncate">{c.label}</span>
-                    <span className="text-xs font-semibold text-gray-500">{c.value}%</span>
-                  </div>
-                  <div className="h-1.5 rounded-pill bg-gray-100 overflow-hidden">
-                    <div
-                      className="h-full rounded-pill bg-brand-blue"
-                      style={{ width: `${c.value * 3}%`, maxWidth: '100%' }}
-                    />
-                  </div>
+              <div
+                key={c.label}
+                className={`rounded-2xl bg-white border-2 ${c.accent} p-4`}
+              >
+                <div className="flex items-center gap-2 text-sm font-semibold text-brand-navy">
+                  <c.Icon className="h-4 w-4" aria-hidden />
+                  {c.label}
                 </div>
-              </li>
+                <div
+                  className={`mt-3 inline-flex items-center justify-center rounded-pill ${c.badgeBg} text-white text-sm font-bold px-3 py-1`}
+                >
+                  {c.pct}%
+                </div>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       </section>
 
-      <section className="mt-10 rounded-2xl bg-white border border-gray-200 p-6" aria-label="Satisfaction des utilisateurs">
-        <h2 className="text-lg font-bold text-brand-navy mb-5">Satisfaction des utilisateurs</h2>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {SATISFACTION.map((s) => (
+      <section className="mt-4 grid gap-4 lg:grid-cols-2">
+        <div className="rounded-2xl bg-white border border-gray-200 p-6">
+          <h2 className="text-lg font-bold text-brand-navy mb-5">
+            Niveau d&apos;activité des signalements
+          </h2>
+          <div className="flex items-end gap-4 h-56 px-2">
+            <div className="flex flex-col justify-between h-full text-[10px] text-gray-400 pr-2">
+              {[80, 70, 60, 50, 40, 30, 20, 10, 0].map((v) => (
+                <span key={v}>{v}</span>
+              ))}
+            </div>
+            <div className="flex-1 grid grid-cols-4 items-end gap-4 h-full">
+              {ACTIVITY.map((a) => (
+                <div key={a.label} className="flex flex-col items-center h-full justify-end">
+                  <span className="text-xs font-bold text-brand-navy mb-1">{a.pct}%</span>
+                  <div
+                    className={`w-full ${a.color} rounded-t-xl`}
+                    style={{ height: `${a.pct}%` }}
+                  />
+                  <span className="mt-2 text-xs font-medium text-gray-500">{a.label}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-2xl bg-white border border-gray-200 p-6">
+          <h2 className="text-lg font-bold text-brand-navy mb-5">Evolution des signalements</h2>
+          <div className="grid grid-cols-2 gap-4 items-center">
+            <div className="space-y-4">
+              <div>
+                <p className="text-sm text-gray-500">+{EVOLUTION_PCT}% vs semaine dernière</p>
+                <span className="mt-1 inline-flex items-center rounded-pill bg-red-500 text-white font-bold px-4 py-1.5 text-sm">
+                  1 900
+                </span>
+              </div>
+              <div>
+                <p className="text-sm text-gray-500">+45% aujourd&apos;hui</p>
+                <span className="mt-1 inline-flex items-center rounded-pill bg-red-500 text-white font-bold px-4 py-1.5 text-sm">
+                  345
+                </span>
+              </div>
+            </div>
+            <div className="flex justify-center">
+              <DonutChart value={EVOLUTION_PCT} />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="mt-4 rounded-2xl bg-white border border-gray-200 p-6">
+        <h2 className="text-lg font-bold text-brand-navy text-center mb-5">
+          Statut des signalements
+        </h2>
+        <div className="flex flex-wrap justify-center gap-3 mb-5">
+          {STATUS.map((s) => (
             <div
               key={s.label}
-              className="rounded-xl bg-gray-50 border border-gray-200 p-4 text-center"
+              className={`inline-flex items-center gap-2 rounded-pill ${s.color} ${s.textColor} px-4 py-2 text-sm font-semibold shadow-sm`}
             >
-              <p className={`text-3xl font-bold ${s.accent}`}>{s.value}</p>
-              <p className="mt-1 text-xs text-gray-500">{s.label}</p>
+              <Siren className="h-4 w-4" aria-hidden />
+              <span className="text-base font-bold">{s.value}</span>
+              <span className="text-xs opacity-90">{s.label}</span>
             </div>
           ))}
         </div>
-        <p className="mt-4 text-xs text-gray-400 text-center">
-          Basé sur les évaluations données par les utilisateurs après soumission d&apos;un
-          signalement (échelle 1 à 5 étoiles).
-        </p>
+        <div className="relative h-2 rounded-pill bg-gray-100 overflow-hidden">
+          <div
+            className="absolute inset-y-0 left-0 rounded-pill bg-brand-navy"
+            style={{ width: `${processingPct}%` }}
+          />
+        </div>
+        <p className="mt-2 text-right text-sm font-bold text-brand-navy">{processingPct}%</p>
       </section>
+
+      <section className="mt-8 flex flex-wrap justify-center gap-3">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-6 py-3 text-sm font-semibold shadow-sm transition-colors"
+        >
+          <ShieldCheck className="h-4 w-4" aria-hidden />
+          Vérifier un contact
+        </Link>
+        <Link
+          href="/signaler"
+          className="inline-flex items-center gap-2 rounded-pill bg-red-500 hover:bg-red-700 text-white px-6 py-3 text-sm font-semibold shadow-sm transition-colors"
+        >
+          <Siren className="h-4 w-4" aria-hidden />
+          Signaler un contact
+        </Link>
+      </section>
+
+      <p className="mt-8 text-xs text-gray-400 text-center max-w-2xl mx-auto">
+        Les données présentées sont issues de signalements publiés et sont fournies à titre
+        indicatif. Aucune donnée personnelle n&apos;est affichée.
+      </p>
     </PageLayout>
   );
 }

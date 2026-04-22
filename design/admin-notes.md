@@ -31,7 +31,9 @@ Deux entités distinctes dans la base et deux écrans de gestion séparés.
   5. `📊 Statistiques`
   6. `📝 Annonces` — publications bandeau / news plateforme
   7. `🎧 Assistant` — support / chatbot / tickets
-- **Footer sidebar** (bas, ancré) : `⚙️ Paramètres`
+- **Footer sidebar** (bas, ancré, 2 items) :
+  - `🛡️ Administration` *(config globale — Admin uniquement, cf §Menu "Administration")*
+  - `⚙️ Paramètres` *(préférences personnelles — tous rôles)*
 
 ### Top bar (droite, au-dessus du contenu)
 - **Barre de recherche globale** (pill blanc large, loupe à droite, placeholder "Rechercher…")
@@ -565,16 +567,15 @@ Les actions sanction **`Bloquer`** et **`Supprimer`** exigent un **motif obligat
 
 ### Layout global
 - Sidebar : item `Paramètres` actif (pill jaune, item ancré en bas)
-- Titre H1 `Paramètres` (navy)
-- **4 tabs horizontaux** (pills) sous le titre :
+- Titre H1 `Paramètres` (navy) *(correction de la typo "Parametres" → "Paramètres" avec accent aigu)*
+- **3 tabs horizontaux** (pills) sous le titre — **préférences personnelles uniquement** :
   1. `Compte` (actif par défaut)
   2. `Sécurité`
-  3. `Rôle`
-  4. `Général`
+  3. `Général`
 - État actif : gradient navy (`#0078BA` → `#00327D`), texte blanc
 - État inactif : fond bleu très clair `#DBE5F3`, texte navy
 
-> **Remarque architecture** : les tabs `Compte`, `Sécurité`, `Général` sont des **préférences personnelles** du membre connecté. Le tab `Rôle` est en revanche de la **configuration globale** (permissions par rôle) qui n'a pas sa place dans des préférences perso. À terme, il faudrait séparer dans un menu "Administration" réservé au super-admin. Pour la V1 on respecte la maquette, en restreignant l'accès au tab `Rôle` aux Admins uniquement (voir matrice §Rôles & permissions).
+> **Architecture validée (propriétaire, avril 2026, pattern SaaS)** : le tab `Rôle` de la maquette initiale a été déplacé dans un **menu `Administration`** distinct (cf §Écran 8) car il s'agit de configuration globale de la plateforme, pas de préférences personnelles. Séparation standard : Notion, Linear, Figma, Slack procèdent ainsi.
 
 ---
 
@@ -650,46 +651,168 @@ Illustration décorative : bouclier `H` en filigrane à droite (watermark opacit
 
 ---
 
-### Tab 3 — Rôle (configuration des permissions)
-
-> ⚠️ **Accès restreint** : cet onglet modifie la matrice de permissions globale de la plateforme → **Admin uniquement** (ou super-admin si on introduit ce rôle). Les Modérateurs / Support n'y ont pas accès.
-
-**3 sections, une par rôle**, chacune avec :
-- Badge jaune avec le nom du rôle (`Admin`, `Modérateur`, `Support`)
-- Liste de permissions, chaque permission = pill + toggle
-
-**Section Admin**
-- Toggle unique `Tous les accès activés` (vert, activé par défaut) — super-admin équivalent
-- Pas de granularité fine : l'Admin a tous les droits
-
-**Section Modérateur**
-3 toggles (tous désactivés par défaut dans la maquette — probablement juste affichage) :
-- `Voir signalements`
-- `Traiter signalements`
-- `Décider` *(= appliquer une décision de modération Publié/Non retenu/À corriger)*
-
-**Section Support**
-2 toggles :
-- `Voir signalements`
-- `Voir utilisateurs`
-
-> **Remarque** : cette liste est **incomplète** pour couvrir toutes les actions possibles. Permissions à ajouter selon la matrice §Rôles & permissions : bloquer/supprimer user, réinitialiser password user, voir membres, gérer membres, voir stats, publier annonces, accès assistant, etc. À enrichir avec le propriétaire.
-
----
-
-### Tab 4 — Général
+### Tab 3 — Général
 
 3 dropdowns horizontaux (pill orange en header, valeur en dessous dans pill bleu clair) :
 
-| Paramètre | Icône | Valeur par défaut | Options attendues |
+| Paramètre | Icône | Valeur par défaut | Options |
 |---|---|---|---|
-| `Langue` | 🌍 globe | `Francais` | `Français`, `العربية` (arabe), `English` (à confirmer) |
-| `Fuseau horaire` | 🕐 horloge | `Casablanca Maroc` | `Africa/Casablanca`, autres TZ IANA |
-| `Format date` | 📅 calendrier | `23 : 23 : 22` *(semble être HH:MM:SS, pas un format date)* | À clarifier — proposition : `DD/MM/YYYY`, `MM/DD/YYYY`, `YYYY-MM-DD` |
+| `Langue` | 🌍 globe | `Français` | À confirmer (FR uniquement ou FR/AR) |
+| `Fuseau horaire` | 🕐 horloge | `Casablanca Maroc` | Liste complète des TZ IANA (ou restreinte à `Africa/Casablanca` + quelques TZ MENA ?) |
+| `Format date` | 📅 calendrier | `JJ/MM/AAAA` | **Format unique `JJ/MM/AAAA`** (français — figé par le propriétaire). Pas de choix multi-formats. |
 
-> **À corriger dans la maquette** : le champ "Format date" affiche `23 : 23 : 22` qui est un timestamp, pas un format. Les options réelles doivent être des formats type `DD/MM/YYYY`.
+> **Stockage** : tous les timestamps en base = UTC (ISO 8601). Affichage = conversion selon TZ du membre. Format string côté rendu = `DD/MM/YYYY` (dayjs) / `dd/MM/yyyy` (date-fns).
 
-> **Langue Admin** : la partie utilisateur sera bilingue FR/AR. L'admin aussi, ou FR only ?
+> **Maquette à corriger** : le placeholder `23 : 23 : 22` du champ `Format date` sera remplacé par `JJ/MM/AAAA`.
+
+---
+
+## Écran 8 — Administration `/admin/administration` *(nouveau — Admin uniquement)*
+
+> **Pourquoi un menu séparé** : la maquette initiale plaçait la configuration des rôles dans `Paramètres > Rôle`. Sur validation du propriétaire, on isole cette zone dans un item sidebar distinct (pattern SaaS : Notion, Linear, Figma, Slack). Rationale :
+> - Séparer les **préférences personnelles** (`Paramètres`) de la **configuration globale plateforme** (`Administration`)
+> - Contrôle d'accès strict : tab Rôle jamais visible par un Modérateur ou Support, même par erreur
+> - Scalabilité : on pourra y ajouter d'autres sections admin (Configuration plateforme, Logs d'audit, Intégrations, Webhooks…) sans surcharger Paramètres
+
+### Position sidebar
+Juste au-dessus de `Paramètres`, en bas de la sidebar :
+```
+…
+📣 Annonces
+🎧 Assistant
+───────────
+🛡️ Administration  ← Admin uniquement (masqué pour Modérateur/Support)
+⚙️ Paramètres      ← tous rôles
+```
+
+### Sections (tabs horizontaux dans `/admin/administration`)
+1. **Rôles & permissions** *(ex-tab Paramètres > Rôle)*
+2. **Logs d'audit** *(trace de toutes les actions sensibles — à détailler plus tard)*
+3. **Configuration plateforme** *(mentions légales, bandeau WhatsApp, paramètres globaux — à détailler)*
+4. **Intégrations** *(email transactionnel, SMS, OAuth providers — à détailler)*
+
+Pour la V1, on implémente uniquement le tab **Rôles & permissions**.
+
+### Tab "Rôles & permissions"
+
+**UI** : une section par rôle (`Admin`, `Modérateur`, `Support`), chaque permission avec un toggle (on/off).
+- Badge jaune en tête de section avec le nom du rôle
+- Grid responsive des permissions : pill `Nom permission` + toggle à droite
+- Bouton bas : `Enregistrer les modifications` (vert, désactivé tant qu'aucun changement)
+- Logique : sauvegarde en une fois pour éviter les ventilations partielles
+
+**Rôle `Admin`** : un seul toggle master `Tous les accès activés` (vert par défaut). Pas de granularité. Si on veut un contrôle fin sur un Admin, on peut introduire plus tard un rôle `Super-admin` distinct.
+
+**Rôles `Modérateur` et `Support`** : toggles individuels pour chaque permission de la matrice ci-dessous.
+
+---
+
+## Matrice complète des permissions
+
+> Liste exhaustive des actions possibles dans l'admin. À **valider ligne par ligne avec le propriétaire**. Chaque permission est un toggle dans l'écran Administration > Rôles & permissions.
+
+**Légende** : ✅ activé par défaut · ❌ désactivé par défaut · 🔒 super-admin uniquement (si on introduit ce rôle)
+
+### Domaine : Dashboard
+| Code permission | Description | Admin | Modérateur | Support |
+|---|---|---|---|---|
+| `dashboard.view` | Accéder au tableau de bord `/admin` | ✅ | ✅ | ✅ |
+| `dashboard.export` | Exporter les KPI du dashboard | ✅ | ❌ | ❌ |
+| `search.global` | Utiliser la recherche globale (top bar) | ✅ | ✅ | ✅ |
+
+### Domaine : Signalements
+| Code permission | Description | Admin | Modérateur | Support |
+|---|---|---|---|---|
+| `reports.list` | Voir la liste `/admin/signalements` | ✅ | ✅ | ✅ |
+| `reports.view` | Voir le détail d'un signalement | ✅ | ✅ | ✅ |
+| `reports.moderate` | Appliquer une décision `Publié` / `Non retenu` / `À corriger` | ✅ | ✅ | ❌ |
+| `reports.export` | Exporter la liste filtrée | ✅ | ✅ | ❌ |
+| `reports.reassign` | Réassigner à un autre modérateur | ✅ | ❌ | ❌ |
+| `reports.viewAudit` | Voir l'historique de modération d'un signalement | ✅ | ✅ | ❌ |
+
+### Domaine : Membres (équipe interne)
+| Code permission | Description | Admin | Modérateur | Support |
+|---|---|---|---|---|
+| `members.list` | Voir la liste `/admin/membres` | ✅ | ❌ | ❌ |
+| `members.view` | Voir le détail d'un membre | ✅ | ❌ | ❌ |
+| `members.create` | Ajouter un nouveau membre | ✅ | ❌ | ❌ |
+| `members.edit` | Modifier nom/email/téléphone d'un membre | ✅ | ❌ | ❌ |
+| `members.changeRole` | Changer le rôle d'un membre | 🔒 Super-admin | ❌ | ❌ |
+| `members.changeStatus` | Actif / Inactif / Suspendu | ✅ | ❌ | ❌ |
+| `members.delete` | Supprimer un membre | ✅ | ❌ | ❌ |
+
+### Domaine : Utilisateurs (usagers finaux)
+| Code permission | Description | Admin | Modérateur | Support |
+|---|---|---|---|---|
+| `users.list` | Voir la liste `/admin/utilisateurs` | ✅ | ✅ | ✅ |
+| `users.view` | Voir le profil d'un utilisateur | ✅ | ✅ | ✅ |
+| `users.resetPassword` | Déclencher un email de reset password | ✅ | ✅ | ✅ |
+| `users.block` | Bloquer un utilisateur (avec motif) | ✅ | ✅ | ❌ |
+| `users.unblock` | Débloquer un utilisateur | ✅ | ✅ | ❌ |
+| `users.softDelete` | Supprimer (soft-delete avec restauration possible) | ✅ | ❌ | ❌ |
+| `users.restore` | Restaurer un compte supprimé | ✅ | ❌ | ❌ |
+| `users.hardDelete` | Purger définitivement (droit à l'oubli CNDP) | 🔒 Super-admin | ❌ | ❌ |
+| `users.export` | Exporter la liste filtrée | ✅ | ❌ | ❌ |
+| `users.bulkActions` | Exécuter des actions en lot | ✅ | ❌ | ❌ |
+
+### Domaine : Statistiques
+| Code permission | Description | Admin | Modérateur | Support |
+|---|---|---|---|---|
+| `stats.view` | Accéder à `/admin/statistiques` | ✅ | ✅ | ✅ |
+| `stats.viewSensitive` | Voir les stats sensibles (montants, identifiants) | ✅ | ✅ | ❌ |
+| `stats.export` | Exporter les rapports statistiques | ✅ | ❌ | ❌ |
+
+### Domaine : Annonces
+| Code permission | Description | Admin | Modérateur | Support |
+|---|---|---|---|---|
+| `announcements.list` | Voir la liste des annonces | ✅ | ✅ | ✅ |
+| `announcements.create` | Créer une annonce / bandeau plateforme | ✅ | ❌ | ❌ |
+| `announcements.edit` | Modifier une annonce | ✅ | ❌ | ❌ |
+| `announcements.publish` | Publier / dépublier | ✅ | ❌ | ❌ |
+| `announcements.delete` | Supprimer | ✅ | ❌ | ❌ |
+
+### Domaine : Assistant (chat support)
+| Code permission | Description | Admin | Modérateur | Support |
+|---|---|---|---|---|
+| `assistant.view` | Voir la liste des conversations | ✅ | ❌ | ✅ |
+| `assistant.reply` | Répondre à une conversation | ✅ | ❌ | ✅ |
+| `assistant.assign` | Assigner / réassigner une conversation | ✅ | ❌ | ✅ |
+| `assistant.close` | Clôturer une conversation | ✅ | ❌ | ✅ |
+| `assistant.viewInternal` | Voir les notes internes | ✅ | ❌ | ✅ |
+| `assistant.addInternal` | Ajouter une note interne | ✅ | ❌ | ✅ |
+| `assistant.configure` | Configurer réponses pré-rédigées / tags / chatbot | ✅ | ❌ | ❌ |
+
+### Domaine : Administration (global)
+| Code permission | Description | Admin | Modérateur | Support |
+|---|---|---|---|---|
+| `admin.view` | Accéder au menu `/admin/administration` | ✅ | ❌ | ❌ |
+| `admin.rolesEdit` | Modifier la matrice de permissions | 🔒 Super-admin | ❌ | ❌ |
+| `admin.viewAuditLog` | Voir les logs d'audit de la plateforme | ✅ | ❌ | ❌ |
+| `admin.platformSettings` | Modifier les paramètres globaux plateforme | 🔒 Super-admin | ❌ | ❌ |
+| `admin.integrations` | Configurer les intégrations (email, SMS, etc.) | 🔒 Super-admin | ❌ | ❌ |
+
+### Domaine : Paramètres personnels
+Toutes les actions `account.*` et `security.*` (modifier son propre profil, 2FA, historique connexions) sont **automatiquement accordées à tous les rôles** pour leur propre compte — pas de toggle.
+
+---
+
+### Totaux
+
+- **Permissions globales** : ~38 permissions
+- **Permissions super-admin uniquement** : 5 (changeRole, hardDelete, rolesEdit, platformSettings, integrations)
+- **Permissions par défaut** :
+  - Admin : toutes ✅ (master toggle)
+  - Modérateur : 14 permissions ✅
+  - Support : 11 permissions ✅
+
+### Proposition d'introduction d'un rôle `Super-admin`
+
+Pour protéger les actions les plus sensibles (gestion des Admins, purge définitive RGPD, config plateforme), **fortement recommandé** d'introduire un 4e rôle `Super-admin` :
+- 1 seule personne (ou très peu) : le propriétaire / CTO
+- Seul à pouvoir : promouvoir/rétrograder un Admin, purger définitivement un user, modifier la matrice de permissions, configurer les intégrations
+- Sinon : n'importe quel Admin peut se promouvoir Super-admin ou supprimer un autre Admin — risque opérationnel
+
+→ **À valider avec le propriétaire**. Si validé, le tab `Rôles & permissions` de l'écran Administration comportera 4 sections au lieu de 3.
 
 ---
 
@@ -729,15 +852,20 @@ Illustration décorative : bouclier `H` en filigrane à droite (watermark opacit
 - [ ] **Statut `Inactif`** auto-flag après combien de jours sans activité ? (proposition : 90 jours)
 
 ### Paramètres
-- [ ] **Typo "Parametres"** dans la maquette (sidebar + titre) → à corriger en `Paramètres` partout
-- [ ] **Architecture tab `Rôle`** : le mélanger avec les préférences perso (Compte/Sécurité/Général) ou le déplacer dans un menu "Administration" dédié ?
-- [ ] **Matrice complète des permissions** : les 3/2 permissions affichées dans le tab Rôle sont insuffisantes. Enrichir avec toutes les actions possibles (bloquer user, publier annonces, etc.)
+- [x] ~~Typo "Parametres"~~ → **Corriger en `Paramètres` partout** (propriétaire)
+- [x] ~~Architecture tab `Rôle`~~ → **Déplacer dans un menu "Administration" dédié** (pattern SaaS, propriétaire). Voir §Menu "Administration" ci-dessous.
+- [x] ~~Matrice complète des permissions~~ → **Oui** (propriétaire). Matrice détaillée §Matrice complète des permissions ci-dessous.
+- [x] ~~Format date (tab Général)~~ → **Format unique `JJ/MM/AAAA` (français)** — pas de choix multi-formats.
 - [ ] **2FA** : activer plusieurs méthodes en même temps (recommandé) ou une seule ?
 - [ ] **Historique connexions** : nombre de lignes à afficher, durée de rétention ?
-- [ ] **Format date (tab Général)** : options concrètes à proposer (la maquette montre un timestamp incorrect)
 - [ ] **Langue Admin** : FR uniquement ou bilingue FR/AR comme la partie user ?
-- [ ] **Fuseau horaire** : global platforme (tous les timestamps stockés en UTC, affichés dans la TZ choisie) ou par user ?
-- [ ] **Access control du tab `Rôle`** : Admin uniquement confirmé ?
+- [ ] **Fuseau horaire** : global plateforme (tous les timestamps stockés en UTC, affichés dans la TZ choisie) ou par user ?
+
+### Administration / Permissions (nouvelles)
+- [ ] **Rôle `Super-admin`** : introduire ce 4e rôle pour protéger les actions ultra-sensibles (cf §Matrice) ?
+- [ ] **Valider la matrice complète des permissions** ligne par ligne (~38 items) — défauts proposés OK ?
+- [ ] **Logs d'audit** : périmètre (toutes actions admin ? uniquement sensibles ?), durée de rétention, qui peut les voir ?
+- [ ] **Configuration plateforme** : liste précise des paramètres globaux éditables (mentions légales ? bandeau WhatsApp ? emails transactionnels ?) — à spécifier
 - [x] ~~Motif de décision obligatoire~~ → **Obligatoire uniquement pour `Non retenu`** (propriétaire). Concern UX levé pour `À corriger` (cf §Écran 3).
 - [ ] Pagination de la liste signalements (type + nombre par page) ?
 - [ ] Filtres liste signalements (tri par colonne + filtres multi-critères par canal/type/statut/user) ?

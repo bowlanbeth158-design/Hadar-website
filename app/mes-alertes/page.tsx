@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { BellRing, Phone, Mail, Globe, Trash2, Archive } from 'lucide-react';
+import { Phone, Mail, Globe, Trash2, Archive } from 'lucide-react';
 import { PageLayout } from '@/components/PageLayout';
 import { BackButton } from '@/components/BackButton';
 import { PageHeading } from '@/components/PageHeading';
 import { DemoBanner } from '@/components/DemoBanner';
+import { NotificationSettingsModal } from '@/components/NotificationSettingsModal';
 
 export const metadata: Metadata = {
   title: 'Mes alertes',
@@ -58,13 +59,7 @@ export default function Page() {
         <p className="text-sm text-gray-500">
           {DEMO_ALERTS.length} alertes actives · 3 nouvelles notifications
         </p>
-        <button
-          type="button"
-          className="inline-flex items-center gap-1.5 rounded-pill border border-gray-200 bg-white text-brand-navy px-4 py-1.5 text-sm font-medium hover:border-brand-blue transition-colors"
-        >
-          <BellRing className="h-4 w-4" aria-hidden />
-          Gérer les notifications
-        </button>
+        <NotificationSettingsModal />
       </div>
 
       <div className="space-y-3">

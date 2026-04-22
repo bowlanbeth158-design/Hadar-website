@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Phone,
   MessageCircle,
@@ -12,6 +12,7 @@ import {
   Coins,
   Search,
   Mic,
+  MicOff,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -38,11 +39,79 @@ type Props = {
   initialQuery?: string;
 };
 
+type SpeechRecognitionResult = { transcript: string };
+type SpeechRecognitionEventLike = {
+  results: { [i: number]: { [j: number]: SpeechRecognitionResult } };
+};
+type SpeechRecognitionLike = {
+  lang: string;
+  interimResults: boolean;
+  continuous: boolean;
+  start(): void;
+  stop(): void;
+  onstart: (() => void) | null;
+  onend: (() => void) | null;
+  onresult: ((e: SpeechRecognitionEventLike) => void) | null;
+  onerror: (() => void) | null;
+};
+type SpeechRecognitionCtor = new () => SpeechRecognitionLike;
+
+function getSpeechRecognition(): SpeechRecognitionCtor | null {
+  if (typeof window === 'undefined') return null;
+  const w = window as unknown as {
+    SpeechRecognition?: SpeechRecognitionCtor;
+    webkitSpeechRecognition?: SpeechRecognitionCtor;
+  };
+  return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null;
+}
+
 export function HomeHero({ initialType, initialQuery = '' }: Props) {
   const defaultType =
     initialType && CONTACT_TYPES.some((c) => c.id === initialType) ? initialType : CONTACT_TYPES[0]!.id;
   const [selected, setSelected] = useState<string>(defaultType);
+  const [listening, setListening] = useState(false);
+  const [query, setQuery] = useState<string>(initialQuery);
+  const [supported, setSupported] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
+
+  useEffect(() => {
+    setSupported(getSpeechRecognition() !== null);
+  }, []);
+
   const active = CONTACT_TYPES.find((c) => c.id === selected) ?? CONTACT_TYPES[0]!;
+
+  const toggleMic = () => {
+    setError(null);
+    if (listening) {
+      recognitionRef.current?.stop();
+      return;
+    }
+    const Ctor = getSpeechRecognition();
+    if (!Ctor) {
+      setError('Recherche vocale non supportée sur ce navigateur.');
+      return;
+    }
+    const recognition = new Ctor();
+    recognition.lang = 'fr-FR';
+    recognition.interimResults = false;
+    recognition.continuous = false;
+    recognition.onstart = () => setListening(true);
+    recognition.onend = () => {
+      setListening(false);
+      recognitionRef.current = null;
+    };
+    recognition.onerror = () => {
+      setError('Micro indisponible ou permission refusée.');
+      setListening(false);
+    };
+    recognition.onresult = (event) => {
+      const transcript = event.results[0]?.[0]?.transcript?.trim();
+      if (transcript) setQuery(transcript);
+    };
+    recognitionRef.current = recognition;
+    recognition.start();
+  };
 
   return (
     <section className="mx-auto max-w-5xl px-4 md:px-6 pt-10 md:pt-14 pb-4 text-center">
@@ -92,17 +161,38 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
         <input
           type="search"
           name="q"
-          defaultValue={initialQuery}
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
           placeholder={active.placeholder}
           aria-label={`Rechercher un ${active.label.toLowerCase()}`}
           className="flex-1 bg-transparent outline-none text-brand-navy placeholder:text-gray-400 py-2 text-base"
         />
         <button
           type="button"
-          aria-label="Recherche vocale"
-          className="p-2 text-gray-400 hover:text-brand-navy"
+          onClick={toggleMic}
+          disabled={!supported}
+          aria-label={listening ? 'Arrêter la recherche vocale' : 'Démarrer la recherche vocale'}
+          aria-pressed={listening}
+          title={supported ? (listening ? 'Arrêter' : 'Recherche vocale') : 'Non supporté'}
+          className={
+            listening
+              ? 'relative p-2 text-red-500 animate-pulse'
+              : 'p-2 text-gray-400 hover:text-brand-navy disabled:opacity-40 disabled:cursor-not-allowed'
+          }
         >
-          <Mic className="h-5 w-5" aria-hidden />
+          {listening ? (
+            <>
+              <Mic className="h-5 w-5" aria-hidden />
+              <span
+                aria-hidden
+                className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500 animate-ping"
+              />
+            </>
+          ) : supported ? (
+            <Mic className="h-5 w-5" aria-hidden />
+          ) : (
+            <MicOff className="h-5 w-5" aria-hidden />
+          )}
         </button>
         <button
           type="submit"
@@ -111,6 +201,17 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
           Vérifier maintenant
         </button>
       </form>
+
+      {error && (
+        <p className="mt-3 text-sm text-red-500" role="status">
+          {error}
+        </p>
+      )}
+      {listening && !error && (
+        <p className="mt-3 text-sm text-brand-blue" role="status">
+          Écoute en cours — parlez maintenant…
+        </p>
+      )}
     </section>
   );
 }

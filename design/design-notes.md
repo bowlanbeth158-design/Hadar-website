@@ -33,6 +33,10 @@
 ### Batch 8 — « Mon profil »
 18. **Page « Mon profil »** (Mon compte → dropdown → Mon profil) — édition identité + mot de passe, badges utilisateur, taux de validation
 
+### Batch 9 — « Mes signalements »
+19. **Page liste « Mes signalements »** (Mon compte → dropdown → Mes signalements) — onglets par statut, cards avec bordure colorée + statut + type de problème
+20. **Page « Détail de signalement »** (clic sur « Voir les détails » d'un signalement de l'utilisateur) — résumé, infos fournies, description, preuves (modifiable), timeline horizontale, boutons Modifier/Supprimer
+
 ### Batch 5 — Pages légales (footer)
 8. **Conditions générales d'utilisation** → `design/legal/01-conditions-generales-utilisation.md`
 9. **Données personnelles & cookies** → `design/legal/02-donnees-personnelles-cookies.md`
@@ -677,6 +681,126 @@ Sur la page de résultat de recherche (à recevoir en maquette), un bouton `🔔
 
 ---
 
+## Page « Mes signalements » (liste)
+
+**Trigger** : nav `Mon compte` → dropdown → `Mes signalements` → route `/mes-signalements` (auth obligatoire).
+
+### Layout
+- Bouton pill `← Retour`
+- Watermark logo H
+- Titre H1 navy : « Mes signalements »
+- Sous-titre : « Suivez l'état de vos signalements en temps réel. »
+
+### Onglets / pills filtres (compteurs entre parenthèses)
+- `Tous (N)` — actif par défaut, navy
+- `Publiés (N)` — point vert
+- `En cours d'examen (N)` — point orange (regroupe `SUBMITTED` + `UNDER_REVIEW`)
+- `Non retenus (N)` — point rouge
+- `À corriger (N)` — point bleu
+
+### Card signalement (en mode liste)
+- **Bordure colorée à gauche** = couleur du statut (vert/orange/rouge/bleu)
+- Icône type de canal + valeur du contact (RIB masqué partiellement)
+- `Signalé le DD mois YYYY à HH:mm` 🕐
+- Pill statut à droite : libellé + point coloré
+- Pill type de problème à gauche en bas (navy avec icône)
+- Lien `Voir les détails` à droite en bas
+
+### Pagination
+Chevron `⌄` pour charger plus (infinite scroll ou « Charger plus »).
+
+### Disclaimer footer
+> Vos signalements sont traités de manière confidentielle.
+> Seuls vous et nos équipes ont accès à vos signalements.
+
+### Sécurité
+- Filtrage strict par `authorId = session.userId` côté serveur
+- Pas d'endpoint qui retourne les signalements d'un autre utilisateur, même pour un modérateur sur cette route (les modérateurs ont leur propre interface)
+- Rate-limit lecture : 200 req/h/user (largement suffisant)
+
+---
+
+## Page « Détail de signalement » (vue auteur)
+
+**Trigger** : clic sur `Voir les détails` d'un signalement de l'utilisateur connecté → route `/mes-signalements/[id]`.
+
+### Layout
+
+#### Header
+- Bouton pill `← Retour`
+- Titre H1 navy : « Détail de signalement »
+- Sous-titre : « Suivez les contacts et recevez les mises à jour. »
+- Watermark logo H
+
+#### Card résumé (haut)
+- Reprend la même card que dans la liste : bordure colorée gauche, icône canal + valeur, date, pill statut
+
+#### Card « Informations fournies »
+- `Type de contact :` valeur (ex. WhatsApp)
+- `Type de problème :` pill bleu (ex. Bloqué après paiement)
+- `Montant estimé :` valeur + devise (ex. 200 MAD)
+
+#### Card « Description du signalement »
+- Zone readonly affichant le texte saisi
+- Si `NEEDS_CORRECTION` : zone éditable (cf. action `Modifier`)
+
+#### Card « Preuves »
+- Affichage des fichiers attachés (vignette + nom + taille)
+- Zone drop pour ajouter une preuve (icône download + texte)
+- Icône poubelle pour retirer
+- ⚠️ **À clarifier** : l'auteur peut-il ajouter/retirer des preuves **après** soumission ? Si oui, dans quels statuts ? Hypothèse : oui dans `SUBMITTED` et `NEEDS_CORRECTION`, non dans `UNDER_REVIEW`/`PUBLISHED`/`REJECTED`/`ARCHIVED` (sauf rouvrir un ticket).
+
+#### Timeline horizontale (stepper)
+3 étapes connectées par lignes pointillées :
+
+1. **Signalement envoyé** — `Signalé le DD mois YYYY à HH:mm` — point jaune rempli (passé)
+2. **En cours d'examen** — `Vérification des informations` — point orange rempli (état actuel)
+3. **Publié** — date estimée — point gris vide (futur)
+
+> ⚠️ La maquette affiche `Publié le 05 avril 2026 à 19:30` même quand le signalement n'est pas encore publié → c'est probablement une **estimation SLA** (« nous publions sous 5 h en moyenne »). À confirmer avec le propriétaire :
+> - **A** = afficher une SLA estimée (« publication estimée le X »)
+> - **B** = laisser le 3ᵉ point sans date tant que pas publié
+> - **C** = afficher la vraie date une fois publié, sinon « En attente »
+
+#### Bandeau statut (orange large)
+- Texte adaptatif selon le statut :
+  - `SUBMITTED` / `UNDER_REVIEW` → « Votre signalement est en cours d'examen »
+  - `NEEDS_CORRECTION` → « Votre signalement nécessite des corrections avant publication »
+  - `PUBLISHED` → « Votre signalement est publié »
+  - `REJECTED` → « Votre signalement n'a pas été retenu » + lien « Voir le motif »
+
+#### Boutons d'action
+- 📝 `Modifier` (bleu navy)
+- 🗑 `Supprimer` (rouge)
+
+#### Disclaimer footer
+> Votre signalement contribue à protéger la communauté.
+> Vos informations restent confidentielles. Seules nos équipes peuvent y accéder.
+
+### Règles d'édition (proposition à valider)
+
+| Statut | Modifier ? | Supprimer ? |
+|---|---|---|
+| `SUBMITTED` | ✅ tous champs | ✅ |
+| `UNDER_REVIEW` | ❌ (verrouillé pendant examen) | ⚠️ demande de retrait → modérateur |
+| `NEEDS_CORRECTION` | ✅ champs concernés (re-soumet en `UNDER_REVIEW`) | ✅ |
+| `PUBLISHED` | ❌ (mais peut demander archivage) | ⚠️ demande de retrait → modérateur |
+| `REJECTED` | ❌ | ✅ (passe en `ARCHIVED`) |
+
+> Le **type de contact** et la **valeur du contact** ne sont **jamais éditables** après soumission (clé d'intégrité) — il faut supprimer et recréer un signalement.
+
+### Sécurité
+
+1. **Auth + ownership check** : avant toute action, vérifier `report.authorId === session.userId`. Sinon 403.
+2. **CSRF token** sur les mutations (Modifier / Supprimer / Ajouter preuve).
+3. **Re-validation Zod** complète à chaque modification (mêmes règles que la création initiale).
+4. **Audit log** : toute modification enregistrée (champs avant/après, IP, timestamp, acteur).
+5. **Suppression** = soft delete → passage en `ARCHIVED` (pas de hard delete immédiat) ; les preuves restent en stockage 30 jours puis purgées.
+6. **Visibilité des preuves** : l'auteur peut télécharger ses propres preuves via URL signée (expirée 5 min) ; les modérateurs ont leur propre route admin.
+7. **Versioning** : conserver l'historique des modifications (table `ReportRevision`) pour permettre aux modérateurs de comparer avant/après une correction.
+
+---
+
 ## Page « Mon profil »
 
 **Trigger** : nav `Mon compte` → dropdown → `Mon profil` → route `/mon-profil` (auth obligatoire).
@@ -758,33 +882,49 @@ tauxValidation = signalementsValides / signalementsEnvoyés × 100
 - Arrondi à l'entier (`100 %`, `83 %`, etc.)
 - **Calculé côté serveur** (pas côté client) à partir de la table `Report` filtrée par `authorId`
 
-### Statuts d'un signalement (5 statuts — spec officielle propriétaire ✅)
+### Statuts d'un signalement
 
-| # | Statut | Code | Description |
-|---|---|---|---|
-| 1 | Soumis | `SUBMITTED` | Vient d'être envoyé par l'utilisateur, en attente d'examen |
-| 2 | En cours d'examen | `UNDER_REVIEW` | Pris en charge par un modérateur |
-| 3 | Publié | `PUBLISHED` | Validé et visible publiquement (compte dans le « taux de validation ») |
-| 4 | Refusé | `REJECTED` | Refusé pour non-conformité aux règles (avec motif) |
-| 5 | Archivé | `ARCHIVED` | Retiré sur demande (auteur ou personne concernée) |
+> ⚠️ **Conflit à résoudre** : Le propriétaire a confirmé 5 statuts (`SUBMITTED`, `UNDER_REVIEW`, `PUBLISHED`, `REJECTED`, `ARCHIVED`), **mais** la maquette « Mes signalements » introduit un nouveau statut **« À corriger »** non prévu, et n'affiche pas `ARCHIVED` dans les onglets utilisateur.
+>
+> **Hypothèse retenue (à valider)** : `À corriger` est en fait un sous-état où le modérateur demande une modification à l'auteur avant publication ; `ARCHIVED` reste un statut backend (résultat d'une suppression / retrait) qui sort de la liste utilisateur.
+
+#### Modèle proposé
 
 ```prisma
 enum ReportStatus {
-  SUBMITTED
-  UNDER_REVIEW
-  PUBLISHED
-  REJECTED
-  ARCHIVED
+  SUBMITTED          // Soumis (en attente de prise en charge par un modérateur)
+  UNDER_REVIEW       // En cours d'examen (modérateur en cours de revue)
+  NEEDS_CORRECTION   // À corriger (modérateur a demandé des modifications à l'auteur)
+  PUBLISHED          // Publié (validé et visible publiquement → compte dans le taux de validation)
+  REJECTED           // Non retenu (refusé définitivement avec motif)
+  ARCHIVED           // Archivé (retiré sur demande — n'apparaît pas dans les onglets utilisateur)
 }
 ```
 
-Transitions autorisées :
-- `SUBMITTED` → `UNDER_REVIEW` (modérateur prend en charge)
-- `UNDER_REVIEW` → `PUBLISHED` (validation)
-- `UNDER_REVIEW` → `REJECTED` (refus avec motif)
-- `PUBLISHED` → `ARCHIVED` (sur demande, par auteur ou modérateur)
-- `REJECTED` → `ARCHIVED` (modérateur)
-- Toute transition est loggée dans l'audit log avec horodatage et acteur.
+#### Mapping statut → onglet utilisateur (spec maquette)
+
+| Onglet UI | Couleur point | Inclut |
+|---|---|---|
+| Tous (N) | navy actif | Tous sauf `ARCHIVED` |
+| Publiés (N) | vert | `PUBLISHED` |
+| En cours d'examen (N) | orange | `SUBMITTED` + `UNDER_REVIEW` |
+| Non retenus (N) | rouge | `REJECTED` |
+| À corriger (N) | bleu | `NEEDS_CORRECTION` |
+
+#### Transitions autorisées (état machine)
+
+```
+SUBMITTED ──► UNDER_REVIEW (mod prend en charge)
+UNDER_REVIEW ──► NEEDS_CORRECTION (mod demande modif)
+UNDER_REVIEW ──► PUBLISHED (validation)
+UNDER_REVIEW ──► REJECTED (refus définitif)
+NEEDS_CORRECTION ──► UNDER_REVIEW (auteur a re-soumis modifs)
+PUBLISHED ──► ARCHIVED (sur demande)
+REJECTED ──► ARCHIVED (modérateur)
+SUBMITTED / UNDER_REVIEW / NEEDS_CORRECTION ──► ARCHIVED (suppression par auteur)
+```
+
+Toute transition est loggée dans l'audit log (horodatage + acteur + ancien/nouveau statut + motif si rejet).
 
 ### Sécurité critique pour cette page
 

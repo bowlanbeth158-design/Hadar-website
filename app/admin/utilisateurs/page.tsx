@@ -13,60 +13,63 @@ import {
   Undo2,
   X,
 } from 'lucide-react';
-import { UserActionsDropdown } from '@/components/admin/UserActionsDropdown';
+import { UserActionsDropdown, type UserAction } from '@/components/admin/UserActionsDropdown';
+import { UserReasonModal, type ReasonAction } from '@/components/admin/UserReasonModal';
 import { RefreshButton } from '@/components/admin/RefreshButton';
 import { ExportButton } from '@/components/admin/ExportButton';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
-
-type Status = 'actif' | 'inactif' | 'bloque' | 'supprime';
-
-const STATUS_STYLE: Record<Status, { label: string; cls: string }> = {
-  actif: { label: 'Actif', cls: 'text-green-700 bg-green-100' },
-  inactif: { label: 'Inactif', cls: 'text-brand-navy bg-brand-sky/60' },
-  bloque: { label: 'Bloqué', cls: 'text-gray-600 bg-gray-200' },
-  supprime: { label: 'Supprimé', cls: 'text-red-700 bg-red-100' },
-};
-
-type User = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string;
-  signup: string;
-  lastSeen: string;
-  status: Status;
-};
-
-const BASE_USERS: User[] = [
-  { id: '01', name: 'Yahya MOUSSAOUI', email: 'yahya.moussaoui@gmail.com', phone: '0675487955', signup: '13/04/26  23:12:05', lastSeen: '13/04/26  23:12:05', status: 'actif' },
-  { id: '18', name: 'Salma EL AMRANI', email: 'salma.elamrani@outlook.com', phone: '0661230987', signup: '05/04/26  09:05:22', lastSeen: '13/04/26  18:41:30', status: 'actif' },
-  { id: '16', name: 'Karim BENJELLOUN', email: 'karim.b@yahoo.fr', phone: '0698564123', signup: '28/03/26  14:22:11', lastSeen: '02/04/26  10:15:08', status: 'inactif' },
-  { id: '22', name: 'Fatima ZAHRA', email: 'fatimaz@gmail.com', phone: '0600000000', signup: '15/02/26  11:00:45', lastSeen: '20/02/26  12:33:17', status: 'bloque' },
-  { id: '07', name: 'Mehdi TAZI', email: 'mehdi.tazi@outlook.com', phone: '0655554433', signup: '01/01/26  08:15:00', lastSeen: '12/01/26  22:10:05', status: 'supprime' },
-  { id: '24', name: 'Imane BENALI', email: 'imane.b@gmail.com', phone: '0612345678', signup: '12/04/26  10:05:00', lastSeen: '13/04/26  10:02:00', status: 'actif' },
-  { id: '25', name: 'Rachid DEMNATI', email: 'rachid.d@outlook.fr', phone: '0699887766', signup: '11/04/26  14:22:00', lastSeen: '13/04/26  09:17:45', status: 'actif' },
-  { id: '26', name: 'Amina KAROUI', email: 'amina.karoui@hadar.ma', phone: '0677001122', signup: '10/04/26  07:30:00', lastSeen: '12/04/26  22:30:00', status: 'inactif' },
-  { id: '27', name: 'Nabil EL HOUSSEIN', email: 'nabil.elh@gmail.com', phone: '0688889999', signup: '08/04/26  20:50:00', lastSeen: '13/04/26  08:44:30', status: 'actif' },
-  { id: '28', name: 'Leila MOUTAMID', email: 'leila.m@outlook.com', phone: '0644556677', signup: '06/04/26  15:10:00', lastSeen: '10/04/26  17:05:15', status: 'bloque' },
-  { id: '29', name: 'Youssef BENDRISS', email: 'y.bendriss@gmail.com', phone: '0622334455', signup: '03/04/26  11:11:11', lastSeen: '11/04/26  13:13:13', status: 'actif' },
-  { id: '30', name: 'Asmaa SENHAJI', email: 'a.senhaji@hadar.ma', phone: '0666667777', signup: '31/03/26  18:20:40', lastSeen: '12/04/26  14:28:02', status: 'actif' },
-];
+import { INITIAL_USERS, STATUS_STYLE, type Status, type User } from '@/lib/mock/utilisateurs';
 
 const ROWS_PER_PAGE_OPTIONS = [10, 20, 30, 50, 100];
+const STATUS_KEY = 'hadar:users:status';
+const REASONS_KEY = 'hadar:users:reasons';
+
+type StatusStore = Record<string, Status>;
+type ReasonStore = Record<string, { action: ReasonAction; reason: string; when: string }>;
+
+function readJson<T>(key: string, fallback: T): T {
+  if (typeof window === 'undefined') return fallback;
+  try {
+    const raw = window.localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+function writeJson<T>(key: string, value: T) {
+  if (typeof window === 'undefined') return;
+  window.localStorage.setItem(key, JSON.stringify(value));
+}
 
 export default function Page() {
   const [refreshKey, setRefreshKey] = useState(0);
-  const [users, setUsers] = useState(BASE_USERS);
+  const [statusOverrides, setStatusOverrides] = useState<StatusStore>({});
+  const [reasons, setReasons] = useState<ReasonStore>({});
+
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | Status>('all');
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [filterOpen, setFilterOpen] = useState(false);
   const [actionsOpen, setActionsOpen] = useState(false);
+  const [flash, setFlash] = useState<string | null>(null);
+
+  const [reasonModal, setReasonModal] = useState<{
+    open: boolean;
+    action: ReasonAction | null;
+    ids: string[];
+  }>({ open: false, action: null, ids: [] });
+
   const filterRef = useRef<HTMLDivElement>(null);
   const actionsRef = useRef<HTMLDivElement>(null);
 
-  // Close popovers on outside click / Escape
+  useEffect(() => {
+    setStatusOverrides(readJson<StatusStore>(STATUS_KEY, {}));
+    setReasons(readJson<ReasonStore>(REASONS_KEY, {}));
+  }, []);
+
   useEffect(() => {
     if (!filterOpen && !actionsOpen) return;
     const onClick = (e: MouseEvent) => {
@@ -87,17 +90,37 @@ export default function Page() {
     };
   }, [filterOpen, actionsOpen]);
 
+  const showFlash = (msg: string) => {
+    setFlash(msg);
+    window.setTimeout(() => setFlash((m) => (m === msg ? null : m)), 2200);
+  };
+
+  const users: User[] = useMemo(
+    () =>
+      INITIAL_USERS.map((u) => ({
+        ...u,
+        status: (statusOverrides[u.id] ?? u.status) as Status,
+      })),
+    [statusOverrides],
+  );
+
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    if (!q) return users;
-    return users.filter(
-      (u) =>
+    return users.filter((u) => {
+      if (statusFilter !== 'all' && u.status !== statusFilter) return false;
+      if (!q) return true;
+      return (
         u.name.toLowerCase().includes(q) ||
         u.email.toLowerCase().includes(q) ||
         u.phone.includes(q) ||
-        u.id.includes(q),
-    );
-  }, [users, search]);
+        u.id.includes(q)
+      );
+    });
+  }, [users, search, statusFilter]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, statusFilter, rowsPerPage]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
   const safePage = Math.min(page, totalPages);
@@ -119,41 +142,117 @@ export default function Page() {
   const toggleAllOnPage = () => {
     setSelectedIds((prev) => {
       const next = new Set(prev);
-      if (allSelectedOnPage) {
-        pageIdsOnScreen.forEach((id) => next.delete(id));
-      } else {
-        pageIdsOnScreen.forEach((id) => next.add(id));
-      }
+      if (allSelectedOnPage) pageIdsOnScreen.forEach((id) => next.delete(id));
+      else pageIdsOnScreen.forEach((id) => next.add(id));
       return next;
     });
   };
 
   const clearSelection = () => setSelectedIds(new Set());
 
-  const bulkApply = (action: 'reset' | 'block' | 'unblock' | 'delete' | 'restore') => {
-    setUsers((all) =>
-      all.map((u) => {
-        if (!selectedIds.has(u.id)) return u;
-        switch (action) {
-          case 'block':
-            return u.status === 'supprime' ? u : { ...u, status: 'bloque' };
-          case 'unblock':
-            return u.status === 'bloque' ? { ...u, status: 'actif' } : u;
-          case 'delete':
-            return { ...u, status: 'supprime' };
-          case 'restore':
-            return u.status === 'supprime' ? { ...u, status: 'actif' } : u;
-          default:
-            return u;
-        }
-      }),
-    );
+  const persistStatus = (updates: Record<string, Status>) => {
+    setStatusOverrides((prev) => {
+      const next = { ...prev, ...updates };
+      writeJson(STATUS_KEY, next);
+      return next;
+    });
+  };
+
+  const persistReasons = (updates: ReasonStore) => {
+    setReasons((prev) => {
+      const next = { ...prev, ...updates };
+      writeJson(REASONS_KEY, next);
+      return next;
+    });
+  };
+
+  const applyStatus = (ids: string[], nextStatus: Status) => {
+    const updates: Record<string, Status> = {};
+    for (const id of ids) {
+      const u = users.find((x) => x.id === id);
+      if (!u) continue;
+      if (nextStatus === 'bloque' && u.status === 'supprime') continue;
+      if (nextStatus === 'actif' && u.status === 'bloque') updates[id] = 'actif';
+      else if (nextStatus === 'actif' && u.status === 'supprime') updates[id] = 'actif';
+      else updates[id] = nextStatus;
+    }
+    persistStatus(updates);
+  };
+
+  const openReasonModal = (action: ReasonAction, ids: string[]) => {
+    if (ids.length === 0) return;
+    setReasonModal({ open: true, action, ids });
+  };
+
+  const confirmReason = (reason: string) => {
+    const { action, ids } = reasonModal;
+    if (!action || ids.length === 0) return;
+    const nextStatus: Status = action === 'block' ? 'bloque' : 'supprime';
+    applyStatus(ids, nextStatus);
+    const stamp = new Date().toLocaleString('fr-FR');
+    const newReasons: ReasonStore = {};
+    for (const id of ids) newReasons[id] = { action, reason, when: stamp };
+    persistReasons(newReasons);
+    setReasonModal({ open: false, action: null, ids: [] });
     clearSelection();
     setActionsOpen(false);
+    showFlash(
+      ids.length > 1
+        ? `${ids.length} utilisateurs ${action === 'block' ? 'bloqués' : 'supprimés'}`
+        : `Utilisateur ${action === 'block' ? 'bloqué' : 'supprimé'}`,
+    );
+  };
+
+  const rowAction = (id: string) => (action: UserAction) => {
+    const user = users.find((u) => u.id === id);
+    const label = user ? user.name : `#${id}`;
+    if (action === 'reset') {
+      showFlash(`Lien de réinitialisation envoyé à ${label}`);
+      return;
+    }
+    if (action === 'unblock') {
+      applyStatus([id], 'actif');
+      showFlash(`${label} débloqué`);
+      return;
+    }
+    if (action === 'restore') {
+      applyStatus([id], 'actif');
+      showFlash(`${label} restauré`);
+      return;
+    }
+    if (action === 'block') openReasonModal('block', [id]);
+    if (action === 'delete') openReasonModal('delete', [id]);
+  };
+
+  const bulkApply = (action: 'reset' | 'block' | 'unblock' | 'delete' | 'restore') => {
+    const ids = Array.from(selectedIds);
+    if (ids.length === 0) return;
+    if (action === 'reset') {
+      showFlash(`Liens de réinitialisation envoyés (${ids.length})`);
+      clearSelection();
+      setActionsOpen(false);
+      return;
+    }
+    if (action === 'unblock') {
+      applyStatus(ids, 'actif');
+      showFlash(`${ids.length} utilisateur(s) débloqué(s)`);
+      clearSelection();
+      setActionsOpen(false);
+      return;
+    }
+    if (action === 'restore') {
+      applyStatus(ids, 'actif');
+      showFlash(`${ids.length} utilisateur(s) restauré(s)`);
+      clearSelection();
+      setActionsOpen(false);
+      return;
+    }
+    if (action === 'block') openReasonModal('block', ids);
+    if (action === 'delete') openReasonModal('delete', ids);
   };
 
   const exportRows = (): (string | number)[][] => [
-    ['ID', 'Nom', 'Email', 'Téléphone', 'Inscription', 'Dernière activité', 'Statut'],
+    ['ID', 'Nom', 'Email', 'Téléphone', 'Inscription', 'Dernière activité', 'Statut', 'Motif'],
     ...filtered.map((u) => [
       `#${u.id}`,
       u.name,
@@ -162,10 +261,23 @@ export default function Page() {
       u.signup,
       u.lastSeen,
       STATUS_STYLE[u.status].label,
+      reasons[u.id]?.reason ?? '',
     ]),
   ];
 
   const selectionCount = selectedIds.size;
+  const reasonTarget =
+    reasonModal.ids.length === 1
+      ? users.find((u) => u.id === reasonModal.ids[0])?.name ?? `#${reasonModal.ids[0]}`
+      : `${reasonModal.ids.length} utilisateurs`;
+
+  const STATUS_FILTERS: { id: 'all' | Status; label: string }[] = [
+    { id: 'all', label: 'Tous' },
+    { id: 'actif', label: 'Actifs' },
+    { id: 'inactif', label: 'Inactifs' },
+    { id: 'bloque', label: 'Bloqués' },
+    { id: 'supprime', label: 'Supprimés' },
+  ];
 
   return (
     <div>
@@ -177,7 +289,11 @@ export default function Page() {
             inscrits
             {search && (
               <>
-                {' '}· <AnimatedCounter key={`${refreshKey}-filtered-${filtered.length}`} value={`${filtered.length}`} />{' '}
+                {' '}·{' '}
+                <AnimatedCounter
+                  key={`${refreshKey}-filtered-${filtered.length}`}
+                  value={`${filtered.length}`}
+                />{' '}
                 correspondent à « {search} »
               </>
             )}
@@ -189,7 +305,16 @@ export default function Page() {
         </div>
       </div>
 
-      <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft overflow-hidden">
+      {flash && (
+        <div
+          role="status"
+          className="mb-6 rounded-xl bg-brand-sky/60 border border-brand-blue/30 text-brand-navy px-4 py-2 text-sm font-medium"
+        >
+          {flash}
+        </div>
+      )}
+
+      <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft overflow-visible">
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 border-b border-gray-100">
           <div className="flex items-center gap-2 flex-wrap">
             <div ref={filterRef} className="relative">
@@ -233,11 +358,31 @@ export default function Page() {
                       }`}
                     >
                       <span>{n} lignes</span>
-                      {n === rowsPerPage && <CheckCircle2 className="h-4 w-4 text-brand-blue" aria-hidden />}
+                      {n === rowsPerPage && (
+                        <CheckCircle2 className="h-4 w-4 text-brand-blue" aria-hidden />
+                      )}
                     </button>
                   ))}
                 </div>
               )}
+            </div>
+
+            <div className="flex flex-wrap gap-1.5">
+              {STATUS_FILTERS.map((f) => (
+                <button
+                  key={f.id}
+                  type="button"
+                  onClick={() => setStatusFilter(f.id)}
+                  aria-pressed={statusFilter === f.id}
+                  className={
+                    statusFilter === f.id
+                      ? 'inline-flex items-center rounded-pill bg-brand-navy text-white px-3 py-1 text-[11px] font-semibold shadow-glow-navy'
+                      : 'inline-flex items-center rounded-pill border border-gray-200 text-brand-navy px-3 py-1 text-[11px] font-medium hover:border-brand-blue'
+                  }
+                >
+                  {f.label}
+                </button>
+              ))}
             </div>
 
             <button
@@ -285,7 +430,7 @@ export default function Page() {
                     className="w-full flex items-center gap-2 px-3 py-2 text-sm text-brand-navy hover:bg-gray-50"
                   >
                     <Ban className="h-4 w-4" aria-hidden />
-                    Bloquer
+                    Bloquer (motif requis)
                   </button>
                   <button
                     type="button"
@@ -302,7 +447,7 @@ export default function Page() {
                     className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50"
                   >
                     <Trash2 className="h-4 w-4" aria-hidden />
-                    Supprimer
+                    Supprimer (motif requis)
                   </button>
                   <button
                     type="button"
@@ -394,7 +539,12 @@ export default function Page() {
                       </td>
                       <td className="px-4 py-3 font-mono text-brand-navy">#{u.id}</td>
                       <td className="px-4 py-3 font-semibold text-brand-navy whitespace-nowrap">
-                        {u.name}
+                        <a
+                          href={`/admin/utilisateurs/${u.id}`}
+                          className="hover:text-brand-blue"
+                        >
+                          {u.name}
+                        </a>
                       </td>
                       <td className="px-4 py-3 text-gray-600">{u.email}</td>
                       <td className="px-4 py-3 text-gray-600">{u.phone}</td>
@@ -408,7 +558,11 @@ export default function Page() {
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right">
-                        <UserActionsDropdown status={u.status} userId={u.id} />
+                        <UserActionsDropdown
+                          status={u.status}
+                          userId={u.id}
+                          onAction={rowAction(u.id)}
+                        />
                       </td>
                     </tr>
                   );
@@ -421,7 +575,10 @@ export default function Page() {
         <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 text-xs text-gray-500 flex-wrap gap-2">
           <span>
             Page {safePage} / {totalPages} ·{' '}
-            <AnimatedCounter key={`${refreshKey}-count-${filtered.length}`} value={`${filtered.length}`} />{' '}
+            <AnimatedCounter
+              key={`${refreshKey}-count-${filtered.length}`}
+              value={`${filtered.length}`}
+            />{' '}
             utilisateur{filtered.length > 1 ? 's' : ''}
           </span>
           <div className="flex items-center gap-1">
@@ -460,6 +617,14 @@ export default function Page() {
           </div>
         </div>
       </section>
+
+      <UserReasonModal
+        open={reasonModal.open}
+        action={reasonModal.action}
+        targetLabel={reasonTarget}
+        onClose={() => setReasonModal({ open: false, action: null, ids: [] })}
+        onConfirm={confirmReason}
+      />
     </div>
   );
 }

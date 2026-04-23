@@ -627,7 +627,7 @@ export function SettingsTabs() {
           <Dropdown
             label={t('settings.general.language')}
             Icon={Globe}
-            value={LOCALES.find((l) => l.id === locale)?.label ?? LOCALES[0].label}
+            value={LOCALES.find((l) => l.id === locale)?.label ?? 'Français'}
             options={LOCALES.map((l) => l.label)}
             onChange={(v) => {
               const match = LOCALES.find((l) => l.label === v);

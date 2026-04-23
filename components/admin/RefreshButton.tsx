@@ -2,13 +2,15 @@
 
 import { useState } from 'react';
 import { RefreshCw } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/provider';
 
 type Props = {
   onRefresh?: () => void;
   label?: string;
 };
 
-export function RefreshButton({ onRefresh, label = 'Rafraîchir' }: Props) {
+export function RefreshButton({ onRefresh, label }: Props) {
+  const { t } = useI18n();
   const [loading, setLoading] = useState(false);
   const [justDone, setJustDone] = useState(false);
 
@@ -32,7 +34,7 @@ export function RefreshButton({ onRefresh, label = 'Rafraîchir' }: Props) {
       className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-4 py-1.5 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue disabled:opacity-70 disabled:cursor-wait transition-all"
     >
       <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} aria-hidden />
-      {loading ? 'Mise à jour…' : justDone ? 'À jour' : label}
+      {loading ? t('refresh.loading') : justDone ? t('refresh.done') : label ?? t('common.refresh')}
     </button>
   );
 }

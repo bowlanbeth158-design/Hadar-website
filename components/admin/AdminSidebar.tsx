@@ -74,7 +74,7 @@ export function AdminSidebar() {
     href === '/admin' ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
-    <aside className="hidden lg:flex flex-col fixed inset-y-0 left-0 w-64 bg-brand-navy text-white px-4 py-6 z-30">
+    <aside className="hidden lg:flex flex-col fixed inset-y-0 left-0 rtl:left-auto rtl:right-0 w-64 bg-brand-navy text-white px-4 py-6 z-30">
       <div className="px-3 mb-8">
         <Logo variant="white" size="md" />
       </div>

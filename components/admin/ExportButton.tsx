@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Download, ChevronDown, Check, Copy, Sheet } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/provider';
 
 type Props = {
   filename: string;
@@ -57,7 +58,8 @@ async function copyToClipboard(text: string): Promise<boolean> {
   }
 }
 
-export function ExportButton({ filename, getRows, label = 'Exporter' }: Props) {
+export function ExportButton({ filename, getRows, label }: Props) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -131,7 +133,7 @@ export function ExportButton({ filename, getRows, label = 'Exporter' }: Props) {
         className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-4 py-1.5 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
       >
         <Download className="h-4 w-4" aria-hidden />
-        {label}
+        {label ?? t('common.export')}
         <ChevronDown className="h-3 w-3" aria-hidden />
       </button>
 

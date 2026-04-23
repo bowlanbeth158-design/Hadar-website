@@ -182,6 +182,28 @@ export default function Page() {
         />
       </div>
 
+      <nav role="tablist" className="flex flex-wrap justify-center gap-2 mb-8">
+        {FILTERS.map((f) => {
+          const active = statusFilter === f.id;
+          return (
+            <button
+              key={f.id}
+              role="tab"
+              aria-selected={active}
+              type="button"
+              onClick={() => setStatusFilter(f.id)}
+              className={
+                active
+                  ? 'rounded-pill bg-brand-navy text-white px-5 py-2 text-sm font-semibold shadow-glow-navy hover:scale-[1.03] transition-transform'
+                  : 'rounded-pill border border-brand-navy text-brand-navy px-5 py-2 text-sm font-medium hover:bg-brand-navy hover:text-white hover:shadow-glow-navy hover:scale-[1.03] transition-all'
+              }
+            >
+              {f.label}
+            </button>
+          );
+        })}
+      </nav>
+
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
         {STATUS_ORDER.map((s) => {
           const c = STATUS_CONFIG[s];
@@ -219,28 +241,8 @@ export default function Page() {
         })}
       </div>
 
-      <div className="flex flex-wrap items-center gap-3 mb-4">
-        <div className="flex flex-wrap gap-2">
-          {FILTERS.map((f) => {
-            const active = statusFilter === f.id;
-            return (
-              <button
-                key={f.id}
-                type="button"
-                onClick={() => setStatusFilter(f.id)}
-                aria-pressed={active}
-                className={
-                  active
-                    ? 'inline-flex items-center rounded-pill bg-brand-navy text-white px-4 py-1.5 text-xs font-semibold shadow-glow-navy'
-                    : 'inline-flex items-center rounded-pill border border-gray-200 text-brand-navy px-4 py-1.5 text-xs font-medium hover:border-brand-blue transition-colors'
-                }
-              >
-                {f.label}
-              </button>
-            );
-          })}
-        </div>
-        <div className="relative ml-auto w-full sm:w-72">
+      <div className="flex justify-end mb-4">
+        <div className="relative w-full sm:w-72">
           <Search
             className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400"
             aria-hidden

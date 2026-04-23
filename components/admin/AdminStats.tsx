@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Siren,
   Copy,
@@ -20,6 +20,7 @@ import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { PeriodTabs } from './PeriodTabs';
 import { RefreshButton } from './RefreshButton';
 import { ExportButton } from './ExportButton';
+import { daysBetween, frNumber, periodMultiplier, scale, relativeNow } from '@/lib/period';
 
 type Tab = 'global' | 'problems' | 'channels' | 'ux';
 
@@ -30,18 +31,27 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'ux', label: 'Expérience utilisateur' },
 ];
 
-const GLOBAL_KPIS: { value: string; label: string; gradient: string; glow: string; Icon: LucideIcon; delta: string }[] = [
-  { value: '1 820', label: 'Total signalements', gradient: 'bg-grad-stat-violet', glow: 'shadow-glow-violet', Icon: Siren, delta: '-10% vs période précédente' },
-  { value: '1 300', label: 'Signalements traités', gradient: 'bg-grad-stat-green', glow: 'shadow-glow-green', Icon: Copy, delta: '+8% vs période précédente' },
-  { value: '71%', label: 'Taux de traitement', gradient: 'bg-grad-stat-red', glow: 'shadow-glow-red', Icon: TrendingUp, delta: '+3 pts vs période précédente' },
-  { value: '36:35:10', label: 'Temps moyen de traitement', gradient: 'bg-grad-stat-orange', glow: 'shadow-glow-orange', Icon: Clock, delta: '-5% vs période précédente' },
+const GLOBAL_KPIS_BASE: {
+  base: number | null;
+  display: string;
+  label: string;
+  gradient: string;
+  glow: string;
+  Icon: LucideIcon;
+  deltaPct: number | null;
+  deltaLabel: string;
+}[] = [
+  { base: 1820, display: '', label: 'Total signalements', gradient: 'bg-grad-stat-violet', glow: 'shadow-glow-violet', Icon: Siren, deltaPct: -10, deltaLabel: 'vs période précédente' },
+  { base: 1300, display: '', label: 'Signalements traités', gradient: 'bg-grad-stat-green', glow: 'shadow-glow-green', Icon: Copy, deltaPct: 8, deltaLabel: 'vs période précédente' },
+  { base: null, display: '71%', label: 'Taux de traitement', gradient: 'bg-grad-stat-red', glow: 'shadow-glow-red', Icon: TrendingUp, deltaPct: null, deltaLabel: '+3 pts vs période précédente' },
+  { base: null, display: '36:35:10', label: 'Temps moyen de traitement', gradient: 'bg-grad-stat-orange', glow: 'shadow-glow-orange', Icon: Clock, deltaPct: null, deltaLabel: '-5% vs période précédente' },
 ];
 
-const RISK_KPIS = [
-  { value: '3,35', pct: '', label: 'Intensité moy. signalements par contact', cls: 'bg-grad-alert-red shadow-glow-red' },
-  { value: '800', pct: '44%', label: 'Vigilance (1 à 2)', cls: 'bg-grad-stat-sky shadow-glow-sky' },
-  { value: '670', pct: '36%', label: 'Modéré (3 à 4)', cls: 'bg-grad-alert-yellow shadow-glow-yellow' },
-  { value: '350', pct: '20%', label: 'Élevé (≥ 5)', cls: 'bg-grad-stat-green shadow-glow-green' },
+const RISK_KPIS_BASE = [
+  { value: '3,35', pct: '', base: null as number | null, label: 'Intensité moy. signalements par contact', cls: 'bg-grad-alert-red shadow-glow-red' },
+  { value: '', pct: '44%', base: 800, label: 'Vigilance (1 à 2)', cls: 'bg-grad-stat-sky shadow-glow-sky' },
+  { value: '', pct: '36%', base: 670, label: 'Modéré (3 à 4)', cls: 'bg-grad-alert-yellow shadow-glow-yellow' },
+  { value: '', pct: '20%', base: 350, label: 'Élevé (≥ 5)', cls: 'bg-grad-stat-green shadow-glow-green' },
 ];
 
 type Bar = { label: string; value: number; color: string };
@@ -140,11 +150,11 @@ const PROBLEMS = [
   { id: 'usurpation', label: 'Usurpation', value: 100, color: 'bg-brand-navy' },
 ];
 
-const UX_KPIS = [
-  { value: '15 000', label: 'Visites', cls: 'bg-grad-stat-sky shadow-glow-sky' },
-  { value: '8 500', label: 'Inscriptions', cls: 'bg-grad-stat-green shadow-glow-green' },
-  { value: '950', label: 'Utilisateurs actifs', cls: 'bg-grad-stat-red shadow-glow-red' },
-  { value: '57%', label: 'Taux de conversion', cls: 'bg-grad-stat-orange shadow-glow-orange' },
+const UX_KPIS_BASE = [
+  { base: 15000 as number | null, display: '', label: 'Visites', cls: 'bg-grad-stat-sky shadow-glow-sky' },
+  { base: 8500 as number | null, display: '', label: 'Inscriptions', cls: 'bg-grad-stat-green shadow-glow-green' },
+  { base: 950 as number | null, display: '', label: 'Utilisateurs actifs', cls: 'bg-grad-stat-red shadow-glow-red' },
+  { base: null, display: '57%', label: 'Taux de conversion', cls: 'bg-grad-stat-orange shadow-glow-orange' },
 ];
 
 const SATISFACTION = [
@@ -160,34 +170,101 @@ export function AdminStats() {
   const [selectedProblem, setSelectedProblem] = useState(PROBLEMS[1]!.id);
   const [selectedChannel, setSelectedChannel] = useState(CHANNELS[1]!.id);
   const [refreshKey, setRefreshKey] = useState(0);
+  const [periodIndex, setPeriodIndex] = useState(4);
+  const [periodLabel, setPeriodLabel] = useState('365 jours');
+  const [rangeDays, setRangeDays] = useState<number | undefined>(undefined);
+  const [lastUpdate, setLastUpdate] = useState<Date>(() => new Date());
+  const [, setTick] = useState(0);
 
-  const selectedP = PROBLEMS.find((p) => p.id === selectedProblem)!;
-  const selectedC = CHANNELS.find((c) => c.id === selectedChannel)!;
-  const channelTotal = CHANNELS.reduce((s, c) => s + c.value, 0);
+  useEffect(() => {
+    const t = window.setInterval(() => setTick((n) => n + 1), 15_000);
+    return () => window.clearInterval(t);
+  }, []);
+
+  const mult = periodMultiplier(periodIndex, rangeDays);
+  // Default period for stats page is 365 jours (index 4, mult 210). Relative factor scales everything proportionally.
+  const factor = mult / 210;
+
+  const globalKpis = useMemo(
+    () =>
+      GLOBAL_KPIS_BASE.map((k) => ({
+        ...k,
+        display: k.base != null ? frNumber(scale(k.base, factor)) : k.display,
+      })),
+    [factor],
+  );
+  const riskKpis = useMemo(
+    () =>
+      RISK_KPIS_BASE.map((k) => ({
+        ...k,
+        value: k.base != null ? frNumber(scale(k.base, factor)) : k.value,
+      })),
+    [factor],
+  );
+  const problems = useMemo(
+    () => PROBLEMS.map((p) => ({ ...p, value: scale(p.value, factor) })),
+    [factor],
+  );
+  const channels = useMemo(
+    () => CHANNELS.map((c) => ({ ...c, value: scale(c.value, factor) })),
+    [factor],
+  );
+  const uxKpis = useMemo(
+    () =>
+      UX_KPIS_BASE.map((k) => ({
+        ...k,
+        display: k.base != null ? frNumber(scale(k.base, factor)) : k.display,
+      })),
+    [factor],
+  );
+
+  const selectedP = problems.find((p) => p.id === selectedProblem) ?? problems[0]!;
+  const selectedC = channels.find((c) => c.id === selectedChannel) ?? channels[0]!;
+  const channelTotal = channels.reduce((s, c) => s + c.value, 0);
 
   const exportRows = (): (string | number)[][] => {
-    const rows: (string | number)[][] = [['Section', 'Indicateur', 'Valeur', 'Delta']];
-    GLOBAL_KPIS.forEach((k) => rows.push(['Vue globale', k.label, k.value, k.delta]));
-    RISK_KPIS.forEach((k) => rows.push(['Niveaux de risque', k.label, k.value, k.pct]));
-    PROBLEMS.forEach((p) => rows.push(['Problèmes', p.label, p.value, '']));
-    CHANNELS.forEach((c) => rows.push(['Canaux', c.label, c.value, '']));
-    UX_KPIS.forEach((k) => rows.push(['UX', k.label, k.value, '']));
-    SATISFACTION.forEach((k) => rows.push(['Satisfaction', k.label, k.value, '']));
+    const rows: (string | number)[][] = [['Section', 'Indicateur', 'Valeur', 'Delta / Période']];
+    globalKpis.forEach((k) => rows.push(['Vue globale', k.label, k.display, k.deltaLabel]));
+    riskKpis.forEach((k) => rows.push(['Niveaux de risque', k.label, k.value, k.pct]));
+    problems.forEach((p) => rows.push(['Problèmes', p.label, p.value, periodLabel]));
+    channels.forEach((c) => rows.push(['Canaux', c.label, c.value, periodLabel]));
+    uxKpis.forEach((k) => rows.push(['UX', k.label, k.display, periodLabel]));
+    SATISFACTION.forEach((k) => rows.push(['Satisfaction', k.label, k.value, periodLabel]));
     return rows;
   };
+
+  const secondsAgo = Math.floor((Date.now() - lastUpdate.getTime()) / 1000);
 
   return (
     <div>
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">Statistiques</h1>
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">Statistiques</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Période : <span className="font-semibold text-brand-navy">{periodLabel}</span>
+          </p>
+        </div>
         <div className="flex items-center gap-2">
-          <RefreshButton onRefresh={() => setRefreshKey((k) => k + 1)} />
+          <RefreshButton
+            onRefresh={() => {
+              setRefreshKey((k) => k + 1);
+              setLastUpdate(new Date());
+            }}
+          />
           <ExportButton filename="hadar-statistiques" getRows={exportRows} />
         </div>
       </div>
 
       <div className="mb-4">
-        <PeriodTabs defaultActive={4} />
+        <PeriodTabs
+          defaultActive={4}
+          onChange={(label, index, range) => {
+            setPeriodLabel(label);
+            setPeriodIndex(index);
+            setRangeDays(range ? daysBetween(range.from, range.to) : undefined);
+            setLastUpdate(new Date());
+          }}
+        />
       </div>
 
       <nav role="tablist" className="flex flex-wrap gap-2 mb-8">
@@ -214,18 +291,18 @@ export function AdminStats() {
 
       {tab !== 'ux' && (
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-          {GLOBAL_KPIS.map((k) => (
+          {globalKpis.map((k) => (
             <div key={k.label} className={`${k.gradient} ${k.glow} text-white rounded-2xl p-5 flex flex-col gap-2`}>
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-3xl font-bold">
-                    <AnimatedCounter key={`${refreshKey}-${k.label}`} value={k.value} />
+                    <AnimatedCounter key={`${refreshKey}-${k.label}-${factor}`} value={k.display} />
                   </p>
                   <p className="text-sm font-medium opacity-90 mt-1">{k.label}</p>
                 </div>
                 <k.Icon className="h-7 w-7 opacity-70" aria-hidden />
               </div>
-              <p className="text-xs text-white/80">{k.delta}</p>
+              <p className="text-xs text-white/80">{k.deltaLabel}</p>
             </div>
           ))}
         </section>
@@ -233,10 +310,10 @@ export function AdminStats() {
 
       {(tab === 'problems' || tab === 'channels') && (
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-          {RISK_KPIS.map((k) => (
+          {riskKpis.map((k) => (
             <div key={k.label} className={`${k.cls} text-white rounded-2xl p-5`}>
               <p className="text-3xl font-bold">
-                <AnimatedCounter key={`${refreshKey}-${k.label}`} value={k.value} />
+                <AnimatedCounter key={`${refreshKey}-${k.label}-${factor}`} value={k.value} />
               </p>
               {k.pct && <p className="text-sm font-semibold opacity-90">{k.pct}</p>}
               <p className="mt-1 text-xs font-medium opacity-90">{k.label}</p>
@@ -257,10 +334,10 @@ export function AdminStats() {
             </div>
             <BarChart
               bars={[
-                { label: 'En cours', value: 200, color: 'bg-orange-500' },
-                { label: 'Publié', value: 1020, color: 'bg-green-500' },
-                { label: 'Refusé', value: 500, color: 'bg-red-500' },
-                { label: 'À corriger', value: 100, color: 'bg-brand-blue' },
+                { label: 'En cours', value: scale(200, factor), color: 'bg-orange-500' },
+                { label: 'Publié', value: scale(1020, factor), color: 'bg-green-500' },
+                { label: 'Refusé', value: scale(500, factor), color: 'bg-red-500' },
+                { label: 'À corriger', value: scale(100, factor), color: 'bg-brand-blue' },
               ]}
               showPct={hybridMode === 'pct'}
               refreshKey={refreshKey}
@@ -269,9 +346,14 @@ export function AdminStats() {
           <ComparisonCard
             title="Variation des signalements"
             subtitle="Comparaison avec la période précédente"
-            prev={{ label: '2025 — période précédente', value: 2120 }}
-            curr={{ label: '2026 — période actuelle', value: 1820 }}
-            delta="-14% vs période précédente"
+            prev={{ label: '2025 — période précédente', value: Math.max(1, Math.round(2120 * factor)) }}
+            curr={{ label: '2026 — période actuelle', value: scale(1820, factor) }}
+            delta={(() => {
+              const p = Math.max(1, Math.round(2120 * factor));
+              const c = scale(1820, factor);
+              const pct = Math.round(((c - p) / p) * 100);
+              return `${pct >= 0 ? '+' : ''}${pct}% vs période précédente`;
+            })()}
             refreshKey={refreshKey}
           />
         </div>
@@ -288,7 +370,7 @@ export function AdminStats() {
               </div>
             </div>
             <div className="flex flex-wrap gap-2 mb-4">
-              {PROBLEMS.map((p) => (
+              {problems.map((p) => (
                 <button
                   key={p.id}
                   type="button"
@@ -303,14 +385,18 @@ export function AdminStats() {
                 </button>
               ))}
             </div>
-            <BarChart bars={PROBLEMS} showPct={hybridMode === 'pct'} refreshKey={refreshKey} />
+            <BarChart bars={problems} showPct={hybridMode === 'pct'} refreshKey={refreshKey} />
           </section>
           <ComparisonCard
             title={`Évolution — ${selectedP.label}`}
             subtitle="Comparaison avec la période précédente"
-            prev={{ label: '2025 — période précédente', value: 1370 }}
+            prev={{ label: '2025 — période précédente', value: Math.max(1, Math.round(1370 * factor)) }}
             curr={{ label: '2026 — période actuelle', value: selectedP.value }}
-            delta={`${selectedP.value >= 1370 ? '+' : '-'}${Math.abs(Math.round(((selectedP.value - 1370) / 1370) * 100))}% vs période précédente`}
+            delta={(() => {
+              const p = Math.max(1, Math.round(1370 * factor));
+              const pct = Math.round(((selectedP.value - p) / p) * 100);
+              return `${pct >= 0 ? '+' : ''}${pct}% vs période précédente`;
+            })()}
             refreshKey={refreshKey}
           />
         </div>
@@ -319,8 +405,8 @@ export function AdminStats() {
       {tab === 'channels' && (
         <div>
           <div className="flex flex-wrap gap-2 mb-6">
-            {CHANNELS.map((c) => {
-              const pct = Math.round((c.value / channelTotal) * 100);
+            {channels.map((c) => {
+              const pct = channelTotal > 0 ? Math.round((c.value / channelTotal) * 100) : 0;
               const on = selectedChannel === c.id;
               return (
                 <button
@@ -346,7 +432,7 @@ export function AdminStats() {
             <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6">
               <h3 className="text-lg font-bold text-brand-navy mb-4">Distribution par canal</h3>
               <BarChart
-                bars={CHANNELS.map((c) => ({ label: c.label, value: c.value, color: 'bg-sky-500' }))}
+                bars={channels.map((c) => ({ label: c.label, value: c.value, color: 'bg-sky-500' }))}
                 showPct={hybridMode === 'pct'}
                 refreshKey={refreshKey}
               />
@@ -354,9 +440,13 @@ export function AdminStats() {
             <ComparisonCard
               title={`Évolution — ${selectedC.label}`}
               subtitle="Comparaison avec la période précédente"
-              prev={{ label: '2025 — période précédente', value: 850 }}
+              prev={{ label: '2025 — période précédente', value: Math.max(1, Math.round(850 * factor)) }}
               curr={{ label: '2026 — période actuelle', value: selectedC.value }}
-              delta={`${selectedC.value >= 850 ? '+' : '-'}${Math.abs(Math.round(((selectedC.value - 850) / 850) * 100))}% vs période précédente`}
+              delta={(() => {
+                const p = Math.max(1, Math.round(850 * factor));
+                const pct = Math.round(((selectedC.value - p) / p) * 100);
+                return `${pct >= 0 ? '+' : ''}${pct}% vs période précédente`;
+              })()}
               refreshKey={refreshKey}
             />
           </div>
@@ -366,10 +456,13 @@ export function AdminStats() {
       {tab === 'ux' && (
         <div>
           <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
-            {UX_KPIS.map((k) => (
+            {uxKpis.map((k) => (
               <div key={k.label} className={`${k.cls} text-white rounded-2xl p-5`}>
                 <p className="text-3xl font-bold">
-                  <AnimatedCounter key={`${refreshKey}-${k.label}`} value={k.value} />
+                  <AnimatedCounter
+                    key={`${refreshKey}-${k.label}-${factor}`}
+                    value={k.display}
+                  />
                 </p>
                 <p className="mt-1 text-sm font-medium opacity-90">{k.label}</p>
               </div>
@@ -437,7 +530,9 @@ export function AdminStats() {
         </div>
       )}
 
-      <p className="mt-6 text-xs text-gray-400 text-right">Dernière mise à jour : il y a 2 min</p>
+      <p className="mt-6 text-xs text-gray-400 text-right">
+        Dernière mise à jour : {relativeNow(secondsAgo)}
+      </p>
     </div>
   );
 }

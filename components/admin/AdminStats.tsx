@@ -237,7 +237,7 @@ export function AdminStats() {
 
   return (
     <div>
-      <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
+      <div className="flex items-center justify-between flex-wrap gap-3 mb-8">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">Statistiques</h1>
           <p className="mt-1 text-sm text-gray-500">
@@ -255,7 +255,7 @@ export function AdminStats() {
         </div>
       </div>
 
-      <div className="mb-4">
+      <div className="mb-8">
         <PeriodTabs
           defaultActive={4}
           onChange={(label, index, range) => {
@@ -267,7 +267,7 @@ export function AdminStats() {
         />
       </div>
 
-      <nav role="tablist" className="flex flex-wrap gap-2 mb-8">
+      <nav role="tablist" className="flex flex-wrap justify-center gap-2 mb-8">
         {TABS.map((t) => {
           const on = t.id === tab;
           return (

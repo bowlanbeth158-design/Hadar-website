@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { CheckCircle2, XCircle, PencilLine, Send } from 'lucide-react';
 
-type Decision = 'publie' | 'non_retenu' | 'a_corriger';
+export type Decision = 'publie' | 'non_retenu' | 'a_corriger';
 
 const DECISIONS: {
   id: Decision;
@@ -47,8 +47,13 @@ const DECISIONS: {
   },
 ];
 
-export function ModerationDecision() {
-  const [decision, setDecision] = useState<Decision | null>(null);
+type Props = {
+  onSubmit?: (decision: Decision, reason: string) => void;
+  currentDecision?: Decision | null;
+};
+
+export function ModerationDecision({ onSubmit, currentDecision = null }: Props) {
+  const [decision, setDecision] = useState<Decision | null>(currentDecision);
   const [reason, setReason] = useState('');
   const [confirmed, setConfirmed] = useState(false);
 
@@ -58,7 +63,8 @@ export function ModerationDecision() {
     decision !== null && (reasonRequired ? reason.trim().length > 0 : true);
 
   const submit = () => {
-    if (!canSubmit) return;
+    if (!canSubmit || !decision) return;
+    onSubmit?.(decision, reason);
     setConfirmed(true);
     setTimeout(() => setConfirmed(false), 2200);
   };
@@ -130,7 +136,7 @@ export function ModerationDecision() {
         </button>
         {confirmed && (
           <p className="mt-3 text-xs text-center text-green-700">
-            L&apos;utilisateur et l&apos;audit log ont été mis à jour (simulation).
+            Statut mis à jour et conservé localement.
           </p>
         )}
       </div>

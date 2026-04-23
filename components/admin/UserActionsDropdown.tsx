@@ -4,13 +4,15 @@ import { useEffect, useRef, useState } from 'react';
 import { Eye, KeyRound, Ban, CheckCircle2, Trash2, Undo2, ChevronDown } from 'lucide-react';
 
 type Status = 'actif' | 'inactif' | 'bloque' | 'supprime';
+export type UserAction = 'view' | 'reset' | 'block' | 'unblock' | 'delete' | 'restore';
 
 type Props = {
   status: Status;
   userId: string;
+  onAction?: (action: UserAction) => void;
 };
 
-export function UserActionsDropdown({ status, userId }: Props) {
+export function UserActionsDropdown({ status, userId, onAction }: Props) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -33,36 +35,37 @@ export function UserActionsDropdown({ status, userId }: Props) {
   const isDeleted = status === 'supprime';
   const isBlocked = status === 'bloque';
 
-  const items = [
+  type Item = {
+    label: string;
+    Icon: typeof Eye;
+    tone: 'default' | 'warning' | 'success' | 'danger';
+    disabled: boolean;
+    href?: string;
+    action: UserAction;
+  };
+
+  const items: Item[] = [
     {
       label: 'Voir le profil',
       Icon: Eye,
-      tone: 'default' as const,
+      tone: 'default',
       href: `/admin/utilisateurs/${userId}`,
       disabled: false,
+      action: 'view',
     },
     {
       label: 'Réinitialiser le mot de passe',
       Icon: KeyRound,
-      tone: 'warning' as const,
+      tone: 'warning',
       disabled: isDeleted,
+      action: 'reset',
     },
     isBlocked
-      ? {
-          label: 'Débloquer',
-          Icon: CheckCircle2,
-          tone: 'success' as const,
-          disabled: isDeleted,
-        }
-      : {
-          label: 'Bloquer',
-          Icon: Ban,
-          tone: 'default' as const,
-          disabled: isDeleted,
-        },
+      ? { label: 'Débloquer', Icon: CheckCircle2, tone: 'success', disabled: isDeleted, action: 'unblock' }
+      : { label: 'Bloquer', Icon: Ban, tone: 'default', disabled: isDeleted, action: 'block' },
     isDeleted
-      ? { label: 'Restaurer', Icon: Undo2, tone: 'success' as const, disabled: false }
-      : { label: 'Supprimer', Icon: Trash2, tone: 'danger' as const, disabled: false },
+      ? { label: 'Restaurer', Icon: Undo2, tone: 'success', disabled: false, action: 'restore' }
+      : { label: 'Supprimer', Icon: Trash2, tone: 'danger', disabled: false, action: 'delete' },
   ];
 
   return (
@@ -100,7 +103,7 @@ export function UserActionsDropdown({ status, userId }: Props) {
                 {it.label}
               </>
             );
-            if ('href' in it && it.href && !it.disabled) {
+            if (it.href && !it.disabled) {
               return (
                 <a
                   key={i}
@@ -119,7 +122,10 @@ export function UserActionsDropdown({ status, userId }: Props) {
                 type="button"
                 role="menuitem"
                 disabled={it.disabled}
-                onClick={() => setOpen(false)}
+                onClick={() => {
+                  setOpen(false);
+                  if (!it.disabled) onAction?.(it.action);
+                }}
                 className={`${base} ${toneClass}`}
               >
                 {content}

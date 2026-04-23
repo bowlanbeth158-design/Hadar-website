@@ -220,7 +220,6 @@ export function AdminStats() {
 
   const selectedP = problems.find((p) => p.id === selectedProblem) ?? problems[0]!;
   const selectedC = channels.find((c) => c.id === selectedChannel) ?? channels[0]!;
-  const channelTotal = channels.reduce((s, c) => s + c.value, 0);
 
   const exportRows = (): (string | number)[][] => {
     const rows: (string | number)[][] = [['Section', 'Indicateur', 'Valeur', 'Delta / Période']];
@@ -404,9 +403,8 @@ export function AdminStats() {
 
       {tab === 'channels' && (
         <div>
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className="flex flex-wrap justify-center gap-2 mb-6">
             {channels.map((c) => {
-              const pct = channelTotal > 0 ? Math.round((c.value / channelTotal) * 100) : 0;
               const on = selectedChannel === c.id;
               return (
                 <button
@@ -421,16 +419,39 @@ export function AdminStats() {
                 >
                   <c.Icon className="h-3.5 w-3.5" aria-hidden />
                   {c.label}
-                  <span className={on ? 'opacity-90 text-[10px]' : 'text-[10px] text-gray-500'}>
-                    {c.value} · {pct}%
-                  </span>
                 </button>
               );
             })}
           </div>
           <div className="grid gap-4 lg:grid-cols-2">
             <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6">
-              <h3 className="text-lg font-bold text-brand-navy mb-4">Distribution par canal</h3>
+              <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+                <h3 className="text-lg font-bold text-brand-navy">Distribution par canal</h3>
+                <div className="inline-flex rounded-pill bg-gray-100 p-1 text-xs">
+                  <button
+                    type="button"
+                    onClick={() => setHybridMode('count')}
+                    className={`px-3 py-1 rounded-pill transition-colors ${
+                      hybridMode === 'count'
+                        ? 'bg-brand-navy text-white shadow-glow-navy'
+                        : 'text-gray-500'
+                    }`}
+                  >
+                    Nombre
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setHybridMode('pct')}
+                    className={`px-3 py-1 rounded-pill transition-colors ${
+                      hybridMode === 'pct'
+                        ? 'bg-brand-navy text-white shadow-glow-navy'
+                        : 'text-gray-500'
+                    }`}
+                  >
+                    %
+                  </button>
+                </div>
+              </div>
               <BarChart
                 bars={channels.map((c) => ({ label: c.label, value: c.value, color: 'bg-sky-500' }))}
                 showPct={hybridMode === 'pct'}

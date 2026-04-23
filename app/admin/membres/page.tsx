@@ -5,6 +5,7 @@ import { UserPlus, Search, Filter, ChevronDown, Eye } from 'lucide-react';
 import { RefreshButton } from '@/components/admin/RefreshButton';
 import { ExportButton } from '@/components/admin/ExportButton';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
+import { MemberModal, type MemberFormValues } from '@/components/admin/MemberModal';
 
 type Role = 'admin' | 'moderateur' | 'support';
 type Status = 'actif' | 'inactif' | 'suspendu';
@@ -38,6 +39,11 @@ const MEMBERS: {
 
 export default function Page() {
   const [refreshKey, setRefreshKey] = useState(0);
+  const [modal, setModal] = useState<{
+    open: boolean;
+    mode: 'create' | 'edit';
+    initial?: Partial<MemberFormValues>;
+  }>({ open: false, mode: 'create' });
 
   const exportRows = (): (string | number)[][] => [
     ['ID', 'Nom', 'Email', 'Rôle', 'Statut', 'Dernière activité'],
@@ -64,6 +70,7 @@ export default function Page() {
         <div className="flex items-center gap-2">
           <button
             type="button"
+            onClick={() => setModal({ open: true, mode: 'create' })}
             className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-4 py-1.5 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
           >
             <UserPlus className="h-4 w-4" aria-hidden />
@@ -133,6 +140,21 @@ export default function Page() {
                     <td className="px-4 py-3 text-right">
                       <button
                         type="button"
+                        onClick={() =>
+                          setModal({
+                            open: true,
+                            mode: 'edit',
+                            initial: {
+                              id: m.id,
+                              name: m.name,
+                              email: m.email,
+                              phone: '',
+                              role: m.role,
+                              status: m.status,
+                              lastSeen: m.lastSeen,
+                            },
+                          })
+                        }
                         className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-3 py-1.5 text-xs font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
                       >
                         <Eye className="h-3.5 w-3.5" aria-hidden />
@@ -205,6 +227,13 @@ export default function Page() {
           </table>
         </div>
       </aside>
+
+      <MemberModal
+        open={modal.open}
+        mode={modal.mode}
+        initial={modal.initial}
+        onClose={() => setModal((m) => ({ ...m, open: false }))}
+      />
     </div>
   );
 }

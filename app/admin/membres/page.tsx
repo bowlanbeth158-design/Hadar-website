@@ -1,4 +1,10 @@
+'use client';
+
+import { useState } from 'react';
 import { UserPlus, Search, Filter, ChevronDown, Eye } from 'lucide-react';
+import { RefreshButton } from '@/components/admin/RefreshButton';
+import { ExportButton } from '@/components/admin/ExportButton';
+import { AnimatedCounter } from '@/components/AnimatedCounter';
 
 type Role = 'admin' | 'moderateur' | 'support';
 type Status = 'actif' | 'inactif' | 'suspendu';
@@ -31,10 +37,30 @@ const MEMBERS: {
 ];
 
 export default function Page() {
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const exportRows = (): (string | number)[][] => [
+    ['ID', 'Nom', 'Email', 'Rôle', 'Statut', 'Dernière activité'],
+    ...MEMBERS.map((m) => [
+      `#${m.id}`,
+      m.name,
+      m.email,
+      ROLE_STYLE[m.role].label,
+      STATUS_STYLE[m.status].label,
+      m.lastSeen,
+    ]),
+  ];
+
   return (
     <div>
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">Membres de l&apos;équipe</h1>
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">Membres de l&apos;équipe</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            <AnimatedCounter key={`${refreshKey}-total`} value={`${MEMBERS.length}`} /> membres
+            dans l&apos;équipe Hadar
+          </p>
+        </div>
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -43,6 +69,8 @@ export default function Page() {
             <UserPlus className="h-4 w-4" aria-hidden />
             Ajouter un membre
           </button>
+          <RefreshButton onRefresh={() => setRefreshKey((k) => k + 1)} />
+          <ExportButton filename="hadar-membres" getRows={exportRows} />
         </div>
       </div>
 
@@ -50,7 +78,7 @@ export default function Page() {
         <div className="flex flex-wrap items-center justify-between gap-3 px-5 py-3 border-b border-gray-100">
           <button
             type="button"
-            className="inline-flex items-center gap-1.5 rounded-pill bg-yellow-100 text-yellow-700 px-3 py-1.5 text-xs font-semibold hover:bg-yellow-200 transition-colors"
+            className="inline-flex items-center gap-1.5 rounded-pill bg-yellow-100 text-yellow-700 px-3 py-1.5 text-xs font-semibold hover:bg-yellow-200 shadow-glow-yellow transition-colors"
           >
             <Filter className="h-3.5 w-3.5" aria-hidden />
             Filtres
@@ -119,11 +147,13 @@ export default function Page() {
         </div>
 
         <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 text-xs text-gray-500">
-          <span>{MEMBERS.length} membres</span>
+          <span>
+            <AnimatedCounter key={`${refreshKey}-count`} value={`${MEMBERS.length}`} /> membres
+          </span>
           <div className="flex items-center gap-1">
             <button type="button" className="px-2 py-1 rounded hover:bg-gray-100">‹</button>
             <button type="button" className="px-2.5 py-1 rounded hover:bg-gray-100">1</button>
-            <button type="button" className="px-2.5 py-1 rounded bg-brand-navy text-white font-semibold">2</button>
+            <button type="button" className="px-2.5 py-1 rounded bg-brand-navy text-white font-semibold shadow-glow-navy">2</button>
             <button type="button" className="px-2.5 py-1 rounded hover:bg-gray-100">3</button>
             <button type="button" className="px-2 py-1 rounded hover:bg-gray-100">›</button>
           </div>
@@ -159,7 +189,7 @@ export default function Page() {
                   {cells.map((ok, i) => (
                     <td key={i} className="px-3 py-2 text-center">
                       {ok ? (
-                        <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-green-100 text-green-700 text-xs">
+                        <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-green-100 text-green-700 text-xs shadow-glow-green">
                           ✓
                         </span>
                       ) : (

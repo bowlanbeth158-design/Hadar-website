@@ -1,7 +1,7 @@
-import type { Metadata } from 'next';
+'use client';
+
+import { useState } from 'react';
 import {
-  RefreshCw,
-  Download,
   Siren,
   Clock,
   Copy,
@@ -12,20 +12,12 @@ import {
   VenetianMask,
   type LucideIcon,
 } from 'lucide-react';
+import { AnimatedCounter } from '@/components/AnimatedCounter';
+import { PeriodTabs } from '@/components/admin/PeriodTabs';
+import { RefreshButton } from '@/components/admin/RefreshButton';
+import { ExportButton } from '@/components/admin/ExportButton';
 
-export const metadata: Metadata = {
-  title: 'Dashboard',
-};
-
-const PERIODS = ['Aujourd’hui', 'Hier', '7 jours', '30 jours', '365 jours', 'Personnalisé'];
-
-const KPIS: {
-  value: string;
-  label: string;
-  gradient: string;
-  glow: string;
-  Icon: LucideIcon;
-}[] = [
+const KPIS: { value: string; label: string; gradient: string; glow: string; Icon: LucideIcon }[] = [
   { value: '25', label: 'Total Signalements', gradient: 'bg-grad-stat-violet', glow: 'shadow-glow-violet', Icon: Siren },
   { value: '8', label: 'En attente', gradient: 'bg-grad-stat-orange', glow: 'shadow-glow-orange', Icon: Clock },
   { value: '13', label: 'Publiés', gradient: 'bg-grad-stat-green', glow: 'shadow-glow-green', Icon: Copy },
@@ -40,55 +32,42 @@ const PROBLEM_KPIS: { value: string; label: string; Icon: LucideIcon }[] = [
 ];
 
 const CHANNELS = [
-  { label: 'Téléphone', count: 1 },
-  { label: 'Réseaux sociaux', count: 8 },
-  { label: 'WhatsApp', count: 8 },
-  { label: 'Binance', count: 1 },
-  { label: 'Email', count: 1 },
-  { label: 'PayPal', count: 0 },
-  { label: 'Site web', count: 2 },
-  { label: 'RIB', count: 3 },
+  { label: 'Téléphone', count: 1, pct: 4 },
+  { label: 'Réseaux sociaux', count: 8, pct: 32 },
+  { label: 'WhatsApp', count: 8, pct: 32 },
+  { label: 'Binance', count: 1, pct: 4 },
+  { label: 'Email', count: 1, pct: 4 },
+  { label: 'PayPal', count: 0, pct: 0 },
+  { label: 'Site web', count: 2, pct: 8 },
+  { label: 'RIB', count: 3, pct: 12 },
 ];
 
 export default function Page() {
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [activeChannel, setActiveChannel] = useState(2);
   const processingRate = 68;
+  const channel = CHANNELS[activeChannel] ?? CHANNELS[0]!;
+
+  const exportRows = (): (string | number)[][] => [
+    ['Section', 'Indicateur', 'Valeur'],
+    ...KPIS.map((k) => ['KPI', k.label, k.value]),
+    ['KPI', 'Taux de traitement', `${processingRate}%`],
+    ...PROBLEM_KPIS.map((p) => ['Problème', p.label, p.value]),
+    ...CHANNELS.map((c) => ['Canal', c.label, `${c.count} (${c.pct}%)`]),
+  ];
 
   return (
     <div>
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
         <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">Dashboard</h1>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-4 py-1.5 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
-          >
-            <RefreshCw className="h-4 w-4" aria-hidden />
-            Rafraîchir
-          </button>
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-4 py-1.5 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
-          >
-            <Download className="h-4 w-4" aria-hidden />
-            Exporter
-          </button>
+          <RefreshButton onRefresh={() => setRefreshKey((k) => k + 1)} />
+          <ExportButton filename="hadar-dashboard" getRows={exportRows} />
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-2 mb-8">
-        {PERIODS.map((p, i) => (
-          <button
-            key={p}
-            type="button"
-            className={
-              i === 0
-                ? 'rounded-pill bg-brand-navy text-white px-4 py-1.5 text-sm font-medium shadow-glow-navy'
-                : 'rounded-pill bg-brand-sky/60 text-brand-navy px-4 py-1.5 text-sm font-medium hover:bg-brand-sky'
-            }
-          >
-            {p}
-          </button>
-        ))}
+      <div className="mb-8">
+        <PeriodTabs defaultActive={0} />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
@@ -98,7 +77,9 @@ export default function Page() {
             className={`${k.gradient} ${k.glow} text-white rounded-2xl p-5 flex items-center justify-between`}
           >
             <div>
-              <p className="text-4xl font-bold">{k.value}</p>
+              <p className="text-4xl font-bold">
+                <AnimatedCounter key={`${refreshKey}-${k.label}`} value={k.value} />
+              </p>
               <p className="mt-1 text-sm font-medium opacity-90">{k.label}</p>
             </div>
             <k.Icon className="h-9 w-9 opacity-70" aria-hidden />
@@ -109,13 +90,12 @@ export default function Page() {
       <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-5 mb-8">
         <div className="flex items-center justify-between mb-3">
           <p className="text-sm font-semibold text-brand-navy">Taux de traitement</p>
-          <p className="text-sm font-bold text-brand-navy">{processingRate}%</p>
+          <p className="text-sm font-bold text-brand-navy">
+            <AnimatedCounter key={`${refreshKey}-rate`} value={`${processingRate}%`} />
+          </p>
         </div>
         <div className="h-2 rounded-pill bg-gray-200 overflow-hidden">
-          <div
-            className="h-full bg-brand-navy rounded-pill"
-            style={{ width: `${processingRate}%` }}
-          />
+          <div className="h-full bg-brand-navy rounded-pill" style={{ width: `${processingRate}%` }} />
         </div>
         <p className="mt-2 text-xs text-gray-400">
           (Publiés + Refusés) / Total — indique la réactivité de l’équipe de modération.
@@ -126,10 +106,12 @@ export default function Page() {
         {PROBLEM_KPIS.map((p) => (
           <div
             key={p.label}
-            className="rounded-2xl bg-white border border-gray-200 p-5 flex items-center justify-between shadow-glow-soft"
+            className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-5 flex items-center justify-between"
           >
             <div>
-              <p className="text-4xl font-bold text-brand-blue">{p.value}</p>
+              <p className="text-4xl font-bold text-brand-blue">
+                <AnimatedCounter key={`${refreshKey}-${p.label}`} value={p.value} />
+              </p>
               <p className="mt-1 text-sm text-gray-500">{p.label}</p>
             </div>
             <p.Icon className="h-7 w-7 text-gray-400" aria-hidden />
@@ -144,16 +126,17 @@ export default function Page() {
             <button
               key={c.label}
               type="button"
+              onClick={() => setActiveChannel(i)}
               className={
-                i === 2
-                  ? 'flex items-center justify-between gap-2 rounded-pill bg-brand-navy text-white px-4 py-1.5 text-sm font-medium'
+                i === activeChannel
+                  ? 'flex items-center justify-between gap-2 rounded-pill bg-brand-navy text-white px-4 py-1.5 text-sm font-medium shadow-glow-navy'
                   : 'flex items-center justify-between gap-2 rounded-pill bg-white border border-sky-500 text-brand-navy px-4 py-1.5 text-sm font-medium hover:bg-brand-sky/30 transition-colors'
               }
             >
               <span>{c.label}</span>
               <span
                 className={
-                  i === 2
+                  i === activeChannel
                     ? 'text-xs bg-white/20 rounded-full px-1.5'
                     : 'text-xs bg-sky-100 text-sky-700 rounded-full px-1.5'
                 }
@@ -164,10 +147,15 @@ export default function Page() {
           ))}
         </div>
         <div className="h-2 rounded-pill bg-gray-200 overflow-hidden">
-          <div className="h-full bg-brand-blue rounded-pill" style={{ width: '42%' }} />
+          <div
+            className="h-full bg-brand-blue rounded-pill transition-all duration-500"
+            style={{ width: `${channel.pct}%` }}
+          />
         </div>
         <p className="mt-2 text-xs text-gray-400">
-          Canal actif : WhatsApp — 42% des signalements sur la période sélectionnée.
+          Canal actif : <span className="font-semibold text-brand-navy">{channel.label}</span> —{' '}
+          <AnimatedCounter key={`${refreshKey}-channel-${activeChannel}`} value={`${channel.pct}%`} /> des
+          signalements sur la période sélectionnée.
         </p>
       </section>
     </div>

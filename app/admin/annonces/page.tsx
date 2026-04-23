@@ -1,4 +1,6 @@
-import type { Metadata } from 'next';
+'use client';
+
+import { useState } from 'react';
 import {
   Megaphone,
   Mail,
@@ -10,8 +12,9 @@ import {
   ScrollText,
   MoreVertical,
 } from 'lucide-react';
-
-export const metadata: Metadata = { title: 'Annonces' };
+import { RefreshButton } from '@/components/admin/RefreshButton';
+import { ExportButton } from '@/components/admin/ExportButton';
+import { AnimatedCounter } from '@/components/AnimatedCounter';
 
 const TABS = [
   { id: 'campagnes', label: 'Campagnes', Icon: Megaphone },
@@ -83,17 +86,46 @@ function ChannelPills({ channels }: { channels: string[] }) {
 }
 
 export default function Page() {
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const exportRows = (): (string | number)[][] => [
+    ['Nom', 'Canaux', 'Statut', 'Audience', 'Envoyés', 'Délivrés', 'Ouverts', 'Cliqués', 'Date'],
+    ...CAMPAIGNS.map((c) => [
+      c.name,
+      c.channels.join(' · '),
+      STATUS[c.status].label,
+      c.audience,
+      c.sent,
+      c.delivered,
+      c.opened,
+      c.clicked,
+      c.scheduled,
+    ]),
+  ];
+
   return (
     <div>
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">Annonces</h1>
-        <button
-          type="button"
-          className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-5 py-2 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
-        >
-          <Send className="h-4 w-4" aria-hidden />
-          Nouvelle campagne
-        </button>
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">Annonces</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            <AnimatedCounter key={`${refreshKey}-total`} value={`${CAMPAIGNS.length}`} /> campagnes
+            &middot;{' '}
+            <AnimatedCounter key={`${refreshKey}-auto`} value={`${AUTOMATIONS.filter((a) => a.active).length}`} />{' '}
+            automations actives
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-5 py-2 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
+          >
+            <Send className="h-4 w-4" aria-hidden />
+            Nouvelle campagne
+          </button>
+          <RefreshButton onRefresh={() => setRefreshKey((k) => k + 1)} />
+          <ExportButton filename="hadar-annonces" getRows={exportRows} />
+        </div>
       </div>
 
       <nav className="flex flex-wrap gap-2 mb-8 border-b border-gray-200 pb-3">
@@ -149,10 +181,30 @@ export default function Page() {
                       </span>
                     </td>
                     <td className="px-4 py-3 text-gray-600 text-xs">{c.audience}</td>
-                    <td className="px-4 py-3 text-right text-brand-navy font-semibold">{c.sent.toLocaleString('fr-FR')}</td>
-                    <td className="px-4 py-3 text-right text-gray-600">{c.delivered.toLocaleString('fr-FR')}</td>
-                    <td className="px-4 py-3 text-right text-gray-600">{c.opened.toLocaleString('fr-FR')}</td>
-                    <td className="px-4 py-3 text-right text-gray-600">{c.clicked.toLocaleString('fr-FR')}</td>
+                    <td className="px-4 py-3 text-right text-brand-navy font-semibold">
+                      <AnimatedCounter
+                        key={`${refreshKey}-sent-${c.name}`}
+                        value={c.sent.toLocaleString('fr-FR').replace(/,/g, ' ')}
+                      />
+                    </td>
+                    <td className="px-4 py-3 text-right text-gray-600">
+                      <AnimatedCounter
+                        key={`${refreshKey}-del-${c.name}`}
+                        value={c.delivered.toLocaleString('fr-FR').replace(/,/g, ' ')}
+                      />
+                    </td>
+                    <td className="px-4 py-3 text-right text-gray-600">
+                      <AnimatedCounter
+                        key={`${refreshKey}-op-${c.name}`}
+                        value={c.opened.toLocaleString('fr-FR').replace(/,/g, ' ')}
+                      />
+                    </td>
+                    <td className="px-4 py-3 text-right text-gray-600">
+                      <AnimatedCounter
+                        key={`${refreshKey}-cl-${c.name}`}
+                        value={c.clicked.toLocaleString('fr-FR').replace(/,/g, ' ')}
+                      />
+                    </td>
                     <td className="px-4 py-3 text-gray-500 whitespace-nowrap text-xs">{c.scheduled}</td>
                     <td className="px-4 py-3 text-right">
                       <button type="button" aria-label="Actions" className="text-gray-400 hover:text-brand-navy">

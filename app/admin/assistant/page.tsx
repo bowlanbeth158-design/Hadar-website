@@ -1,7 +1,8 @@
-import type { Metadata } from 'next';
+'use client';
+
+import { useState } from 'react';
 import {
   Search,
-  RefreshCw,
   MoreVertical,
   Send,
   Paperclip,
@@ -13,8 +14,10 @@ import {
   Eye,
   Lock,
 } from 'lucide-react';
-
-export const metadata: Metadata = { title: 'Assistant' };
+import { RefreshButton } from '@/components/admin/RefreshButton';
+import { ExportButton } from '@/components/admin/ExportButton';
+import { AnimatedCounter } from '@/components/AnimatedCounter';
+import { RefreshCw } from 'lucide-react';
 
 type Status = 'ouvert' | 'en_cours' | 'waiting' | 'resolu';
 const STATUS_STYLE: Record<Status, { label: string; cls: string }> = {
@@ -60,18 +63,36 @@ const THREAD = [
 const FILTERS = ['Tous', 'Non assignés', 'Mes tickets', 'Mentions', 'Résolus', 'Archivés'];
 
 export default function Page() {
+  const [refreshKey, setRefreshKey] = useState(0);
+  const openCount = CONVERSATIONS.filter((c) => c.status === 'ouvert' || c.status === 'en_cours').length;
+  const unreadCount = CONVERSATIONS.filter((c) => c.unread).length;
+
+  const exportRows = (): (string | number)[][] => [
+    ['ID', 'Utilisateur', 'Statut', 'Priorité', 'Dernier message', 'Heure'],
+    ...CONVERSATIONS.map((c) => [
+      c.id,
+      c.name,
+      STATUS_STYLE[c.status].label,
+      c.priority,
+      c.preview,
+      c.time,
+    ]),
+  ];
+
   return (
     <div>
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">Assistant</h1>
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">Assistant</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            <AnimatedCounter key={`${refreshKey}-open`} value={`${openCount}`} /> tickets ouverts
+            &middot;{' '}
+            <AnimatedCounter key={`${refreshKey}-unread`} value={`${unreadCount}`} /> non lus
+          </p>
+        </div>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-4 py-1.5 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
-          >
-            <RefreshCw className="h-4 w-4" aria-hidden />
-            Rafraîchir
-          </button>
+          <RefreshButton onRefresh={() => setRefreshKey((k) => k + 1)} />
+          <ExportButton filename="hadar-tickets" getRows={exportRows} />
         </div>
       </div>
 

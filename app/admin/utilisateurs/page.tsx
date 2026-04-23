@@ -1,5 +1,11 @@
-import { RefreshCw, Download, Search, Filter, ChevronDown, ListChecks } from 'lucide-react';
+'use client';
+
+import { Search, Filter, ChevronDown, ListChecks } from 'lucide-react';
 import { UserActionsDropdown } from '@/components/admin/UserActionsDropdown';
+import { RefreshButton } from '@/components/admin/RefreshButton';
+import { ExportButton } from '@/components/admin/ExportButton';
+import { AnimatedCounter } from '@/components/AnimatedCounter';
+import { useState } from 'react';
 
 type Status = 'actif' | 'inactif' | 'bloque' | 'supprime';
 
@@ -27,25 +33,35 @@ const USERS: {
 ];
 
 export default function Page() {
+  const [refreshKey, setRefreshKey] = useState(0);
+  const total = USERS.length;
+
+  const exportRows = (): (string | number)[][] => [
+    ['ID', 'Nom', 'Email', 'Téléphone', 'Inscription', 'Dernière activité', 'Statut'],
+    ...USERS.map((u) => [
+      `#${u.id}`,
+      u.name,
+      u.email,
+      u.phone,
+      u.signup,
+      u.lastSeen,
+      STATUS_STYLE[u.status].label,
+    ]),
+  ];
+
   return (
     <div>
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">Utilisateurs</h1>
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">Utilisateurs</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            <AnimatedCounter key={`${refreshKey}-total`} value={`${total}`} /> utilisateurs inscrits
+            sur la plateforme
+          </p>
+        </div>
         <div className="flex items-center gap-2">
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-4 py-1.5 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
-          >
-            <RefreshCw className="h-4 w-4" aria-hidden />
-            Rafraîchir
-          </button>
-          <button
-            type="button"
-            className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-4 py-1.5 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
-          >
-            <Download className="h-4 w-4" aria-hidden />
-            Exporter
-          </button>
+          <RefreshButton onRefresh={() => setRefreshKey((k) => k + 1)} />
+          <ExportButton filename="hadar-utilisateurs" getRows={exportRows} />
         </div>
       </div>
 
@@ -54,7 +70,7 @@ export default function Page() {
           <div className="flex items-center gap-2 flex-wrap">
             <button
               type="button"
-              className="inline-flex items-center gap-1.5 rounded-pill bg-yellow-100 text-yellow-700 px-3 py-1.5 text-xs font-semibold hover:bg-yellow-200 transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-pill bg-yellow-100 text-yellow-700 px-3 py-1.5 text-xs font-semibold hover:bg-yellow-200 shadow-glow-yellow transition-colors"
             >
               <Filter className="h-3.5 w-3.5" aria-hidden />
               Filtres
@@ -65,21 +81,24 @@ export default function Page() {
             </button>
             <button
               type="button"
-              className="inline-flex items-center gap-1.5 rounded-pill border border-gray-200 text-brand-navy px-3 py-1.5 text-xs font-medium hover:border-brand-blue transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-pill border border-gray-200 text-brand-navy px-3 py-1.5 text-xs font-medium hover:border-brand-blue shadow-glow-soft transition-all"
             >
               <ListChecks className="h-3.5 w-3.5" aria-hidden />
               Sélectionner tous
             </button>
             <button
               type="button"
-              className="inline-flex items-center gap-1.5 rounded-pill border border-gray-200 text-brand-navy px-3 py-1.5 text-xs font-medium hover:border-brand-blue transition-colors"
+              className="inline-flex items-center gap-1.5 rounded-pill border border-gray-200 text-brand-navy px-3 py-1.5 text-xs font-medium hover:border-brand-blue shadow-glow-soft transition-all"
             >
               Actions
               <ChevronDown className="h-3 w-3" aria-hidden />
             </button>
           </div>
           <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400" aria-hidden />
+            <Search
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-400"
+              aria-hidden
+            />
             <input
               type="search"
               placeholder="Rechercher un utilisateur"
@@ -114,13 +133,17 @@ export default function Page() {
                       <input type="checkbox" aria-label={`Sélectionner ${u.name}`} />
                     </td>
                     <td className="px-4 py-3 font-mono text-brand-navy">#{u.id}</td>
-                    <td className="px-4 py-3 font-semibold text-brand-navy whitespace-nowrap">{u.name}</td>
+                    <td className="px-4 py-3 font-semibold text-brand-navy whitespace-nowrap">
+                      {u.name}
+                    </td>
                     <td className="px-4 py-3 text-gray-600">{u.email}</td>
                     <td className="px-4 py-3 text-gray-600">{u.phone}</td>
                     <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{u.signup}</td>
                     <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{u.lastSeen}</td>
                     <td className="px-4 py-3">
-                      <span className={`inline-flex items-center rounded-pill px-2.5 py-0.5 text-xs font-semibold ${s.cls}`}>
+                      <span
+                        className={`inline-flex items-center rounded-pill px-2.5 py-0.5 text-xs font-semibold ${s.cls}`}
+                      >
                         {s.label}
                       </span>
                     </td>
@@ -135,11 +158,18 @@ export default function Page() {
         </div>
 
         <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 text-xs text-gray-500">
-          <span>{USERS.length} utilisateurs affichés</span>
+          <span>
+            <AnimatedCounter key={`${refreshKey}-count`} value={`${USERS.length}`} /> utilisateurs affichés
+          </span>
           <div className="flex items-center gap-1">
             <button type="button" className="px-2 py-1 rounded hover:bg-gray-100">‹</button>
             <button type="button" className="px-2.5 py-1 rounded hover:bg-gray-100">1</button>
-            <button type="button" className="px-2.5 py-1 rounded bg-brand-navy text-white font-semibold">2</button>
+            <button
+              type="button"
+              className="px-2.5 py-1 rounded bg-brand-navy text-white font-semibold shadow-glow-navy"
+            >
+              2
+            </button>
             <button type="button" className="px-2.5 py-1 rounded hover:bg-gray-100">3</button>
             <button type="button" className="px-2 py-1 rounded hover:bg-gray-100">›</button>
           </div>

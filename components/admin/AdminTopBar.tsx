@@ -273,7 +273,7 @@ export function AdminTopBar() {
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 ml-auto">
           <div ref={msgRef} className="relative">
             <button
               type="button"

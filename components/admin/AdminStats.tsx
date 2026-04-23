@@ -339,7 +339,7 @@ export function AdminStats() {
 
       {tab === 'global' && (
         <div className="grid gap-4 lg:grid-cols-2">
-          <section className="rounded-2xl bg-brand-sky/20 border border-brand-blue/20 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
+          <section className="rounded-2xl bg-blue-50 border border-blue-200 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <h3 className="text-lg font-bold text-brand-navy">Répartition</h3>
               <div className="inline-flex rounded-pill bg-gray-100 p-1 text-xs">
@@ -370,14 +370,14 @@ export function AdminStats() {
               return `${pct >= 0 ? '+' : ''}${pct}% vs période précédente`;
             })()}
             refreshKey={refreshKey}
-            tint="bg-brand-sky/20"
+            tint="bg-blue-50"
           />
         </div>
       )}
 
       {tab === 'problems' && (
         <div className="grid gap-4 lg:grid-cols-2">
-          <section className="rounded-2xl bg-orange-50 border border-orange-200 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
+          <section className="rounded-2xl bg-blue-50 border border-blue-200 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <h3 className="text-lg font-bold text-brand-navy">Répartition des problèmes</h3>
               <div className="inline-flex rounded-pill bg-gray-100 p-1 text-xs">
@@ -414,7 +414,7 @@ export function AdminStats() {
               return `${pct >= 0 ? '+' : ''}${pct}% vs période précédente`;
             })()}
             refreshKey={refreshKey}
-            tint="bg-orange-50"
+            tint="bg-blue-50"
           />
         </div>
       )}

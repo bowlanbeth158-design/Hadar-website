@@ -68,12 +68,18 @@ function BarChart({ bars, showPct, refreshKey }: { bars: Bar[]; showPct: boolean
             ? `${Math.round((b.value / total) * 100)}%`
             : b.value.toLocaleString('fr-FR').replace(/,/g, ' ');
           return (
-            <div key={b.label} className="flex flex-col items-center h-full justify-end">
-              <span className="text-xs font-bold text-brand-navy mb-1">
+            <div key={b.label} className="flex flex-col items-center h-full justify-end group">
+              <span className="text-xs font-bold text-brand-navy mb-1 transition-transform group-hover:scale-110">
                 <AnimatedCounter key={`${refreshKey}-${b.label}-${showPct}`} value={labelValue} />
               </span>
-              <div className={`w-full ${b.color} rounded-t-xl transition-all duration-700`} style={{ height: `${pct}%` }} />
-              <span className="mt-2 text-xs font-medium text-gray-500 text-center">{b.label}</span>
+              <div
+                className={`w-full ${b.color} rounded-t-xl transition-all duration-700 group-hover:brightness-110 group-hover:shadow-glow-navy cursor-pointer`}
+                style={{ height: `${pct}%` }}
+                title={`${b.label} — ${labelValue}`}
+              />
+              <span className="mt-2 text-xs font-medium text-gray-500 text-center transition-colors group-hover:text-brand-navy">
+                {b.label}
+              </span>
             </div>
           );
         })}
@@ -99,11 +105,11 @@ function ComparisonCard({
 }) {
   const max = Math.max(prev.value, curr.value);
   return (
-    <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6">
+    <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
       <h3 className="text-lg font-bold text-brand-navy">{title}</h3>
       <p className="mt-1 text-xs text-gray-500">{subtitle}</p>
       <div className="mt-5 space-y-4">
-        {[{ ...prev, color: 'bg-red-500' }, { ...curr, color: 'bg-green-500' }].map((b) => (
+        {[{ ...prev, color: 'bg-grad-stat-red shadow-glow-red' }, { ...curr, color: 'bg-grad-stat-green shadow-glow-green' }].map((b) => (
           <div key={b.label}>
             <div className="flex items-center justify-between text-sm mb-1">
               <span className="text-brand-navy font-medium">{b.label}</span>
@@ -278,8 +284,8 @@ export function AdminStats() {
               type="button"
               className={
                 on
-                  ? 'rounded-pill bg-brand-navy text-white px-5 py-2 text-sm font-semibold shadow-glow-navy'
-                  : 'rounded-pill border border-brand-navy text-brand-navy px-5 py-2 text-sm font-medium hover:bg-brand-navy/5 transition-colors'
+                  ? 'rounded-pill bg-brand-navy text-white px-5 py-2 text-sm font-semibold shadow-glow-navy hover:scale-[1.03] transition-transform'
+                  : 'rounded-pill border border-brand-navy text-brand-navy px-5 py-2 text-sm font-medium hover:bg-brand-navy hover:text-white hover:shadow-glow-navy hover:scale-[1.03] transition-all'
               }
             >
               {t.label}
@@ -291,7 +297,10 @@ export function AdminStats() {
       {tab !== 'ux' && (
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
           {globalKpis.map((k) => (
-            <div key={k.label} className={`${k.gradient} ${k.glow} text-white rounded-2xl p-5 flex flex-col gap-2`}>
+            <div
+              key={k.label}
+              className={`${k.gradient} ${k.glow} text-white rounded-2xl p-5 flex flex-col gap-2 cursor-default hover:scale-[1.03] hover:brightness-110 transition-all duration-300`}
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-3xl font-bold">
@@ -299,7 +308,7 @@ export function AdminStats() {
                   </p>
                   <p className="text-sm font-medium opacity-90 mt-1">{k.label}</p>
                 </div>
-                <k.Icon className="h-7 w-7 opacity-70" aria-hidden />
+                <k.Icon className="h-7 w-7 opacity-70 transition-transform group-hover:rotate-6" aria-hidden />
               </div>
               <p className="text-xs text-white/80">{k.deltaLabel}</p>
             </div>
@@ -310,7 +319,10 @@ export function AdminStats() {
       {(tab === 'problems' || tab === 'channels') && (
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
           {riskKpis.map((k) => (
-            <div key={k.label} className={`${k.cls} text-white rounded-2xl p-5`}>
+            <div
+              key={k.label}
+              className={`${k.cls} text-white rounded-2xl p-5 cursor-default hover:scale-[1.03] hover:brightness-110 transition-all duration-300`}
+            >
               <p className="text-3xl font-bold">
                 <AnimatedCounter key={`${refreshKey}-${k.label}-${factor}`} value={k.value} />
               </p>
@@ -323,7 +335,7 @@ export function AdminStats() {
 
       {tab === 'global' && (
         <div className="grid gap-4 lg:grid-cols-2">
-          <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6">
+          <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <h3 className="text-lg font-bold text-brand-navy">Répartition</h3>
               <div className="inline-flex rounded-pill bg-gray-100 p-1 text-xs">
@@ -360,7 +372,7 @@ export function AdminStats() {
 
       {tab === 'problems' && (
         <div className="grid gap-4 lg:grid-cols-2">
-          <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6">
+          <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <h3 className="text-lg font-bold text-brand-navy">Répartition des problèmes</h3>
               <div className="inline-flex rounded-pill bg-gray-100 p-1 text-xs">
@@ -368,7 +380,7 @@ export function AdminStats() {
                 <button type="button" onClick={() => setHybridMode('pct')} className={`px-3 py-1 rounded-pill transition-colors ${hybridMode === 'pct' ? 'bg-brand-navy text-white shadow-glow-navy' : 'text-gray-500'}`}>%</button>
               </div>
             </div>
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="flex flex-wrap justify-center gap-2 mb-4">
               {problems.map((p) => (
                 <button
                   key={p.id}
@@ -376,8 +388,8 @@ export function AdminStats() {
                   onClick={() => setSelectedProblem(p.id)}
                   className={
                     selectedProblem === p.id
-                      ? 'rounded-pill bg-brand-navy text-white px-3 py-1 text-xs font-semibold shadow-glow-navy'
-                      : 'rounded-pill bg-gray-100 text-gray-600 px-3 py-1 text-xs font-medium hover:bg-gray-200'
+                      ? 'rounded-pill bg-brand-navy text-white px-3 py-1 text-xs font-semibold shadow-glow-navy hover:scale-[1.05] transition-transform'
+                      : 'rounded-pill bg-gray-100 text-gray-600 px-3 py-1 text-xs font-medium hover:bg-brand-navy hover:text-white hover:shadow-glow-navy hover:scale-[1.05] transition-all'
                   }
                 >
                   {p.label}
@@ -413,8 +425,8 @@ export function AdminStats() {
                   onClick={() => setSelectedChannel(c.id)}
                   className={
                     on
-                      ? 'inline-flex items-center gap-2 rounded-pill bg-brand-navy text-white px-3.5 py-1.5 text-xs font-semibold shadow-glow-navy'
-                      : 'inline-flex items-center gap-2 rounded-pill bg-white border border-gray-200 text-brand-navy px-3.5 py-1.5 text-xs font-medium hover:border-brand-blue transition-colors'
+                      ? 'inline-flex items-center gap-2 rounded-pill bg-brand-navy text-white px-3.5 py-1.5 text-xs font-semibold shadow-glow-navy hover:scale-[1.05] transition-transform'
+                      : 'inline-flex items-center gap-2 rounded-pill bg-white border border-gray-200 text-brand-navy px-3.5 py-1.5 text-xs font-medium hover:border-brand-blue hover:shadow-glow-navy hover:scale-[1.05] transition-all'
                   }
                 >
                   <c.Icon className="h-3.5 w-3.5" aria-hidden />
@@ -424,7 +436,7 @@ export function AdminStats() {
             })}
           </div>
           <div className="grid gap-4 lg:grid-cols-2">
-            <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6">
+            <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
               <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                 <h3 className="text-lg font-bold text-brand-navy">Distribution par canal</h3>
                 <div className="inline-flex rounded-pill bg-gray-100 p-1 text-xs">
@@ -453,7 +465,7 @@ export function AdminStats() {
                 </div>
               </div>
               <BarChart
-                bars={channels.map((c) => ({ label: c.label, value: c.value, color: 'bg-sky-500' }))}
+                bars={channels.map((c) => ({ label: c.label, value: c.value, color: 'bg-grad-stat-navy shadow-glow-navy' }))}
                 showPct={hybridMode === 'pct'}
                 refreshKey={refreshKey}
               />
@@ -478,7 +490,10 @@ export function AdminStats() {
         <div>
           <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
             {uxKpis.map((k) => (
-              <div key={k.label} className={`${k.cls} text-white rounded-2xl p-5`}>
+              <div
+                key={k.label}
+                className={`${k.cls} text-white rounded-2xl p-5 cursor-default hover:scale-[1.03] hover:brightness-110 transition-all duration-300`}
+              >
                 <p className="text-3xl font-bold">
                   <AnimatedCounter
                     key={`${refreshKey}-${k.label}-${factor}`}
@@ -491,12 +506,12 @@ export function AdminStats() {
           </section>
 
           <div className="grid gap-4 lg:grid-cols-2 mb-8">
-            <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6">
+            <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
               <h3 className="text-lg font-bold text-brand-navy mb-4">Signalements vs Vérifications</h3>
               <div className="space-y-3">
                 {[
-                  { label: 'Signalements', value: 300, pct: 31, color: 'bg-violet-500' },
-                  { label: 'Vérifications', value: 650, pct: 69, color: 'bg-brand-navy' },
+                  { label: 'Signalements', value: 300, pct: 31, color: 'bg-grad-stat-violet shadow-glow-violet' },
+                  { label: 'Vérifications', value: 650, pct: 69, color: 'bg-grad-stat-navy shadow-glow-navy' },
                 ].map((r) => (
                   <div key={r.label}>
                     <div className="flex items-center justify-between text-sm mb-1">
@@ -514,12 +529,12 @@ export function AdminStats() {
               </div>
             </section>
 
-            <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6">
+            <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
               <h3 className="text-lg font-bold text-brand-navy mb-4">Temps moyen par usage</h3>
               <div className="space-y-3">
                 {[
-                  { label: 'Signalement', value: '5 min 23 sec', pct: 70, color: 'bg-violet-500' },
-                  { label: 'Vérification', value: '2 min 13 sec', pct: 30, color: 'bg-brand-navy' },
+                  { label: 'Signalement', value: '5 min 23 sec', pct: 70, color: 'bg-grad-stat-violet shadow-glow-violet' },
+                  { label: 'Vérification', value: '2 min 13 sec', pct: 30, color: 'bg-grad-stat-navy shadow-glow-navy' },
                 ].map((r) => (
                   <div key={r.label}>
                     <div className="flex items-center justify-between text-sm mb-1">
@@ -539,7 +554,7 @@ export function AdminStats() {
             {SATISFACTION.map((c) => (
               <div
                 key={c.label}
-                className="rounded-2xl bg-violet-500/10 border border-violet-500/20 shadow-glow-violet p-5 text-center"
+                className="rounded-2xl bg-violet-500/10 border border-violet-500/20 shadow-glow-violet p-5 text-center cursor-default hover:scale-[1.03] hover:bg-violet-500/20 transition-all duration-300"
               >
                 <p className="text-3xl font-bold text-violet-500">
                   <AnimatedCounter key={`${refreshKey}-${c.label}`} value={c.value} />

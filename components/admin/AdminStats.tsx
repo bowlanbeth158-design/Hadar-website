@@ -95,6 +95,7 @@ function ComparisonCard({
   curr,
   delta,
   refreshKey,
+  tint = 'bg-white',
 }: {
   title: string;
   subtitle: string;
@@ -102,10 +103,13 @@ function ComparisonCard({
   curr: { label: string; value: number };
   delta: string;
   refreshKey: number;
+  tint?: string;
 }) {
   const max = Math.max(prev.value, curr.value);
   return (
-    <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
+    <section
+      className={`rounded-2xl ${tint} border border-gray-200 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300`}
+    >
       <h3 className="text-lg font-bold text-brand-navy">{title}</h3>
       <p className="mt-1 text-xs text-gray-500">{subtitle}</p>
       <div className="mt-5 space-y-4">
@@ -335,7 +339,7 @@ export function AdminStats() {
 
       {tab === 'global' && (
         <div className="grid gap-4 lg:grid-cols-2">
-          <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
+          <section className="rounded-2xl bg-brand-sky/20 border border-brand-blue/20 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <h3 className="text-lg font-bold text-brand-navy">Répartition</h3>
               <div className="inline-flex rounded-pill bg-gray-100 p-1 text-xs">
@@ -366,13 +370,14 @@ export function AdminStats() {
               return `${pct >= 0 ? '+' : ''}${pct}% vs période précédente`;
             })()}
             refreshKey={refreshKey}
+            tint="bg-brand-sky/20"
           />
         </div>
       )}
 
       {tab === 'problems' && (
         <div className="grid gap-4 lg:grid-cols-2">
-          <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
+          <section className="rounded-2xl bg-orange-50 border border-orange-200 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
               <h3 className="text-lg font-bold text-brand-navy">Répartition des problèmes</h3>
               <div className="inline-flex rounded-pill bg-gray-100 p-1 text-xs">
@@ -409,6 +414,7 @@ export function AdminStats() {
               return `${pct >= 0 ? '+' : ''}${pct}% vs période précédente`;
             })()}
             refreshKey={refreshKey}
+            tint="bg-orange-50"
           />
         </div>
       )}
@@ -436,7 +442,7 @@ export function AdminStats() {
             })}
           </div>
           <div className="grid gap-4 lg:grid-cols-2">
-            <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
+            <section className="rounded-2xl bg-blue-50 border border-blue-200 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
               <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
                 <h3 className="text-lg font-bold text-brand-navy">Distribution par canal</h3>
                 <div className="inline-flex rounded-pill bg-gray-100 p-1 text-xs">
@@ -481,6 +487,7 @@ export function AdminStats() {
                 return `${pct >= 0 ? '+' : ''}${pct}% vs période précédente`;
               })()}
               refreshKey={refreshKey}
+              tint="bg-blue-50"
             />
           </div>
         </div>
@@ -506,7 +513,7 @@ export function AdminStats() {
           </section>
 
           <div className="grid gap-4 lg:grid-cols-2 mb-8">
-            <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
+            <section className="rounded-2xl bg-violet-50 border border-violet-200 shadow-glow-soft p-6 hover:shadow-glow-violet hover:border-violet-400 transition-all duration-300">
               <h3 className="text-lg font-bold text-brand-navy mb-4">Signalements vs Vérifications</h3>
               <div className="space-y-3">
                 {[
@@ -529,7 +536,7 @@ export function AdminStats() {
               </div>
             </section>
 
-            <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
+            <section className="rounded-2xl bg-violet-50 border border-violet-200 shadow-glow-soft p-6 hover:shadow-glow-violet hover:border-violet-400 transition-all duration-300">
               <h3 className="text-lg font-bold text-brand-navy mb-4">Temps moyen par usage</h3>
               <div className="space-y-3">
                 {[

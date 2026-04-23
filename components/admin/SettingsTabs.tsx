@@ -15,6 +15,11 @@ import {
   AlertTriangle,
   Check,
 } from 'lucide-react';
+import {
+  TfaEnrollmentModal,
+  type TfaEnrollment,
+  type TfaMethodId,
+} from './TfaEnrollmentModal';
 
 type Tab = 'compte' | 'securite' | 'general';
 
@@ -26,7 +31,7 @@ const TABS: { id: Tab; label: string }[] = [
 
 const PROFILE_KEY = 'hadar:settings:profile';
 const GENERAL_KEY = 'hadar:settings:general';
-const TFA_KEY = 'hadar:settings:tfa';
+const TFA_KEY = 'hadar:settings:tfa-enrolled';
 
 type Profile = { firstName: string; lastName: string; phone: string; email: string };
 const DEFAULT_PROFILE: Profile = {
@@ -46,7 +51,38 @@ const DEFAULT_GENERAL: General = {
 const LANGUAGES = ['Français', 'العربية', 'English'];
 const TIMEZONES = ['Casablanca, Maroc', 'Paris, France', 'Londres, Royaume-Uni', 'UTC'];
 const DATE_FORMATS = ['JJ/MM/AAAA', 'AAAA-MM-JJ', 'MM/JJ/AAAA'];
-const TFA_METHODS = ['Application (Google Authenticator, Authy)', 'SMS', 'Email'] as const;
+
+const TFA_METHODS: { id: TfaMethodId; label: string; short: string }[] = [
+  { id: 'app', label: 'Application (Google Authenticator, Authy)', short: 'Application' },
+  { id: 'sms', label: 'SMS', short: 'SMS' },
+  { id: 'email', label: 'Email', short: 'Email' },
+];
+
+type TfaState = Partial<Record<TfaMethodId, TfaEnrollment>>;
+
+function maskPhone(p: string): string {
+  const s = p.replace(/\s/g, '');
+  if (s.length <= 4) return p;
+  return `${s.slice(0, 4)} •••• •• ${s.slice(-2)}`;
+}
+
+function maskEmail(e: string): string {
+  const at = e.indexOf('@');
+  if (at <= 0) return e;
+  const local = e.slice(0, at);
+  const domain = e.slice(at);
+  const visible = local.slice(0, 1);
+  return `${visible}${'•'.repeat(Math.max(3, local.length - 1))}${domain}`;
+}
+
+function formatEnrolledDate(iso: string): string {
+  try {
+    const d = new Date(iso);
+    return d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: '2-digit' });
+  } catch {
+    return '';
+  }
+}
 
 function PasswordInput({
   id,
@@ -202,9 +238,8 @@ export function SettingsTabs() {
   const [profile, setProfile] = useState<Profile>(DEFAULT_PROFILE);
   const [savedProfile, setSavedProfile] = useState<Profile>(DEFAULT_PROFILE);
   const [general, setGeneral] = useState<General>(DEFAULT_GENERAL);
-  const [tfaMethods, setTfaMethods] = useState<Set<string>>(
-    new Set(['Application (Google Authenticator, Authy)']),
-  );
+  const [tfaState, setTfaState] = useState<TfaState>({});
+  const [enrolling, setEnrolling] = useState<TfaMethodId | null>(null);
   const [flash, setFlash] = useState<{ type: 'ok' | 'err'; msg: string } | null>(null);
 
   const [currentPwd, setCurrentPwd] = useState('');
@@ -222,7 +257,7 @@ export function SettingsTabs() {
       const g = window.localStorage.getItem(GENERAL_KEY);
       if (g) setGeneral(JSON.parse(g) as General);
       const t = window.localStorage.getItem(TFA_KEY);
-      if (t) setTfaMethods(new Set(JSON.parse(t) as string[]));
+      if (t) setTfaState(JSON.parse(t) as TfaState);
     } catch {
       // ignore
     }
@@ -266,14 +301,50 @@ export function SettingsTabs() {
     showFlash('ok', 'Préférences mises à jour');
   };
 
-  const toggleTfa = (method: string) => {
-    setTfaMethods((prev) => {
-      const next = new Set(prev);
-      if (next.has(method)) next.delete(method);
-      else next.add(method);
-      window.localStorage.setItem(TFA_KEY, JSON.stringify(Array.from(next)));
-      return next;
-    });
+  const persistTfa = (next: TfaState) => {
+    window.localStorage.setItem(TFA_KEY, JSON.stringify(next));
+    setTfaState(next);
+  };
+
+  const handleEnroll = (method: TfaMethodId, enrollment: TfaEnrollment) => {
+    const next: TfaState = { ...tfaState, [method]: enrollment };
+    persistTfa(next);
+    setEnrolling(null);
+    showFlash(
+      'ok',
+      method === 'app'
+        ? 'Application activée avec succès'
+        : method === 'sms'
+        ? 'SMS activé avec succès'
+        : 'Email activé avec succès',
+    );
+  };
+
+  const handleDisenroll = (method: TfaMethodId) => {
+    const enrolledCount = Object.values(tfaState).filter(Boolean).length;
+    if (enrolledCount <= 1) {
+      showFlash('err', 'Au moins une méthode 2FA doit rester active');
+      return;
+    }
+    const label = TFA_METHODS.find((m) => m.id === method)?.short ?? method;
+    if (!window.confirm(`Désactiver la méthode « ${label} » ?`)) return;
+    const next: TfaState = { ...tfaState };
+    delete next[method];
+    persistTfa(next);
+    showFlash('ok', `${label} désactivé`);
+  };
+
+  const onMethodClick = (method: TfaMethodId) => {
+    if (tfaState[method]) handleDisenroll(method);
+    else setEnrolling(method);
+  };
+
+  const renderMethodTarget = (method: TfaMethodId): string => {
+    const enrollment = tfaState[method];
+    if (!enrollment) return '';
+    if (method === 'app') return `Activée le ${formatEnrolledDate(enrollment.enrolledAt)}`;
+    if (method === 'sms') return maskPhone(enrollment.target);
+    return maskEmail(enrollment.target);
   };
 
   const logoutEverywhere = () => {
@@ -457,31 +528,53 @@ export function SettingsTabs() {
               defaultOpen
             >
               <p className="text-sm text-gray-600 mb-3">
-                Choisissez les méthodes de double authentification à activer.
+                Activez une ou plusieurs méthodes. Cliquez sur une méthode active pour la désactiver.
               </p>
-              <div className="flex flex-wrap gap-2">
+              <ul className="space-y-2">
                 {TFA_METHODS.map((m) => {
-                  const on = tfaMethods.has(m);
+                  const on = Boolean(tfaState[m.id]);
+                  const target = renderMethodTarget(m.id);
                   return (
-                    <button
-                      key={m}
-                      type="button"
-                      onClick={() => toggleTfa(m)}
-                      aria-pressed={on}
-                      className={
-                        on
-                          ? 'rounded-pill bg-grad-alert-orange text-white px-4 py-1.5 text-sm font-semibold shadow-glow-orange'
-                          : 'rounded-pill border-2 border-orange-500 text-orange-600 px-4 py-1.5 text-sm font-semibold hover:bg-orange-50'
-                      }
-                    >
-                      {m}
-                    </button>
+                    <li key={m.id}>
+                      <button
+                        type="button"
+                        onClick={() => onMethodClick(m.id)}
+                        aria-pressed={on}
+                        className={
+                          on
+                            ? 'w-full flex items-center justify-between gap-3 rounded-xl bg-green-100 border border-green-300 text-green-900 px-4 py-3 text-sm font-semibold hover:bg-green-200 transition-colors'
+                            : 'w-full flex items-center justify-between gap-3 rounded-xl border-2 border-orange-500 text-orange-700 px-4 py-3 text-sm font-semibold hover:bg-orange-50 transition-colors'
+                        }
+                      >
+                        <span className="flex items-center gap-2 min-w-0">
+                          {on ? (
+                            <CheckCircle2 className="h-4 w-4 flex-none" aria-hidden />
+                          ) : (
+                            <Shield className="h-4 w-4 flex-none" aria-hidden />
+                          )}
+                          <span className="truncate">{m.label}</span>
+                        </span>
+                        <span className="flex items-center gap-2 text-xs font-medium flex-none">
+                          {on && target && <span className="hidden sm:inline opacity-80">{target}</span>}
+                          <span
+                            className={
+                              on
+                                ? 'rounded-pill bg-green-600 text-white px-2 py-0.5 text-[11px]'
+                                : 'rounded-pill bg-orange-500 text-white px-2 py-0.5 text-[11px]'
+                            }
+                          >
+                            {on ? 'Activée' : 'Activer'}
+                          </span>
+                        </span>
+                      </button>
+                    </li>
                   );
                 })}
-              </div>
+              </ul>
               <p className="mt-3 text-[11px] text-gray-400">
-                {tfaMethods.size} méthode{tfaMethods.size > 1 ? 's' : ''} activée
-                {tfaMethods.size > 1 ? 's' : ''}
+                {Object.keys(tfaState).length} méthode
+                {Object.keys(tfaState).length > 1 ? 's' : ''} activée
+                {Object.keys(tfaState).length > 1 ? 's' : ''}
               </p>
             </AccordionItem>
 
@@ -557,6 +650,16 @@ export function SettingsTabs() {
             onChange={(v) => saveGeneral({ ...general, dateFormat: v })}
           />
         </div>
+      )}
+
+      {enrolling && (
+        <TfaEnrollmentModal
+          method={enrolling}
+          defaultEmail={profile.email}
+          defaultPhone={profile.phone}
+          onClose={() => setEnrolling(null)}
+          onEnroll={handleEnroll}
+        />
       )}
     </>
   );

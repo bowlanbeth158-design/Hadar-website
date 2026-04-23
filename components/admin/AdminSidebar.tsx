@@ -15,17 +15,21 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { Logo } from '../Logo';
+import { REPORTS } from '@/lib/mock/signalements';
 
-type NavItem = { href: string; label: string; Icon: LucideIcon };
+type NavItem = { href: string; label: string; Icon: LucideIcon; badge?: number };
+
+const PENDING_REPORTS = REPORTS.filter((r) => r.status === 'en_cours').length;
+const UNREAD_TICKETS = 3;
 
 const MAIN_NAV: NavItem[] = [
   { href: '/admin', label: 'Dashboard', Icon: LayoutDashboard },
-  { href: '/admin/signalements', label: 'Signalements', Icon: Siren },
+  { href: '/admin/signalements', label: 'Signalements', Icon: Siren, badge: PENDING_REPORTS },
   { href: '/admin/membres', label: 'Membres', Icon: Users },
   { href: '/admin/utilisateurs', label: 'Utilisateurs', Icon: UserPlus },
   { href: '/admin/statistiques', label: 'Statistiques', Icon: BarChart3 },
   { href: '/admin/annonces', label: 'Annonces', Icon: Megaphone },
-  { href: '/admin/assistant', label: 'Assistant', Icon: MessageCircle },
+  { href: '/admin/assistant', label: 'Assistant', Icon: MessageCircle, badge: UNREAD_TICKETS },
 ];
 
 const FOOTER_NAV: NavItem[] = [
@@ -44,7 +48,19 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
       }
     >
       <item.Icon className="h-4 w-4" aria-hidden />
-      {item.label}
+      <span className="flex-1">{item.label}</span>
+      {item.badge && item.badge > 0 && (
+        <span
+          className={
+            active
+              ? 'min-w-[20px] h-5 px-1.5 rounded-full bg-white text-orange-600 text-[10px] font-bold inline-flex items-center justify-center'
+              : 'min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[10px] font-bold inline-flex items-center justify-center'
+          }
+          aria-label={`${item.badge} en attente`}
+        >
+          {item.badge}
+        </span>
+      )}
     </Link>
   );
 }

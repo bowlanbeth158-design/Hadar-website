@@ -12,17 +12,33 @@ import {
   Trash2,
   Undo2,
   X,
+  Users as UsersIcon,
+  CalendarDays,
+  Sparkles,
+  UserMinus,
 } from 'lucide-react';
 import { UserActionsDropdown, type UserAction } from '@/components/admin/UserActionsDropdown';
 import { UserReasonModal, type ReasonAction } from '@/components/admin/UserReasonModal';
+import { UserGroupsModal } from '@/components/admin/UserGroupsModal';
 import { RefreshButton } from '@/components/admin/RefreshButton';
 import { ExportButton } from '@/components/admin/ExportButton';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { INITIAL_USERS, STATUS_STYLE, type Status, type User } from '@/lib/mock/utilisateurs';
+import {
+  GROUP_COLORS,
+  loadGroups,
+  monthLabel,
+  parseFrDate,
+  saveGroups,
+  signupMonthKey,
+  type UserGroup,
+} from '@/lib/groups';
 
 const ROWS_PER_PAGE_OPTIONS = [10, 20, 30, 50, 100];
 const STATUS_KEY = 'hadar:users:status';
 const REASONS_KEY = 'hadar:users:reasons';
+// Snapshot of the mock dataset "today" — used for the "Nouveaux inscrits (30 j)" filter
+const TODAY_ISO = '2026-04-13';
 
 type StatusStore = Record<string, Status>;
 type ReasonStore = Record<string, { action: ReasonAction; reason: string; when: string }>;
@@ -62,12 +78,61 @@ export default function Page() {
     ids: string[];
   }>({ open: false, action: null, ids: [] });
 
+  const [groups, setGroups] = useState<UserGroup[]>([]);
+  const [groupsModal, setGroupsModal] = useState<{ open: boolean; mode: 'manage' | 'add' }>({
+    open: false,
+    mode: 'manage',
+  });
+  const [groupFilter, setGroupFilter] = useState<string>('all'); // 'all' | 'new' | groupId
+  const [monthFilter, setMonthFilter] = useState<string>('all');
+  const [groupMenuOpen, setGroupMenuOpen] = useState(false);
+  const [monthMenuOpen, setMonthMenuOpen] = useState(false);
+
   const filterRef = useRef<HTMLDivElement>(null);
   const actionsRef = useRef<HTMLDivElement>(null);
+  const groupMenuRef = useRef<HTMLDivElement>(null);
+  const monthMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setStatusOverrides(readJson<StatusStore>(STATUS_KEY, {}));
     setReasons(readJson<ReasonStore>(REASONS_KEY, {}));
+    setGroups(loadGroups());
+  }, []);
+
+  useEffect(() => {
+    if (!groupMenuOpen && !monthMenuOpen) return;
+    const onClick = (e: MouseEvent) => {
+      if (groupMenuOpen && !groupMenuRef.current?.contains(e.target as Node))
+        setGroupMenuOpen(false);
+      if (monthMenuOpen && !monthMenuRef.current?.contains(e.target as Node))
+        setMonthMenuOpen(false);
+    };
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setGroupMenuOpen(false);
+        setMonthMenuOpen(false);
+      }
+    };
+    window.addEventListener('mousedown', onClick);
+    window.addEventListener('keydown', onEsc);
+    return () => {
+      window.removeEventListener('mousedown', onClick);
+      window.removeEventListener('keydown', onEsc);
+    };
+  }, [groupMenuOpen, monthMenuOpen]);
+
+  const persistGroups = (next: UserGroup[]) => {
+    setGroups(next);
+    saveGroups(next);
+  };
+
+  const availableMonths = useMemo(() => {
+    const set = new Set<string>();
+    INITIAL_USERS.forEach((u) => {
+      const k = signupMonthKey(u.signup);
+      if (k) set.add(k);
+    });
+    return Array.from(set).sort().reverse();
   }, []);
 
   useEffect(() => {
@@ -106,8 +171,21 @@ export default function Page() {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
+    const today = new Date(TODAY_ISO);
+    const activeGroup = groupFilter !== 'all' && groupFilter !== 'new'
+      ? groups.find((g) => g.id === groupFilter)
+      : undefined;
     return users.filter((u) => {
       if (statusFilter !== 'all' && u.status !== statusFilter) return false;
+      if (monthFilter !== 'all' && signupMonthKey(u.signup) !== monthFilter) return false;
+      if (groupFilter === 'new') {
+        const d = parseFrDate(u.signup);
+        if (!d) return false;
+        const diffDays = Math.floor((today.getTime() - d.getTime()) / 86_400_000);
+        if (diffDays < 0 || diffDays > 30) return false;
+      } else if (activeGroup && !activeGroup.userIds.includes(u.id)) {
+        return false;
+      }
       if (!q) return true;
       return (
         u.name.toLowerCase().includes(q) ||
@@ -116,11 +194,95 @@ export default function Page() {
         u.id.includes(q)
       );
     });
-  }, [users, search, statusFilter]);
+  }, [users, search, statusFilter, monthFilter, groupFilter, groups]);
 
   useEffect(() => {
     setPage(1);
-  }, [search, statusFilter, rowsPerPage]);
+  }, [search, statusFilter, rowsPerPage, monthFilter, groupFilter]);
+
+  const userGroupsMap = useMemo(() => {
+    const map = new Map<string, UserGroup[]>();
+    for (const g of groups) {
+      for (const uid of g.userIds) {
+        const arr = map.get(uid) ?? [];
+        arr.push(g);
+        map.set(uid, arr);
+      }
+    }
+    return map;
+  }, [groups]);
+
+  const createGroup = (
+    name: string,
+    description: string,
+    colorCls: string,
+    seedUserIds?: string[],
+  ) => {
+    const id = `g_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+    const stamp = new Date().toLocaleDateString('fr-FR');
+    const next: UserGroup = {
+      id,
+      name,
+      description,
+      color: colorCls || GROUP_COLORS[0],
+      userIds: seedUserIds ?? [],
+      createdAt: stamp,
+    };
+    persistGroups([...groups, next]);
+    if (seedUserIds && seedUserIds.length > 0) {
+      showFlash(`Groupe « ${name} » créé avec ${seedUserIds.length} utilisateur${seedUserIds.length > 1 ? 's' : ''}`);
+    } else {
+      showFlash(`Groupe « ${name} » créé`);
+    }
+    setGroupsModal({ open: false, mode: 'manage' });
+    clearSelection();
+  };
+
+  const updateGroup = (id: string, patch: Partial<Omit<UserGroup, 'id' | 'createdAt'>>) => {
+    persistGroups(groups.map((g) => (g.id === id ? { ...g, ...patch } : g)));
+    showFlash('Groupe mis à jour');
+  };
+
+  const deleteGroup = (id: string) => {
+    persistGroups(groups.filter((g) => g.id !== id));
+    if (groupFilter === id) setGroupFilter('all');
+    showFlash('Groupe supprimé');
+  };
+
+  const addToGroup = (groupId: string, userIds: string[]) => {
+    persistGroups(
+      groups.map((g) =>
+        g.id === groupId
+          ? { ...g, userIds: Array.from(new Set([...g.userIds, ...userIds])) }
+          : g,
+      ),
+    );
+    const group = groups.find((g) => g.id === groupId);
+    showFlash(
+      `${userIds.length} utilisateur${userIds.length > 1 ? 's' : ''} ajouté${userIds.length > 1 ? 's' : ''} à « ${group?.name ?? groupId} »`,
+    );
+    setGroupsModal({ open: false, mode: 'manage' });
+    clearSelection();
+  };
+
+  const removeFromGroupFilter = () => {
+    if (groupFilter !== 'all' && groupFilter !== 'new' && selectedIds.size > 0) {
+      const ids = Array.from(selectedIds);
+      persistGroups(
+        groups.map((g) =>
+          g.id === groupFilter
+            ? { ...g, userIds: g.userIds.filter((uid) => !ids.includes(uid)) }
+            : g,
+        ),
+      );
+      const group = groups.find((g) => g.id === groupFilter);
+      showFlash(
+        `${ids.length} utilisateur${ids.length > 1 ? 's' : ''} retiré${ids.length > 1 ? 's' : ''} de « ${group?.name ?? ''} »`,
+      );
+      clearSelection();
+      setActionsOpen(false);
+    }
+  };
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / rowsPerPage));
   const safePage = Math.min(page, totalPages);
@@ -300,6 +462,19 @@ export default function Page() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setGroupsModal({ open: true, mode: 'manage' })}
+            className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-4 py-1.5 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
+          >
+            <UsersIcon className="h-4 w-4" aria-hidden />
+            Groupes
+            {groups.length > 0 && (
+              <span className="rounded-full bg-white/20 text-white h-4 min-w-4 px-1 text-[10px] font-bold flex items-center justify-center">
+                {groups.length}
+              </span>
+            )}
+          </button>
           <RefreshButton onRefresh={() => setRefreshKey((k) => k + 1)} />
           <ExportButton filename="hadar-utilisateurs" getRows={exportRows} />
         </div>
@@ -385,6 +560,182 @@ export default function Page() {
               ))}
             </div>
 
+            <div ref={groupMenuRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setGroupMenuOpen((v) => !v)}
+                aria-haspopup="menu"
+                aria-expanded={groupMenuOpen}
+                className="inline-flex items-center gap-1.5 rounded-pill bg-brand-sky/60 text-brand-navy px-3 py-1.5 text-xs font-semibold hover:bg-brand-sky transition-colors"
+              >
+                <UsersIcon className="h-3.5 w-3.5" aria-hidden />
+                {groupFilter === 'all'
+                  ? 'Tous les groupes'
+                  : groupFilter === 'new'
+                    ? 'Nouveaux (30 j)'
+                    : groups.find((g) => g.id === groupFilter)?.name ?? 'Groupe'}
+                <ChevronDown className="h-3 w-3" aria-hidden />
+              </button>
+              {groupMenuOpen && (
+                <div
+                  role="menu"
+                  className="absolute left-0 top-full mt-2 w-56 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-20 py-1 max-h-72 overflow-y-auto"
+                >
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setGroupFilter('all');
+                      setGroupMenuOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-between px-3 py-2 text-sm ${
+                      groupFilter === 'all'
+                        ? 'bg-brand-sky/30 text-brand-navy font-semibold'
+                        : 'text-brand-navy hover:bg-gray-50'
+                    }`}
+                  >
+                    Tous les utilisateurs
+                    {groupFilter === 'all' && (
+                      <CheckCircle2 className="h-4 w-4 text-brand-blue" aria-hidden />
+                    )}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setGroupFilter('new');
+                      setGroupMenuOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-between px-3 py-2 text-sm ${
+                      groupFilter === 'new'
+                        ? 'bg-brand-sky/30 text-brand-navy font-semibold'
+                        : 'text-brand-navy hover:bg-gray-50'
+                    }`}
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      <Sparkles className="h-3.5 w-3.5 text-orange-500" aria-hidden />
+                      Nouveaux (30 j)
+                    </span>
+                    {groupFilter === 'new' && (
+                      <CheckCircle2 className="h-4 w-4 text-brand-blue" aria-hidden />
+                    )}
+                  </button>
+                  {groups.length > 0 && (
+                    <>
+                      <p className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-400 border-t border-gray-100 mt-1">
+                        Groupes
+                      </p>
+                      {groups.map((g) => (
+                        <button
+                          key={g.id}
+                          type="button"
+                          onClick={() => {
+                            setGroupFilter(g.id);
+                            setGroupMenuOpen(false);
+                          }}
+                          className={`w-full flex items-center justify-between gap-2 px-3 py-2 text-sm text-left ${
+                            groupFilter === g.id
+                              ? 'bg-brand-sky/30 text-brand-navy font-semibold'
+                              : 'text-brand-navy hover:bg-gray-50'
+                          }`}
+                        >
+                          <span className="inline-flex items-center gap-1.5 min-w-0">
+                            <span
+                              className={`inline-block h-2.5 w-2.5 rounded-full border ${g.color}`}
+                              aria-hidden
+                            />
+                            <span className="truncate">{g.name}</span>
+                            <span className="text-[10px] text-gray-400">({g.userIds.length})</span>
+                          </span>
+                          {groupFilter === g.id && (
+                            <CheckCircle2 className="h-4 w-4 text-brand-blue shrink-0" aria-hidden />
+                          )}
+                        </button>
+                      ))}
+                    </>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setGroupMenuOpen(false);
+                      setGroupsModal({ open: true, mode: 'manage' });
+                    }}
+                    className="w-full flex items-center gap-1.5 px-3 py-2 text-xs text-brand-blue hover:bg-gray-50 border-t border-gray-100 mt-1 font-semibold"
+                  >
+                    <UsersIcon className="h-3.5 w-3.5" aria-hidden />
+                    Gérer les groupes
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div ref={monthMenuRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setMonthMenuOpen((v) => !v)}
+                aria-haspopup="menu"
+                aria-expanded={monthMenuOpen}
+                className="inline-flex items-center gap-1.5 rounded-pill bg-brand-sky/60 text-brand-navy px-3 py-1.5 text-xs font-semibold hover:bg-brand-sky transition-colors"
+              >
+                <CalendarDays className="h-3.5 w-3.5" aria-hidden />
+                {monthFilter === 'all' ? "Tous les mois" : monthLabel(monthFilter)}
+                <ChevronDown className="h-3 w-3" aria-hidden />
+              </button>
+              {monthMenuOpen && (
+                <div
+                  role="menu"
+                  className="absolute left-0 top-full mt-2 w-52 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-20 py-1 max-h-72 overflow-y-auto"
+                >
+                  <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+                    Mois d&apos;inscription
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMonthFilter('all');
+                      setMonthMenuOpen(false);
+                    }}
+                    className={`w-full flex items-center justify-between px-3 py-2 text-sm ${
+                      monthFilter === 'all'
+                        ? 'bg-brand-sky/30 text-brand-navy font-semibold'
+                        : 'text-brand-navy hover:bg-gray-50'
+                    }`}
+                  >
+                    Tous les mois
+                    {monthFilter === 'all' && (
+                      <CheckCircle2 className="h-4 w-4 text-brand-blue" aria-hidden />
+                    )}
+                  </button>
+                  {availableMonths.map((m) => {
+                    const count = INITIAL_USERS.filter(
+                      (u) => signupMonthKey(u.signup) === m,
+                    ).length;
+                    return (
+                      <button
+                        key={m}
+                        type="button"
+                        onClick={() => {
+                          setMonthFilter(m);
+                          setMonthMenuOpen(false);
+                        }}
+                        className={`w-full flex items-center justify-between px-3 py-2 text-sm ${
+                          monthFilter === m
+                            ? 'bg-brand-sky/30 text-brand-navy font-semibold'
+                            : 'text-brand-navy hover:bg-gray-50'
+                        }`}
+                      >
+                        <span>
+                          {monthLabel(m)}{' '}
+                          <span className="text-[10px] text-gray-400">({count})</span>
+                        </span>
+                        {monthFilter === m && (
+                          <CheckCircle2 className="h-4 w-4 text-brand-blue" aria-hidden />
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
             <button
               type="button"
               onClick={toggleAllOnPage}
@@ -457,6 +808,28 @@ export default function Page() {
                     <Undo2 className="h-4 w-4" aria-hidden />
                     Restaurer
                   </button>
+                  <div className="my-1 border-t border-gray-100" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActionsOpen(false);
+                      setGroupsModal({ open: true, mode: 'add' });
+                    }}
+                    className="w-full flex items-center gap-2 px-3 py-2 text-sm text-brand-navy hover:bg-gray-50"
+                  >
+                    <UsersIcon className="h-4 w-4" aria-hidden />
+                    Ajouter à un groupe
+                  </button>
+                  {groupFilter !== 'all' && groupFilter !== 'new' && (
+                    <button
+                      type="button"
+                      onClick={removeFromGroupFilter}
+                      className="w-full flex items-center gap-2 px-3 py-2 text-sm text-orange-600 hover:bg-orange-50"
+                    >
+                      <UserMinus className="h-4 w-4" aria-hidden />
+                      Retirer du groupe affiché
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -539,12 +912,23 @@ export default function Page() {
                       </td>
                       <td className="px-4 py-3 font-mono text-brand-navy">#{u.id}</td>
                       <td className="px-4 py-3 font-semibold text-brand-navy whitespace-nowrap">
-                        <a
-                          href={`/admin/utilisateurs/${u.id}`}
-                          className="hover:text-brand-blue"
-                        >
-                          {u.name}
-                        </a>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <a
+                            href={`/admin/utilisateurs/${u.id}`}
+                            className="hover:text-brand-blue"
+                          >
+                            {u.name}
+                          </a>
+                          {(userGroupsMap.get(u.id) ?? []).map((g) => (
+                            <span
+                              key={g.id}
+                              className={`inline-flex items-center rounded-pill px-2 py-0.5 text-[10px] font-semibold border ${g.color}`}
+                              title={g.name}
+                            >
+                              {g.name}
+                            </span>
+                          ))}
+                        </div>
                       </td>
                       <td className="px-4 py-3 text-gray-600">{u.email}</td>
                       <td className="px-4 py-3 text-gray-600">{u.phone}</td>
@@ -624,6 +1008,18 @@ export default function Page() {
         targetLabel={reasonTarget}
         onClose={() => setReasonModal({ open: false, action: null, ids: [] })}
         onConfirm={confirmReason}
+      />
+
+      <UserGroupsModal
+        open={groupsModal.open}
+        mode={groupsModal.mode}
+        groups={groups}
+        selectedUserIds={Array.from(selectedIds)}
+        onClose={() => setGroupsModal({ open: false, mode: 'manage' })}
+        onCreate={createGroup}
+        onUpdate={updateGroup}
+        onDelete={deleteGroup}
+        onAddToGroup={addToGroup}
       />
     </div>
   );

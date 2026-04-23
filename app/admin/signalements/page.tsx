@@ -38,6 +38,8 @@ const FILTERS: { id: 'all' | Status; label: string }[] = [
 
 const PAGE_SIZE = 5;
 const DECISIONS_KEY = 'hadar:moderation-decisions';
+// Dataset snapshot "today" — matches the latest date in lib/mock/signalements
+const TODAY_ISO = '2026-04-13';
 
 type DecisionStore = Record<string, Status>;
 
@@ -51,12 +53,47 @@ function readDecisions(): DecisionStore {
   }
 }
 
+function parseFrDate(d: string): Date | null {
+  // "13/04/26  23:12:05" → Date
+  const [datePart] = d.trim().split(/\s+/);
+  if (!datePart) return null;
+  const [dd, mm, yy] = datePart.split('/');
+  if (!dd || !mm || !yy) return null;
+  const year = yy.length === 2 ? 2000 + Number(yy) : Number(yy);
+  return new Date(year, Number(mm) - 1, Number(dd));
+}
+
+function inPeriod(
+  d: string,
+  periodIndex: number,
+  range?: { from: string; to: string },
+): boolean {
+  const date = parseFrDate(d);
+  if (!date) return true;
+  const today = new Date(TODAY_ISO);
+  const diffDays = Math.floor((today.getTime() - date.getTime()) / 86_400_000);
+  if (periodIndex === 0) return diffDays === 0; // Aujourd'hui
+  if (periodIndex === 1) return diffDays === 1; // Hier
+  if (periodIndex === 2) return diffDays >= 0 && diffDays < 7; // 7 jours
+  if (periodIndex === 3) return diffDays >= 0 && diffDays < 30; // 30 jours
+  if (periodIndex === 4) return diffDays >= 0 && diffDays < 365; // 365 jours
+  if (periodIndex === 5 && range?.from && range?.to) {
+    const from = new Date(range.from);
+    const to = new Date(range.to);
+    return date.getTime() >= from.getTime() && date.getTime() <= to.getTime() + 86_400_000 - 1;
+  }
+  return true;
+}
+
 export default function Page() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [statusFilter, setStatusFilter] = useState<'all' | Status>('all');
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
   const [decisions, setDecisions] = useState<DecisionStore>({});
+  const [periodIndex, setPeriodIndex] = useState(4);
+  const [periodLabel, setPeriodLabel] = useState('365 jours');
+  const [periodRange, setPeriodRange] = useState<{ from: string; to: string } | undefined>();
 
   useEffect(() => {
     setDecisions(readDecisions());
@@ -79,6 +116,7 @@ export default function Page() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     return merged.filter((r) => {
+      if (!inPeriod(r.date, periodIndex, periodRange)) return false;
       if (statusFilter !== 'all' && r.status !== statusFilter) return false;
       if (!q) return true;
       return (
@@ -88,11 +126,11 @@ export default function Page() {
         r.contactMasked.toLowerCase().includes(q)
       );
     });
-  }, [merged, statusFilter, query]);
+  }, [merged, statusFilter, query, periodIndex, periodRange]);
 
   useEffect(() => {
     setPage(1);
-  }, [statusFilter, query]);
+  }, [statusFilter, query, periodIndex, periodRange]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -121,7 +159,12 @@ export default function Page() {
   return (
     <div>
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">Signalements</h1>
+        <div>
+          <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">Signalements</h1>
+          <p className="mt-1 text-sm text-gray-500">
+            Période : <span className="font-semibold text-brand-navy">{periodLabel}</span>
+          </p>
+        </div>
         <div className="flex items-center gap-2">
           <RefreshButton onRefresh={() => setRefreshKey((k) => k + 1)} />
           <ExportButton filename="hadar-signalements" getRows={exportRows} />
@@ -129,7 +172,14 @@ export default function Page() {
       </div>
 
       <div className="mb-8">
-        <PeriodTabs defaultActive={0} />
+        <PeriodTabs
+          defaultActive={4}
+          onChange={(label, index, range) => {
+            setPeriodLabel(label);
+            setPeriodIndex(index);
+            setPeriodRange(range);
+          }}
+        />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">

@@ -19,6 +19,7 @@ import {
 import { REPORTS, STATUS_LABEL as REPORT_STATUS_LABEL } from '@/lib/mock/signalements';
 import { INITIAL_USERS } from '@/lib/mock/utilisateurs';
 import { INITIAL_MEMBERS } from '@/lib/mock/membres';
+import { useI18n } from '@/lib/i18n/provider';
 
 type Ticket = {
   id: string;
@@ -76,6 +77,7 @@ function useClickOutside(ref: React.RefObject<HTMLElement>, onClose: () => void,
 
 export function AdminTopBar() {
   const router = useRouter();
+  const { t } = useI18n();
 
   const [query, setQuery] = useState('');
   const [searchOpen, setSearchOpen] = useState(false);
@@ -167,7 +169,7 @@ export function AdminTopBar() {
               setSearchOpen(true);
             }}
             onFocus={openSearch}
-            placeholder="Rechercher un signalement, un utilisateur, un membre…"
+            placeholder={t('topbar.searchPlaceholder')}
             className="w-full rounded-pill bg-gray-50 border border-gray-200 pl-11 pr-10 py-2 text-sm text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue"
           />
           {query && (

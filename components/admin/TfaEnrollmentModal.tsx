@@ -10,6 +10,7 @@ import {
   Smartphone,
   X,
 } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/provider';
 
 export type TfaMethodId = 'app' | 'sms' | 'email';
 
@@ -38,10 +39,10 @@ function formatSecret(s: string): string {
   return s.match(/.{1,4}/g)?.join(' ') ?? s;
 }
 
-const TITLE: Record<TfaMethodId, string> = {
-  app: "Application d'authentification",
-  sms: 'Vérification par SMS',
-  email: 'Vérification par email',
+const TITLE_KEY: Record<TfaMethodId, string> = {
+  app: 'tfa.title.app',
+  sms: 'tfa.title.sms',
+  email: 'tfa.title.email',
 };
 
 const ICON: Record<TfaMethodId, typeof Smartphone> = {
@@ -57,6 +58,7 @@ export function TfaEnrollmentModal({
   onClose,
   onEnroll,
 }: Props) {
+  const { t } = useI18n();
   const [step, setStep] = useState<'setup' | 'verify'>('setup');
   const [phone, setPhone] = useState(defaultPhone);
   const [email, setEmail] = useState(defaultEmail);
@@ -98,13 +100,13 @@ export function TfaEnrollmentModal({
     setErr(null);
     if (method === 'sms') {
       if (!/^\+?[\d\s.-]{8,}$/.test(phone.trim())) {
-        setErr('Numéro invalide (format international attendu)');
+        setErr(t('tfa.err.phone'));
         return;
       }
     }
     if (method === 'email') {
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-        setErr('Email invalide');
+        setErr(t('tfa.err.email'));
         return;
       }
     }
@@ -118,7 +120,7 @@ export function TfaEnrollmentModal({
   const verify = () => {
     setErr(null);
     if (!/^\d{6}$/.test(code)) {
-      setErr('Code invalide (6 chiffres attendus)');
+      setErr(t('tfa.err.code'));
       return;
     }
     const target =
@@ -135,7 +137,7 @@ export function TfaEnrollmentModal({
     >
       <button
         type="button"
-        aria-label="Fermer"
+        aria-label={t('common.close')}
         onClick={onClose}
         className="absolute inset-0 bg-brand-navy/40 backdrop-blur-sm cursor-default"
       />
@@ -144,12 +146,12 @@ export function TfaEnrollmentModal({
           <div className="flex items-center gap-2">
             <Icon className="h-5 w-5" aria-hidden />
             <h2 id="tfa-modal-title" className="text-lg font-bold">
-              {TITLE[method]}
+              {t(TITLE_KEY[method])}
             </h2>
           </div>
           <button
             type="button"
-            aria-label="Fermer"
+            aria-label={t('common.close')}
             onClick={onClose}
             className="h-8 w-8 rounded-full hover:bg-white/10 flex items-center justify-center"
           >
@@ -159,11 +161,11 @@ export function TfaEnrollmentModal({
 
         <div className="flex items-center gap-2 px-6 py-3 bg-brand-sky/30 text-xs font-semibold">
           <span className={step === 'setup' ? 'text-brand-blue' : 'text-brand-navy/40'}>
-            1. Configuration
+            {t('tfa.step.setup')}
           </span>
           <span className="text-brand-navy/40">›</span>
           <span className={step === 'verify' ? 'text-brand-blue' : 'text-brand-navy/40'}>
-            2. Vérification
+            {t('tfa.step.verify')}
           </span>
         </div>
 
@@ -177,19 +179,14 @@ export function TfaEnrollmentModal({
 
           {step === 'setup' && method === 'app' && (
             <div className="space-y-4">
-              <p className="text-sm text-gray-600">
-                Scannez ce QR code avec <b>Google Authenticator</b>, <b>Authy</b> ou
-                toute autre app TOTP. Vous pouvez aussi saisir la clé manuellement.
-              </p>
+              <p className="text-sm text-gray-600">{t('tfa.app.instructions')}</p>
               <div className="flex flex-col items-center gap-3 bg-brand-sky/30 rounded-xl p-4">
                 <QrPreview secret={secret} />
-                <p className="text-[11px] text-gray-500 italic">
-                  Mode démo — le QR sera généré côté serveur en production.
-                </p>
+                <p className="text-[11px] text-gray-500 italic">{t('tfa.app.demoNote')}</p>
               </div>
               <div>
                 <label className="block text-xs font-semibold text-brand-navy mb-1">
-                  Clé secrète (saisie manuelle)
+                  {t('tfa.app.secretLabel')}
                 </label>
                 <div className="flex gap-2">
                   <input
@@ -203,7 +200,7 @@ export function TfaEnrollmentModal({
                     className="rounded-xl border border-brand-navy px-3 py-2 text-xs font-semibold text-brand-navy hover:bg-brand-navy hover:text-white transition-colors inline-flex items-center gap-1.5"
                   >
                     {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                    {copied ? 'Copié' : 'Copier'}
+                    {copied ? t('common.copied') : t('common.copy')}
                   </button>
                 </div>
               </div>
@@ -212,21 +209,17 @@ export function TfaEnrollmentModal({
                 onClick={() => setStep('verify')}
                 className="w-full rounded-xl bg-grad-stat-navy text-white px-4 py-2.5 text-sm font-semibold shadow-glow-navy hover:brightness-110"
               >
-                Continuer
+                {t('common.continue')}
               </button>
             </div>
           )}
 
           {step === 'setup' && method === 'sms' && (
             <div className="space-y-4">
-              <p className="text-sm text-gray-600">
-                Nous enverrons un code à 6 chiffres par SMS à ce numéro. Format
-                international (ex :{' '}
-                <code className="font-mono">+212 6 98 00 00 00</code>).
-              </p>
+              <p className="text-sm text-gray-600">{t('tfa.sms.instructions')}</p>
               <label className="block">
                 <span className="block text-xs font-semibold text-brand-navy mb-1">
-                  Numéro de téléphone
+                  {t('tfa.sms.phoneLabel')}
                 </span>
                 <input
                   type="tel"
@@ -242,19 +235,17 @@ export function TfaEnrollmentModal({
                 disabled={sending}
                 className="w-full rounded-xl bg-grad-stat-navy text-white px-4 py-2.5 text-sm font-semibold shadow-glow-navy hover:brightness-110 disabled:opacity-60"
               >
-                {sending ? 'Envoi…' : 'Envoyer le code'}
+                {sending ? t('common.sending') : t('tfa.sendCode')}
               </button>
             </div>
           )}
 
           {step === 'setup' && method === 'email' && (
             <div className="space-y-4">
-              <p className="text-sm text-gray-600">
-                Nous enverrons un code à 6 chiffres à cette adresse email.
-              </p>
+              <p className="text-sm text-gray-600">{t('tfa.email.instructions')}</p>
               <label className="block">
                 <span className="block text-xs font-semibold text-brand-navy mb-1">
-                  Adresse email
+                  {t('tfa.email.emailLabel')}
                 </span>
                 <input
                   type="email"
@@ -278,21 +269,13 @@ export function TfaEnrollmentModal({
           {step === 'verify' && (
             <div className="space-y-4">
               <p className="text-sm text-gray-600">
-                {method === 'app' && 'Entrez le code à 6 chiffres affiché dans votre application.'}
-                {method === 'sms' && (
-                  <>
-                    Code envoyé à <b>{phone}</b>. Entrez-le ci-dessous.
-                  </>
-                )}
-                {method === 'email' && (
-                  <>
-                    Code envoyé à <b>{email}</b>. Vérifiez votre boîte de réception.
-                  </>
-                )}
+                {method === 'app' && t('tfa.verify.instructions.app')}
+                {method === 'sms' && t('tfa.verify.instructions.sms', { target: phone })}
+                {method === 'email' && t('tfa.verify.instructions.email', { target: email })}
               </p>
               <label className="block">
                 <span className="block text-xs font-semibold text-brand-navy mb-1">
-                  Code à 6 chiffres
+                  {t('tfa.verify.codeLabel')}
                 </span>
                 <input
                   type="text"
@@ -316,19 +299,17 @@ export function TfaEnrollmentModal({
                   }}
                   className="flex-1 rounded-xl border border-gray-200 px-4 py-2.5 text-sm font-semibold text-brand-navy hover:bg-gray-50"
                 >
-                  Retour
+                  {t('common.back')}
                 </button>
                 <button
                   type="button"
                   onClick={verify}
                   className="flex-1 rounded-xl bg-grad-stat-navy text-white px-4 py-2.5 text-sm font-semibold shadow-glow-navy hover:brightness-110"
                 >
-                  Activer
+                  {t('common.activate')}
                 </button>
               </div>
-              <p className="text-[11px] text-center text-gray-400">
-                Mode démo : tout code à 6 chiffres sera accepté.
-              </p>
+              <p className="text-[11px] text-center text-gray-400">{t('tfa.verify.demoNote')}</p>
             </div>
           )}
         </div>

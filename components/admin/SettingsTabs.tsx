@@ -20,13 +20,15 @@ import {
   type TfaEnrollment,
   type TfaMethodId,
 } from './TfaEnrollmentModal';
+import { useI18n } from '@/lib/i18n/provider';
+import { LOCALES, type Locale } from '@/lib/i18n/messages';
 
 type Tab = 'compte' | 'securite' | 'general';
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'compte', label: 'Compte' },
-  { id: 'securite', label: 'Sécurité' },
-  { id: 'general', label: 'Général' },
+const TABS: { id: Tab; labelKey: string }[] = [
+  { id: 'compte', labelKey: 'settings.tab.compte' },
+  { id: 'securite', labelKey: 'settings.tab.securite' },
+  { id: 'general', labelKey: 'settings.tab.general' },
 ];
 
 const PROFILE_KEY = 'hadar:settings:profile';
@@ -41,21 +43,19 @@ const DEFAULT_PROFILE: Profile = {
   email: 'mohamedossama@hadar.ma',
 };
 
-type General = { language: string; timezone: string; dateFormat: string };
+type General = { timezone: string; dateFormat: string };
 const DEFAULT_GENERAL: General = {
-  language: 'Français',
   timezone: 'Casablanca, Maroc',
   dateFormat: 'JJ/MM/AAAA',
 };
 
-const LANGUAGES = ['Français', 'العربية', 'English'];
 const TIMEZONES = ['Casablanca, Maroc', 'Paris, France', 'Londres, Royaume-Uni', 'UTC'];
 const DATE_FORMATS = ['JJ/MM/AAAA', 'AAAA-MM-JJ', 'MM/JJ/AAAA'];
 
-const TFA_METHODS: { id: TfaMethodId; label: string; short: string }[] = [
-  { id: 'app', label: 'Application (Google Authenticator, Authy)', short: 'Application' },
-  { id: 'sms', label: 'SMS', short: 'SMS' },
-  { id: 'email', label: 'Email', short: 'Email' },
+const TFA_METHODS: { id: TfaMethodId; labelKey: string }[] = [
+  { id: 'app', labelKey: 'settings.security.method.app' },
+  { id: 'sms', labelKey: 'settings.security.method.sms' },
+  { id: 'email', labelKey: 'settings.security.method.email' },
 ];
 
 type TfaState = Partial<Record<TfaMethodId, TfaEnrollment>>;
@@ -234,6 +234,7 @@ function Dropdown({
 }
 
 export function SettingsTabs() {
+  const { t, locale, setLocale } = useI18n();
   const [active, setActive] = useState<Tab>('compte');
   const [profile, setProfile] = useState<Profile>(DEFAULT_PROFILE);
   const [savedProfile, setSavedProfile] = useState<Profile>(DEFAULT_PROFILE);
@@ -256,8 +257,8 @@ export function SettingsTabs() {
       }
       const g = window.localStorage.getItem(GENERAL_KEY);
       if (g) setGeneral(JSON.parse(g) as General);
-      const t = window.localStorage.getItem(TFA_KEY);
-      if (t) setTfaState(JSON.parse(t) as TfaState);
+      const tfa = window.localStorage.getItem(TFA_KEY);
+      if (tfa) setTfaState(JSON.parse(tfa) as TfaState);
     } catch {
       // ignore
     }
@@ -273,32 +274,32 @@ export function SettingsTabs() {
   const saveProfile = () => {
     window.localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
     setSavedProfile(profile);
-    showFlash('ok', 'Informations enregistrées');
+    showFlash('ok', t('settings.account.savedMsg'));
   };
 
   const updatePassword = () => {
     if (!currentPwd || !newPwd) {
-      showFlash('err', 'Veuillez remplir tous les champs');
+      showFlash('err', t('settings.account.errRequired'));
       return;
     }
     if (newPwd !== confirmPwd) {
-      showFlash('err', 'La confirmation ne correspond pas');
+      showFlash('err', t('settings.account.errMismatch'));
       return;
     }
     if (newPwd.length < 8) {
-      showFlash('err', 'Minimum 8 caractères');
+      showFlash('err', t('settings.account.errTooShort'));
       return;
     }
     setCurrentPwd('');
     setNewPwd('');
     setConfirmPwd('');
-    showFlash('ok', 'Mot de passe mis à jour');
+    showFlash('ok', t('settings.account.pwdUpdated'));
   };
 
   const saveGeneral = (next: General) => {
     setGeneral(next);
     window.localStorage.setItem(GENERAL_KEY, JSON.stringify(next));
-    showFlash('ok', 'Préférences mises à jour');
+    showFlash('ok', t('settings.general.updated'));
   };
 
   const persistTfa = (next: TfaState) => {
@@ -306,32 +307,30 @@ export function SettingsTabs() {
     setTfaState(next);
   };
 
+  const methodLabel = (method: TfaMethodId): string => {
+    const key = TFA_METHODS.find((m) => m.id === method)?.labelKey ?? '';
+    return t(key);
+  };
+
   const handleEnroll = (method: TfaMethodId, enrollment: TfaEnrollment) => {
     const next: TfaState = { ...tfaState, [method]: enrollment };
     persistTfa(next);
     setEnrolling(null);
-    showFlash(
-      'ok',
-      method === 'app'
-        ? 'Application activée avec succès'
-        : method === 'sms'
-        ? 'SMS activé avec succès'
-        : 'Email activé avec succès',
-    );
+    showFlash('ok', t('settings.security.activated', { label: methodLabel(method) }));
   };
 
   const handleDisenroll = (method: TfaMethodId) => {
     const enrolledCount = Object.values(tfaState).filter(Boolean).length;
     if (enrolledCount <= 1) {
-      showFlash('err', 'Au moins une méthode 2FA doit rester active');
+      showFlash('err', t('settings.security.minOneRequired'));
       return;
     }
-    const label = TFA_METHODS.find((m) => m.id === method)?.short ?? method;
-    if (!window.confirm(`Désactiver la méthode « ${label} » ?`)) return;
+    const label = methodLabel(method);
+    if (!window.confirm(t('settings.security.disableConfirm', { label }))) return;
     const next: TfaState = { ...tfaState };
     delete next[method];
     persistTfa(next);
-    showFlash('ok', `${label} désactivé`);
+    showFlash('ok', t('settings.security.disabled', { label }));
   };
 
   const onMethodClick = (method: TfaMethodId) => {
@@ -342,35 +341,41 @@ export function SettingsTabs() {
   const renderMethodTarget = (method: TfaMethodId): string => {
     const enrollment = tfaState[method];
     if (!enrollment) return '';
-    if (method === 'app') return `Activée le ${formatEnrolledDate(enrollment.enrolledAt)}`;
+    if (method === 'app')
+      return t('settings.security.enrolledOn', {
+        date: formatEnrolledDate(enrollment.enrolledAt),
+      });
     if (method === 'sms') return maskPhone(enrollment.target);
     return maskEmail(enrollment.target);
   };
 
   const logoutEverywhere = () => {
-    if (!window.confirm('Déconnecter toutes les autres sessions ?')) return;
-    showFlash('ok', 'Toutes les autres sessions ont été révoquées');
+    if (!window.confirm(t('settings.security.logoutAllConfirm'))) return;
+    showFlash('ok', t('settings.security.logoutAllDone'));
   };
 
   return (
     <>
-      <div role="tablist" aria-label="Sections paramètres" className="flex flex-wrap gap-2 mb-8">
-        {TABS.map((t) => {
-          const on = t.id === active;
+      <h1 className="text-2xl md:text-3xl font-bold text-brand-navy mb-6">
+        {t('page.parametres.title')}
+      </h1>
+      <div role="tablist" aria-label="Sections" className="flex flex-wrap gap-2 mb-8">
+        {TABS.map((tab) => {
+          const on = tab.id === active;
           return (
             <button
-              key={t.id}
+              key={tab.id}
               type="button"
               role="tab"
               aria-selected={on}
-              onClick={() => setActive(t.id)}
+              onClick={() => setActive(tab.id)}
               className={
                 on
                   ? 'rounded-pill bg-grad-stat-navy text-white px-5 py-2 text-sm font-semibold shadow-glow-navy'
                   : 'rounded-pill bg-brand-sky/60 text-brand-navy px-5 py-2 text-sm font-medium hover:bg-brand-sky'
               }
             >
-              {t.label}
+              {t(tab.labelKey)}
             </button>
           );
         })}
@@ -404,20 +409,20 @@ export function SettingsTabs() {
               <h3 className="text-lg font-bold text-brand-navy">
                 {profile.firstName} {profile.lastName}
               </h3>
-              <p className="text-sm text-brand-blue font-semibold">Admin</p>
+              <p className="text-sm text-brand-blue font-semibold">{t('settings.role.admin')}</p>
             </div>
           </div>
 
           <div className="grid gap-4 lg:grid-cols-2">
             <section className="rounded-2xl bg-gray-50 border border-gray-200 shadow-glow-soft p-6">
-              <h3 className="text-base font-bold text-brand-navy">Informations personnelles</h3>
-              <p className="mt-1 text-xs text-gray-500">
-                Gérez vos informations personnelles en toute sécurité.
-              </p>
+              <h3 className="text-base font-bold text-brand-navy">
+                {t('settings.account.personalTitle')}
+              </h3>
+              <p className="mt-1 text-xs text-gray-500">{t('settings.account.personalSub')}</p>
               <div className="mt-5 grid sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-brand-navy mb-1">
-                    Prénom
+                    {t('settings.account.firstName')}
                   </label>
                   <input
                     type="text"
@@ -428,7 +433,7 @@ export function SettingsTabs() {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-brand-navy mb-1">
-                    Nom de famille
+                    {t('settings.account.lastName')}
                   </label>
                   <input
                     type="text"
@@ -439,7 +444,7 @@ export function SettingsTabs() {
                 </div>
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-semibold text-brand-navy mb-1">
-                    Numéro de portable
+                    {t('settings.account.phone')}
                   </label>
                   <input
                     type="tel"
@@ -447,13 +452,10 @@ export function SettingsTabs() {
                     onChange={(e) => setProfile((p) => ({ ...p, phone: e.target.value }))}
                     className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-brand-navy focus:outline-none focus:border-brand-blue"
                   />
-                  <p className="mt-1 text-[11px] text-gray-400">
-                    Inclure l&apos;indicatif pays (ex : 212…), sans 0 ni +
-                  </p>
                 </div>
                 <div className="sm:col-span-2">
                   <label className="block text-xs font-semibold text-brand-navy mb-1">
-                    Adresse e-mail
+                    {t('settings.account.email')}
                   </label>
                   <input
                     type="email"
@@ -471,32 +473,32 @@ export function SettingsTabs() {
                   className="inline-flex items-center gap-1.5 rounded-pill bg-green-500 hover:bg-green-700 text-white px-5 py-2 text-sm font-semibold shadow-glow-green disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   <CheckCircle2 className="h-4 w-4" aria-hidden />
-                  Enregistrer les modifications
+                  {t('common.save')}
                 </button>
               </div>
             </section>
 
             <section className="rounded-2xl bg-gray-50 border border-gray-200 shadow-glow-soft p-6">
-              <h3 className="text-base font-bold text-brand-navy">Mot de passe</h3>
-              <p className="mt-1 text-xs text-gray-500">
-                Pour votre sécurité, utilisez un mot de passe unique et sécurisé.
-              </p>
+              <h3 className="text-base font-bold text-brand-navy">
+                {t('settings.account.passwordTitle')}
+              </h3>
+              <p className="mt-1 text-xs text-gray-500">{t('settings.account.passwordSub')}</p>
               <div className="mt-5 space-y-3">
                 <PasswordInput
                   id="current-password"
-                  label="Mot de passe actuel"
+                  label={t('settings.account.currentPwd')}
                   value={currentPwd}
                   onChange={setCurrentPwd}
                 />
                 <PasswordInput
                   id="new-password"
-                  label="Nouveau mot de passe"
+                  label={t('settings.account.newPwd')}
                   value={newPwd}
                   onChange={setNewPwd}
                 />
                 <PasswordInput
                   id="confirm-password"
-                  label="Confirmer le nouveau mot de passe"
+                  label={t('settings.account.confirmPwd')}
                   value={confirmPwd}
                   onChange={setConfirmPwd}
                 />
@@ -508,7 +510,7 @@ export function SettingsTabs() {
                   className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-5 py-2 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
                 >
                   <RefreshCw className="h-4 w-4" aria-hidden />
-                  Mettre à jour le mot de passe
+                  {t('settings.account.updatePwd')}
                 </button>
               </div>
             </section>
@@ -523,13 +525,8 @@ export function SettingsTabs() {
             className="absolute -top-4 right-0 h-40 w-40 text-brand-navy/5 pointer-events-none"
           />
           <div className="relative space-y-3">
-            <AccordionItem
-              title="Activer / désactiver la double authentification (2FA)"
-              defaultOpen
-            >
-              <p className="text-sm text-gray-600 mb-3">
-                Activez une ou plusieurs méthodes. Cliquez sur une méthode active pour la désactiver.
-              </p>
+            <AccordionItem title={t('settings.security.tfaTitle')} defaultOpen>
+              <p className="text-sm text-gray-600 mb-3">{t('settings.security.tfaSub')}</p>
               <ul className="space-y-2">
                 {TFA_METHODS.map((m) => {
                   const on = Boolean(tfaState[m.id]);
@@ -552,7 +549,7 @@ export function SettingsTabs() {
                           ) : (
                             <Shield className="h-4 w-4 flex-none" aria-hidden />
                           )}
-                          <span className="truncate">{m.label}</span>
+                          <span className="truncate">{t(m.labelKey)}</span>
                         </span>
                         <span className="flex items-center gap-2 text-xs font-medium flex-none">
                           {on && target && <span className="hidden sm:inline opacity-80">{target}</span>}
@@ -563,7 +560,7 @@ export function SettingsTabs() {
                                 : 'rounded-pill bg-orange-500 text-white px-2 py-0.5 text-[11px]'
                             }
                           >
-                            {on ? 'Activée' : 'Activer'}
+                            {on ? t('common.active') : t('common.activate')}
                           </span>
                         </span>
                       </button>
@@ -572,18 +569,21 @@ export function SettingsTabs() {
                 })}
               </ul>
               <p className="mt-3 text-[11px] text-gray-400">
-                {Object.keys(tfaState).length} méthode
-                {Object.keys(tfaState).length > 1 ? 's' : ''} activée
-                {Object.keys(tfaState).length > 1 ? 's' : ''}
+                {t(
+                  Object.keys(tfaState).length > 1
+                    ? 'settings.security.count.other'
+                    : 'settings.security.count.one',
+                  { count: Object.keys(tfaState).length },
+                )}
               </p>
             </AccordionItem>
 
-            <AccordionItem title="Historique des connexions">
+            <AccordionItem title={t('settings.security.historyTitle')}>
               <ul className="space-y-2 text-sm">
                 {[
-                  { dt: '13/04/26  23:12', loc: 'Casablanca, MA', ua: 'Chrome · macOS', status: 'Réussie' },
-                  { dt: '12/04/26  09:05', loc: 'Rabat, MA', ua: 'Safari · iOS', status: 'Réussie' },
-                  { dt: '10/04/26  18:44', loc: 'Marrakech, MA', ua: 'Chrome · Windows', status: 'Bloquée' },
+                  { dt: '13/04/26  23:12', loc: 'Casablanca, MA', ua: 'Chrome · macOS', ok: true },
+                  { dt: '12/04/26  09:05', loc: 'Rabat, MA', ua: 'Safari · iOS', ok: true },
+                  { dt: '10/04/26  18:44', loc: 'Marrakech, MA', ua: 'Chrome · Windows', ok: false },
                 ].map((s) => (
                   <li
                     key={s.dt}
@@ -596,30 +596,26 @@ export function SettingsTabs() {
                     </div>
                     <span
                       className={
-                        s.status === 'Réussie'
+                        s.ok
                           ? 'inline-flex items-center rounded-pill bg-green-100 text-green-700 px-2.5 py-0.5 text-[11px] font-semibold'
                           : 'inline-flex items-center rounded-pill bg-red-100 text-red-700 px-2.5 py-0.5 text-[11px] font-semibold'
                       }
                     >
-                      {s.status}
+                      {s.ok ? t('common.active') : t('common.close')}
                     </span>
                   </li>
                 ))}
               </ul>
             </AccordionItem>
 
-            <AccordionItem title="Déconnexion de tous les appareils">
-              <p className="text-sm text-gray-600 mb-4">
-                Révoque toutes les autres sessions actives sur vos appareils. Vous resterez
-                connecté sur cet appareil.
-              </p>
+            <AccordionItem title={t('settings.security.logoutAll')}>
               <button
                 type="button"
                 onClick={logoutEverywhere}
                 className="inline-flex items-center gap-1.5 rounded-pill bg-red-500 hover:bg-red-700 text-white px-5 py-2 text-sm font-semibold shadow-glow-red transition-all"
               >
                 <LogOut className="h-4 w-4" aria-hidden />
-                Se déconnecter partout
+                {t('settings.security.logoutAll')}
               </button>
             </AccordionItem>
           </div>
@@ -629,21 +625,27 @@ export function SettingsTabs() {
       {active === 'general' && (
         <div className="grid gap-4 sm:grid-cols-3">
           <Dropdown
-            label="Langue"
+            label={t('settings.general.language')}
             Icon={Globe}
-            value={general.language}
-            options={LANGUAGES}
-            onChange={(v) => saveGeneral({ ...general, language: v })}
+            value={LOCALES.find((l) => l.id === locale)?.label ?? LOCALES[0].label}
+            options={LOCALES.map((l) => l.label)}
+            onChange={(v) => {
+              const match = LOCALES.find((l) => l.label === v);
+              if (match) {
+                setLocale(match.id as Locale);
+                showFlash('ok', t('settings.general.updated'));
+              }
+            }}
           />
           <Dropdown
-            label="Fuseau horaire"
+            label={t('settings.general.timezone')}
             Icon={Clock}
             value={general.timezone}
             options={TIMEZONES}
             onChange={(v) => saveGeneral({ ...general, timezone: v })}
           />
           <Dropdown
-            label="Format de date"
+            label={t('settings.general.dateFormat')}
             Icon={Calendar}
             value={general.dateFormat}
             options={DATE_FORMATS}

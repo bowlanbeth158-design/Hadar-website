@@ -16,28 +16,30 @@ import {
 } from 'lucide-react';
 import { Logo } from '../Logo';
 import { REPORTS } from '@/lib/mock/signalements';
+import { useI18n } from '@/lib/i18n/provider';
 
-type NavItem = { href: string; label: string; Icon: LucideIcon; badge?: number };
+type NavItem = { href: string; labelKey: string; Icon: LucideIcon; badge?: number };
 
 const PENDING_REPORTS = REPORTS.filter((r) => r.status === 'en_cours').length;
 const UNREAD_TICKETS = 3;
 
 const MAIN_NAV: NavItem[] = [
-  { href: '/admin', label: 'Dashboard', Icon: LayoutDashboard },
-  { href: '/admin/signalements', label: 'Signalements', Icon: Siren, badge: PENDING_REPORTS },
-  { href: '/admin/membres', label: 'Membres', Icon: Users },
-  { href: '/admin/utilisateurs', label: 'Utilisateurs', Icon: UserPlus },
-  { href: '/admin/statistiques', label: 'Statistiques', Icon: BarChart3 },
-  { href: '/admin/annonces', label: 'Annonces', Icon: Megaphone },
-  { href: '/admin/assistant', label: 'Assistant', Icon: MessageCircle, badge: UNREAD_TICKETS },
+  { href: '/admin', labelKey: 'sidebar.dashboard', Icon: LayoutDashboard },
+  { href: '/admin/signalements', labelKey: 'sidebar.signalements', Icon: Siren, badge: PENDING_REPORTS },
+  { href: '/admin/membres', labelKey: 'sidebar.membres', Icon: Users },
+  { href: '/admin/utilisateurs', labelKey: 'sidebar.utilisateurs', Icon: UserPlus },
+  { href: '/admin/statistiques', labelKey: 'sidebar.statistiques', Icon: BarChart3 },
+  { href: '/admin/annonces', labelKey: 'sidebar.annonces', Icon: Megaphone },
+  { href: '/admin/assistant', labelKey: 'sidebar.assistant', Icon: MessageCircle, badge: UNREAD_TICKETS },
 ];
 
 const FOOTER_NAV: NavItem[] = [
-  { href: '/admin/administration', label: 'Administration', Icon: ShieldCheck },
-  { href: '/admin/parametres', label: 'Paramètres', Icon: Settings },
+  { href: '/admin/administration', labelKey: 'sidebar.administration', Icon: ShieldCheck },
+  { href: '/admin/parametres', labelKey: 'sidebar.parametres', Icon: Settings },
 ];
 
 function NavLink({ item, active }: { item: NavItem; active: boolean }) {
+  const { t } = useI18n();
   return (
     <Link
       href={item.href}
@@ -48,7 +50,7 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
       }
     >
       <item.Icon className="h-4 w-4" aria-hidden />
-      <span className="flex-1">{item.label}</span>
+      <span className="flex-1">{t(item.labelKey)}</span>
       {item.badge && item.badge > 0 && (
         <span
           className={
@@ -56,7 +58,7 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
               ? 'min-w-[20px] h-5 px-1.5 rounded-full bg-white text-orange-600 text-[10px] font-bold inline-flex items-center justify-center'
               : 'min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[10px] font-bold inline-flex items-center justify-center'
           }
-          aria-label={`${item.badge} en attente`}
+          aria-label={`${item.badge} ${t('sidebar.pending')}`}
         >
           {item.badge}
         </span>

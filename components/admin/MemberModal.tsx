@@ -21,6 +21,8 @@ type Props = {
   mode: 'create' | 'edit';
   initial?: Partial<MemberFormValues>;
   onClose: () => void;
+  onSave?: (values: MemberFormValues) => void;
+  onDelete?: (id: string) => void;
 };
 
 const ROLES: { id: Role; label: string; desc: string }[] = [
@@ -35,7 +37,7 @@ const STATUSES: { id: Status; label: string; cls: string }[] = [
   { id: 'suspendu', label: 'Suspendu', cls: 'text-red-700 bg-red-100 border-red-500' },
 ];
 
-export function MemberModal({ open, mode, initial, onClose }: Props) {
+export function MemberModal({ open, mode, initial, onClose, onSave, onDelete }: Props) {
   const [name, setName] = useState(initial?.name ?? '');
   const [email, setEmail] = useState(initial?.email ?? '');
   const [phone, setPhone] = useState(initial?.phone ?? '');
@@ -74,11 +76,27 @@ export function MemberModal({ open, mode, initial, onClose }: Props) {
 
   const submit = () => {
     if (!canSubmit) return;
+    onSave?.({
+      id: initial?.id,
+      name: name.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      role,
+      status,
+      lastSeen: initial?.lastSeen,
+    });
     setSaved(true);
     setTimeout(() => {
       setSaved(false);
       onClose();
-    }, 1200);
+    }, 900);
+  };
+
+  const remove = () => {
+    if (!initial?.id) return;
+    if (!window.confirm(`Supprimer le membre ${initial.name ?? ''} ?`)) return;
+    onDelete?.(initial.id);
+    onClose();
   };
 
   return (
@@ -234,6 +252,7 @@ export function MemberModal({ open, mode, initial, onClose }: Props) {
           {mode === 'edit' ? (
             <button
               type="button"
+              onClick={remove}
               className="inline-flex items-center gap-1.5 rounded-pill bg-red-500 hover:bg-red-700 text-white px-4 py-2 text-sm font-semibold shadow-glow-red transition-all"
             >
               <Trash2 className="h-4 w-4" aria-hidden />

@@ -13,46 +13,48 @@ import {
   X,
 } from 'lucide-react';
 import { PermissionToggle } from '@/components/admin/PermissionToggle';
+import { useI18n } from '@/lib/i18n/provider';
+import { translateRole } from '@/lib/i18n/helpers';
 
 type Tab = 'roles' | 'logs' | 'config' | 'integrations';
 type RoleKey = 'admin' | 'mod' | 'support';
 
-type Perm = { id: string; label: string; defaultOn: boolean; locked?: boolean };
+type Perm = { id: string; labelKey: string; defaultOn: boolean; locked?: boolean };
 
 const ADMIN_PERMS: Perm[] = [
-  { id: 'adm-dashboard', label: 'Accéder au tableau de bord', defaultOn: true },
-  { id: 'adm-export', label: 'Exporter les KPI du dashboard', defaultOn: true },
-  { id: 'adm-moderate', label: 'Modérer un signalement', defaultOn: true },
-  { id: 'adm-block', label: 'Bloquer un utilisateur', defaultOn: true },
-  { id: 'adm-softdelete', label: 'Supprimer un utilisateur (soft-delete)', defaultOn: true },
-  { id: 'adm-members', label: 'Ajouter / modifier un membre', defaultOn: true },
-  { id: 'adm-announce', label: 'Publier une annonce', defaultOn: true },
-  { id: 'adm-assistant', label: "Superviser l'Assistant", defaultOn: true },
-  { id: 'adm-role', label: "Changer le rôle d'un membre", defaultOn: false, locked: true },
-  { id: 'adm-harddelete', label: 'Purger un utilisateur (hard-delete)', defaultOn: false, locked: true },
-  { id: 'adm-integrations', label: 'Modifier les intégrations', defaultOn: false, locked: true },
-  { id: 'adm-permissions', label: 'Modifier la matrice des permissions', defaultOn: false, locked: true },
-  { id: 'adm-platform', label: 'Configurer les paramètres globaux', defaultOn: false, locked: true },
+  { id: 'adm-dashboard', labelKey: 'admin.perm.adm.dashboard', defaultOn: true },
+  { id: 'adm-export', labelKey: 'admin.perm.adm.export', defaultOn: true },
+  { id: 'adm-moderate', labelKey: 'admin.perm.adm.moderate', defaultOn: true },
+  { id: 'adm-block', labelKey: 'admin.perm.adm.block', defaultOn: true },
+  { id: 'adm-softdelete', labelKey: 'admin.perm.adm.softdelete', defaultOn: true },
+  { id: 'adm-members', labelKey: 'admin.perm.adm.members', defaultOn: true },
+  { id: 'adm-announce', labelKey: 'admin.perm.adm.announce', defaultOn: true },
+  { id: 'adm-assistant', labelKey: 'admin.perm.adm.assistant', defaultOn: true },
+  { id: 'adm-role', labelKey: 'admin.perm.adm.role', defaultOn: false, locked: true },
+  { id: 'adm-harddelete', labelKey: 'admin.perm.adm.harddelete', defaultOn: false, locked: true },
+  { id: 'adm-integrations', labelKey: 'admin.perm.adm.integrations', defaultOn: false, locked: true },
+  { id: 'adm-permissions', labelKey: 'admin.perm.adm.permissions', defaultOn: false, locked: true },
+  { id: 'adm-platform', labelKey: 'admin.perm.adm.platform', defaultOn: false, locked: true },
 ];
 
 const MOD_PERMS: Perm[] = [
-  { id: 'mod-dashboard', label: 'Accéder au tableau de bord', defaultOn: true },
-  { id: 'mod-moderate', label: 'Modérer un signalement', defaultOn: true },
-  { id: 'mod-users', label: 'Voir la liste des utilisateurs', defaultOn: true },
-  { id: 'mod-reset', label: 'Réinitialiser un mot de passe user', defaultOn: true },
-  { id: 'mod-block', label: 'Bloquer un utilisateur', defaultOn: true },
-  { id: 'mod-export', label: 'Exporter les KPI du dashboard', defaultOn: false },
-  { id: 'mod-delete', label: 'Supprimer un utilisateur', defaultOn: false },
-  { id: 'mod-members', label: 'Ajouter un membre', defaultOn: false },
+  { id: 'mod-dashboard', labelKey: 'admin.perm.mod.dashboard', defaultOn: true },
+  { id: 'mod-moderate', labelKey: 'admin.perm.mod.moderate', defaultOn: true },
+  { id: 'mod-users', labelKey: 'admin.perm.mod.users', defaultOn: true },
+  { id: 'mod-reset', labelKey: 'admin.perm.mod.reset', defaultOn: true },
+  { id: 'mod-block', labelKey: 'admin.perm.mod.block', defaultOn: true },
+  { id: 'mod-export', labelKey: 'admin.perm.mod.export', defaultOn: false },
+  { id: 'mod-delete', labelKey: 'admin.perm.mod.delete', defaultOn: false },
+  { id: 'mod-members', labelKey: 'admin.perm.mod.members', defaultOn: false },
 ];
 
 const SUPPORT_PERMS: Perm[] = [
-  { id: 'sup-dashboard', label: 'Accéder au tableau de bord', defaultOn: true },
-  { id: 'sup-users', label: 'Voir la liste des utilisateurs', defaultOn: true },
-  { id: 'sup-reset', label: 'Réinitialiser un mot de passe user', defaultOn: true },
-  { id: 'sup-chat', label: 'Répondre aux conversations Assistant', defaultOn: true },
-  { id: 'sup-moderate', label: 'Modérer un signalement', defaultOn: false },
-  { id: 'sup-block', label: 'Bloquer un utilisateur', defaultOn: false },
+  { id: 'sup-dashboard', labelKey: 'admin.perm.sup.dashboard', defaultOn: true },
+  { id: 'sup-users', labelKey: 'admin.perm.sup.users', defaultOn: true },
+  { id: 'sup-reset', labelKey: 'admin.perm.sup.reset', defaultOn: true },
+  { id: 'sup-chat', labelKey: 'admin.perm.sup.chat', defaultOn: true },
+  { id: 'sup-moderate', labelKey: 'admin.perm.sup.moderate', defaultOn: false },
+  { id: 'sup-block', labelKey: 'admin.perm.sup.block', defaultOn: false },
 ];
 
 const ALL_PERMS: Record<RoleKey, Perm[]> = {
@@ -134,6 +136,7 @@ const INITIAL_CONFIG: PlatformConfig = {
 };
 
 export default function Page() {
+  const { t } = useI18n();
   const [tab, setTab] = useState<Tab>('roles');
   const [perms, setPerms] = useState<PermState>(initialState);
   const [savedPerms, setSavedPerms] = useState<PermState>(initialState);
@@ -182,12 +185,12 @@ export default function Page() {
   const savePerms = () => {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(perms));
     setSavedPerms(perms);
-    showFlash('Matrice des permissions enregistrée');
+    showFlash(t('admin.flash.permsSaved'));
   };
   const saveConfig = () => {
     window.localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
     setSavedConfig(config);
-    showFlash('Configuration plateforme enregistrée');
+    showFlash(t('admin.flash.configSaved'));
   };
   const resetPerms = () => setPerms(savedPerms);
   const resetConfig = () => setConfig(savedConfig);
@@ -204,7 +207,7 @@ export default function Page() {
   const syncIntegration = (id: string) => {
     const it = integrations.find((i) => i.id === id);
     if (!it) return;
-    showFlash(`« ${it.name} » synchronisée`);
+    showFlash(t('admin.flash.syncDone', { name: it.name }));
   };
 
   const filteredLogs = useMemo(() => {
@@ -232,7 +235,9 @@ export default function Page() {
   return (
     <div>
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
-        <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">Administration</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">
+          {t('page.administration.title')}
+        </h1>
         <div className="flex items-center gap-2">
           {dirty && (
             <button
@@ -241,7 +246,7 @@ export default function Page() {
               className="inline-flex items-center gap-1.5 rounded-pill border border-gray-200 bg-white text-brand-navy px-4 py-2 text-sm font-medium hover:border-brand-blue transition-colors"
             >
               <X className="h-4 w-4" aria-hidden />
-              Annuler
+              {t('admin.cancel')}
             </button>
           )}
           <button
@@ -251,7 +256,7 @@ export default function Page() {
             className="inline-flex items-center gap-1.5 rounded-pill bg-green-500 hover:bg-green-700 text-white px-5 py-2 text-sm font-semibold shadow-glow-green disabled:opacity-60 disabled:cursor-not-allowed transition-all"
           >
             <CheckCircle2 className="h-4 w-4" aria-hidden />
-            Enregistrer les modifications
+            {t('admin.saveChanges')}
           </button>
         </div>
       </div>
@@ -267,27 +272,27 @@ export default function Page() {
 
       <nav role="tablist" className="flex flex-wrap gap-2 mb-8">
         {([
-          { id: 'roles', label: 'Rôles & permissions', Icon: ShieldCheck },
-          { id: 'logs', label: "Logs d'audit", Icon: FileText },
-          { id: 'config', label: 'Configuration plateforme', Icon: Settings2 },
-          { id: 'integrations', label: 'Intégrations', Icon: Plug },
-        ] as const).map((t) => {
-          const on = t.id === tab;
+          { id: 'roles', labelKey: 'admin.tab.roles', Icon: ShieldCheck },
+          { id: 'logs', labelKey: 'admin.tab.logs', Icon: FileText },
+          { id: 'config', labelKey: 'admin.tab.config', Icon: Settings2 },
+          { id: 'integrations', labelKey: 'admin.tab.integrations', Icon: Plug },
+        ] as const).map((item) => {
+          const on = item.id === tab;
           return (
             <button
-              key={t.id}
+              key={item.id}
               type="button"
               role="tab"
               aria-selected={on}
-              onClick={() => setTab(t.id)}
+              onClick={() => setTab(item.id)}
               className={
                 on
                   ? 'inline-flex items-center gap-1.5 rounded-pill bg-grad-stat-navy text-white px-5 py-2 text-sm font-semibold shadow-glow-navy'
                   : 'inline-flex items-center gap-1.5 rounded-pill bg-brand-sky/60 text-brand-navy px-5 py-2 text-sm font-medium hover:bg-brand-sky transition-colors'
               }
             >
-              <t.Icon className="h-3.5 w-3.5" aria-hidden />
-              {t.label}
+              <item.Icon className="h-3.5 w-3.5" aria-hidden />
+              {t(item.labelKey)}
             </button>
           );
         })}
@@ -299,11 +304,11 @@ export default function Page() {
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div className="flex items-center gap-2">
                 <ShieldCheck className="h-5 w-5" aria-hidden />
-                <span className="font-semibold">Super-admin</span>
-                <span className="text-xs bg-white/20 rounded-full px-2 py-0.5">1-2 personnes max</span>
+                <span className="font-semibold">{t('role.superadmin')}</span>
+                <span className="text-xs bg-white/20 rounded-full px-2 py-0.5">{t('admin.superadmin.maxPersons')}</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs opacity-90">Tous les accès activés</span>
+                <span className="text-xs opacity-90">{t('admin.superadmin.allAccess')}</span>
                 <span
                   role="switch"
                   aria-checked="true"
@@ -314,18 +319,16 @@ export default function Page() {
                 </span>
               </div>
             </div>
-            <p className="mt-2 text-xs opacity-90">
-              Rôle figé — non désactivable. Exclusif aux propriétaire / CTO (garde-fou opérationnel).
-            </p>
+            <p className="mt-2 text-xs opacity-90">{t('admin.superadmin.note')}</p>
           </section>
 
           {(
             [
-              ['admin', 'Admin', ADMIN_PERMS],
-              ['mod', 'Modérateur', MOD_PERMS],
-              ['support', 'Support', SUPPORT_PERMS],
+              ['admin', 'admin', ADMIN_PERMS],
+              ['mod', 'moderateur', MOD_PERMS],
+              ['support', 'support', SUPPORT_PERMS],
             ] as const
-          ).map(([key, title, list]) => (
+          ).map(([key, roleId, list]) => (
             <section
               key={key}
               className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6"
@@ -333,17 +336,20 @@ export default function Page() {
               <div className="flex items-center justify-between flex-wrap gap-3 mb-5">
                 <span className="inline-flex items-center gap-2 rounded-pill bg-yellow-100 text-yellow-700 px-4 py-1.5 text-sm font-semibold">
                   <ShieldCheck className="h-4 w-4" aria-hidden />
-                  {title}
+                  {translateRole(t, roleId)}
                 </span>
                 <span className="text-xs text-gray-500">
-                  {list.filter((p) => perms[p.id]).length} / {list.length} permissions
+                  {t('admin.permsCount', {
+                    on: list.filter((p) => perms[p.id]).length,
+                    total: list.length,
+                  })}
                 </span>
               </div>
               <div className="grid gap-2 sm:grid-cols-2">
                 {list.map((p) => (
                   <PermissionToggle
                     key={p.id}
-                    label={p.label}
+                    label={t(p.labelKey)}
                     locked={p.locked}
                     checked={!!perms[p.id]}
                     onChange={(v) => setPerms((prev) => ({ ...prev, [p.id]: v }))}
@@ -361,7 +367,7 @@ export default function Page() {
             <div className="flex flex-wrap gap-2">
               {(['all', 'low', 'medium', 'high'] as const).map((s) => {
                 const active = logSeverity === s;
-                const label = { all: 'Tous', low: 'Info', medium: 'Moyenne', high: 'Critique' }[s];
+                const labelKey = { all: 'admin.logs.all', low: 'admin.logs.low', medium: 'admin.logs.medium', high: 'admin.logs.high' }[s];
                 return (
                   <button
                     key={s}
@@ -374,7 +380,7 @@ export default function Page() {
                         : 'inline-flex items-center rounded-pill border border-gray-200 text-brand-navy px-4 py-1.5 text-xs font-medium hover:border-brand-blue'
                     }
                   >
-                    {label}
+                    {t(labelKey)}
                   </button>
                 );
               })}
@@ -388,7 +394,7 @@ export default function Page() {
                 type="search"
                 value={logQuery}
                 onChange={(e) => setLogQuery(e.target.value)}
-                placeholder="Rechercher (auteur, action, cible)…"
+                placeholder={t('admin.logs.search')}
                 className="w-full rounded-pill bg-gray-50 border border-gray-200 pl-9 pr-3 py-1.5 text-xs text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue"
               />
             </div>
@@ -397,25 +403,27 @@ export default function Page() {
             <table className="min-w-full text-sm">
               <thead className="bg-gray-50 text-gray-500 border-b border-gray-200 text-xs uppercase tracking-wide">
                 <tr>
-                  <th className="px-4 py-3 text-left font-semibold">Date</th>
-                  <th className="px-4 py-3 text-left font-semibold">Auteur</th>
-                  <th className="px-4 py-3 text-left font-semibold">Action</th>
-                  <th className="px-4 py-3 text-left font-semibold">Cible</th>
-                  <th className="px-4 py-3 text-left font-semibold">Sévérité</th>
+                  <th className="px-4 py-3 text-left font-semibold">{t('admin.logs.col.date')}</th>
+                  <th className="px-4 py-3 text-left font-semibold">{t('admin.logs.col.author')}</th>
+                  <th className="px-4 py-3 text-left font-semibold">{t('admin.logs.col.action')}</th>
+                  <th className="px-4 py-3 text-left font-semibold">{t('admin.logs.col.target')}</th>
+                  <th className="px-4 py-3 text-left font-semibold">{t('admin.logs.col.severity')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {filteredLogs.length === 0 && (
                   <tr>
                     <td colSpan={5} className="px-5 py-10 text-center text-sm text-gray-400">
-                      Aucun log ne correspond à vos critères.
+                      {t('admin.logs.empty')}
                     </td>
                   </tr>
                 )}
                 {filteredLogs.map((l, i) => (
                   <tr key={i} className="hover:bg-gray-50/60">
                     <td className="px-4 py-3 text-gray-500 whitespace-nowrap text-xs">{l.dt}</td>
-                    <td className="px-4 py-3 text-brand-navy font-medium">{l.who}</td>
+                    <td className="px-4 py-3 text-brand-navy font-medium">
+                      {l.who === 'système' ? t('admin.logs.author.system') : l.who}
+                    </td>
                     <td className="px-4 py-3">
                       <code className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-[11px]">
                         {l.action}
@@ -434,10 +442,10 @@ export default function Page() {
                       >
                         {l.severity === 'high' && <AlertTriangle className="h-3 w-3" />}
                         {l.severity === 'high'
-                          ? 'Critique'
+                          ? t('admin.logs.high')
                           : l.severity === 'medium'
-                            ? 'Moyenne'
-                            : 'Info'}
+                            ? t('admin.logs.medium')
+                            : t('admin.logs.low')}
                       </span>
                     </td>
                   </tr>
@@ -446,7 +454,9 @@ export default function Page() {
             </table>
           </div>
           <div className="px-5 py-3 border-t border-gray-100 text-xs text-gray-500">
-            {filteredLogs.length} entrée{filteredLogs.length > 1 ? 's' : ''}
+            {t(filteredLogs.length > 1 ? 'admin.logs.count.other' : 'admin.logs.count.one', {
+              count: filteredLogs.length,
+            })}
           </div>
         </section>
       )}
@@ -455,17 +465,17 @@ export default function Page() {
         <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6 space-y-6">
           <div className="grid gap-4 sm:grid-cols-2">
             <PermissionToggle
-              label="Mode maintenance (bandeau global + écritures désactivées)"
+              label={t('admin.config.maintenance')}
               checked={config.maintenance}
               onChange={(v) => setConfig((c) => ({ ...c, maintenance: v }))}
             />
             <PermissionToggle
-              label="Recherche publique ouverte"
+              label={t('admin.config.publicSearch')}
               checked={config.publicSearch}
               onChange={(v) => setConfig((c) => ({ ...c, publicSearch: v }))}
             />
             <PermissionToggle
-              label="Inscriptions ouvertes"
+              label={t('admin.config.registrationsOpen')}
               checked={config.registrationsOpen}
               onChange={(v) => setConfig((c) => ({ ...c, registrationsOpen: v }))}
             />
@@ -473,24 +483,22 @@ export default function Page() {
 
           <div>
             <label className="block text-xs font-semibold text-brand-navy mb-1.5">
-              Bandeau d&apos;annonce global
+              {t('admin.config.bannerLabel')}
             </label>
             <input
               type="text"
               value={config.banner}
               onChange={(e) => setConfig((c) => ({ ...c, banner: e.target.value }))}
-              placeholder="Ex. : Nouvelle règle de publication en vigueur dès le 01/05."
+              placeholder={t('admin.config.bannerPlaceholder')}
               className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-brand-navy focus:outline-none focus:border-brand-blue"
             />
-            <p className="mt-1 text-xs text-gray-400">
-              Laisser vide pour masquer le bandeau.
-            </p>
+            <p className="mt-1 text-xs text-gray-400">{t('admin.config.bannerHint')}</p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <label className="block text-xs font-semibold text-brand-navy mb-1.5">
-                Taille max d&apos;upload (Mo)
+                {t('admin.config.maxUpload')}
               </label>
               <input
                 type="number"
@@ -505,7 +513,7 @@ export default function Page() {
             </div>
             <div>
               <label className="block text-xs font-semibold text-brand-navy mb-1.5">
-                Durée de session JWT (minutes)
+                {t('admin.config.sessionMinutes')}
               </label>
               <input
                 type="number"
@@ -520,10 +528,7 @@ export default function Page() {
             </div>
           </div>
 
-          <p className="text-xs text-gray-400">
-            💡 Les modifications sont enregistrées localement pour prévisualisation. Cliquez sur
-            « Enregistrer les modifications » en haut.
-          </p>
+          <p className="text-xs text-gray-400">{t('admin.config.previewNote')}</p>
         </section>
       )}
 
@@ -554,7 +559,11 @@ export default function Page() {
                   {i.status === 'ok' && <Check className="h-3 w-3" />}
                   {i.status === 'warn' && <AlertTriangle className="h-3 w-3" />}
                   {i.status === 'off' && <X className="h-3 w-3" />}
-                  {i.status === 'ok' ? 'OK' : i.status === 'warn' ? 'Attention' : 'Désactivée'}
+                  {i.status === 'ok'
+                    ? t('admin.integration.status.ok')
+                    : i.status === 'warn'
+                      ? t('admin.integration.status.warn')
+                      : t('admin.integration.status.off')}
                 </span>
               </div>
               <div className="flex items-center justify-between gap-2 mt-auto">
@@ -565,7 +574,7 @@ export default function Page() {
                   className="inline-flex items-center gap-1.5 rounded-pill border border-gray-200 text-brand-navy px-3 py-1.5 text-xs font-medium hover:border-brand-blue disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                 >
                   <Plug className="h-3.5 w-3.5" aria-hidden />
-                  Synchroniser
+                  {t('admin.integration.sync')}
                 </button>
                 <button
                   type="button"

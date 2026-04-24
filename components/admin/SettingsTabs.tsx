@@ -359,7 +359,7 @@ export function SettingsTabs() {
       <h1 className="text-2xl md:text-3xl font-bold text-brand-navy mb-6">
         {t('page.parametres.title')}
       </h1>
-      <div role="tablist" aria-label="Sections" className="flex flex-wrap gap-2 mb-8">
+      <div role="tablist" aria-label={t('settings.sectionsAria')} className="flex flex-wrap gap-2 mb-8">
         {TABS.map((tab) => {
           const on = tab.id === active;
           return (

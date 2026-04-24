@@ -16,6 +16,7 @@ import {
   Clock,
   Plus,
   Trash2,
+  ChevronDown,
 } from 'lucide-react';
 import { loadGroups, type UserGroup } from '@/lib/groups';
 import { INITIAL_USERS } from '@/lib/mock/utilisateurs';
@@ -266,26 +267,22 @@ export function NewCampaignModal({ open, templates, onClose, onSubmit }: Props) 
               <UsersIcon className="inline h-3 w-3 mr-1" aria-hidden />
               2. Audience — groupe d&apos;utilisateurs
             </label>
-            <div className="grid gap-2 sm:grid-cols-2">
-              {audienceOptions.map((opt) => {
-                const on = audience === opt.id;
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    onClick={() => setAudience(opt.id)}
-                    aria-pressed={on}
-                    className={
-                      on
-                        ? 'flex items-center justify-between gap-2 rounded-xl border-2 border-brand-blue bg-brand-sky/30 px-3 py-2 text-sm text-brand-navy text-left'
-                        : 'flex items-center justify-between gap-2 rounded-xl border-2 border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy text-left hover:border-gray-300'
-                    }
-                  >
-                    <span className="font-semibold truncate">{opt.label}</span>
-                    <span className="text-xs text-gray-500 whitespace-nowrap">{opt.count}</span>
-                  </button>
-                );
-              })}
+            <div className="relative">
+              <select
+                value={audience}
+                onChange={(e) => setAudience(e.target.value)}
+                className="w-full appearance-none rounded-xl border border-gray-200 bg-white px-4 py-2.5 pr-10 text-sm text-brand-navy font-medium focus:outline-none focus:border-brand-blue cursor-pointer"
+              >
+                {audienceOptions.map((opt) => (
+                  <option key={opt.id} value={opt.id}>
+                    {opt.label} ({opt.count})
+                  </option>
+                ))}
+              </select>
+              <ChevronDown
+                className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+                aria-hidden
+              />
             </div>
             {groups.length === 0 && (
               <p className="mt-2 text-[11px] text-gray-500">
@@ -342,28 +339,23 @@ export function NewCampaignModal({ open, templates, onClose, onSubmit }: Props) 
                 </span>
               </div>
             ) : (
-              <div className="grid gap-2 sm:grid-cols-2">
-                {filteredTemplates.map((t) => {
-                  const on = templateId === t.id;
-                  return (
-                    <button
-                      key={t.id}
-                      type="button"
-                      onClick={() => setTemplateId(t.id)}
-                      aria-pressed={on}
-                      className={
-                        on
-                          ? 'rounded-xl border-2 border-brand-blue bg-brand-sky/30 p-3 text-left'
-                          : 'rounded-xl border-2 border-gray-200 bg-white p-3 text-left hover:border-gray-300'
-                      }
-                    >
-                      <p className="text-sm font-semibold text-brand-navy">{t.name}</p>
-                      <p className="mt-1 text-[11px] text-gray-500">
-                        {t.language} · {t.channel}
-                      </p>
-                    </button>
-                  );
-                })}
+              <div className="relative">
+                <select
+                  value={templateId}
+                  onChange={(e) => setTemplateId(e.target.value)}
+                  className="w-full appearance-none rounded-xl border border-gray-200 bg-white px-4 py-2.5 pr-10 text-sm text-brand-navy font-medium focus:outline-none focus:border-brand-blue cursor-pointer"
+                >
+                  <option value="">— Choisir un modèle —</option>
+                  {filteredTemplates.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.name} ({t.language} · {t.channel})
+                    </option>
+                  ))}
+                </select>
+                <ChevronDown
+                  className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 pointer-events-none"
+                  aria-hidden
+                />
               </div>
             )}
           </div>

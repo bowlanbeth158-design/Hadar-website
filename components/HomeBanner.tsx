@@ -1,13 +1,5 @@
 import Link from 'next/link';
-import {
-  ShieldCheck,
-  Siren,
-  Sparkles,
-  Phone,
-  Star,
-  TrendingUp,
-  XCircle,
-} from 'lucide-react';
+import { ShieldCheck, Siren, Sparkles, Phone, Star, XCircle } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
 
 // URL postimg de la photo ambassadeur Hadar (Gemini + fond transparent via remove.bg)
@@ -66,10 +58,6 @@ export function HomeBanner() {
           {/* Stat callout */}
           <div className="mt-8 flex items-baseline gap-3">
             <span className="text-4xl md:text-5xl font-bold text-brand-navy">3 247</span>
-            <span className="inline-flex items-center gap-1 rounded-pill bg-green-100 text-green-700 px-2 py-1 text-xs font-bold">
-              <TrendingUp className="h-3 w-3" aria-hidden />
-              +18%
-            </span>
           </div>
           <p className="mt-1 text-sm text-gray-500">vérifications utiles ce mois-ci.</p>
 

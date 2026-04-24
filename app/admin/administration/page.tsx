@@ -1317,16 +1317,67 @@ export default function Page() {
               <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-2">
                 {t('brand.seo.preview')}
               </p>
-              <div className="rounded-xl border border-gray-200 bg-white p-4 max-w-xl">
-                <p className="text-[11px] text-gray-400 truncate">
-                  {config.seoCanonicalUrl || 'https://hadar.ma'}
-                </p>
-                <p className="text-base text-blue-700 font-semibold mt-1 line-clamp-1">
-                  {config.seoTitle || config.siteName}
-                </p>
-                <p className="text-xs text-gray-600 mt-1 line-clamp-2">
-                  {config.seoDescription || config.siteTagline}
-                </p>
+              <div className="grid gap-4 lg:grid-cols-2">
+                <div>
+                  <p className="text-[10px] font-medium text-gray-500 mb-1.5 inline-flex items-center gap-1">
+                    <Search className="h-3 w-3" aria-hidden />
+                    {t('brand.seo.preview.google')}
+                  </p>
+                  <div className="rounded-xl border border-gray-200 bg-white p-4">
+                    <p className="text-[11px] text-gray-400 truncate">
+                      {config.seoCanonicalUrl || 'https://hadar.ma'}
+                    </p>
+                    <p className="text-base text-blue-700 font-semibold mt-1 line-clamp-1">
+                      {config.seoTitle || config.siteName}
+                    </p>
+                    <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                      {config.seoDescription || config.siteTagline}
+                    </p>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-[10px] font-medium text-gray-500 mb-1.5 inline-flex items-center gap-1">
+                    <ImageIcon className="h-3 w-3" aria-hidden />
+                    {t('brand.seo.preview.social')}
+                  </p>
+                  <div className="rounded-xl border border-gray-200 bg-white overflow-hidden">
+                    {config.brandOgImage ? (
+                      /* eslint-disable-next-line @next/next/no-img-element */
+                      <img
+                        src={config.brandOgImage}
+                        alt=""
+                        className="w-full aspect-[1200/630] object-cover bg-gray-100"
+                      />
+                    ) : (
+                      <div className="w-full aspect-[1200/630] bg-gray-100 flex items-center justify-center text-gray-400">
+                        <div className="text-center">
+                          <ImageIcon className="h-8 w-8 mx-auto opacity-40" aria-hidden />
+                          <p className="mt-1 text-[10px]">{t('brand.seo.preview.ogPlaceholder')}</p>
+                        </div>
+                      </div>
+                    )}
+                    <div className="px-3 py-2 bg-gray-50 border-t border-gray-200">
+                      <p className="text-[10px] uppercase text-gray-400 tracking-wide truncate">
+                        {(() => {
+                          try {
+                            return new URL(config.seoCanonicalUrl || 'https://hadar.ma').hostname;
+                          } catch {
+                            return 'hadar.ma';
+                          }
+                        })()}
+                      </p>
+                      <p className="text-sm font-semibold text-brand-navy mt-0.5 line-clamp-2">
+                        {config.seoTitle || config.siteName}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">
+                        {config.seoDescription || config.siteTagline}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="mt-1.5 text-[10px] text-gray-400">
+                    {t('brand.seo.preview.socialHint')}
+                  </p>
+                </div>
               </div>
             </div>
 

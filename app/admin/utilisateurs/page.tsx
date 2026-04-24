@@ -530,7 +530,7 @@ export default function Page() {
               {filterOpen && (
                 <div
                   role="menu"
-                  className="absolute left-0 top-full mt-2 w-44 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-20 py-1"
+                  className="absolute left-0 rtl:left-auto rtl:right-0 top-full mt-2 w-44 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-20 py-1"
                 >
                   <p className="px-3 py-2 text-[10px] font-semibold uppercase tracking-wide text-gray-400 border-b border-gray-100">
                     {t('users.perPage')}
@@ -599,7 +599,7 @@ export default function Page() {
               {groupMenuOpen && (
                 <div
                   role="menu"
-                  className="absolute left-0 top-full mt-2 w-56 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-20 py-1 max-h-72 overflow-y-auto"
+                  className="absolute left-0 rtl:left-auto rtl:right-0 top-full mt-2 w-56 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-20 py-1 max-h-72 overflow-y-auto"
                 >
                   <button
                     type="button"
@@ -702,7 +702,7 @@ export default function Page() {
               {monthMenuOpen && (
                 <div
                   role="menu"
-                  className="absolute left-0 top-full mt-2 w-52 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-20 py-1 max-h-72 overflow-y-auto"
+                  className="absolute left-0 rtl:left-auto rtl:right-0 top-full mt-2 w-52 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-20 py-1 max-h-72 overflow-y-auto"
                 >
                   <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
                     {t('users.filter.monthSignup')}
@@ -785,7 +785,7 @@ export default function Page() {
               {actionsOpen && (
                 <div
                   role="menu"
-                  className="absolute left-0 top-full mt-2 w-60 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-20 py-1"
+                  className="absolute left-0 rtl:left-auto rtl:right-0 top-full mt-2 w-60 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-20 py-1"
                 >
                   <button
                     type="button"

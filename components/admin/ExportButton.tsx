@@ -140,7 +140,7 @@ export function ExportButton({ filename, getRows, label }: Props) {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-full mt-2 w-64 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-30 py-1"
+          className="absolute right-0 rtl:right-auto rtl:left-0 top-full mt-2 w-64 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-30 py-1"
         >
           <button
             type="button"
@@ -187,7 +187,7 @@ export function ExportButton({ filename, getRows, label }: Props) {
       {toast && (
         <div
           role="status"
-          className="absolute right-0 top-full mt-2 z-20 rounded-xl bg-brand-navy text-white px-4 py-2 text-xs font-medium shadow-glow-navy whitespace-nowrap flex items-center gap-2"
+          className="absolute right-0 rtl:right-auto rtl:left-0 top-full mt-2 z-20 rounded-xl bg-brand-navy text-white px-4 py-2 text-xs font-medium shadow-glow-navy whitespace-nowrap flex items-center gap-2"
         >
           <Check className="h-3.5 w-3.5 text-green-400" aria-hidden />
           {toast}

@@ -174,7 +174,7 @@ function CampaignRowMenu({
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-full mt-2 w-44 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-20 py-1"
+          className="absolute right-0 rtl:right-auto rtl:left-0 top-full mt-2 w-44 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-20 py-1"
         >
           {items.map((it) => (
             <button

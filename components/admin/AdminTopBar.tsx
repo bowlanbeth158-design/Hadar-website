@@ -280,7 +280,7 @@ export function AdminTopBar() {
           )}
         </div>
 
-        <div className="flex items-center gap-2 ml-auto">
+        <div className="flex items-center gap-2 ml-auto rtl:ml-0 rtl:mr-auto">
           <div ref={msgRef} className="relative">
             <button
               type="button"
@@ -304,7 +304,7 @@ export function AdminTopBar() {
             {msgOpen && (
               <div
                 role="menu"
-                className="absolute right-0 top-full mt-2 w-[22rem] rounded-2xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-30"
+                className="absolute right-0 rtl:right-auto rtl:left-0 top-full mt-2 w-[22rem] rounded-2xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-30"
               >
                 <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
                   <p className="text-sm font-semibold text-brand-navy">{t('topbar.messagesTitle')}</p>
@@ -378,7 +378,7 @@ export function AdminTopBar() {
             {notifOpen && (
               <div
                 role="menu"
-                className="absolute right-0 top-full mt-2 w-[22rem] rounded-2xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-30"
+                className="absolute right-0 rtl:right-auto rtl:left-0 top-full mt-2 w-[22rem] rounded-2xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-30"
               >
                 <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
                   <p className="text-sm font-semibold text-brand-navy">
@@ -450,7 +450,7 @@ export function AdminTopBar() {
             {menuOpen && (
               <div
                 role="menu"
-                className="absolute right-0 top-full mt-2 w-56 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-30 py-1"
+                className="absolute right-0 rtl:right-auto rtl:left-0 top-full mt-2 w-56 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-30 py-1"
               >
                 <div className="px-4 py-3 border-b border-gray-100">
                   <p className="text-sm font-semibold text-brand-navy">{t('topbar.myAccountHeader')}</p>

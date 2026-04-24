@@ -215,7 +215,7 @@ export default function Page() {
               {filtersOpen && (
                 <div
                   role="menu"
-                  className="absolute left-0 top-full mt-2 w-64 rounded-xl bg-white border border-gray-200 shadow-glow-navy z-20 p-4"
+                  className="absolute left-0 rtl:left-auto rtl:right-0 top-full mt-2 w-64 rounded-xl bg-white border border-gray-200 shadow-glow-navy z-20 p-4"
                 >
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-2">
                     {t('membres.field.role')}
@@ -289,7 +289,7 @@ export default function Page() {
               {pageSizeOpen && (
                 <div
                   role="menu"
-                  className="absolute left-0 top-full mt-2 w-56 rounded-xl bg-white border border-gray-200 shadow-glow-navy z-20 py-2"
+                  className="absolute left-0 rtl:left-auto rtl:right-0 top-full mt-2 w-56 rounded-xl bg-white border border-gray-200 shadow-glow-navy z-20 py-2"
                 >
                   <p className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
                     {t('membres.perPage')}

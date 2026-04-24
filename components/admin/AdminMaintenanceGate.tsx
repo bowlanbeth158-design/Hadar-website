@@ -4,19 +4,29 @@ import { useEffect, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { ArrowLeft, Coffee, Rocket, Wrench } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/provider';
-import type {
-  MaintenancePageId,
-  MaintenancePreset,
+import {
+  MAINTENANCE_PATH_MATCHERS,
+  PLATFORM_CONFIG_EVENT,
+  PLATFORM_CONFIG_KEY,
+  type MaintenancePageId,
+  type MaintenancePreset,
 } from '@/lib/admin-config';
 
-const CONFIG_KEY = 'hadar:admin:platform-config';
-const CONFIG_EVENT = 'hadar:config-updated';
+const CONFIG_KEY = PLATFORM_CONFIG_KEY;
+const CONFIG_EVENT = PLATFORM_CONFIG_EVENT;
+
+export type MaintenanceCardTexts = {
+  title: string;
+  desc: string;
+  back: string;
+};
 
 type MaintenanceCardProps = {
   preset: MaintenancePreset;
   message?: string;
   image?: string;
   onBack?: () => void;
+  texts?: MaintenanceCardTexts;
 };
 
 type MaintenanceState = {
@@ -46,18 +56,8 @@ function readConfig(): MaintenanceState | null {
   }
 }
 
-const PAGE_MATCHERS: Record<MaintenancePageId, (p: string) => boolean> = {
-  dashboard: (p) => p === '/admin',
-  signalements: (p) => p === '/admin/signalements' || p.startsWith('/admin/signalements/'),
-  membres: (p) => p === '/admin/membres' || p.startsWith('/admin/membres/'),
-  utilisateurs: (p) => p === '/admin/utilisateurs' || p.startsWith('/admin/utilisateurs/'),
-  statistiques: (p) => p === '/admin/statistiques' || p.startsWith('/admin/statistiques/'),
-  annonces: (p) => p === '/admin/annonces' || p.startsWith('/admin/annonces/'),
-  assistant: (p) => p === '/admin/assistant' || p.startsWith('/admin/assistant/'),
-};
-
 function pathInMaintenance(pathname: string, pages: MaintenancePageId[]): boolean {
-  return pages.some((id) => PAGE_MATCHERS[id](pathname));
+  return pages.some((id) => MAINTENANCE_PATH_MATCHERS[id]?.(pathname));
 }
 
 const PRESET_META: Record<
@@ -84,9 +84,13 @@ const PRESET_META: Record<
   },
 };
 
-export function MaintenanceCard({ preset, message, image, onBack }: MaintenanceCardProps) {
+export function MaintenanceCard({ preset, message, image, onBack, texts }: MaintenanceCardProps) {
   const { t } = useI18n();
   const meta = PRESET_META[preset] ?? PRESET_META['short-break'];
+
+  const title = texts?.title ?? t(meta.titleKey);
+  const desc = message?.trim() ? message : texts?.desc ?? t(meta.descKey);
+  const backLabel = texts?.back ?? t('common.back');
 
   return (
     <div className="flex items-center justify-center py-6">
@@ -96,12 +100,8 @@ export function MaintenanceCard({ preset, message, image, onBack }: MaintenanceC
           <div className={`inline-flex h-16 w-16 rounded-full bg-gradient-to-br ${meta.accent} items-center justify-center text-white shadow-glow-navy mb-4`}>
             <meta.Icon className="h-7 w-7" aria-hidden />
           </div>
-          <h2 className="text-2xl md:text-3xl font-bold text-brand-navy">
-            {t(meta.titleKey)}
-          </h2>
-          <p className="mt-3 text-sm text-gray-600 max-w-md mx-auto whitespace-pre-wrap">
-            {message?.trim() ? message : t(meta.descKey)}
-          </p>
+          <h2 className="text-2xl md:text-3xl font-bold text-brand-navy">{title}</h2>
+          <p className="mt-3 text-sm text-gray-600 max-w-md mx-auto whitespace-pre-wrap">{desc}</p>
           {image && (
             <div className="mt-6 flex justify-center">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -119,7 +119,7 @@ export function MaintenanceCard({ preset, message, image, onBack }: MaintenanceC
               className="mt-6 inline-flex items-center gap-1.5 rounded-pill border border-brand-navy text-brand-navy px-4 py-2 text-sm font-semibold hover:bg-brand-navy hover:text-white transition-colors"
             >
               <ArrowLeft className="h-4 w-4 rtl:rotate-180" aria-hidden />
-              {t('common.back')}
+              {backLabel}
             </button>
           )}
         </div>

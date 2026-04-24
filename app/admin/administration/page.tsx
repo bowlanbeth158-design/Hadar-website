@@ -33,7 +33,8 @@ import { useI18n } from '@/lib/i18n/provider';
 import { translateRole } from '@/lib/i18n/helpers';
 import {
   INITIAL_PLATFORM_CONFIG as INITIAL_CONFIG,
-  MAINTENANCE_PAGES,
+  MAINTENANCE_GROUPS,
+  MAINTENANCE_LABEL_KEY,
   MAX_BANNER_MESSAGES as MAX_MESSAGES,
   PLATFORM_CONFIG_KEY as CONFIG_KEY,
   type PlatformConfig,
@@ -580,37 +581,48 @@ export default function Page() {
               <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-2">
                 {t('admin.maintenance.pages')}
               </p>
-              <div className="grid gap-2 sm:grid-cols-2">
-                {MAINTENANCE_PAGES.map((pageId) => {
-                  const on = config.maintenancePages.includes(pageId);
-                  return (
-                    <label
-                      key={pageId}
-                      className={
-                        on
-                          ? 'flex items-center gap-2 rounded-xl border-2 border-orange-400 bg-orange-50 px-3 py-2 text-sm text-brand-navy cursor-pointer transition-colors'
-                          : 'flex items-center gap-2 rounded-xl border-2 border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy cursor-pointer hover:border-gray-300 transition-colors'
-                      }
-                    >
-                      <input
-                        type="checkbox"
-                        checked={on}
-                        onChange={() =>
-                          setConfig((c) => ({
-                            ...c,
-                            maintenancePages: on
-                              ? c.maintenancePages.filter((x) => x !== pageId)
-                              : [...c.maintenancePages, pageId],
-                          }))
-                        }
-                        className="accent-orange-500"
-                      />
-                      <span className="font-medium">{t(`sidebar.${pageId}`)}</span>
-                    </label>
-                  );
-                })}
+              <div className="space-y-4">
+                {MAINTENANCE_GROUPS.map((group) => (
+                  <div key={group.labelKey}>
+                    <p className="text-[11px] font-semibold text-brand-navy/70 mb-2">
+                      {t(group.labelKey)}
+                    </p>
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      {group.ids.map((pageId) => {
+                        const on = config.maintenancePages.includes(pageId);
+                        return (
+                          <label
+                            key={pageId}
+                            className={
+                              on
+                                ? 'flex items-center gap-2 rounded-xl border-2 border-orange-400 bg-orange-50 px-3 py-2 text-sm text-brand-navy cursor-pointer transition-colors'
+                                : 'flex items-center gap-2 rounded-xl border-2 border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy cursor-pointer hover:border-gray-300 transition-colors'
+                            }
+                          >
+                            <input
+                              type="checkbox"
+                              checked={on}
+                              onChange={() =>
+                                setConfig((c) => ({
+                                  ...c,
+                                  maintenancePages: on
+                                    ? c.maintenancePages.filter((x) => x !== pageId)
+                                    : [...c.maintenancePages, pageId],
+                                }))
+                              }
+                              className="accent-orange-500"
+                            />
+                            <span className="font-medium">
+                              {t(MAINTENANCE_LABEL_KEY[pageId])}
+                            </span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
               </div>
-              <p className="mt-2 text-[11px] text-gray-500">
+              <p className="mt-3 text-[11px] text-gray-500">
                 {t('admin.maintenance.pagesHint')}
               </p>
             </div>

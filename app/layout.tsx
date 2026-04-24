@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { Poppins, Cairo } from 'next/font/google';
 import './globals.css';
+import { PublicMaintenanceGate } from '@/components/PublicMaintenanceGate';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -48,7 +49,9 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr" dir="ltr" className={`${poppins.variable} ${cairo.variable}`}>
-      <body className="min-h-screen antialiased bg-page-gradient font-sans">{children}</body>
+      <body className="min-h-screen antialiased bg-page-gradient font-sans">
+        <PublicMaintenanceGate>{children}</PublicMaintenanceGate>
+      </body>
     </html>
   );
 }

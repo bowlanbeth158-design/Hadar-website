@@ -4,7 +4,7 @@ import { loadLegal } from '@/lib/loadLegal';
 
 export const metadata: Metadata = {
   title: 'Qui sommes-nous ?',
-  description: "L'équipe, la mission et les valeurs de Hadar.ma.",
+  description: "L'équipe, la mission et les valeurs de Hadar.",
 };
 
 export default async function Page() {

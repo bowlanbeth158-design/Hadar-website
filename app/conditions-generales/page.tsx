@@ -5,7 +5,7 @@ import { loadLegal } from '@/lib/loadLegal';
 export const metadata: Metadata = {
   title: "Conditions générales d'utilisation",
   description:
-    "Conditions générales d'utilisation de la plateforme Hadar.ma — règles d'usage, droits et obligations.",
+    "Conditions générales d'utilisation de la plateforme Hadar — règles d'usage, droits et obligations.",
 };
 
 export default async function Page() {

@@ -11,7 +11,7 @@ export function AuthCard({ title, children, footer }: Props) {
   return (
     <div className="min-h-screen bg-page-gradient flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md rounded-2xl bg-white shadow-glow-navy p-8">
-        <Link href="/" className="flex justify-center mb-6" aria-label="Accueil Hadar.ma">
+        <Link href="/" className="flex justify-center mb-6" aria-label="Accueil Hadar">
           <Logo size="md" />
         </Link>
         <h1 className="text-2xl font-bold text-brand-navy text-center mb-2">{title}</h1>

@@ -5,7 +5,7 @@ import { GoogleIcon } from '@/components/GoogleIcon';
 
 export const metadata: Metadata = {
   title: 'Créer un compte',
-  description: 'Créez un compte Hadar.ma pour signaler et être alerté.',
+  description: 'Créez un compte Hadar pour signaler et être alerté.',
 };
 
 export default function Page() {

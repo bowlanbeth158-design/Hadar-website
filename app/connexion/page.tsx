@@ -4,7 +4,7 @@ import { LoginFormContent } from '@/components/LoginFormContent';
 
 export const metadata: Metadata = {
   title: 'Se connecter',
-  description: 'Connectez-vous à votre compte Hadar.ma.',
+  description: 'Connectez-vous à votre compte Hadar.',
 };
 
 export default function Page() {

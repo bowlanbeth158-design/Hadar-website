@@ -16,7 +16,7 @@ export function Header() {
 
       <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur border-b border-gray-200">
         <nav className="mx-auto max-w-7xl flex items-center justify-between gap-4 px-4 md:px-6 py-3">
-          <Link href="/" aria-label="Retour à l'accueil Hadar.ma" className="shrink-0">
+          <Link href="/" aria-label="Retour à l'accueil Hadar" className="shrink-0">
             <Logo size="md" />
           </Link>
 

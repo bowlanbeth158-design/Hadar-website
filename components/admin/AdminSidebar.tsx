@@ -22,7 +22,7 @@ import { PLATFORM_CONFIG_EVENT, PLATFORM_CONFIG_KEY } from '@/lib/admin-config';
 
 function SidebarBrand() {
   const [customLogo, setCustomLogo] = useState<string | undefined>(undefined);
-  const [siteName, setSiteName] = useState('Hadar.ma');
+  const [siteName, setSiteName] = useState('Hadar');
 
   useEffect(() => {
     const read = () => {

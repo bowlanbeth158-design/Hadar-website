@@ -174,10 +174,10 @@ export const INITIAL_PLATFORM_CONFIG: PlatformConfig = {
   registrationsOpen: true,
   maxUploadMb: 10,
   sessionMinutes: 15,
-  siteName: 'Hadar.ma',
+  siteName: 'Hadar',
   siteTagline: 'Restez vigilant avant toute transaction',
-  siteTitleFormat: '%s · Hadar.ma',
-  seoTitle: 'Hadar.ma — Restez vigilant avant toute transaction',
+  siteTitleFormat: '%s · Hadar',
+  seoTitle: 'Hadar — Restez vigilant avant toute transaction',
   seoDescription:
     'Plateforme marocaine de prévention des fraudes. Vérifiez un numéro, un email, un site web ou un moyen de paiement avant toute transaction.',
   seoKeywords: 'fraude, arnaque, vérification, Maroc, signalement, Hadar',

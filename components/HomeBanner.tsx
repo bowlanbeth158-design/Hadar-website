@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ShieldCheck, Siren, Sparkles, Phone, Star, XCircle } from 'lucide-react';
+import { ShieldCheck, Siren, Sparkles, Search, Users, Zap } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
 
 // URL postimg de la photo ambassadeur Hadar (Gemini + fond transparent via remove.bg)
@@ -103,87 +103,82 @@ export function HomeBanner() {
               className="absolute inset-0 h-full w-full object-contain object-top [mask-image:linear-gradient(to_bottom,black_80%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_80%,transparent_100%)]"
             />
 
-            {/* Card 1 — High risk search result (MID-LEFT, extends outside) */}
+            {/* Card 1 — Search action (MID-LEFT, extends outside) */}
             <div
               className="absolute top-[38%] -left-10 w-64 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 animate-float-soft"
               style={{ animationDelay: '0s' }}
             >
-              <div className="flex items-center justify-between">
-                <span className="inline-flex items-center gap-1.5 rounded-pill bg-red-100 text-red-700 px-2.5 py-1 text-[11px] font-bold">
-                  <XCircle className="h-3 w-3" aria-hidden />
-                  Risque élevé
-                </span>
-                <span className="text-[10px] text-gray-400">il y a 2 min</span>
-              </div>
-              <div className="mt-3 flex items-center gap-2">
-                <Phone className="h-4 w-4 text-gray-400" aria-hidden />
-                <span className="font-semibold text-brand-navy text-sm">+212 6 12 34 56 78</span>
-              </div>
-              <div className="mt-2 flex items-center justify-between">
-                <span className="text-xs text-gray-500">12 signalements</span>
-                <div className="flex items-center gap-0.5">
-                  <span className="h-1.5 w-6 rounded-full bg-red-500" />
-                  <span className="h-1.5 w-6 rounded-full bg-red-500" />
-                  <span className="h-1.5 w-6 rounded-full bg-red-500" />
-                </div>
-              </div>
-            </div>
-
-            {/* Card 2 — Trust / reviews (TOP-RIGHT, small, beside head) */}
-            <div
-              className="absolute top-4 -right-8 w-52 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-3.5 animate-float-soft"
-              style={{ animationDelay: '1.5s' }}
-            >
               <div className="flex items-center gap-2">
-                <div className="flex -space-x-2">
-                  <div className="h-7 w-7 rounded-full bg-grad-stat-violet ring-2 ring-white" />
-                  <div className="h-7 w-7 rounded-full bg-grad-stat-green ring-2 ring-white" />
-                  <div className="h-7 w-7 rounded-full bg-grad-stat-orange ring-2 ring-white" />
-                  <div className="h-7 w-7 rounded-full bg-grad-stat-navy ring-2 ring-white flex items-center justify-center text-[9px] font-bold text-white">
-                    +2k
-                  </div>
+                <div className="h-9 w-9 rounded-full bg-brand-sky flex items-center justify-center">
+                  <Search className="h-4 w-4 text-brand-blue" aria-hidden />
                 </div>
+                <span className="text-[10px] uppercase font-bold text-brand-blue tracking-wide">
+                  Vérification
+                </span>
               </div>
-              <div className="mt-2 flex items-center gap-1 text-yellow-500">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star key={i} className="h-3.5 w-3.5 fill-current" aria-hidden />
-                ))}
-                <span className="ml-1 text-xs font-bold text-brand-navy">4.9</span>
-              </div>
-              <p className="mt-1 text-xs text-gray-500">
-                <span className="font-semibold text-brand-navy">2 000+</span> utilisateurs
-                protégés
+              <p className="mt-3 text-sm font-bold text-brand-navy leading-snug">
+                Vérifiez un numéro, email ou RIB
+              </p>
+              <p className="mt-1 inline-flex items-center gap-1 text-xs text-gray-500">
+                <Zap className="h-3 w-3 text-brand-blue" aria-hidden />
+                Recherche instantanée
               </p>
             </div>
 
-            {/* Card 3 — Comparison / free (BOTTOM-RIGHT, wider, extends right) */}
+            {/* Card 2 — Community / consulted reports (TOP-RIGHT, beside head) */}
+            <div
+              className="absolute top-4 -right-8 w-56 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-3.5 animate-float-soft"
+              style={{ animationDelay: '1.5s' }}
+            >
+              <div className="flex -space-x-2">
+                <div className="h-7 w-7 rounded-full bg-grad-stat-violet ring-2 ring-white" />
+                <div className="h-7 w-7 rounded-full bg-grad-stat-green ring-2 ring-white" />
+                <div className="h-7 w-7 rounded-full bg-grad-stat-orange ring-2 ring-white" />
+                <div className="h-7 w-7 rounded-full bg-grad-stat-navy ring-2 ring-white flex items-center justify-center text-[9px] font-bold text-white">
+                  +2k
+                </div>
+              </div>
+              <p className="mt-2.5 text-base font-bold text-brand-navy leading-tight">
+                +10 000
+              </p>
+              <p className="text-[11px] text-gray-500">signalements consultés</p>
+              <p className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-semibold text-brand-blue">
+                <Users className="h-3 w-3" aria-hidden />
+                Communauté active marocaine
+              </p>
+            </div>
+
+            {/* Card 3 — Risk levels overview (BOTTOM-RIGHT, wider, extends right) */}
             <div
               className="absolute bottom-6 -right-10 w-72 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 animate-float-soft"
               style={{ animationDelay: '3s' }}
             >
-              <div className="flex items-center justify-between pb-2 border-b border-gray-100">
+              <div className="pb-2 border-b border-gray-100">
                 <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
-                  Comparatif
-                </span>
-                <span className="inline-flex items-center gap-1 rounded-pill bg-green-100 text-green-700 px-2 py-0.5 text-[10px] font-bold">
-                  Gratuit à vie
+                  Niveaux de risque
                 </span>
               </div>
-              <ul className="mt-2 space-y-2 text-xs">
+              <ul className="mt-2.5 space-y-2.5 text-xs">
                 <li className="flex items-center justify-between">
                   <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
-                    <ShieldCheck className="h-4 w-4 text-brand-blue" aria-hidden />
-                    Hadar
+                    <span className="h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-green-100" />
+                    Risque faible
                   </span>
-                  <span className="text-green-700 font-bold">0 MAD</span>
+                  <span className="text-gray-500">0 signalement récent</span>
                 </li>
-                <li className="flex items-center justify-between text-gray-400">
-                  <span>Autres plateformes</span>
-                  <span className="line-through">Payant</span>
+                <li className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
+                    <span className="h-2.5 w-2.5 rounded-full bg-yellow-500 ring-2 ring-yellow-100" />
+                    Risque modéré
+                  </span>
+                  <span className="text-gray-500">2 signalements</span>
                 </li>
-                <li className="flex items-center justify-between text-gray-400">
-                  <span>Solution classique</span>
-                  <span className="line-through">Inexistant</span>
+                <li className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
+                    <span className="h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-red-100" />
+                    Risque élevé
+                  </span>
+                  <span className="text-gray-500">7 signalements</span>
                 </li>
               </ul>
             </div>

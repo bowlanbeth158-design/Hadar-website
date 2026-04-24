@@ -17,7 +17,7 @@ export function Header() {
       <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur border-b border-gray-200">
         <nav className="mx-auto max-w-7xl flex items-center gap-4 px-4 md:px-6 py-3">
           <Link href="/" aria-label="Retour à l'accueil Hadar" className="shrink-0">
-            <Logo size="md" />
+            <Logo size="lg" />
           </Link>
 
           <ul className="hidden md:flex items-center gap-5 text-sm font-medium text-brand-navy ml-6">
@@ -54,9 +54,9 @@ export function Header() {
 
           <Link
             href="/signaler"
-            className="ml-4 inline-flex items-center gap-2 rounded-pill bg-red-500 hover:bg-red-700 text-white px-6 py-2.5 text-sm font-semibold shadow-glow-red hover:scale-[1.03] transition-all"
+            className="ml-4 inline-flex items-center gap-2 rounded-pill bg-red-500 hover:bg-red-700 text-white px-10 py-3 text-base font-semibold shadow-glow-red hover:scale-[1.03] transition-all"
           >
-            <Siren className="h-4 w-4" aria-hidden />
+            <Siren className="h-5 w-5" aria-hidden />
             Signaler
           </Link>
 

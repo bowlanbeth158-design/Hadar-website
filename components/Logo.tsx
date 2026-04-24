@@ -18,7 +18,10 @@ export const OFFICIAL_LOGO_URL =
 
 export function Logo({ variant = 'color', withWordmark = true, size = 'md' }: Props) {
   const s = SIZE_MAP[size];
-  const wordmarkColor = variant === 'white' ? 'text-white' : 'text-brand-navy';
+  const wordmarkClass =
+    variant === 'white'
+      ? 'text-white'
+      : 'bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 bg-clip-text text-transparent';
 
   return (
     <div className={`flex items-center ${s.gap}`}>
@@ -29,7 +32,7 @@ export function Logo({ variant = 'color', withWordmark = true, size = 'md' }: Pr
         className={`${s.shield} object-contain ${variant === 'white' ? 'brightness-0 invert' : ''}`}
       />
       {withWordmark && (
-        <span className={`${s.text} font-bold ${wordmarkColor} tracking-tight`}>Hadar</span>
+        <span className={`${s.text} font-bold ${wordmarkClass} tracking-tight`}>Hadar</span>
       )}
     </div>
   );

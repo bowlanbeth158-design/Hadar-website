@@ -98,27 +98,27 @@ export function HomeBanner() {
           </p>
         </div>
 
-        {/* RIGHT — ambassador photo + floating product cards */}
+        {/* RIGHT — ambassador photo + floating product cards (Ultahost-style) */}
         <div className="relative hidden lg:block">
-          <div className="relative mx-auto aspect-[5/6] max-w-md">
+          <div className="relative mx-auto aspect-[4/5] max-w-lg">
             {/* Soft halo behind the person */}
             <div
               aria-hidden
-              className="absolute inset-10 rounded-full bg-gradient-to-br from-brand-sky via-white to-brand-sky blur-2xl"
+              className="absolute inset-12 rounded-full bg-gradient-to-br from-brand-sky via-white to-brand-sky blur-2xl"
             />
 
-            {/* Ambassador photo — fade into the page background at the bottom (Ultahost effect) */}
+            {/* Ambassador photo — face visible top-center, fades into page background at bottom */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={AMBASSADOR_IMAGE_URL}
               alt=""
               aria-hidden
-              className="absolute inset-x-0 bottom-0 top-0 mx-auto h-full w-full object-contain object-bottom [mask-image:linear-gradient(to_bottom,black_78%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_78%,transparent_100%)]"
+              className="absolute inset-0 h-full w-full object-contain object-top [mask-image:linear-gradient(to_bottom,black_80%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_80%,transparent_100%)]"
             />
 
-            {/* Card 1 — High risk search result (top-left) */}
+            {/* Card 1 — High risk search result (MID-LEFT, extends outside) */}
             <div
-              className="absolute top-6 -left-4 w-64 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 animate-float-soft"
+              className="absolute top-[38%] -left-10 w-64 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 animate-float-soft"
               style={{ animationDelay: '0s' }}
             >
               <div className="flex items-center justify-between">
@@ -142,9 +142,9 @@ export function HomeBanner() {
               </div>
             </div>
 
-            {/* Card 2 — Trust / reviews (top-right) */}
+            {/* Card 2 — Trust / reviews (TOP-RIGHT, small, beside head) */}
             <div
-              className="absolute top-2 -right-2 w-56 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-3.5 animate-float-soft"
+              className="absolute top-4 -right-8 w-52 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-3.5 animate-float-soft"
               style={{ animationDelay: '1.5s' }}
             >
               <div className="flex items-center gap-2">
@@ -169,9 +169,9 @@ export function HomeBanner() {
               </p>
             </div>
 
-            {/* Card 3 — Comparison / free (bottom-right) */}
+            {/* Card 3 — Comparison / free (BOTTOM-RIGHT, wider, extends right) */}
             <div
-              className="absolute bottom-4 -right-4 w-72 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 animate-float-soft"
+              className="absolute bottom-6 -right-10 w-72 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 animate-float-soft"
               style={{ animationDelay: '3s' }}
             >
               <div className="flex items-center justify-between pb-2 border-b border-gray-100">

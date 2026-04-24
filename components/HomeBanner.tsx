@@ -61,20 +61,20 @@ export function HomeBanner() {
           </div>
           <p className="mt-1 text-sm text-gray-500">vérifications utiles ce mois-ci.</p>
 
-          {/* CTAs */}
+          {/* CTAs — same pulse + wiggle effect as the old header buttons */}
           <div className="mt-7 flex flex-wrap items-center gap-3">
             <Link
               href="#recherche"
-              className="inline-flex items-center gap-2 rounded-pill bg-green-500 hover:bg-green-700 text-white px-6 py-3 text-sm font-semibold shadow-glow-green transition-all hover:scale-[1.03]"
+              className="inline-flex items-center gap-2 rounded-pill bg-green-500 hover:bg-green-700 text-white px-6 py-3 text-sm font-semibold shadow-glow-green animate-verify-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all"
             >
-              <ShieldCheck className="h-5 w-5" aria-hidden />
+              <ShieldCheck className="h-5 w-5 animate-siren-wiggle" aria-hidden />
               Vérifier maintenant
             </Link>
             <Link
               href="/signaler"
-              className="inline-flex items-center gap-2 rounded-pill border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white px-6 py-3 text-sm font-semibold transition-all hover:scale-[1.03]"
+              className="inline-flex items-center gap-2 rounded-pill bg-red-500 hover:bg-red-700 text-white px-6 py-3 text-sm font-semibold shadow-glow-red animate-alert-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all"
             >
-              <Siren className="h-5 w-5" aria-hidden />
+              <Siren className="h-5 w-5 animate-siren-wiggle" aria-hidden />
               Signaler une arnaque
             </Link>
           </div>

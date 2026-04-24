@@ -1,9 +1,10 @@
 import Link from 'next/link';
-import { Siren, ShieldCheck } from 'lucide-react';
 import { Logo } from './Logo';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { CurrencySwitcher } from './CurrencySwitcher';
 import { UserMenu } from './UserMenu';
+
+const ALERT_COUNT = 8;
 
 export function Header() {
   return (
@@ -14,7 +15,7 @@ export function Header() {
 
       <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur border-b border-gray-200">
         <nav className="mx-auto max-w-7xl flex items-center justify-between gap-6 px-6 md:px-10 py-3">
-          {/* LEFT CLUSTER : logo + nav + Vérifier + Signaler */}
+          {/* LEFT CLUSTER : logo + nav */}
           <div className="flex items-center gap-5">
             <Link href="/" aria-label="Retour à l'accueil Hadar" className="shrink-0">
               <Logo size="lg" />
@@ -31,23 +32,23 @@ export function Header() {
                   Comment ça marche
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/mes-alertes"
+                  className="inline-flex items-center gap-1.5 hover:text-brand-blue transition-colors"
+                >
+                  Mes alertes
+                  {ALERT_COUNT > 0 && (
+                    <span
+                      aria-label={`${ALERT_COUNT} nouvelles alertes`}
+                      className="min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[10px] font-bold inline-flex items-center justify-center"
+                    >
+                      {ALERT_COUNT > 99 ? '99+' : ALERT_COUNT}
+                    </span>
+                  )}
+                </Link>
+              </li>
             </ul>
-
-            <Link
-              href="/recherche"
-              className="inline-flex items-center gap-2 rounded-pill bg-green-500 hover:bg-green-700 text-white px-6 py-2.5 text-sm font-semibold shadow-glow-green animate-verify-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all"
-            >
-              <ShieldCheck className="h-5 w-5 animate-siren-wiggle" aria-hidden />
-              Vérifier
-            </Link>
-
-            <Link
-              href="/signaler"
-              className="inline-flex items-center gap-2 rounded-pill bg-red-500 hover:bg-red-700 text-white px-6 py-2.5 text-sm font-semibold shadow-glow-red animate-alert-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all"
-            >
-              <Siren className="h-5 w-5 animate-siren-wiggle" aria-hidden />
-              Signaler
-            </Link>
           </div>
 
           {/* RIGHT CLUSTER : langue + devise + profil */}

@@ -10,10 +10,9 @@ import {
 } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
 
-// Placeholder — remplacer par l'URL postimg de la photo ambassadeur Hadar
-// (homme souriant en sweat bleu marine, fond blanc/neutre)
+// URL postimg de la photo ambassadeur Hadar (généré Gemini — sweat bleu charte)
 const AMBASSADOR_IMAGE_URL =
-  'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=720&h=900&q=80';
+  'https://i.postimg.cc/s2MGYCKC/Gemini-Generated-Image-5qi7u35qi7u35qi7.png';
 
 const BULLETS = [
   '+10 000 signalements vérifiés',
@@ -108,13 +107,13 @@ export function HomeBanner() {
               className="absolute inset-10 rounded-full bg-gradient-to-br from-brand-sky via-white to-brand-sky blur-2xl"
             />
 
-            {/* Ambassador photo */}
+            {/* Ambassador photo — fade into the page background at the bottom (Ultahost effect) */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={AMBASSADOR_IMAGE_URL}
               alt=""
               aria-hidden
-              className="absolute inset-x-6 bottom-0 top-4 w-auto h-[95%] object-cover object-top mx-auto rounded-[40%_40%_8%_8%/35%_35%_5%_5%]"
+              className="absolute inset-x-0 bottom-0 top-0 mx-auto h-full w-full object-contain object-bottom [mask-image:linear-gradient(to_bottom,black_78%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_78%,transparent_100%)]"
             />
 
             {/* Card 1 — High risk search result (top-left) */}

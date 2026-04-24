@@ -15,12 +15,12 @@ export function Header() {
       </div>
 
       <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur border-b border-gray-200">
-        <nav className="mx-auto max-w-7xl flex items-center justify-between gap-4 px-4 md:px-6 py-3">
+        <nav className="mx-auto max-w-7xl flex items-center gap-4 px-4 md:px-6 py-3">
           <Link href="/" aria-label="Retour à l'accueil Hadar" className="shrink-0">
             <Logo size="md" />
           </Link>
 
-          <ul className="hidden md:flex items-center gap-6 text-sm font-medium text-brand-navy">
+          <ul className="hidden md:flex items-center gap-5 text-sm font-medium text-brand-navy ml-6">
             <li>
               <Link href="/" className="hover:text-brand-blue transition-colors">
                 Accueil
@@ -52,21 +52,20 @@ export function Header() {
             </li>
           </ul>
 
-          <div className="flex items-center gap-2 md:gap-3">
-            <Link
-              href="/signaler"
-              className="inline-flex items-center gap-1.5 rounded-pill bg-red-500 hover:bg-red-700 text-white px-4 py-2 text-sm font-semibold shadow-glow-red transition-all"
-            >
-              <Siren className="h-4 w-4" aria-hidden />
-              Signaler
-            </Link>
+          <Link
+            href="/signaler"
+            className="ml-4 inline-flex items-center gap-2 rounded-pill bg-red-500 hover:bg-red-700 text-white px-6 py-2.5 text-sm font-semibold shadow-glow-red hover:scale-[1.03] transition-all"
+          >
+            <Siren className="h-4 w-4" aria-hidden />
+            Signaler
+          </Link>
 
-            <div className="hidden sm:flex items-center gap-1 border-l border-gray-200 pl-2">
+          <div className="ml-auto flex items-center gap-3">
+            <div className="hidden sm:flex items-center gap-1 pr-3 border-r border-gray-200">
               <LanguageSwitcher />
               <CurrencySwitcher />
             </div>
-
-            <div className="hidden sm:block border-l border-gray-200 pl-2">
+            <div className="hidden sm:block">
               <UserMenu />
             </div>
           </div>

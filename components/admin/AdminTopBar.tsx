@@ -16,17 +16,19 @@ import {
   Users,
   X,
 } from 'lucide-react';
-import { REPORTS, STATUS_LABEL as REPORT_STATUS_LABEL } from '@/lib/mock/signalements';
+import { REPORTS } from '@/lib/mock/signalements';
 import { INITIAL_USERS } from '@/lib/mock/utilisateurs';
 import { INITIAL_MEMBERS } from '@/lib/mock/membres';
 import { useI18n } from '@/lib/i18n/provider';
+import { translateProblem, translateChannel, translateStatus } from '@/lib/i18n/helpers';
 
 type Ticket = {
   id: string;
   name: string;
   initials: string;
-  preview: string;
-  time: string;
+  previewKey: string;
+  timeKey: 'topbar.time.minutes' | 'topbar.time.hours';
+  timeValue: number;
   unread: boolean;
 };
 
@@ -35,24 +37,27 @@ const TICKETS: Ticket[] = [
     id: 't1',
     name: 'Yahya MOUSSAOUI',
     initials: 'YM',
-    preview: 'Bonjour, mon signalement #2454 est refusé sans explication…',
-    time: 'il y a 5 min',
+    previewKey: 'ticket.preview.1',
+    timeKey: 'topbar.time.minutes',
+    timeValue: 5,
     unread: true,
   },
   {
     id: 't3',
     name: 'Karim BENJELLOUN',
     initials: 'KB',
-    preview: 'Je n’arrive pas à réinitialiser mon mot de passe',
-    time: 'il y a 2 h',
+    previewKey: 'ticket.preview.3',
+    timeKey: 'topbar.time.hours',
+    timeValue: 2,
     unread: true,
   },
   {
     id: 't5',
     name: 'Mehdi TAZI',
     initials: 'MT',
-    preview: 'Est-ce que mon compte est bloqué ?',
-    time: 'il y a 4 h',
+    previewKey: 'ticket.preview.5',
+    timeKey: 'topbar.time.hours',
+    timeValue: 4,
     unread: true,
   },
 ];
@@ -139,7 +144,7 @@ export function AdminTopBar() {
   };
 
   const logout = () => {
-    if (!window.confirm('Se déconnecter de la session admin ?')) return;
+    if (!window.confirm(t('topbar.logoutConfirm'))) return;
     setMenuOpen(false);
     router.push('/');
   };
@@ -179,7 +184,7 @@ export function AdminTopBar() {
                 setQuery('');
                 setSearchOpen(false);
               }}
-              aria-label="Effacer la recherche"
+              aria-label={t('topbar.clearSearch')}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-brand-navy"
             >
               <X className="h-4 w-4" />
@@ -192,14 +197,14 @@ export function AdminTopBar() {
             >
               {totalResults === 0 ? (
                 <p className="px-4 py-6 text-center text-sm text-gray-400">
-                  Aucun résultat pour « {query} »
+                  {t('topbar.noResults', { query })}
                 </p>
               ) : (
                 <>
                   {results.reports.length > 0 && (
                     <div>
                       <p className="px-4 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-400 inline-flex items-center gap-1">
-                        <Siren className="h-3 w-3" /> Signalements
+                        <Siren className="h-3 w-3" /> {t('topbar.section.reports')}
                       </p>
                       {results.reports.map((r) => (
                         <button
@@ -210,14 +215,14 @@ export function AdminTopBar() {
                         >
                           <div className="min-w-0">
                             <p className="font-semibold text-brand-navy">
-                              #{r.id} — {r.problem}
+                              #{r.id} — {translateProblem(t, r.problem)}
                             </p>
                             <p className="text-xs text-gray-500 truncate">
-                              {r.contact} · {r.contactMasked}
+                              {translateChannel(t, r.contact)} · {r.contactMasked}
                             </p>
                           </div>
                           <span className="text-[10px] text-gray-400 whitespace-nowrap">
-                            {REPORT_STATUS_LABEL[r.status]}
+                            {translateStatus(t, r.status)}
                           </span>
                         </button>
                       ))}
@@ -226,7 +231,7 @@ export function AdminTopBar() {
                   {results.users.length > 0 && (
                     <div className="border-t border-gray-100">
                       <p className="px-4 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-400 inline-flex items-center gap-1">
-                        <UserPlus className="h-3 w-3" /> Utilisateurs
+                        <UserPlus className="h-3 w-3" /> {t('topbar.section.users')}
                       </p>
                       {results.users.map((u) => (
                         <button
@@ -249,7 +254,7 @@ export function AdminTopBar() {
                   {results.members.length > 0 && (
                     <div className="border-t border-gray-100">
                       <p className="px-4 pt-3 pb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-400 inline-flex items-center gap-1">
-                        <Users className="h-3 w-3" /> Membres
+                        <Users className="h-3 w-3" /> {t('topbar.section.members')}
                       </p>
                       {results.members.map((m) => (
                         <button
@@ -279,7 +284,7 @@ export function AdminTopBar() {
           <div ref={msgRef} className="relative">
             <button
               type="button"
-              aria-label="Conversations"
+              aria-label={t('topbar.conversations')}
               aria-haspopup="menu"
               aria-expanded={msgOpen}
               onClick={() => {
@@ -302,34 +307,36 @@ export function AdminTopBar() {
                 className="absolute right-0 top-full mt-2 w-[22rem] rounded-2xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-30"
               >
                 <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                  <p className="text-sm font-semibold text-brand-navy">Messages</p>
-                  <span className="text-[11px] text-gray-500">{TICKETS.length} tickets</span>
+                  <p className="text-sm font-semibold text-brand-navy">{t('topbar.messagesTitle')}</p>
+                  <span className="text-[11px] text-gray-500">
+                    {t('topbar.tickets', { count: TICKETS.length })}
+                  </span>
                 </div>
                 <ul className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
-                  {TICKETS.map((t) => (
-                    <li key={t.id}>
+                  {TICKETS.map((ticket) => (
+                    <li key={ticket.id}>
                       <button
                         type="button"
                         onClick={() => goTo('/admin/assistant')}
                         className="w-full flex items-start gap-3 px-4 py-3 text-left hover:bg-gray-50"
                       >
                         <span className="relative shrink-0 h-9 w-9 rounded-full bg-grad-stat-navy text-white text-xs font-bold flex items-center justify-center">
-                          {t.initials}
-                          {t.unread && (
+                          {ticket.initials}
+                          {ticket.unread && (
                             <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white" />
                           )}
                         </span>
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2">
                             <p className="font-semibold text-brand-navy text-sm truncate">
-                              {t.name}
+                              {ticket.name}
                             </p>
                             <span className="text-[10px] text-gray-400 whitespace-nowrap">
-                              {t.time}
+                              {t(ticket.timeKey, { n: ticket.timeValue })}
                             </span>
                           </div>
                           <p className="text-xs text-gray-500 line-clamp-2 mt-0.5">
-                            {t.preview}
+                            {t(ticket.previewKey)}
                           </p>
                         </div>
                       </button>
@@ -341,7 +348,7 @@ export function AdminTopBar() {
                   onClick={() => setMsgOpen(false)}
                   className="flex items-center justify-center gap-1 px-4 py-2.5 text-xs font-semibold text-brand-blue hover:bg-gray-50 border-t border-gray-100"
                 >
-                  Voir tous les tickets
+                  {t('topbar.seeAllTickets')}
                   <ChevronRight className="h-3 w-3" aria-hidden />
                 </Link>
               </div>
@@ -351,7 +358,7 @@ export function AdminTopBar() {
           <div ref={notifRef} className="relative">
             <button
               type="button"
-              aria-label="Notifications"
+              aria-label={t('topbar.notifications')}
               aria-haspopup="menu"
               aria-expanded={notifOpen}
               onClick={() => {
@@ -374,9 +381,11 @@ export function AdminTopBar() {
                 className="absolute right-0 top-full mt-2 w-[22rem] rounded-2xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-30"
               >
                 <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100">
-                  <p className="text-sm font-semibold text-brand-navy">Signalements reçus</p>
+                  <p className="text-sm font-semibold text-brand-navy">
+                    {t('topbar.reportsReceived')}
+                  </p>
                   <span className="text-[11px] text-gray-500">
-                    {pendingReports.length} en attente
+                    {t('topbar.pending', { count: pendingReports.length })}
                   </span>
                 </div>
                 <ul className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
@@ -393,14 +402,14 @@ export function AdminTopBar() {
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2">
                             <p className="font-semibold text-brand-navy text-sm truncate">
-                              #{r.id} — {r.problem}
+                              #{r.id} — {translateProblem(t, r.problem)}
                             </p>
                             <span className="text-[10px] text-gray-400 whitespace-nowrap">
                               {r.date.split(/\s+/)[0]}
                             </span>
                           </div>
                           <p className="text-xs text-gray-500 truncate mt-0.5">
-                            {r.contact} · {r.contactMasked}
+                            {translateChannel(t, r.contact)} · {r.contactMasked}
                           </p>
                         </div>
                       </button>
@@ -412,7 +421,7 @@ export function AdminTopBar() {
                   onClick={() => setNotifOpen(false)}
                   className="flex items-center justify-center gap-1 px-4 py-2.5 text-xs font-semibold text-brand-blue hover:bg-gray-50 border-t border-gray-100"
                 >
-                  Voir tous les signalements
+                  {t('topbar.seeAllReports')}
                   <ChevronRight className="h-3 w-3" aria-hidden />
                 </Link>
               </div>
@@ -420,13 +429,13 @@ export function AdminTopBar() {
           </div>
 
           <span className="hidden md:inline-flex items-center rounded-pill border border-brand-navy text-brand-navy px-3 py-1 text-xs font-semibold">
-            Admin
+            {t('topbar.adminBadge')}
           </span>
 
           <div ref={menuRef} className="relative">
             <button
               type="button"
-              aria-label="Menu du compte administrateur"
+              aria-label={t('topbar.accountMenu')}
               aria-haspopup="menu"
               aria-expanded={menuOpen}
               onClick={() => {
@@ -444,8 +453,8 @@ export function AdminTopBar() {
                 className="absolute right-0 top-full mt-2 w-56 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-30 py-1"
               >
                 <div className="px-4 py-3 border-b border-gray-100">
-                  <p className="text-sm font-semibold text-brand-navy">HM — Admin</p>
-                  <p className="text-[11px] text-gray-500">Connecté·e sur Hadar.ma</p>
+                  <p className="text-sm font-semibold text-brand-navy">{t('topbar.myAccountHeader')}</p>
+                  <p className="text-[11px] text-gray-500">{t('topbar.loggedOn')}</p>
                 </div>
                 <Link
                   href="/admin/parametres"
@@ -454,7 +463,7 @@ export function AdminTopBar() {
                   className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-brand-navy hover:bg-gray-50"
                 >
                   <UserIcon className="h-4 w-4" aria-hidden />
-                  Mon compte
+                  {t('topbar.myAccount')}
                 </Link>
                 <Link
                   href="/admin/parametres"
@@ -463,7 +472,7 @@ export function AdminTopBar() {
                   className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-brand-navy hover:bg-gray-50"
                 >
                   <SettingsIcon className="h-4 w-4" aria-hidden />
-                  Paramètres
+                  {t('topbar.parametres')}
                 </Link>
                 <button
                   type="button"
@@ -472,7 +481,7 @@ export function AdminTopBar() {
                   className="w-full flex items-center gap-2.5 px-3 py-2 text-sm text-red-600 hover:bg-red-50 border-t border-gray-100"
                 >
                   <LogOut className="h-4 w-4" aria-hidden />
-                  Se déconnecter
+                  {t('topbar.logout')}
                 </button>
               </div>
             )}

@@ -105,11 +105,16 @@ const config: Config = {
           '96%': { transform: 'rotate(14deg)' },
           '98%': { transform: 'rotate(-8deg)' },
         },
+        'float-soft': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-8px)' },
+        },
       },
       animation: {
         'alert-pulse': 'alert-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite',
         'verify-pulse': 'verify-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite',
         'siren-wiggle': 'siren-wiggle 4s ease-in-out infinite',
+        'float-soft': 'float-soft 5s ease-in-out infinite',
       },
     },
   },

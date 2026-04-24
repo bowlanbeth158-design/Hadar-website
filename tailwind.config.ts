@@ -94,6 +94,11 @@ const config: Config = {
           '70%': { boxShadow: '0 0 0 14px rgba(238, 68, 68, 0)' },
           '100%': { boxShadow: '0 0 0 0 rgba(238, 68, 68, 0)' },
         },
+        'verify-pulse': {
+          '0%': { boxShadow: '0 0 0 0 rgba(34, 196, 94, 0.55)' },
+          '70%': { boxShadow: '0 0 0 14px rgba(34, 196, 94, 0)' },
+          '100%': { boxShadow: '0 0 0 0 rgba(34, 196, 94, 0)' },
+        },
         'siren-wiggle': {
           '0%, 92%, 100%': { transform: 'rotate(0deg)' },
           '94%': { transform: 'rotate(-14deg)' },
@@ -103,6 +108,7 @@ const config: Config = {
       },
       animation: {
         'alert-pulse': 'alert-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+        'verify-pulse': 'verify-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite',
         'siren-wiggle': 'siren-wiggle 4s ease-in-out infinite',
       },
     },

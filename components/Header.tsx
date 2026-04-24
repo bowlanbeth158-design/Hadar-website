@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Bell, Siren } from 'lucide-react';
+import { Bell, Siren, ShieldCheck } from 'lucide-react';
 import { Logo } from './Logo';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { CurrencySwitcher } from './CurrencySwitcher';
@@ -53,8 +53,16 @@ export function Header() {
           </ul>
 
           <Link
+            href="/recherche"
+            className="ml-4 inline-flex items-center gap-2 rounded-pill bg-green-500 hover:bg-green-700 text-white px-6 py-2.5 text-sm font-semibold shadow-glow-green animate-verify-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all"
+          >
+            <ShieldCheck className="h-5 w-5 animate-siren-wiggle" aria-hidden />
+            Vérifier
+          </Link>
+
+          <Link
             href="/signaler"
-            className="ml-4 inline-flex items-center gap-2 rounded-pill bg-red-500 hover:bg-red-700 text-white px-6 py-2.5 text-sm font-semibold shadow-glow-red animate-alert-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all"
+            className="ml-2 inline-flex items-center gap-2 rounded-pill bg-red-500 hover:bg-red-700 text-white px-6 py-2.5 text-sm font-semibold shadow-glow-red animate-alert-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all"
           >
             <Siren className="h-5 w-5 animate-siren-wiggle" aria-hidden />
             Signaler

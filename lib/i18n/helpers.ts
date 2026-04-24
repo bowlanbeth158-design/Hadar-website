@@ -84,7 +84,8 @@ export function translateUserStatus(t: T, statusId: string): string {
 
 export function formatDateTime(iso: string, locale: Locale): string {
   if (!iso) return '';
-  const tag = locale === 'fr' ? 'fr-FR' : locale === 'en' ? 'en-GB' : 'ar-MA';
+  const tag =
+    locale === 'fr' ? 'fr-FR' : locale === 'en' ? 'en-GB' : 'ar-MA-u-nu-latn';
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return iso;
   return d.toLocaleString(tag, {

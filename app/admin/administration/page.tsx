@@ -56,6 +56,7 @@ function BannerPreview({ config }: { config: PlatformConfig }) {
 }
 
 type Tab = 'roles' | 'logs' | 'config' | 'integrations';
+type ConfigSubTab = 'general' | 'maintenance' | 'banner' | 'brand' | 'seo';
 type RoleKey = 'admin' | 'mod' | 'support';
 
 type Perm = { id: string; labelKey: string; defaultOn: boolean; locked?: boolean };
@@ -158,6 +159,7 @@ const INITIAL_INTEGRATIONS: Integration[] = [
 export default function Page() {
   const { t } = useI18n();
   const [tab, setTab] = useState<Tab>('roles');
+  const [configSubTab, setConfigSubTab] = useState<ConfigSubTab>('general');
   const [perms, setPerms] = useState<PermState>(initialState);
   const [savedPerms, setSavedPerms] = useState<PermState>(initialState);
   const [flash, setFlash] = useState<string | null>(null);
@@ -603,24 +605,93 @@ export default function Page() {
 
       {tab === 'config' && (
         <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6 space-y-6">
-          <div className="grid gap-4 sm:grid-cols-2">
-            <PermissionToggle
-              label={t('admin.config.maintenance')}
-              checked={config.maintenance}
-              onChange={(v) => setConfig((c) => ({ ...c, maintenance: v }))}
-            />
-            <PermissionToggle
-              label={t('admin.config.publicSearch')}
-              checked={config.publicSearch}
-              onChange={(v) => setConfig((c) => ({ ...c, publicSearch: v }))}
-            />
-            <PermissionToggle
-              label={t('admin.config.registrationsOpen')}
-              checked={config.registrationsOpen}
-              onChange={(v) => setConfig((c) => ({ ...c, registrationsOpen: v }))}
-            />
-          </div>
+          <nav role="tablist" className="flex flex-wrap gap-2 pb-4 border-b border-gray-100">
+            {(
+              [
+                { id: 'general', labelKey: 'admin.configSub.general', Icon: Settings2 },
+                { id: 'maintenance', labelKey: 'admin.configSub.maintenance', Icon: Wrench },
+                { id: 'banner', labelKey: 'admin.configSub.banner', Icon: Megaphone },
+                { id: 'brand', labelKey: 'admin.configSub.brand', Icon: ImageIcon },
+                { id: 'seo', labelKey: 'admin.configSub.seo', Icon: Search },
+              ] as const
+            ).map((item) => {
+              const on = configSubTab === item.id;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  role="tab"
+                  aria-selected={on}
+                  onClick={() => setConfigSubTab(item.id)}
+                  className={
+                    on
+                      ? 'inline-flex items-center gap-1.5 rounded-pill bg-brand-navy text-white px-4 py-1.5 text-xs font-semibold shadow-glow-navy'
+                      : 'inline-flex items-center gap-1.5 rounded-pill bg-brand-sky/50 text-brand-navy px-4 py-1.5 text-xs font-medium hover:bg-brand-sky transition-colors'
+                  }
+                >
+                  <item.Icon className="h-3.5 w-3.5" aria-hidden />
+                  {t(item.labelKey)}
+                </button>
+              );
+            })}
+          </nav>
 
+          {configSubTab === 'general' && (
+            <>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <PermissionToggle
+                  label={t('admin.config.maintenance')}
+                  checked={config.maintenance}
+                  onChange={(v) => setConfig((c) => ({ ...c, maintenance: v }))}
+                />
+                <PermissionToggle
+                  label={t('admin.config.publicSearch')}
+                  checked={config.publicSearch}
+                  onChange={(v) => setConfig((c) => ({ ...c, publicSearch: v }))}
+                />
+                <PermissionToggle
+                  label={t('admin.config.registrationsOpen')}
+                  checked={config.registrationsOpen}
+                  onChange={(v) => setConfig((c) => ({ ...c, registrationsOpen: v }))}
+                />
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="block text-xs font-semibold text-brand-navy mb-1.5">
+                    {t('admin.config.maxUpload')}
+                  </label>
+                  <input
+                    type="number"
+                    min={1}
+                    max={100}
+                    value={config.maxUploadMb}
+                    onChange={(e) =>
+                      setConfig((c) => ({ ...c, maxUploadMb: Number(e.target.value) || 1 }))
+                    }
+                    className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-brand-navy focus:outline-none focus:border-brand-blue"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-brand-navy mb-1.5">
+                    {t('admin.config.sessionMinutes')}
+                  </label>
+                  <input
+                    type="number"
+                    min={5}
+                    max={120}
+                    value={config.sessionMinutes}
+                    onChange={(e) =>
+                      setConfig((c) => ({ ...c, sessionMinutes: Number(e.target.value) || 5 }))
+                    }
+                    className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-brand-navy focus:outline-none focus:border-brand-blue"
+                  />
+                </div>
+              </div>
+            </>
+          )}
+
+          {configSubTab === 'maintenance' && (
           <div className="rounded-2xl border border-gray-200 bg-gray-50/60 p-5 space-y-5">
             <div className="inline-flex items-center gap-2">
               <Wrench className="h-4 w-4 text-brand-blue" aria-hidden />
@@ -796,7 +867,9 @@ export default function Page() {
               />
             </div>
           </div>
+          )}
 
+          {configSubTab === 'banner' && (
           <div className="rounded-2xl border border-gray-200 bg-gray-50/60 p-5 space-y-5">
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div className="inline-flex items-center gap-2">
@@ -983,7 +1056,10 @@ export default function Page() {
 
             <p className="text-xs text-gray-400">{t('admin.banner.hint')}</p>
           </div>
+          )}
 
+          {configSubTab === 'brand' && (
+          <>
           <div className="rounded-2xl border border-gray-200 bg-gray-50/60 p-5 space-y-5">
             <div className="inline-flex items-center gap-2">
               <ImageIcon className="h-4 w-4 text-brand-blue" aria-hidden />
@@ -1077,7 +1153,10 @@ export default function Page() {
               />
             </div>
           </div>
+          </>
+          )}
 
+          {configSubTab === 'seo' && (
           <div className="rounded-2xl border border-gray-200 bg-gray-50/60 p-5 space-y-5">
             <div className="inline-flex items-center gap-2">
               <Search className="h-4 w-4 text-brand-blue" aria-hidden />
@@ -1383,41 +1462,11 @@ export default function Page() {
 
             <p className="text-xs text-gray-400">{t('brand.seo.hint')}</p>
           </div>
+          )}
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <div>
-              <label className="block text-xs font-semibold text-brand-navy mb-1.5">
-                {t('admin.config.maxUpload')}
-              </label>
-              <input
-                type="number"
-                min={1}
-                max={100}
-                value={config.maxUploadMb}
-                onChange={(e) =>
-                  setConfig((c) => ({ ...c, maxUploadMb: Number(e.target.value) || 1 }))
-                }
-                className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-brand-navy focus:outline-none focus:border-brand-blue"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-semibold text-brand-navy mb-1.5">
-                {t('admin.config.sessionMinutes')}
-              </label>
-              <input
-                type="number"
-                min={5}
-                max={120}
-                value={config.sessionMinutes}
-                onChange={(e) =>
-                  setConfig((c) => ({ ...c, sessionMinutes: Number(e.target.value) || 5 }))
-                }
-                className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-brand-navy focus:outline-none focus:border-brand-blue"
-              />
-            </div>
-          </div>
-
-          <p className="text-xs text-gray-400">{t('admin.config.previewNote')}</p>
+          <p className="text-xs text-gray-400 pt-2 border-t border-gray-100">
+            {t('admin.config.previewNote')}
+          </p>
         </section>
       )}
 

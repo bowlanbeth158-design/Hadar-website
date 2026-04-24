@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import {
-  CheckCircle2,
   ShieldCheck,
   Siren,
   Sparkles,
@@ -9,6 +8,7 @@ import {
   TrendingUp,
   XCircle,
 } from 'lucide-react';
+import { VerifiedBadge } from './VerifiedBadge';
 
 const BULLETS = [
   '+10 000 signalements vérifiés',
@@ -53,7 +53,7 @@ export function HomeBanner() {
           <ul className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl">
             {BULLETS.map((b) => (
               <li key={b} className="flex items-center gap-2.5 text-sm text-brand-navy">
-                <CheckCircle2 className="h-5 w-5 shrink-0 text-brand-blue" aria-hidden />
+                <VerifiedBadge className="h-5 w-5 shrink-0" />
                 <span className="font-medium">{b}</span>
               </li>
             ))}

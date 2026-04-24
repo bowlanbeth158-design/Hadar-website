@@ -15,26 +15,22 @@ import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { PeriodTabs } from '@/components/admin/PeriodTabs';
 import { RefreshButton } from '@/components/admin/RefreshButton';
 import { ExportButton } from '@/components/admin/ExportButton';
-import { REPORTS, STATUS_LABEL, type Status } from '@/lib/mock/signalements';
+import { REPORTS, type Status } from '@/lib/mock/signalements';
+import { useI18n } from '@/lib/i18n/provider';
+import { translateProblem, translateChannel, translateStatus } from '@/lib/i18n/helpers';
 
 const STATUS_CONFIG: Record<
   Status,
-  { label: string; pill: string; text: string; Icon: LucideIcon; gradient: string; glow: string }
+  { pill: string; text: string; Icon: LucideIcon; gradient: string; glow: string }
 > = {
-  en_cours: { label: 'En cours', pill: 'bg-orange-100', text: 'text-orange-700', Icon: Clock, gradient: 'bg-grad-stat-orange', glow: 'shadow-glow-orange' },
-  publie: { label: 'Publié', pill: 'bg-green-100', text: 'text-green-700', Icon: Copy, gradient: 'bg-grad-stat-green', glow: 'shadow-glow-green' },
-  non_retenu: { label: 'Non retenu', pill: 'bg-red-100', text: 'text-red-700', Icon: XCircle, gradient: 'bg-grad-stat-red', glow: 'shadow-glow-red' },
-  a_corriger: { label: 'À corriger', pill: 'bg-brand-sky', text: 'text-brand-navy', Icon: PencilLine, gradient: 'bg-grad-stat-navy', glow: 'shadow-glow-navy' },
+  en_cours: { pill: 'bg-orange-100', text: 'text-orange-700', Icon: Clock, gradient: 'bg-grad-stat-orange', glow: 'shadow-glow-orange' },
+  publie: { pill: 'bg-green-100', text: 'text-green-700', Icon: Copy, gradient: 'bg-grad-stat-green', glow: 'shadow-glow-green' },
+  non_retenu: { pill: 'bg-red-100', text: 'text-red-700', Icon: XCircle, gradient: 'bg-grad-stat-red', glow: 'shadow-glow-red' },
+  a_corriger: { pill: 'bg-brand-sky', text: 'text-brand-navy', Icon: PencilLine, gradient: 'bg-grad-stat-navy', glow: 'shadow-glow-navy' },
 };
 
 const STATUS_ORDER: Status[] = ['en_cours', 'publie', 'non_retenu', 'a_corriger'];
-const FILTERS: { id: 'all' | Status; label: string }[] = [
-  { id: 'all', label: 'Tous' },
-  { id: 'en_cours', label: STATUS_LABEL.en_cours },
-  { id: 'publie', label: STATUS_LABEL.publie },
-  { id: 'non_retenu', label: STATUS_LABEL.non_retenu },
-  { id: 'a_corriger', label: STATUS_LABEL.a_corriger },
-];
+const FILTER_IDS: ('all' | Status)[] = ['all', 'en_cours', 'publie', 'non_retenu', 'a_corriger'];
 
 const PAGE_SIZE = 5;
 const DECISIONS_KEY = 'hadar:moderation-decisions';
@@ -86,13 +82,14 @@ function inPeriod(
 }
 
 export default function Page() {
+  const { t } = useI18n();
   const [refreshKey, setRefreshKey] = useState(0);
   const [statusFilter, setStatusFilter] = useState<'all' | Status>('all');
   const [query, setQuery] = useState('');
   const [page, setPage] = useState(1);
   const [decisions, setDecisions] = useState<DecisionStore>({});
   const [periodIndex, setPeriodIndex] = useState(4);
-  const [periodLabel, setPeriodLabel] = useState('365 jours');
+  const [periodLabel, setPeriodLabel] = useState(t('period.365d'));
   const [periodRange, setPeriodRange] = useState<{ from: string; to: string } | undefined>();
 
   useEffect(() => {
@@ -145,14 +142,21 @@ export default function Page() {
   const total = filtered.length || 1;
 
   const exportRows = (): (string | number)[][] => [
-    ['ID', 'Contact', 'Type problème', 'Montant', 'Date & heure', 'Statut'],
+    [
+      t('signalements.col.id'),
+      t('signalements.col.contact'),
+      t('signalements.col.problemType'),
+      t('signalements.col.amount'),
+      t('signalements.col.datetime'),
+      t('signalements.col.status'),
+    ],
     ...filtered.map((r) => [
       `#${r.id}`,
-      r.contact,
-      r.problem,
+      translateChannel(t, r.contact),
+      translateProblem(t, r.problem),
       r.amount,
       r.date,
-      STATUS_CONFIG[r.status].label,
+      translateStatus(t, r.status),
     ]),
   ];
 
@@ -160,9 +164,12 @@ export default function Page() {
     <div>
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">Signalements</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">
+            {t('page.signalements.title')}
+          </h1>
           <p className="mt-1 text-sm text-gray-500">
-            Période : <span className="font-semibold text-brand-navy">{periodLabel}</span>
+            {t('period.label')} :{' '}
+            <span className="font-semibold text-brand-navy">{periodLabel}</span>
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -183,22 +190,23 @@ export default function Page() {
       </div>
 
       <nav role="tablist" className="flex flex-wrap justify-center gap-2 mb-8">
-        {FILTERS.map((f) => {
-          const active = statusFilter === f.id;
+        {FILTER_IDS.map((id) => {
+          const active = statusFilter === id;
+          const label = id === 'all' ? t('filter.all') : translateStatus(t, id);
           return (
             <button
-              key={f.id}
+              key={id}
               role="tab"
               aria-selected={active}
               type="button"
-              onClick={() => setStatusFilter(f.id)}
+              onClick={() => setStatusFilter(id)}
               className={
                 active
                   ? 'rounded-pill bg-brand-navy text-white px-5 py-2 text-sm font-semibold shadow-glow-navy hover:scale-[1.03] transition-transform'
                   : 'rounded-pill border border-brand-navy text-brand-navy px-5 py-2 text-sm font-medium hover:bg-brand-navy hover:text-white hover:shadow-glow-navy hover:scale-[1.03] transition-all'
               }
             >
-              {f.label}
+              {label}
             </button>
           );
         })}
@@ -227,7 +235,7 @@ export default function Page() {
                   <p className="text-4xl font-bold">
                     <AnimatedCounter key={`${refreshKey}-${s}-${count}`} value={`${count}`} />
                   </p>
-                  <p className="mt-1 text-sm font-medium opacity-90">{c.label}</p>
+                  <p className="mt-1 text-sm font-medium opacity-90">{translateStatus(t, s)}</p>
                 </div>
                 <div className="flex flex-col items-end gap-1">
                   <c.Icon className="h-7 w-7 opacity-80" aria-hidden />
@@ -251,7 +259,7 @@ export default function Page() {
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Rechercher (ID, problème, contact)…"
+            placeholder={t('signalements.searchPlaceholder')}
             className="w-full rounded-pill bg-white border border-gray-200 pl-9 pr-3 py-1.5 text-xs text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue"
           />
         </div>
@@ -262,19 +270,19 @@ export default function Page() {
           <table className="min-w-full text-sm">
             <thead className="bg-gray-50 border-b border-gray-200 text-gray-500">
               <tr>
-                <th scope="col" className="text-left px-5 py-3 font-semibold">ID</th>
-                <th scope="col" className="text-left px-5 py-3 font-semibold">Contact</th>
-                <th scope="col" className="text-left px-5 py-3 font-semibold">Type problème</th>
-                <th scope="col" className="text-left px-5 py-3 font-semibold">Montant</th>
-                <th scope="col" className="text-left px-5 py-3 font-semibold">Date & heure</th>
-                <th scope="col" className="text-right px-5 py-3 font-semibold">Statut</th>
+                <th scope="col" className="text-left px-5 py-3 font-semibold">{t('signalements.col.id')}</th>
+                <th scope="col" className="text-left px-5 py-3 font-semibold">{t('signalements.col.contact')}</th>
+                <th scope="col" className="text-left px-5 py-3 font-semibold">{t('signalements.col.problemType')}</th>
+                <th scope="col" className="text-left px-5 py-3 font-semibold">{t('signalements.col.amount')}</th>
+                <th scope="col" className="text-left px-5 py-3 font-semibold">{t('signalements.col.datetime')}</th>
+                <th scope="col" className="text-right px-5 py-3 font-semibold">{t('signalements.col.status')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {pageItems.length === 0 && (
                 <tr>
                   <td colSpan={6} className="px-5 py-10 text-center text-sm text-gray-400">
-                    Aucun signalement ne correspond à vos critères.
+                    {t('signalements.empty')}
                   </td>
                 </tr>
               )}
@@ -297,8 +305,8 @@ export default function Page() {
                         #{r.id}
                       </Link>
                     </td>
-                    <td className="px-5 py-3 text-brand-navy">{r.contact}</td>
-                    <td className="px-5 py-3 text-gray-600">{r.problem}</td>
+                    <td className="px-5 py-3 text-brand-navy">{translateChannel(t, r.contact)}</td>
+                    <td className="px-5 py-3 text-gray-600">{translateProblem(t, r.problem)}</td>
                     <td className="px-5 py-3 text-gray-600">{r.amount}</td>
                     <td className="px-5 py-3 text-gray-500 whitespace-nowrap">{r.date}</td>
                     <td className="px-5 py-3 text-right">
@@ -307,7 +315,7 @@ export default function Page() {
                         onClick={(e) => e.stopPropagation()}
                         className={`inline-flex items-center gap-1.5 rounded-pill ${c.pill} ${c.text} px-3 py-1 text-xs font-semibold hover:opacity-80 transition-opacity`}
                       >
-                        {c.label}
+                        {translateStatus(t, r.status)}
                         <ChevronRight className="h-3.5 w-3.5" aria-hidden />
                       </Link>
                     </td>
@@ -319,9 +327,13 @@ export default function Page() {
         </div>
         <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 text-xs text-gray-500">
           <span>
-            {filtered.length} signalement{filtered.length > 1 ? 's' : ''}
-            {statusFilter === 'all' ? '' : ` · filtre : ${STATUS_LABEL[statusFilter]}`}
-            {query ? ` · recherche : « ${query} »` : ''}
+            {t(filtered.length > 1 ? 'signalements.count.other' : 'signalements.count.one', {
+              count: filtered.length,
+            })}
+            {statusFilter === 'all'
+              ? ''
+              : ` · ${t('signalements.filter.suffix', { label: translateStatus(t, statusFilter) })}`}
+            {query ? ` · ${t('signalements.search.suffix', { query })}` : ''}
           </span>
           <div className="flex items-center gap-1">
             <button
@@ -329,7 +341,7 @@ export default function Page() {
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={currentPage <= 1}
               className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
-              aria-label="Page précédente"
+              aria-label={t('pagination.prev')}
             >
               ‹
             </button>
@@ -353,7 +365,7 @@ export default function Page() {
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage >= totalPages}
               className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
-              aria-label="Page suivante"
+              aria-label={t('pagination.next')}
             >
               ›
             </button>

@@ -129,6 +129,29 @@ export type PlatformConfig = {
   registrationsOpen: boolean;
   maxUploadMb: number;
   sessionMinutes: number;
+  // Branding — public
+  brandPublicLogo?: string;
+  brandPublicLogoSquare?: string;
+  // Branding — admin
+  brandAdminLogo?: string;
+  // Favicons & social
+  brandFavicon?: string;
+  brandAppleTouchIcon?: string;
+  brandOgImage?: string;
+  // Site identity
+  siteName: string;
+  siteTagline: string;
+  siteTitleFormat: string;
+  // SEO
+  seoTitle: string;
+  seoDescription: string;
+  seoKeywords: string;
+  seoCanonicalUrl: string;
+  seoRobotsIndex: boolean;
+  seoRobotsFollow: boolean;
+  seoGaId: string;
+  seoGoogleVerification: string;
+  seoTwitterHandle: string;
 };
 
 export const PLATFORM_CONFIG_KEY = 'hadar:admin:platform-config';
@@ -147,6 +170,19 @@ export const INITIAL_PLATFORM_CONFIG: PlatformConfig = {
   registrationsOpen: true,
   maxUploadMb: 10,
   sessionMinutes: 15,
+  siteName: 'Hadar.ma',
+  siteTagline: 'Restez vigilant avant toute transaction',
+  siteTitleFormat: '%s · Hadar.ma',
+  seoTitle: 'Hadar.ma — Restez vigilant avant toute transaction',
+  seoDescription:
+    'Plateforme marocaine de prévention des fraudes. Vérifiez un numéro, un email, un site web ou un moyen de paiement avant toute transaction.',
+  seoKeywords: 'fraude, arnaque, vérification, Maroc, signalement, Hadar',
+  seoCanonicalUrl: 'https://hadar.ma',
+  seoRobotsIndex: true,
+  seoRobotsFollow: true,
+  seoGaId: '',
+  seoGoogleVerification: '',
+  seoTwitterHandle: '',
 };
 
 export const MAX_BANNER_MESSAGES = 3;

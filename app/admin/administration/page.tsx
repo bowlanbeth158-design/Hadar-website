@@ -29,6 +29,7 @@ import {
   dispatchConfigUpdate,
 } from '@/components/admin/AdminAnnouncementBanner';
 import { MaintenancePreview } from '@/components/admin/AdminMaintenanceGate';
+import { ImageUploadField } from '@/components/admin/ImageUploadField';
 import { useI18n } from '@/lib/i18n/provider';
 import { translateRole } from '@/lib/i18n/helpers';
 import {
@@ -200,6 +201,43 @@ export default function Page() {
             parsed.bannerType === 'toast'
               ? parsed.bannerType
               : INITIAL_CONFIG.bannerType,
+          siteName:
+            typeof parsed.siteName === 'string' ? parsed.siteName : INITIAL_CONFIG.siteName,
+          siteTagline:
+            typeof parsed.siteTagline === 'string' ? parsed.siteTagline : INITIAL_CONFIG.siteTagline,
+          siteTitleFormat:
+            typeof parsed.siteTitleFormat === 'string'
+              ? parsed.siteTitleFormat
+              : INITIAL_CONFIG.siteTitleFormat,
+          seoTitle:
+            typeof parsed.seoTitle === 'string' ? parsed.seoTitle : INITIAL_CONFIG.seoTitle,
+          seoDescription:
+            typeof parsed.seoDescription === 'string'
+              ? parsed.seoDescription
+              : INITIAL_CONFIG.seoDescription,
+          seoKeywords:
+            typeof parsed.seoKeywords === 'string' ? parsed.seoKeywords : INITIAL_CONFIG.seoKeywords,
+          seoCanonicalUrl:
+            typeof parsed.seoCanonicalUrl === 'string'
+              ? parsed.seoCanonicalUrl
+              : INITIAL_CONFIG.seoCanonicalUrl,
+          seoRobotsIndex:
+            typeof parsed.seoRobotsIndex === 'boolean'
+              ? parsed.seoRobotsIndex
+              : INITIAL_CONFIG.seoRobotsIndex,
+          seoRobotsFollow:
+            typeof parsed.seoRobotsFollow === 'boolean'
+              ? parsed.seoRobotsFollow
+              : INITIAL_CONFIG.seoRobotsFollow,
+          seoGaId: typeof parsed.seoGaId === 'string' ? parsed.seoGaId : INITIAL_CONFIG.seoGaId,
+          seoGoogleVerification:
+            typeof parsed.seoGoogleVerification === 'string'
+              ? parsed.seoGoogleVerification
+              : INITIAL_CONFIG.seoGoogleVerification,
+          seoTwitterHandle:
+            typeof parsed.seoTwitterHandle === 'string'
+              ? parsed.seoTwitterHandle
+              : INITIAL_CONFIG.seoTwitterHandle,
         };
         setConfig(merged);
         setSavedConfig(merged);
@@ -930,6 +968,299 @@ export default function Page() {
             </div>
 
             <p className="text-xs text-gray-400">{t('admin.banner.hint')}</p>
+          </div>
+
+          <div className="rounded-2xl border border-gray-200 bg-gray-50/60 p-5 space-y-5">
+            <div className="inline-flex items-center gap-2">
+              <ImageIcon className="h-4 w-4 text-brand-blue" aria-hidden />
+              <h3 className="text-sm font-bold text-brand-navy">{t('brand.public.title')}</h3>
+            </div>
+            <p className="text-xs text-gray-500">{t('brand.public.desc')}</p>
+            <div className="grid gap-5 sm:grid-cols-2">
+              <ImageUploadField
+                label={t('brand.public.logoHorizontal')}
+                hint={t('brand.public.logoHorizontalHint')}
+                width={512}
+                height={128}
+                fit="contain"
+                previewShape="landscape"
+                value={config.brandPublicLogo}
+                onChange={(v) => setConfig((c) => ({ ...c, brandPublicLogo: v }))}
+                onError={showFlash}
+              />
+              <ImageUploadField
+                label={t('brand.public.logoSquare')}
+                hint={t('brand.public.logoSquareHint')}
+                width={512}
+                height={512}
+                fit="cover"
+                previewShape="square"
+                value={config.brandPublicLogoSquare}
+                onChange={(v) => setConfig((c) => ({ ...c, brandPublicLogoSquare: v }))}
+                onError={showFlash}
+              />
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-gray-200 bg-gray-50/60 p-5 space-y-5">
+            <div className="inline-flex items-center gap-2">
+              <ImageIcon className="h-4 w-4 text-brand-blue" aria-hidden />
+              <h3 className="text-sm font-bold text-brand-navy">{t('brand.admin.title')}</h3>
+            </div>
+            <p className="text-xs text-gray-500">{t('brand.admin.desc')}</p>
+            <ImageUploadField
+              label={t('brand.admin.logo')}
+              hint={t('brand.admin.logoHint')}
+              width={256}
+              height={256}
+              fit="cover"
+              previewShape="square"
+              value={config.brandAdminLogo}
+              onChange={(v) => setConfig((c) => ({ ...c, brandAdminLogo: v }))}
+              onError={showFlash}
+            />
+          </div>
+
+          <div className="rounded-2xl border border-gray-200 bg-gray-50/60 p-5 space-y-5">
+            <div className="inline-flex items-center gap-2">
+              <ImageIcon className="h-4 w-4 text-brand-blue" aria-hidden />
+              <h3 className="text-sm font-bold text-brand-navy">{t('brand.favicons.title')}</h3>
+            </div>
+            <p className="text-xs text-gray-500">{t('brand.favicons.desc')}</p>
+            <div className="grid gap-5 sm:grid-cols-3">
+              <ImageUploadField
+                label={t('brand.favicons.favicon')}
+                hint={t('brand.favicons.faviconHint')}
+                width={32}
+                height={32}
+                fit="cover"
+                previewShape="square"
+                value={config.brandFavicon}
+                onChange={(v) => setConfig((c) => ({ ...c, brandFavicon: v }))}
+                onError={showFlash}
+              />
+              <ImageUploadField
+                label={t('brand.favicons.appleTouch')}
+                hint={t('brand.favicons.appleTouchHint')}
+                width={180}
+                height={180}
+                fit="cover"
+                previewShape="square"
+                value={config.brandAppleTouchIcon}
+                onChange={(v) => setConfig((c) => ({ ...c, brandAppleTouchIcon: v }))}
+                onError={showFlash}
+              />
+              <ImageUploadField
+                label={t('brand.favicons.og')}
+                hint={t('brand.favicons.ogHint')}
+                width={1200}
+                height={630}
+                fit="cover"
+                previewShape="landscape"
+                value={config.brandOgImage}
+                onChange={(v) => setConfig((c) => ({ ...c, brandOgImage: v }))}
+                onError={showFlash}
+              />
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-gray-200 bg-gray-50/60 p-5 space-y-5">
+            <div className="inline-flex items-center gap-2">
+              <Search className="h-4 w-4 text-brand-blue" aria-hidden />
+              <h3 className="text-sm font-bold text-brand-navy">{t('brand.seo.title')}</h3>
+            </div>
+
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-2">
+                {t('brand.identity.section')}
+              </p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="block text-[11px] font-semibold text-brand-navy mb-1">
+                    {t('brand.identity.siteName')}
+                  </label>
+                  <input
+                    type="text"
+                    value={config.siteName}
+                    onChange={(e) => setConfig((c) => ({ ...c, siteName: e.target.value }))}
+                    className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-brand-navy mb-1">
+                    {t('brand.identity.titleFormat')}
+                  </label>
+                  <input
+                    type="text"
+                    value={config.siteTitleFormat}
+                    onChange={(e) =>
+                      setConfig((c) => ({ ...c, siteTitleFormat: e.target.value }))
+                    }
+                    placeholder="%s · Hadar.ma"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue font-mono"
+                  />
+                  <p className="mt-1 text-[10px] text-gray-400">{t('brand.identity.titleFormatHint')}</p>
+                </div>
+                <div className="sm:col-span-2">
+                  <label className="block text-[11px] font-semibold text-brand-navy mb-1">
+                    {t('brand.identity.tagline')}
+                  </label>
+                  <input
+                    type="text"
+                    value={config.siteTagline}
+                    onChange={(e) => setConfig((c) => ({ ...c, siteTagline: e.target.value }))}
+                    className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-2">
+                {t('brand.seo.meta')}
+              </p>
+              <div className="grid gap-3">
+                <div>
+                  <label className="flex items-center justify-between text-[11px] font-semibold text-brand-navy mb-1">
+                    {t('brand.seo.metaTitle')}
+                    <span className="text-gray-400 font-normal">{config.seoTitle.length}/60</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={config.seoTitle}
+                    onChange={(e) => setConfig((c) => ({ ...c, seoTitle: e.target.value }))}
+                    maxLength={70}
+                    className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue"
+                  />
+                </div>
+                <div>
+                  <label className="flex items-center justify-between text-[11px] font-semibold text-brand-navy mb-1">
+                    {t('brand.seo.metaDescription')}
+                    <span className="text-gray-400 font-normal">{config.seoDescription.length}/160</span>
+                  </label>
+                  <textarea
+                    value={config.seoDescription}
+                    onChange={(e) => setConfig((c) => ({ ...c, seoDescription: e.target.value }))}
+                    rows={2}
+                    maxLength={180}
+                    className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue resize-y"
+                  />
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <label className="block text-[11px] font-semibold text-brand-navy mb-1">
+                      {t('brand.seo.keywords')}
+                    </label>
+                    <input
+                      type="text"
+                      value={config.seoKeywords}
+                      onChange={(e) => setConfig((c) => ({ ...c, seoKeywords: e.target.value }))}
+                      placeholder="mot1, mot2, mot3"
+                      className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-semibold text-brand-navy mb-1">
+                      {t('brand.seo.canonical')}
+                    </label>
+                    <input
+                      type="url"
+                      value={config.seoCanonicalUrl}
+                      onChange={(e) =>
+                        setConfig((c) => ({ ...c, seoCanonicalUrl: e.target.value }))
+                      }
+                      placeholder="https://hadar.ma"
+                      className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue font-mono"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-2">
+                {t('brand.seo.robots')}
+              </p>
+              <div className="grid gap-2 sm:grid-cols-2">
+                <PermissionToggle
+                  label={t('brand.seo.robotsIndex')}
+                  checked={config.seoRobotsIndex}
+                  onChange={(v) => setConfig((c) => ({ ...c, seoRobotsIndex: v }))}
+                />
+                <PermissionToggle
+                  label={t('brand.seo.robotsFollow')}
+                  checked={config.seoRobotsFollow}
+                  onChange={(v) => setConfig((c) => ({ ...c, seoRobotsFollow: v }))}
+                />
+              </div>
+            </div>
+
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-2">
+                {t('brand.seo.tracking')}
+              </p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <div>
+                  <label className="block text-[11px] font-semibold text-brand-navy mb-1">
+                    {t('brand.seo.gaId')}
+                  </label>
+                  <input
+                    type="text"
+                    value={config.seoGaId}
+                    onChange={(e) => setConfig((c) => ({ ...c, seoGaId: e.target.value }))}
+                    placeholder="G-XXXXXXXXXX"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-brand-navy mb-1">
+                    {t('brand.seo.googleVerif')}
+                  </label>
+                  <input
+                    type="text"
+                    value={config.seoGoogleVerification}
+                    onChange={(e) =>
+                      setConfig((c) => ({ ...c, seoGoogleVerification: e.target.value }))
+                    }
+                    placeholder="abc123XYZ..."
+                    className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue font-mono"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-brand-navy mb-1">
+                    {t('brand.seo.twitter')}
+                  </label>
+                  <input
+                    type="text"
+                    value={config.seoTwitterHandle}
+                    onChange={(e) =>
+                      setConfig((c) => ({ ...c, seoTwitterHandle: e.target.value }))
+                    }
+                    placeholder="@hadar_ma"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue font-mono"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-2">
+                {t('brand.seo.preview')}
+              </p>
+              <div className="rounded-xl border border-gray-200 bg-white p-4 max-w-xl">
+                <p className="text-[11px] text-gray-400 truncate">
+                  {config.seoCanonicalUrl || 'https://hadar.ma'}
+                </p>
+                <p className="text-base text-blue-700 font-semibold mt-1 line-clamp-1">
+                  {config.seoTitle || config.siteName}
+                </p>
+                <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                  {config.seoDescription || config.siteTagline}
+                </p>
+              </div>
+            </div>
+
+            <p className="text-xs text-gray-400">{t('brand.seo.hint')}</p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">

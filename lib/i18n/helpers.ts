@@ -32,6 +32,19 @@ const STATUS_KEY: Record<string, string> = {
   a_corriger: 'status.a_corriger',
 };
 
+const ROLE_KEY: Record<string, string> = {
+  superadmin: 'role.superadmin',
+  admin: 'role.admin',
+  moderateur: 'role.moderateur',
+  support: 'role.support',
+};
+
+const MEMBER_STATUS_KEY: Record<string, string> = {
+  actif: 'member.status.actif',
+  inactif: 'member.status.inactif',
+  suspendu: 'member.status.suspendu',
+};
+
 export function translateProblem(t: T, frLabel: string): string {
   const key = PROBLEM_KEY[frLabel];
   return key ? t(key) : frLabel;
@@ -44,6 +57,16 @@ export function translateChannel(t: T, frLabel: string): string {
 
 export function translateStatus(t: T, statusId: string): string {
   const key = STATUS_KEY[statusId];
+  return key ? t(key) : statusId;
+}
+
+export function translateRole(t: T, roleId: string): string {
+  const key = ROLE_KEY[roleId];
+  return key ? t(key) : roleId;
+}
+
+export function translateMemberStatus(t: T, statusId: string): string {
+  const key = MEMBER_STATUS_KEY[statusId];
   return key ? t(key) : statusId;
 }
 

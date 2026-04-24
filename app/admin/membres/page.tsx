@@ -23,6 +23,8 @@ import {
   type Role,
   type Status,
 } from '@/lib/mock/membres';
+import { useI18n } from '@/lib/i18n/provider';
+import { translateRole, translateMemberStatus } from '@/lib/i18n/helpers';
 
 const PAGE_SIZE_OPTIONS = [10, 20, 30, 50, 100] as const;
 const ROLES: Role[] = ['admin', 'moderateur', 'support'];
@@ -47,6 +49,7 @@ function useClickOutside(ref: React.RefObject<HTMLElement>, onOutside: () => voi
 }
 
 export default function Page() {
+  const { t } = useI18n();
   const [refreshKey, setRefreshKey] = useState(0);
   const [members, setMembers] = useState<Member[]>(INITIAL_MEMBERS);
   const [search, setSearch] = useState('');
@@ -92,14 +95,22 @@ export default function Page() {
   const pageItems = filtered.slice((currentPage - 1) * pageSize, currentPage * pageSize);
 
   const exportRows = (): (string | number)[][] => [
-    ['ID', 'Nom', 'Email', 'Téléphone', 'Rôle', 'Statut', 'Dernière activité'],
+    [
+      t('membres.col.id'),
+      t('membres.col.name'),
+      t('membres.col.email'),
+      t('membres.col.phone'),
+      t('membres.col.role'),
+      t('membres.col.status'),
+      t('membres.col.lastSeen'),
+    ],
     ...filtered.map((m) => [
       `#${m.id}`,
       m.name,
       m.email,
       m.phone,
-      ROLE_STYLE[m.role].label,
-      STATUS_STYLE[m.status].label,
+      translateRole(t, m.role),
+      translateMemberStatus(t, m.status),
       m.lastSeen,
     ]),
   ];
@@ -161,12 +172,10 @@ export default function Page() {
     <div>
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">
-            Membres de l&apos;équipe
-          </h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">{t('membres.title')}</h1>
           <p className="mt-1 text-sm text-gray-500">
-            <AnimatedCounter key={`${refreshKey}-total`} value={`${members.length}`} /> membres dans
-            l&apos;équipe Hadar
+            <AnimatedCounter key={`${refreshKey}-total`} value={`${members.length}`} />{' '}
+            {t('membres.subtitle')}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -176,7 +185,7 @@ export default function Page() {
             className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-4 py-1.5 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
           >
             <UserPlus className="h-4 w-4" aria-hidden />
-            Ajouter un membre
+            {t('membres.addMember')}
           </button>
           <RefreshButton onRefresh={() => setRefreshKey((k) => k + 1)} />
           <ExportButton filename="hadar-membres" getRows={exportRows} />
@@ -195,7 +204,7 @@ export default function Page() {
                 className="inline-flex items-center gap-1.5 rounded-pill bg-yellow-100 text-yellow-700 px-3 py-1.5 text-xs font-semibold hover:bg-yellow-200 shadow-glow-yellow transition-colors"
               >
                 <Filter className="h-3.5 w-3.5" aria-hidden />
-                Filtres
+                {t('membres.filters')}
                 {activeFilterCount > 0 && (
                   <span className="rounded-full bg-yellow-500 text-white h-4 min-w-4 px-1 text-[10px] flex items-center justify-center">
                     {activeFilterCount}
@@ -209,7 +218,7 @@ export default function Page() {
                   className="absolute left-0 top-full mt-2 w-64 rounded-xl bg-white border border-gray-200 shadow-glow-navy z-20 p-4"
                 >
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-2">
-                    Rôle
+                    {t('membres.field.role')}
                   </p>
                   <div className="space-y-1.5 mb-4">
                     {ROLES.map((r) => (
@@ -223,12 +232,12 @@ export default function Page() {
                           onChange={() => setRoleFilter((s) => toggle(s, r))}
                           className="accent-brand-navy"
                         />
-                        {ROLE_STYLE[r].label}
+                        {translateRole(t, r)}
                       </label>
                     ))}
                   </div>
                   <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-2">
-                    Statut
+                    {t('membres.field.status')}
                   </p>
                   <div className="space-y-1.5 mb-3">
                     {STATUSES.map((s) => (
@@ -242,7 +251,7 @@ export default function Page() {
                           onChange={() => setStatusFilter((set) => toggle(set, s))}
                           className="accent-brand-navy"
                         />
-                        {STATUS_STYLE[s].label}
+                        {translateMemberStatus(t, s)}
                       </label>
                     ))}
                   </div>
@@ -256,7 +265,7 @@ export default function Page() {
                     className="w-full inline-flex items-center justify-center gap-1.5 rounded-pill border border-gray-200 text-brand-navy px-3 py-1.5 text-xs font-medium hover:border-brand-blue disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     <X className="h-3 w-3" aria-hidden />
-                    Effacer les filtres
+                    {t('membres.clearFilters')}
                   </button>
                 </div>
               )}
@@ -271,7 +280,7 @@ export default function Page() {
                 className="inline-flex items-center gap-1.5 rounded-pill bg-yellow-100 text-yellow-700 px-3 py-1.5 text-xs font-semibold hover:bg-yellow-200 shadow-glow-yellow transition-colors"
               >
                 <SlidersHorizontal className="h-3.5 w-3.5" aria-hidden />
-                Lignes par page
+                {t('membres.rowsPerPage')}
                 <span className="rounded-full bg-yellow-600 text-white h-4 min-w-5 px-1 text-[10px] flex items-center justify-center">
                   {pageSize}
                 </span>
@@ -283,7 +292,7 @@ export default function Page() {
                   className="absolute left-0 top-full mt-2 w-56 rounded-xl bg-white border border-gray-200 shadow-glow-navy z-20 py-2"
                 >
                   <p className="px-4 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
-                    Afficher par page
+                    {t('membres.perPage')}
                   </p>
                   {PAGE_SIZE_OPTIONS.map((n) => {
                     const active = n === pageSize;
@@ -302,7 +311,7 @@ export default function Page() {
                             : 'text-brand-navy hover:bg-gray-50'
                         }`}
                       >
-                        <span>{n} lignes</span>
+                        <span>{t('membres.rows', { n })}</span>
                         {active && (
                           <span className="inline-flex items-center justify-center h-5 w-5 rounded-full border-2 border-brand-blue text-brand-blue">
                             <Check className="h-3 w-3" />
@@ -325,7 +334,7 @@ export default function Page() {
               type="search"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="Rechercher un membre"
+              placeholder={t('membres.searchPlaceholder')}
               className="w-64 rounded-pill bg-gray-50 border border-gray-200 pl-9 pr-3 py-1.5 text-xs text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue"
             />
           </div>
@@ -335,20 +344,20 @@ export default function Page() {
           <table className="min-w-full text-sm">
             <thead className="bg-gray-50 text-gray-500 border-b border-gray-200">
               <tr>
-                <th className="px-4 py-3 text-left font-semibold">ID</th>
-                <th className="px-4 py-3 text-left font-semibold">Nom</th>
-                <th className="px-4 py-3 text-left font-semibold">Email</th>
-                <th className="px-4 py-3 text-left font-semibold">Rôle</th>
-                <th className="px-4 py-3 text-left font-semibold">Statut</th>
-                <th className="px-4 py-3 text-left font-semibold">Dernière activité</th>
-                <th className="px-4 py-3 text-right font-semibold">Action</th>
+                <th className="px-4 py-3 text-left font-semibold">{t('membres.col.id')}</th>
+                <th className="px-4 py-3 text-left font-semibold">{t('membres.col.name')}</th>
+                <th className="px-4 py-3 text-left font-semibold">{t('membres.col.email')}</th>
+                <th className="px-4 py-3 text-left font-semibold">{t('membres.col.role')}</th>
+                <th className="px-4 py-3 text-left font-semibold">{t('membres.col.status')}</th>
+                <th className="px-4 py-3 text-left font-semibold">{t('membres.col.lastSeen')}</th>
+                <th className="px-4 py-3 text-right font-semibold">{t('membres.col.action')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {pageItems.length === 0 && (
                 <tr>
                   <td colSpan={7} className="px-5 py-10 text-center text-sm text-gray-400">
-                    Aucun membre ne correspond à vos critères.
+                    {t('membres.empty')}
                   </td>
                 </tr>
               )}
@@ -366,14 +375,14 @@ export default function Page() {
                       <span
                         className={`inline-flex items-center rounded-pill px-2.5 py-0.5 text-xs font-semibold ${r.cls}`}
                       >
-                        {r.label}
+                        {translateRole(t, m.role)}
                       </span>
                     </td>
                     <td className="px-4 py-3">
                       <span
                         className={`inline-flex items-center rounded-pill px-2.5 py-0.5 text-xs font-semibold ${s.cls}`}
                       >
-                        {s.label}
+                        {translateMemberStatus(t, m.status)}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-gray-500 whitespace-nowrap">{m.lastSeen}</td>
@@ -398,7 +407,7 @@ export default function Page() {
                         className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-3 py-1.5 text-xs font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
                       >
                         <Eye className="h-3.5 w-3.5" aria-hidden />
-                        Voir
+                        {t('membres.see')}
                       </button>
                     </td>
                   </tr>
@@ -414,9 +423,11 @@ export default function Page() {
               key={`${refreshKey}-count-${filtered.length}`}
               value={`${filtered.length}`}
             />{' '}
-            membre{filtered.length > 1 ? 's' : ''}
-            {activeFilterCount > 0 ? ` · ${activeFilterCount} filtre${activeFilterCount > 1 ? 's' : ''}` : ''}
-            {search ? ` · recherche : « ${search} »` : ''}
+            {t(filtered.length > 1 ? 'membres.countWord.other' : 'membres.countWord.one')}
+            {activeFilterCount > 0
+              ? ` · ${t(activeFilterCount > 1 ? 'membres.filter.other' : 'membres.filter.one', { count: activeFilterCount })}`
+              : ''}
+            {search ? ` · ${t('membres.searchApplied', { query: search })}` : ''}
           </span>
           <div className="flex items-center gap-1">
             <button
@@ -424,7 +435,7 @@ export default function Page() {
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={currentPage <= 1}
               className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
-              aria-label="Page précédente"
+              aria-label={t('pagination.prev')}
             >
               ‹
             </button>
@@ -448,7 +459,7 @@ export default function Page() {
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={currentPage >= totalPages}
               className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
-              aria-label="Page suivante"
+              aria-label={t('pagination.next')}
             >
               ›
             </button>
@@ -457,31 +468,31 @@ export default function Page() {
       </section>
 
       <aside className="mt-6 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6">
-        <h2 className="text-lg font-bold text-brand-navy mb-4">Matrice des permissions</h2>
+        <h2 className="text-lg font-bold text-brand-navy mb-4">{t('membres.permMatrix')}</h2>
         <div className="overflow-x-auto">
           <table className="min-w-full text-xs">
             <thead className="text-gray-400">
               <tr>
-                <th className="text-left px-3 py-2 font-semibold">Action</th>
-                <th className="px-3 py-2 font-semibold text-center">Super-admin</th>
-                <th className="px-3 py-2 font-semibold text-center">Admin</th>
-                <th className="px-3 py-2 font-semibold text-center">Modérateur</th>
-                <th className="px-3 py-2 font-semibold text-center">Support</th>
+                <th className="text-left px-3 py-2 font-semibold">{t('membres.col.action')}</th>
+                <th className="px-3 py-2 font-semibold text-center">{t('role.superadmin')}</th>
+                <th className="px-3 py-2 font-semibold text-center">{t('role.admin')}</th>
+                <th className="px-3 py-2 font-semibold text-center">{t('role.moderateur')}</th>
+                <th className="px-3 py-2 font-semibold text-center">{t('role.support')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {[
-                ['Voir le dashboard', true, true, true, true],
-                ['Modérer un signalement', true, true, true, false],
-                ['Bloquer un utilisateur', true, true, true, false],
-                ['Supprimer un utilisateur', true, true, false, false],
-                ['Ajouter / modifier un membre', true, true, false, false],
-                ['Changer le rôle d’un membre 🔒', true, false, false, false],
-                ['Purger définitivement 🔒', true, false, false, false],
-                ['Modifier les intégrations 🔒', true, false, false, false],
-              ].map(([label, ...cells]) => (
-                <tr key={String(label)} className="text-brand-navy">
-                  <td className="px-3 py-2 font-medium">{label}</td>
+                ['perm.viewDashboard', true, true, true, true],
+                ['perm.moderateReport', true, true, true, false],
+                ['perm.blockUser', true, true, true, false],
+                ['perm.deleteUser', true, true, false, false],
+                ['perm.addEditMember', true, true, false, false],
+                ['perm.changeRole', true, false, false, false],
+                ['perm.hardDelete', true, false, false, false],
+                ['perm.editIntegrations', true, false, false, false],
+              ].map(([key, ...cells]) => (
+                <tr key={String(key)} className="text-brand-navy">
+                  <td className="px-3 py-2 font-medium">{t(String(key))}</td>
                   {cells.map((ok, i) => (
                     <td key={i} className="px-3 py-2 text-center">
                       {ok ? (

@@ -14,6 +14,8 @@ import {
   LogOut,
   AlertTriangle,
   Check,
+  Camera,
+  Trash2,
 } from 'lucide-react';
 import {
   TfaEnrollmentModal,
@@ -35,7 +37,7 @@ const PROFILE_KEY = 'hadar:settings:profile';
 const GENERAL_KEY = 'hadar:settings:general';
 const TFA_KEY = 'hadar:settings:tfa-enrolled';
 
-type Profile = { firstName: string; lastName: string; phone: string; email: string };
+type Profile = { firstName: string; lastName: string; phone: string; email: string; photo?: string };
 const DEFAULT_PROFILE: Profile = {
   firstName: 'Mohamed Ossama',
   lastName: 'MOUSSAOUI',
@@ -243,6 +245,9 @@ export function SettingsTabs() {
   const [enrolling, setEnrolling] = useState<TfaMethodId | null>(null);
   const [flash, setFlash] = useState<{ type: 'ok' | 'err'; msg: string } | null>(null);
 
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+
   const [currentPwd, setCurrentPwd] = useState('');
   const [newPwd, setNewPwd] = useState('');
   const [confirmPwd, setConfirmPwd] = useState('');
@@ -275,6 +280,73 @@ export function SettingsTabs() {
     window.localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
     setSavedProfile(profile);
     showFlash('ok', t('settings.account.savedMsg'));
+  };
+
+  const resizePhoto = (file: File, size = 256): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('read-fail'));
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onerror = () => reject(new Error('img-fail'));
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = size;
+          canvas.height = size;
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return reject(new Error('no-ctx'));
+          const ratio = img.width / img.height;
+          let sx = 0;
+          let sy = 0;
+          let sw = img.width;
+          let sh = img.height;
+          if (ratio > 1) {
+            sw = img.height;
+            sx = (img.width - sw) / 2;
+          } else {
+            sh = img.width;
+            sy = (img.height - sh) / 2;
+          }
+          ctx.drawImage(img, sx, sy, sw, sh, 0, 0, size, size);
+          resolve(canvas.toDataURL('image/jpeg', 0.85));
+        };
+        img.src = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+
+  const handlePhotoPick = () => photoInputRef.current?.click();
+
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      showFlash('err', t('settings.account.photoErrType'));
+      if (photoInputRef.current) photoInputRef.current.value = '';
+      return;
+    }
+    try {
+      setPhotoUploading(true);
+      const dataUrl = await resizePhoto(file, 256);
+      const next = { ...profile, photo: dataUrl };
+      setProfile(next);
+      window.localStorage.setItem(PROFILE_KEY, JSON.stringify(next));
+      setSavedProfile(next);
+      showFlash('ok', t('settings.account.photoChanged'));
+    } catch {
+      showFlash('err', t('settings.account.photoErr'));
+    } finally {
+      setPhotoUploading(false);
+      if (photoInputRef.current) photoInputRef.current.value = '';
+    }
+  };
+
+  const handlePhotoRemove = () => {
+    const next = { ...profile, photo: undefined };
+    setProfile(next);
+    window.localStorage.setItem(PROFILE_KEY, JSON.stringify(next));
+    setSavedProfile(next);
+    showFlash('ok', t('settings.account.photoRemoved'));
   };
 
   const updatePassword = () => {
@@ -402,14 +474,66 @@ export function SettingsTabs() {
       {active === 'compte' && (
         <div>
           <div className="flex items-center gap-4 mb-6">
-            <div className="h-20 w-20 rounded-full bg-grad-stat-navy text-white flex items-center justify-center text-xl font-bold shadow-glow-navy">
-              {(profile.firstName[0] ?? '') + (profile.lastName[0] ?? '')}
+            <div className="relative group">
+              <button
+                type="button"
+                onClick={handlePhotoPick}
+                disabled={photoUploading}
+                aria-label={t('settings.account.changePhotoAria')}
+                className="h-20 w-20 rounded-full bg-grad-stat-navy text-white flex items-center justify-center text-xl font-bold shadow-glow-navy overflow-hidden hover:brightness-110 transition-all disabled:opacity-60 disabled:cursor-wait relative"
+              >
+                {profile.photo ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={profile.photo}
+                    alt=""
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <span>{(profile.firstName[0] ?? '') + (profile.lastName[0] ?? '')}</span>
+                )}
+                <span className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                  <Camera className="h-5 w-5 text-white" aria-hidden />
+                </span>
+              </button>
+              <input
+                ref={photoInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handlePhotoChange}
+              />
             </div>
             <div>
               <h3 className="text-lg font-bold text-brand-navy">
                 {profile.firstName} {profile.lastName}
               </h3>
               <p className="text-sm text-brand-blue font-semibold">{t('settings.role.admin')}</p>
+              <div className="mt-1.5 flex items-center gap-3 text-xs">
+                <button
+                  type="button"
+                  onClick={handlePhotoPick}
+                  disabled={photoUploading}
+                  className="inline-flex items-center gap-1 text-brand-blue hover:text-brand-navy font-medium disabled:opacity-60 disabled:cursor-wait"
+                >
+                  <Camera className="h-3 w-3" aria-hidden />
+                  {photoUploading
+                    ? t('settings.account.photoUploading')
+                    : profile.photo
+                      ? t('settings.account.photoChange')
+                      : t('settings.account.photoUpload')}
+                </button>
+                {profile.photo && (
+                  <button
+                    type="button"
+                    onClick={handlePhotoRemove}
+                    className="inline-flex items-center gap-1 text-red-600 hover:text-red-700 font-medium"
+                  >
+                    <Trash2 className="h-3 w-3" aria-hidden />
+                    {t('settings.account.photoRemove')}
+                  </button>
+                )}
+              </div>
             </div>
           </div>
 

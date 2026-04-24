@@ -562,6 +562,15 @@ const fr: Dict = {
   'settings.account.errMismatch': 'La confirmation ne correspond pas',
   'settings.account.errTooShort': 'Minimum 8 caractères',
   'settings.account.pwdUpdated': 'Mot de passe mis à jour',
+  'settings.account.changePhotoAria': 'Changer la photo de profil',
+  'settings.account.photoUpload': 'Ajouter une photo',
+  'settings.account.photoChange': 'Changer la photo',
+  'settings.account.photoRemove': 'Retirer',
+  'settings.account.photoUploading': 'Chargement…',
+  'settings.account.photoChanged': 'Photo de profil mise à jour',
+  'settings.account.photoRemoved': 'Photo de profil retirée',
+  'settings.account.photoErrType': 'Fichier image requis (PNG, JPG, WebP)',
+  'settings.account.photoErr': 'Impossible de charger cette image',
 
   'settings.security.tfaTitle': 'Activer / désactiver la double authentification (2FA)',
   'settings.security.tfaSub':
@@ -1165,6 +1174,15 @@ const en: Dict = {
   'settings.account.errMismatch': "Confirmation doesn't match",
   'settings.account.errTooShort': 'At least 8 characters',
   'settings.account.pwdUpdated': 'Password updated',
+  'settings.account.changePhotoAria': 'Change profile photo',
+  'settings.account.photoUpload': 'Add a photo',
+  'settings.account.photoChange': 'Change photo',
+  'settings.account.photoRemove': 'Remove',
+  'settings.account.photoUploading': 'Loading…',
+  'settings.account.photoChanged': 'Profile photo updated',
+  'settings.account.photoRemoved': 'Profile photo removed',
+  'settings.account.photoErrType': 'Image file required (PNG, JPG, WebP)',
+  'settings.account.photoErr': 'Cannot load this image',
 
   'settings.security.tfaTitle': 'Enable / disable two-factor authentication (2FA)',
   'settings.security.tfaSub':
@@ -1766,6 +1784,15 @@ const ar: Dict = {
   'settings.account.errMismatch': 'التأكيد غير مطابق',
   'settings.account.errTooShort': '8 أحرف على الأقل',
   'settings.account.pwdUpdated': 'تم تحديث كلمة المرور',
+  'settings.account.changePhotoAria': 'تغيير صورة الملف الشخصي',
+  'settings.account.photoUpload': 'إضافة صورة',
+  'settings.account.photoChange': 'تغيير الصورة',
+  'settings.account.photoRemove': 'إزالة',
+  'settings.account.photoUploading': 'جارٍ التحميل…',
+  'settings.account.photoChanged': 'تم تحديث صورة الملف الشخصي',
+  'settings.account.photoRemoved': 'تمت إزالة صورة الملف الشخصي',
+  'settings.account.photoErrType': 'ملف صورة مطلوب (PNG, JPG, WebP)',
+  'settings.account.photoErr': 'تعذر تحميل هذه الصورة',
 
   'settings.security.tfaTitle': 'تفعيل / تعطيل المصادقة الثنائية (2FA)',
   'settings.security.tfaSub':

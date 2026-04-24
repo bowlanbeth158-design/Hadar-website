@@ -15,7 +15,7 @@ import {
   Settings,
   type LucideIcon,
 } from 'lucide-react';
-import { Logo } from '../Logo';
+import { OFFICIAL_LOGO_URL } from '../Logo';
 import { REPORTS } from '@/lib/mock/signalements';
 import { useI18n } from '@/lib/i18n/provider';
 import { PLATFORM_CONFIG_EVENT, PLATFORM_CONFIG_KEY } from '@/lib/admin-config';
@@ -48,26 +48,24 @@ function SidebarBrand() {
     };
   }, []);
 
-  if (customLogo) {
-    const dotIndex = siteName.indexOf('.');
-    const main = dotIndex > 0 ? siteName.slice(0, dotIndex) : siteName;
-    const suffix = dotIndex > 0 ? siteName.slice(dotIndex) : '';
-    return (
-      <div className="flex items-center gap-2.5">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={customLogo}
-          alt=""
-          className="h-10 w-10 rounded-xl object-cover bg-white/10"
-        />
-        <span className="text-2xl font-bold text-white tracking-tight">
-          {main}
-          {suffix && <span className="opacity-70">{suffix}</span>}
-        </span>
-      </div>
-    );
-  }
-  return <Logo variant="white" size="md" />;
+  const dotIndex = siteName.indexOf('.');
+  const main = dotIndex > 0 ? siteName.slice(0, dotIndex) : siteName;
+  const suffix = dotIndex > 0 ? siteName.slice(dotIndex) : '';
+  const imageSrc = customLogo ?? OFFICIAL_LOGO_URL;
+  const imgClass = customLogo
+    ? 'h-24 w-24 rounded-2xl object-cover bg-white/10'
+    : 'h-24 w-24 object-contain brightness-0 invert';
+
+  return (
+    <div className="flex flex-col items-center justify-center gap-3 text-center">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={imageSrc} alt="" className={imgClass} />
+      <span className="text-3xl font-bold text-white tracking-tight">
+        {main}
+        {suffix && <span className="opacity-70">{suffix}</span>}
+      </span>
+    </div>
+  );
 }
 
 type NavItem = { href: string; labelKey: string; Icon: LucideIcon; badge?: number };

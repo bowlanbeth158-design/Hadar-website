@@ -13,7 +13,7 @@ const SIZE_MAP: Record<Size, { shield: string; text: string; gap: string }> = {
   lg: { shield: 'h-14 w-14', text: 'text-4xl', gap: 'gap-3' },
 };
 
-const OFFICIAL_LOGO_URL =
+export const OFFICIAL_LOGO_URL =
   'https://i.postimg.cc/P5FjXRLP/Logo-new-hadar-06-%281%29.png';
 
 export function Logo({ variant = 'color', withWordmark = true, size = 'md' }: Props) {

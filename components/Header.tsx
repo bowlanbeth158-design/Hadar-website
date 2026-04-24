@@ -15,60 +15,64 @@ export function Header() {
       </div>
 
       <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur border-b border-gray-200">
-        <nav className="mx-auto max-w-7xl flex items-center gap-4 px-4 md:px-6 py-3">
-          <Link href="/" aria-label="Retour à l'accueil Hadar" className="shrink-0">
-            <Logo size="lg" />
-          </Link>
+        <nav className="mx-auto max-w-7xl flex items-center justify-between gap-6 px-6 md:px-10 py-3">
+          {/* LEFT CLUSTER : logo + nav + Vérifier + Signaler */}
+          <div className="flex items-center gap-5">
+            <Link href="/" aria-label="Retour à l'accueil Hadar" className="shrink-0">
+              <Logo size="lg" />
+            </Link>
 
-          <ul className="hidden md:flex items-center gap-5 text-sm font-medium text-brand-navy ml-6">
-            <li>
-              <Link href="/" className="hover:text-brand-blue transition-colors">
-                Accueil
-              </Link>
-            </li>
-            <li>
-              <Link href="/comment-ca-marche" className="hover:text-brand-blue transition-colors">
-                Comment ça marche
-              </Link>
-            </li>
-            <li>
-              <Link
-                href="/mes-alertes"
-                className="relative inline-flex items-center gap-1.5 hover:text-brand-blue transition-colors"
-              >
-                Mes alertes
-                <span className="relative inline-flex">
-                  <Bell className="h-4 w-4" aria-hidden />
-                  {ALERT_COUNT > 0 && (
-                    <span
-                      aria-label={`${ALERT_COUNT} nouvelles alertes`}
-                      className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1"
-                    >
-                      {ALERT_COUNT > 9 ? '9+' : ALERT_COUNT}
-                    </span>
-                  )}
-                </span>
-              </Link>
-            </li>
-          </ul>
+            <ul className="hidden md:flex items-center gap-5 text-sm font-medium text-brand-navy ml-2">
+              <li>
+                <Link href="/" className="hover:text-brand-blue transition-colors">
+                  Accueil
+                </Link>
+              </li>
+              <li>
+                <Link href="/comment-ca-marche" className="hover:text-brand-blue transition-colors">
+                  Comment ça marche
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/mes-alertes"
+                  className="relative inline-flex items-center gap-1.5 hover:text-brand-blue transition-colors"
+                >
+                  Mes alertes
+                  <span className="relative inline-flex">
+                    <Bell className="h-4 w-4" aria-hidden />
+                    {ALERT_COUNT > 0 && (
+                      <span
+                        aria-label={`${ALERT_COUNT} nouvelles alertes`}
+                        className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1"
+                      >
+                        {ALERT_COUNT > 9 ? '9+' : ALERT_COUNT}
+                      </span>
+                    )}
+                  </span>
+                </Link>
+              </li>
+            </ul>
 
-          <Link
-            href="/recherche"
-            className="ml-4 inline-flex items-center gap-2 rounded-pill bg-green-500 hover:bg-green-700 text-white px-6 py-2.5 text-sm font-semibold shadow-glow-green animate-verify-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all"
-          >
-            <ShieldCheck className="h-5 w-5 animate-siren-wiggle" aria-hidden />
-            Vérifier
-          </Link>
+            <Link
+              href="/recherche"
+              className="inline-flex items-center gap-2 rounded-pill bg-green-500 hover:bg-green-700 text-white px-6 py-2.5 text-sm font-semibold shadow-glow-green animate-verify-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all"
+            >
+              <ShieldCheck className="h-5 w-5 animate-siren-wiggle" aria-hidden />
+              Vérifier
+            </Link>
 
-          <Link
-            href="/signaler"
-            className="ml-2 inline-flex items-center gap-2 rounded-pill bg-red-500 hover:bg-red-700 text-white px-6 py-2.5 text-sm font-semibold shadow-glow-red animate-alert-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all"
-          >
-            <Siren className="h-5 w-5 animate-siren-wiggle" aria-hidden />
-            Signaler
-          </Link>
+            <Link
+              href="/signaler"
+              className="inline-flex items-center gap-2 rounded-pill bg-red-500 hover:bg-red-700 text-white px-6 py-2.5 text-sm font-semibold shadow-glow-red animate-alert-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all"
+            >
+              <Siren className="h-5 w-5 animate-siren-wiggle" aria-hidden />
+              Signaler
+            </Link>
+          </div>
 
-          <div className="ml-auto flex items-center gap-3">
+          {/* RIGHT CLUSTER : langue + devise + profil */}
+          <div className="flex items-center gap-3">
             <div className="hidden sm:flex items-center gap-1 pr-3 border-r border-gray-200">
               <LanguageSwitcher />
               <CurrencySwitcher />

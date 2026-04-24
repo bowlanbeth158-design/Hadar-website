@@ -12,6 +12,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 import { GROUP_COLORS, type UserGroup } from '@/lib/groups';
+import { useI18n } from '@/lib/i18n/provider';
 
 type Mode = 'manage' | 'add';
 
@@ -38,6 +39,7 @@ export function UserGroupsModal({
   onDelete,
   onAddToGroup,
 }: Props) {
+  const { t } = useI18n();
   const [draftName, setDraftName] = useState('');
   const [draftDesc, setDraftDesc] = useState('');
   const [draftColor, setDraftColor] = useState<string>(GROUP_COLORS[0]);
@@ -90,8 +92,11 @@ export function UserGroupsModal({
 
   const title =
     mode === 'add'
-      ? `Ajouter ${selectedUserIds.length} utilisateur${selectedUserIds.length > 1 ? 's' : ''} à un groupe`
-      : 'Groupes d’utilisateurs';
+      ? t(
+          selectedUserIds.length > 1 ? 'groupsModal.titleAdd.other' : 'groupsModal.titleAdd.one',
+          { count: selectedUserIds.length },
+        )
+      : t('groupsModal.titleManage');
 
   return (
     <div
@@ -101,7 +106,7 @@ export function UserGroupsModal({
     >
       <button
         type="button"
-        aria-label="Fermer"
+        aria-label={t('common.close')}
         onClick={onClose}
         className="absolute inset-0 bg-brand-navy/40 backdrop-blur-sm cursor-default"
       />
@@ -113,7 +118,7 @@ export function UserGroupsModal({
           </div>
           <button
             type="button"
-            aria-label="Fermer"
+            aria-label={t('common.close')}
             onClick={onClose}
             className="h-8 w-8 rounded-full hover:bg-white/10 flex items-center justify-center"
           >
@@ -125,7 +130,7 @@ export function UserGroupsModal({
           {mode === 'add' && groups.length > 0 && (
             <section className="px-6 pt-5">
               <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-2">
-                Groupes existants
+                {t('groupsModal.existingGroups')}
               </p>
               <ul className="space-y-2">
                 {groups.map((g) => (
@@ -142,7 +147,10 @@ export function UserGroupsModal({
                           {g.name}
                         </span>
                         <span className="text-xs text-gray-500">
-                          {g.userIds.length} membre{g.userIds.length > 1 ? 's' : ''}
+                          {t(
+                            g.userIds.length > 1 ? 'groupsModal.members.other' : 'groupsModal.members.one',
+                            { count: g.userIds.length },
+                          )}
                         </span>
                       </div>
                       <ChevronRight className="h-4 w-4 text-gray-400" aria-hidden />
@@ -156,12 +164,12 @@ export function UserGroupsModal({
           {mode === 'manage' && (
             <section className="px-6 pt-5">
               <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-2">
-                {groups.length} groupe{groups.length > 1 ? 's' : ''}
+                {t(groups.length > 1 ? 'groupsModal.count.other' : 'groupsModal.count.one', {
+                  count: groups.length,
+                })}
               </p>
               {groups.length === 0 ? (
-                <p className="text-sm text-gray-400 py-4">
-                  Aucun groupe pour l&apos;instant. Créez-en un ci-dessous.
-                </p>
+                <p className="text-sm text-gray-400 py-4">{t('groupsModal.empty')}</p>
               ) : (
                 <ul className="space-y-2">
                   {groups.map((g) => {
@@ -177,14 +185,14 @@ export function UserGroupsModal({
                               type="text"
                               value={editName}
                               onChange={(e) => setEditName(e.target.value)}
-                              placeholder="Nom du groupe"
+                              placeholder={t('groupsModal.namePlaceholder')}
                               className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue"
                             />
                             <textarea
                               value={editDesc}
                               onChange={(e) => setEditDesc(e.target.value)}
                               rows={2}
-                              placeholder="Description (optionnel)"
+                              placeholder={t('groupsModal.descPlaceholder')}
                               className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue resize-none"
                             />
                             <div className="flex flex-wrap gap-2">
@@ -206,7 +214,7 @@ export function UserGroupsModal({
                                 onClick={() => setEditing(null)}
                                 className="inline-flex items-center gap-1 rounded-pill border border-gray-200 text-brand-navy px-3 py-1.5 text-xs font-medium hover:border-brand-blue"
                               >
-                                Annuler
+                                {t('groupsModal.cancel')}
                               </button>
                               <button
                                 type="button"
@@ -215,7 +223,7 @@ export function UserGroupsModal({
                                 className="inline-flex items-center gap-1 rounded-pill bg-green-500 hover:bg-green-700 text-white px-3 py-1.5 text-xs font-semibold shadow-glow-green disabled:opacity-50 disabled:cursor-not-allowed"
                               >
                                 <Save className="h-3.5 w-3.5" aria-hidden />
-                                Enregistrer
+                                {t('groupsModal.save')}
                               </button>
                             </div>
                           </div>
@@ -229,19 +237,24 @@ export function UserGroupsModal({
                                   {g.name}
                                 </span>
                                 <span className="text-xs text-gray-500">
-                                  {g.userIds.length} membre{g.userIds.length > 1 ? 's' : ''}
+                                  {t(
+                                    g.userIds.length > 1 ? 'groupsModal.members.other' : 'groupsModal.members.one',
+                                    { count: g.userIds.length },
+                                  )}
                                 </span>
                               </div>
                               {g.description && (
                                 <p className="mt-1 text-xs text-gray-500">{g.description}</p>
                               )}
-                              <p className="mt-1 text-[10px] text-gray-400">Créé le {g.createdAt}</p>
+                              <p className="mt-1 text-[10px] text-gray-400">
+                                {t('groupsModal.createdOn', { date: g.createdAt })}
+                              </p>
                             </div>
                             <div className="flex items-center gap-1 shrink-0">
                               <button
                                 type="button"
                                 onClick={() => startEdit(g)}
-                                aria-label="Modifier"
+                                aria-label={t('groupsModal.editAria')}
                                 className="h-8 w-8 rounded-full hover:bg-gray-100 flex items-center justify-center text-brand-navy"
                               >
                                 <Pencil className="h-3.5 w-3.5" aria-hidden />
@@ -249,11 +262,11 @@ export function UserGroupsModal({
                               <button
                                 type="button"
                                 onClick={() => {
-                                  if (window.confirm(`Supprimer le groupe « ${g.name} » ?`)) {
+                                  if (window.confirm(t('groupsModal.confirmDelete', { name: g.name }))) {
                                     onDelete(g.id);
                                   }
                                 }}
-                                aria-label="Supprimer"
+                                aria-label={t('groupsModal.deleteAria')}
                                 className="h-8 w-8 rounded-full hover:bg-red-50 flex items-center justify-center text-red-600"
                               >
                                 <Trash2 className="h-3.5 w-3.5" aria-hidden />
@@ -271,26 +284,26 @@ export function UserGroupsModal({
 
           <section className="px-6 pt-6 pb-6 bg-gray-50 border-t border-gray-100 mt-5">
             <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-3">
-              {mode === 'add' ? 'Ou créer un nouveau groupe' : 'Nouveau groupe'}
+              {mode === 'add' ? t('groupsModal.newSectionAdd') : t('groupsModal.newSectionManage')}
             </p>
             <div className="space-y-3">
               <input
                 type="text"
                 value={draftName}
                 onChange={(e) => setDraftName(e.target.value)}
-                placeholder="Ex : Nouveaux inscrits — Septembre 2026"
+                placeholder={t('groupsModal.newPlaceholder')}
                 className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue"
               />
               <textarea
                 value={draftDesc}
                 onChange={(e) => setDraftDesc(e.target.value)}
                 rows={2}
-                placeholder="Description (optionnel)"
+                placeholder={t('groupsModal.descPlaceholder')}
                 className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue resize-none"
               />
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">
-                  Couleur :
+                  {t('groupsModal.color')}
                 </span>
                 {GROUP_COLORS.map((c) => (
                   <button
@@ -312,17 +325,18 @@ export function UserGroupsModal({
                   className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-4 py-2 text-sm font-semibold shadow-glow-navy disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
                   <Plus className="h-4 w-4" aria-hidden />
-                  {mode === 'add' ? 'Créer & ajouter les utilisateurs' : 'Créer le groupe'}
+                  {mode === 'add' ? t('groupsModal.createAndAdd') : t('groupsModal.createGroup')}
                 </button>
               </div>
               {mode === 'add' && (
                 <p className="text-[11px] text-gray-500 flex items-center gap-1">
                   <Check className="h-3 w-3" aria-hidden />
-                  Le groupe sera créé avec les{' '}
-                  <strong>
-                    {selectedUserIds.length} utilisateur{selectedUserIds.length > 1 ? 's' : ''}
-                  </strong>{' '}
-                  sélectionné{selectedUserIds.length > 1 ? 's' : ''}.
+                  {t(
+                    selectedUserIds.length > 1
+                      ? 'groupsModal.createNote.other'
+                      : 'groupsModal.createNote.one',
+                    { count: selectedUserIds.length },
+                  )}
                 </p>
               )}
             </div>

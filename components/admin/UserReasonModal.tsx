@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { X, Ban, Trash2, AlertTriangle } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/provider';
 
 export type ReasonAction = 'block' | 'delete';
 
@@ -13,32 +14,28 @@ type Props = {
   onClose: () => void;
 };
 
-const PRESETS: Record<ReasonAction, string[]> = {
+const PRESET_KEYS: Record<ReasonAction, string[]> = {
   block: [
-    'Signalements répétés non retenus',
-    'Comportement abusif dans le chat',
-    'Suspicion de spam ou usurpation',
-    'Demande interne (support)',
+    'reasonModal.preset.block.1',
+    'reasonModal.preset.block.2',
+    'reasonModal.preset.block.3',
+    'reasonModal.preset.block.4',
   ],
   delete: [
-    'Demande explicite de l’utilisateur',
-    'Violation grave des CGU',
-    'Compte factice / bot',
-    'Décision de la direction',
+    'reasonModal.preset.delete.1',
+    'reasonModal.preset.delete.2',
+    'reasonModal.preset.delete.3',
+    'reasonModal.preset.delete.4',
   ],
 };
 
-const TITLES: Record<ReasonAction, { title: string; cta: string; Icon: typeof Ban; tone: string; ctaTone: string }> = {
+const STYLES: Record<ReasonAction, { Icon: typeof Ban; tone: string; ctaTone: string }> = {
   block: {
-    title: 'Bloquer cet utilisateur',
-    cta: 'Bloquer',
     Icon: Ban,
     tone: 'bg-orange-500',
     ctaTone: 'bg-orange-500 hover:bg-orange-700 shadow-glow-orange',
   },
   delete: {
-    title: 'Supprimer cet utilisateur',
-    cta: 'Supprimer',
     Icon: Trash2,
     tone: 'bg-red-500',
     ctaTone: 'bg-red-500 hover:bg-red-700 shadow-glow-red',
@@ -46,6 +43,7 @@ const TITLES: Record<ReasonAction, { title: string; cta: string; Icon: typeof Ba
 };
 
 export function UserReasonModal({ open, action, targetLabel, onConfirm, onClose }: Props) {
+  const { t } = useI18n();
   const [reason, setReason] = useState('');
 
   useEffect(() => {
@@ -64,8 +62,10 @@ export function UserReasonModal({ open, action, targetLabel, onConfirm, onClose 
   }, [open, onClose]);
 
   if (!open || !action) return null;
-  const cfg = TITLES[action];
-  const presets = PRESETS[action];
+  const cfg = STYLES[action];
+  const title = action === 'block' ? t('reasonModal.block.title') : t('reasonModal.delete.title');
+  const ctaLabel = action === 'block' ? t('reasonModal.block.cta') : t('reasonModal.delete.cta');
+  const presets = PRESET_KEYS[action];
   const canSubmit = reason.trim().length > 0;
 
   return (
@@ -77,7 +77,7 @@ export function UserReasonModal({ open, action, targetLabel, onConfirm, onClose 
     >
       <button
         type="button"
-        aria-label="Fermer"
+        aria-label={t('common.close')}
         onClick={onClose}
         className="absolute inset-0 bg-brand-navy/40 backdrop-blur-sm cursor-default"
       />
@@ -86,12 +86,12 @@ export function UserReasonModal({ open, action, targetLabel, onConfirm, onClose 
           <div className="flex items-center gap-2">
             <cfg.Icon className="h-5 w-5" aria-hidden />
             <h2 id="user-reason-title" className="text-lg font-bold">
-              {cfg.title}
+              {title}
             </h2>
           </div>
           <button
             type="button"
-            aria-label="Fermer"
+            aria-label={t('common.close')}
             onClick={onClose}
             className="h-8 w-8 rounded-full hover:bg-white/10 flex items-center justify-center"
           >
@@ -103,30 +103,33 @@ export function UserReasonModal({ open, action, targetLabel, onConfirm, onClose 
           <div className="rounded-xl bg-brand-sky/40 border border-brand-blue/30 px-4 py-3 text-sm flex items-start gap-2">
             <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0 text-brand-blue" aria-hidden />
             <p className="text-brand-navy">
-              Action sur :{' '}
+              {t('reasonModal.actionOn')}{' '}
               <span className="font-semibold">{targetLabel}</span>
             </p>
           </div>
 
           <div>
             <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-2">
-              Motifs fréquents
+              {t('reasonModal.commonReasons')}
             </p>
             <div className="flex flex-wrap gap-2">
-              {presets.map((p) => (
-                <button
-                  key={p}
-                  type="button"
-                  onClick={() => setReason(p)}
-                  className={
-                    reason === p
-                      ? 'inline-flex items-center rounded-pill bg-brand-navy text-white px-3 py-1 text-xs font-semibold shadow-glow-navy'
-                      : 'inline-flex items-center rounded-pill border border-gray-200 text-brand-navy px-3 py-1 text-xs font-medium hover:border-brand-blue'
-                  }
-                >
-                  {p}
-                </button>
-              ))}
+              {presets.map((key) => {
+                const label = t(key);
+                return (
+                  <button
+                    key={key}
+                    type="button"
+                    onClick={() => setReason(label)}
+                    className={
+                      reason === label
+                        ? 'inline-flex items-center rounded-pill bg-brand-navy text-white px-3 py-1 text-xs font-semibold shadow-glow-navy'
+                        : 'inline-flex items-center rounded-pill border border-gray-200 text-brand-navy px-3 py-1 text-xs font-medium hover:border-brand-blue'
+                    }
+                  >
+                    {label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
@@ -135,14 +138,14 @@ export function UserReasonModal({ open, action, targetLabel, onConfirm, onClose 
               htmlFor="reason"
               className="block text-xs font-semibold text-brand-navy mb-1.5"
             >
-              Motif personnalisé <span className="text-red-500">*</span>
+              {t('reasonModal.customLabel')} <span className="text-red-500">*</span>
             </label>
             <textarea
               id="reason"
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               rows={4}
-              placeholder="Expliquez brièvement la raison de cette action…"
+              placeholder={t('reasonModal.placeholder')}
               className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-brand-navy focus:outline-none focus:border-brand-blue resize-y"
             />
           </div>
@@ -154,7 +157,7 @@ export function UserReasonModal({ open, action, targetLabel, onConfirm, onClose 
             onClick={onClose}
             className="inline-flex items-center gap-1.5 rounded-pill border border-gray-200 bg-white text-brand-navy px-4 py-2 text-sm font-medium hover:border-brand-blue transition-colors"
           >
-            Annuler
+            {t('reasonModal.cancel')}
           </button>
           <button
             type="button"
@@ -166,7 +169,7 @@ export function UserReasonModal({ open, action, targetLabel, onConfirm, onClose 
             className={`inline-flex items-center gap-1.5 rounded-pill text-white px-5 py-2 text-sm font-semibold transition-all disabled:bg-gray-300 disabled:cursor-not-allowed disabled:shadow-none ${cfg.ctaTone}`}
           >
             <cfg.Icon className="h-4 w-4" aria-hidden />
-            Confirmer — {cfg.cta}
+            {t('reasonModal.confirm', { cta: ctaLabel })}
           </button>
         </div>
       </div>

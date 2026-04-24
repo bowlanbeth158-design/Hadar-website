@@ -45,6 +45,13 @@ const MEMBER_STATUS_KEY: Record<string, string> = {
   suspendu: 'member.status.suspendu',
 };
 
+const USER_STATUS_KEY: Record<string, string> = {
+  actif: 'user.status.actif',
+  inactif: 'user.status.inactif',
+  bloque: 'user.status.bloque',
+  supprime: 'user.status.supprime',
+};
+
 export function translateProblem(t: T, frLabel: string): string {
   const key = PROBLEM_KEY[frLabel];
   return key ? t(key) : frLabel;
@@ -67,6 +74,11 @@ export function translateRole(t: T, roleId: string): string {
 
 export function translateMemberStatus(t: T, statusId: string): string {
   const key = MEMBER_STATUS_KEY[statusId];
+  return key ? t(key) : statusId;
+}
+
+export function translateUserStatus(t: T, statusId: string): string {
+  const key = USER_STATUS_KEY[statusId];
   return key ? t(key) : statusId;
 }
 

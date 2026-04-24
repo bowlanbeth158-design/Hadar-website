@@ -10,9 +10,9 @@ import {
 } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
 
-// URL postimg de la photo ambassadeur Hadar (généré Gemini — sweat bleu charte)
+// URL postimg de la photo ambassadeur Hadar (Gemini + fond transparent via remove.bg)
 const AMBASSADOR_IMAGE_URL =
-  'https://i.postimg.cc/s2MGYCKC/Gemini-Generated-Image-5qi7u35qi7u35qi7.png';
+  'https://i.postimg.cc/tC71QjQp/Gemini-Generated-Image-5qi7u35qi7u35qi7-removebg-preview.png';
 
 const BULLETS = [
   '+10 000 signalements vérifiés',

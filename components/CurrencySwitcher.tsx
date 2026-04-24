@@ -6,7 +6,7 @@ import { Check, ChevronDown } from 'lucide-react';
 type Currency = 'MAD' | 'EUR' | 'USD';
 
 const CURRENCIES: { id: Currency; label: string; symbol: string }[] = [
-  { id: 'MAD', label: 'Dirham marocain', symbol: 'MAD' },
+  { id: 'MAD', label: 'Dirham marocain', symbol: 'DH' },
   { id: 'EUR', label: 'Euro', symbol: '€' },
   { id: 'USD', label: 'Dollar américain', symbol: '$' },
 ];

@@ -150,6 +150,10 @@ export type PlatformConfig = {
   seoRobotsIndex: boolean;
   seoRobotsFollow: boolean;
   seoGaId: string;
+  seoGtmId: string;
+  seoMetaPixelId: string;
+  seoTiktokPixelId: string;
+  seoClarityId: string;
   seoGoogleVerification: string;
   seoTwitterHandle: string;
 };
@@ -181,6 +185,10 @@ export const INITIAL_PLATFORM_CONFIG: PlatformConfig = {
   seoRobotsIndex: true,
   seoRobotsFollow: true,
   seoGaId: '',
+  seoGtmId: '',
+  seoMetaPixelId: '',
+  seoTiktokPixelId: '',
+  seoClarityId: '',
   seoGoogleVerification: '',
   seoTwitterHandle: '',
 };

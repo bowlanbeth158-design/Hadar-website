@@ -230,6 +230,20 @@ export default function Page() {
               ? parsed.seoRobotsFollow
               : INITIAL_CONFIG.seoRobotsFollow,
           seoGaId: typeof parsed.seoGaId === 'string' ? parsed.seoGaId : INITIAL_CONFIG.seoGaId,
+          seoGtmId:
+            typeof parsed.seoGtmId === 'string' ? parsed.seoGtmId : INITIAL_CONFIG.seoGtmId,
+          seoMetaPixelId:
+            typeof parsed.seoMetaPixelId === 'string'
+              ? parsed.seoMetaPixelId
+              : INITIAL_CONFIG.seoMetaPixelId,
+          seoTiktokPixelId:
+            typeof parsed.seoTiktokPixelId === 'string'
+              ? parsed.seoTiktokPixelId
+              : INITIAL_CONFIG.seoTiktokPixelId,
+          seoClarityId:
+            typeof parsed.seoClarityId === 'string'
+              ? parsed.seoClarityId
+              : INITIAL_CONFIG.seoClarityId,
           seoGoogleVerification:
             typeof parsed.seoGoogleVerification === 'string'
               ? parsed.seoGoogleVerification
@@ -1211,6 +1225,7 @@ export default function Page() {
                     placeholder="G-XXXXXXXXXX"
                     className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue font-mono"
                   />
+                  <p className="mt-1 text-[10px] text-gray-400">{t('brand.seo.gaHint')}</p>
                 </div>
                 <div>
                   <label className="block text-[11px] font-semibold text-brand-navy mb-1">
@@ -1225,8 +1240,63 @@ export default function Page() {
                     placeholder="abc123XYZ..."
                     className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue font-mono"
                   />
+                  <p className="mt-1 text-[10px] text-gray-400">{t('brand.seo.googleVerifHint')}</p>
                 </div>
                 <div>
+                  <label className="block text-[11px] font-semibold text-brand-navy mb-1">
+                    {t('brand.seo.gtmId')}
+                  </label>
+                  <input
+                    type="text"
+                    value={config.seoGtmId}
+                    onChange={(e) => setConfig((c) => ({ ...c, seoGtmId: e.target.value }))}
+                    placeholder="GTM-XXXXXXX"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue font-mono"
+                  />
+                  <p className="mt-1 text-[10px] text-gray-400">{t('brand.seo.gtmHint')}</p>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-brand-navy mb-1">
+                    {t('brand.seo.metaPixel')}
+                  </label>
+                  <input
+                    type="text"
+                    value={config.seoMetaPixelId}
+                    onChange={(e) => setConfig((c) => ({ ...c, seoMetaPixelId: e.target.value }))}
+                    placeholder="1234567890123456"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue font-mono"
+                  />
+                  <p className="mt-1 text-[10px] text-gray-400">{t('brand.seo.metaPixelHint')}</p>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-brand-navy mb-1">
+                    {t('brand.seo.tiktokPixel')}
+                  </label>
+                  <input
+                    type="text"
+                    value={config.seoTiktokPixelId}
+                    onChange={(e) =>
+                      setConfig((c) => ({ ...c, seoTiktokPixelId: e.target.value }))
+                    }
+                    placeholder="C4XXXXXXXXXXXXX"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue font-mono"
+                  />
+                  <p className="mt-1 text-[10px] text-gray-400">{t('brand.seo.tiktokPixelHint')}</p>
+                </div>
+                <div>
+                  <label className="block text-[11px] font-semibold text-brand-navy mb-1">
+                    {t('brand.seo.clarity')}
+                  </label>
+                  <input
+                    type="text"
+                    value={config.seoClarityId}
+                    onChange={(e) => setConfig((c) => ({ ...c, seoClarityId: e.target.value }))}
+                    placeholder="abc1d2e3f4"
+                    className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue font-mono"
+                  />
+                  <p className="mt-1 text-[10px] text-gray-400">{t('brand.seo.clarityHint')}</p>
+                </div>
+                <div className="sm:col-span-2">
                   <label className="block text-[11px] font-semibold text-brand-navy mb-1">
                     {t('brand.seo.twitter')}
                   </label>

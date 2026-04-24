@@ -54,9 +54,9 @@ export function Header() {
 
           <Link
             href="/signaler"
-            className="ml-4 inline-flex items-center gap-2 rounded-pill bg-red-500 hover:bg-red-700 text-white px-6 py-2.5 text-sm font-semibold shadow-glow-red hover:scale-[1.03] transition-all"
+            className="ml-4 inline-flex items-center gap-2 rounded-pill bg-red-500 hover:bg-red-700 text-white px-6 py-2.5 text-sm font-semibold shadow-glow-red animate-alert-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all"
           >
-            <Siren className="h-4 w-4" aria-hidden />
+            <Siren className="h-4 w-4 animate-siren-wiggle" aria-hidden />
             Signaler
           </Link>
 

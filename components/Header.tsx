@@ -1,11 +1,9 @@
 import Link from 'next/link';
-import { Bell, Siren, ShieldCheck } from 'lucide-react';
+import { Siren, ShieldCheck } from 'lucide-react';
 import { Logo } from './Logo';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { CurrencySwitcher } from './CurrencySwitcher';
 import { UserMenu } from './UserMenu';
-
-const ALERT_COUNT = 8;
 
 export function Header() {
   return (
@@ -22,7 +20,7 @@ export function Header() {
               <Logo size="lg" />
             </Link>
 
-            <ul className="hidden md:flex items-center gap-5 text-sm font-medium text-brand-navy ml-2">
+            <ul className="hidden md:flex items-center gap-6 text-sm font-medium text-brand-navy ml-2">
               <li>
                 <Link href="/" className="hover:text-brand-blue transition-colors">
                   Accueil
@@ -31,25 +29,6 @@ export function Header() {
               <li>
                 <Link href="/comment-ca-marche" className="hover:text-brand-blue transition-colors">
                   Comment ça marche
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/mes-alertes"
-                  className="relative inline-flex items-center gap-1.5 hover:text-brand-blue transition-colors"
-                >
-                  Mes alertes
-                  <span className="relative inline-flex">
-                    <Bell className="h-4 w-4" aria-hidden />
-                    {ALERT_COUNT > 0 && (
-                      <span
-                        aria-label={`${ALERT_COUNT} nouvelles alertes`}
-                        className="absolute -top-1.5 -right-1.5 min-w-[16px] h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1"
-                      >
-                        {ALERT_COUNT > 9 ? '9+' : ALERT_COUNT}
-                      </span>
-                    )}
-                  </span>
                 </Link>
               </li>
             </ul>

@@ -23,6 +23,7 @@ import {
 import { RefreshButton } from '@/components/admin/RefreshButton';
 import { ExportButton } from '@/components/admin/ExportButton';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
+import { NewCampaignModal, type CampaignDraft } from '@/components/admin/NewCampaignModal';
 
 const TABS = [
   { id: 'campagnes', label: 'Campagnes', Icon: Megaphone },
@@ -79,6 +80,9 @@ const TEMPLATES = [
   { id: 'tpl4', name: 'Confirmation publication', channel: 'email', updated: '10/04/26', language: 'FR' },
   { id: 'tpl5', name: 'Bandeau alerte risque', channel: 'banner', updated: '08/04/26', language: 'FR' },
   { id: 'tpl6', name: 'Alerte connexion inhabituelle', channel: 'email', updated: '02/04/26', language: 'FR' },
+  { id: 'tpl7', name: 'Alerte nouvelle fraude détectée', channel: 'whatsapp', updated: '22/04/26', language: 'FR' },
+  { id: 'tpl8', name: 'Canal Telegram — bienvenue', channel: 'telegram', updated: '20/04/26', language: 'FR' },
+  { id: 'tpl9', name: 'Canal Telegram — alerte quotidienne', channel: 'telegram', updated: '19/04/26', language: 'FR' },
 ];
 
 const INTEGRATIONS = [
@@ -234,6 +238,7 @@ export default function Page() {
   const [refreshKey, setRefreshKey] = useState(0);
   const [activeTab, setActiveTab] = useState<TabId>('campagnes');
   const [campaigns, setCampaigns] = useState<Campaign[]>(INITIAL_CAMPAIGNS);
+  const [newCampaignOpen, setNewCampaignOpen] = useState(false);
   const [automations, setAutomations] = useState<Automation[]>(INITIAL_AUTOMATIONS);
   const [flash, setFlash] = useState<string | null>(null);
 
@@ -289,6 +294,43 @@ export default function Page() {
     );
   };
 
+  const handleCreateCampaign = (draft: CampaignDraft) => {
+    const now = new Date();
+    const pad = (n: number) => String(n).padStart(2, '0');
+    const scheduled =
+      draft.sendAt === 'later' && draft.scheduledIso
+        ? (() => {
+            const d = new Date(draft.scheduledIso);
+            if (Number.isNaN(d.getTime())) return '—';
+            return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${String(d.getFullYear()).slice(-2)} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+          })()
+        : `${pad(now.getDate())}/${pad(now.getMonth() + 1)}/${String(now.getFullYear()).slice(-2)} ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+    const status: Status = draft.sendAt === 'later' ? 'planifiee' : 'envoyee';
+    const sent = draft.sendAt === 'later' ? 0 : draft.audienceCount;
+    const delivered = sent ? Math.round(sent * 0.985) : 0;
+    const opened = delivered ? Math.round(delivered * 0.42) : 0;
+    const clicked = opened ? Math.round(opened * 0.28) : 0;
+    const next: Campaign = {
+      id: `c-${Date.now()}`,
+      name: draft.name,
+      channels: [draft.platform],
+      status,
+      audience: `${draft.audienceCount.toLocaleString('fr-FR').replace(/,/g, ' ')} users · ${draft.audienceLabel}`,
+      sent,
+      delivered,
+      opened,
+      clicked,
+      scheduled,
+    };
+    setCampaigns((list) => [next, ...list]);
+    setNewCampaignOpen(false);
+    showFlash(
+      draft.sendAt === 'later'
+        ? `« ${draft.name} » planifiée pour ${scheduled}`
+        : `« ${draft.name} » envoyée à ${draft.audienceCount} destinataires (simulation)`,
+    );
+  };
+
   return (
     <div>
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
@@ -304,7 +346,7 @@ export default function Page() {
         <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={() => showFlash('Nouvelle campagne — assistant à venir')}
+            onClick={() => setNewCampaignOpen(true)}
             className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-5 py-2 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
           >
             <Send className="h-4 w-4" aria-hidden />
@@ -589,6 +631,13 @@ export default function Page() {
           </div>
         </section>
       )}
+
+      <NewCampaignModal
+        open={newCampaignOpen}
+        templates={TEMPLATES}
+        onClose={() => setNewCampaignOpen(false)}
+        onSubmit={handleCreateCampaign}
+      />
     </div>
   );
 }

@@ -10,7 +10,7 @@ type Props = {
 const SIZE_MAP: Record<Size, { shield: string; text: string; gap: string }> = {
   sm: { shield: 'h-8 w-8', text: 'text-xl', gap: 'gap-2' },
   md: { shield: 'h-10 w-10', text: 'text-2xl', gap: 'gap-2.5' },
-  lg: { shield: 'h-14 w-14', text: 'text-4xl', gap: 'gap-3' },
+  lg: { shield: 'h-12 w-12', text: 'text-3xl', gap: 'gap-2.5' },
 };
 
 export const OFFICIAL_LOGO_URL =

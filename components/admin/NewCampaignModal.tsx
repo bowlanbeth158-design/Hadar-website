@@ -230,7 +230,7 @@ export function NewCampaignModal({ open, templates, onClose, onSubmit }: Props) 
         onClick={onClose}
         className="absolute inset-0 bg-brand-navy/40 backdrop-blur-sm cursor-default"
       />
-      <div className="relative w-full max-w-3xl rounded-2xl bg-white shadow-glow-navy overflow-hidden max-h-[90vh] flex flex-col">
+      <div className="relative w-full max-w-5xl rounded-2xl bg-white shadow-glow-navy overflow-hidden max-h-[90vh] flex flex-col">
         <div className="flex items-center justify-between px-6 py-4 bg-brand-navy text-white">
           <div className="flex items-center gap-2">
             <Megaphone className="h-5 w-5" aria-hidden />
@@ -248,7 +248,9 @@ export function NewCampaignModal({ open, templates, onClose, onSubmit }: Props) 
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto">
+          <div className="grid gap-6 lg:grid-cols-[1fr_360px] p-6">
+            <div className="space-y-6">
           <div>
             <label className="block text-[11px] font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
               1. Nom de la campagne
@@ -574,6 +576,25 @@ export function NewCampaignModal({ open, templates, onClose, onSubmit }: Props) 
               </div>
             )}
           </div>
+            </div>
+            <div className="lg:sticky lg:top-0 self-start">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-400 mb-2">
+                Aperçu — côté destinataire
+              </p>
+              <CampaignPreview
+                platform={platform}
+                campaignName={name}
+                templateName={
+                  filteredTemplates.find((t) => t.id === templateId)?.name ?? ''
+                }
+                audienceLabel={selectedAudience.label}
+                mediaType={mediaType}
+                mediaImage={mediaImage}
+                mediaVideoUrl={mediaVideoUrl}
+                carousel={carousel}
+              />
+            </div>
+          </div>
         </div>
 
         <div className="px-6 py-4 bg-gray-50 border-t border-gray-100 flex items-center justify-between gap-2 flex-wrap">
@@ -597,6 +618,157 @@ export function NewCampaignModal({ open, templates, onClose, onSubmit }: Props) 
               <Send className="h-4 w-4" aria-hidden />
               {sendAt === 'now' ? 'Envoyer maintenant' : 'Planifier l’envoi'}
             </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+type PreviewProps = {
+  platform: CampaignPlatform;
+  campaignName: string;
+  templateName: string;
+  audienceLabel: string;
+  mediaType: 'none' | 'image' | 'video' | 'carousel';
+  mediaImage?: string;
+  mediaVideoUrl?: string;
+  carousel: string[];
+};
+
+function CampaignPreview({
+  platform,
+  campaignName,
+  templateName,
+  audienceLabel,
+  mediaType,
+  mediaImage,
+  mediaVideoUrl,
+  carousel,
+}: PreviewProps) {
+  const subject = campaignName.trim() || templateName || 'Nouvelle campagne';
+  const bodyLine1 =
+    templateName.trim() ||
+    'Sélectionnez un modèle pour voir l’aperçu du contenu du message.';
+  const bodyLine2 =
+    'Restez vigilant avant toute transaction. Vérifiez un contact sur Hadar.ma.';
+
+  const Media = () => {
+    if (mediaType === 'image' && mediaImage) {
+      /* eslint-disable-next-line @next/next/no-img-element */
+      return <img src={mediaImage} alt="" className="w-full rounded-lg" />;
+    }
+    if (mediaType === 'video' && mediaVideoUrl) {
+      return (
+        <div className="w-full aspect-video rounded-lg bg-black/80 flex items-center justify-center text-white">
+          <div className="text-center">
+            <Video className="h-7 w-7 mx-auto opacity-80" aria-hidden />
+            <p className="mt-1 text-[10px] truncate max-w-[200px] opacity-80">
+              {mediaVideoUrl}
+            </p>
+          </div>
+        </div>
+      );
+    }
+    if (mediaType === 'carousel' && carousel.length > 0) {
+      return (
+        <div className="flex gap-1 overflow-x-auto rounded-lg">
+          {carousel.map((src, i) => (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              key={i}
+              src={src}
+              alt=""
+              className="h-28 w-28 object-cover rounded-lg flex-none"
+            />
+          ))}
+        </div>
+      );
+    }
+    return null;
+  };
+
+  if (platform === 'email') {
+    return (
+      <div className="rounded-2xl border border-gray-200 bg-gray-50 overflow-hidden">
+        <div className="px-3 py-2 bg-white border-b border-gray-200 text-[11px] text-gray-500 space-y-0.5">
+          <p>
+            <span className="text-gray-400">De : </span>
+            <span className="text-brand-navy">Hadar.ma</span>{' '}
+            <span className="text-gray-400">&lt;no-reply@hadar.ma&gt;</span>
+          </p>
+          <p>
+            <span className="text-gray-400">À : </span>
+            <span className="text-brand-navy">{audienceLabel}</span>
+          </p>
+          <p>
+            <span className="text-gray-400">Objet : </span>
+            <span className="font-semibold text-brand-navy">{subject}</span>
+          </p>
+        </div>
+        <div className="bg-white p-4 text-sm text-brand-navy space-y-3">
+          <div className="h-6 w-24 rounded bg-grad-stat-navy" aria-hidden />
+          <p className="text-xs">Bonjour,</p>
+          <p className="text-xs leading-relaxed">{bodyLine1}</p>
+          <Media />
+          <p className="text-xs text-gray-500 leading-relaxed">{bodyLine2}</p>
+          <div className="pt-2 border-t border-gray-100 text-[10px] text-gray-400">
+            Hadar.ma — Casablanca, Maroc · Se désinscrire
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (platform === 'whatsapp') {
+    return (
+      <div className="rounded-2xl border border-gray-200 overflow-hidden bg-[#ECE5DD]">
+        <div className="px-3 py-2 bg-[#075E54] text-white flex items-center gap-2 text-[11px]">
+          <span className="inline-flex h-7 w-7 rounded-full bg-white/20 items-center justify-center text-[10px] font-bold">
+            H
+          </span>
+          <div>
+            <p className="font-semibold">Hadar.ma</p>
+            <p className="text-[9px] opacity-80">en ligne</p>
+          </div>
+        </div>
+        <div className="p-3 min-h-[200px] space-y-2">
+          <div className="max-w-[85%] rounded-lg bg-white shadow-sm p-2 text-xs text-gray-800 space-y-2">
+            <Media />
+            <p className="font-semibold text-[11px]">{subject}</p>
+            <p className="text-[11px] leading-snug">{bodyLine1}</p>
+            <p className="text-[10px] text-gray-500">{bodyLine2}</p>
+            <div className="flex items-center justify-end gap-1 text-[9px] text-gray-400">
+              10:42
+              <span className="text-blue-500">✓✓</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Telegram
+  return (
+    <div className="rounded-2xl border border-gray-200 overflow-hidden bg-[#E7EBF0]">
+      <div className="px-3 py-2 bg-[#517DA2] text-white flex items-center gap-2 text-[11px]">
+        <span className="inline-flex h-7 w-7 rounded-full bg-white/20 items-center justify-center text-[10px] font-bold">
+          H
+        </span>
+        <div>
+          <p className="font-semibold">Hadar channel</p>
+          <p className="text-[9px] opacity-80">12 456 abonnés</p>
+        </div>
+      </div>
+      <div className="p-3 min-h-[200px]">
+        <div className="rounded-lg bg-white shadow-sm p-2 text-xs text-gray-800 space-y-2">
+          <Media />
+          <p className="font-semibold text-[11px] text-[#517DA2]">{subject}</p>
+          <p className="text-[11px] leading-snug">{bodyLine1}</p>
+          <p className="text-[10px] text-gray-500">{bodyLine2}</p>
+          <div className="flex items-center justify-end gap-1 text-[9px] text-gray-400">
+            10:42
+            <span>✓</span>
           </div>
         </div>
       </div>

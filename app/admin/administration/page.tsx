@@ -176,9 +176,32 @@ export default function Page() {
     try {
       const raw = window.localStorage.getItem(CONFIG_KEY);
       if (raw) {
-        const parsed = JSON.parse(raw) as PlatformConfig;
-        setConfig(parsed);
-        setSavedConfig(parsed);
+        const parsed = JSON.parse(raw) as Partial<PlatformConfig>;
+        const merged: PlatformConfig = {
+          ...INITIAL_CONFIG,
+          ...parsed,
+          maintenancePages: Array.isArray(parsed.maintenancePages)
+            ? (parsed.maintenancePages as PlatformConfig['maintenancePages'])
+            : [],
+          maintenancePreset:
+            parsed.maintenancePreset === 'scheduled' ||
+            parsed.maintenancePreset === 'new-version' ||
+            parsed.maintenancePreset === 'short-break'
+              ? parsed.maintenancePreset
+              : INITIAL_CONFIG.maintenancePreset,
+          bannerMessages:
+            Array.isArray(parsed.bannerMessages) && parsed.bannerMessages.length > 0
+              ? (parsed.bannerMessages as PlatformConfig['bannerMessages'])
+              : INITIAL_CONFIG.bannerMessages,
+          bannerType:
+            parsed.bannerType === 'topbar' ||
+            parsed.bannerType === 'carousel' ||
+            parsed.bannerType === 'toast'
+              ? parsed.bannerType
+              : INITIAL_CONFIG.bannerType,
+        };
+        setConfig(merged);
+        setSavedConfig(merged);
       }
     } catch {
       // ignore

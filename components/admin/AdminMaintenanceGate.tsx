@@ -86,7 +86,7 @@ const PRESET_META: Record<
 
 export function MaintenanceCard({ preset, message, image, onBack }: MaintenanceCardProps) {
   const { t } = useI18n();
-  const meta = PRESET_META[preset];
+  const meta = PRESET_META[preset] ?? PRESET_META['short-break'];
 
   return (
     <div className="flex items-center justify-center py-6">

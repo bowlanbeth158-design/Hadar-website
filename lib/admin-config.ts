@@ -20,7 +20,6 @@ export const MAINTENANCE_PAGES = [
   'assistant',
   // Public — main user pages
   'home',
-  'recherche',
   'signaler',
   'mes-alertes',
   'mes-signalements',
@@ -52,7 +51,7 @@ export const MAINTENANCE_GROUPS: {
   },
   {
     labelKey: 'admin.maintenance.group.userMain',
-    ids: ['home', 'recherche', 'signaler', 'mes-alertes', 'mes-signalements', 'mon-profil', 'public-statistiques', 'comment-ca-marche', 'faq'],
+    ids: ['home', 'signaler', 'mes-alertes', 'mes-signalements', 'mon-profil', 'public-statistiques', 'comment-ca-marche', 'faq'],
   },
   {
     labelKey: 'admin.maintenance.group.auth',
@@ -73,7 +72,6 @@ export const MAINTENANCE_LABEL_KEY: Record<MaintenancePageId, string> = {
   annonces: 'sidebar.annonces',
   assistant: 'sidebar.assistant',
   home: 'admin.maintenance.page.home',
-  recherche: 'admin.maintenance.page.recherche',
   signaler: 'admin.maintenance.page.signaler',
   'mes-alertes': 'admin.maintenance.page.mesAlertes',
   'mes-signalements': 'admin.maintenance.page.mesSignalements',
@@ -100,7 +98,6 @@ export const MAINTENANCE_PATH_MATCHERS: Record<MaintenancePageId, (p: string) =>
   annonces: (p) => p === '/admin/annonces' || p.startsWith('/admin/annonces/'),
   assistant: (p) => p === '/admin/assistant' || p.startsWith('/admin/assistant/'),
   home: (p) => p === '/',
-  recherche: (p) => p === '/recherche' || p.startsWith('/recherche/'),
   signaler: (p) => p === '/signaler' || p.startsWith('/signaler/'),
   'mes-alertes': (p) => p === '/mes-alertes' || p.startsWith('/mes-alertes/'),
   'mes-signalements': (p) => p === '/mes-signalements' || p.startsWith('/mes-signalements/'),

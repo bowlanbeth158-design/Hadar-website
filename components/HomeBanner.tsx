@@ -75,7 +75,7 @@ export function HomeBanner() {
               className="inline-flex items-center gap-2 rounded-pill bg-red-500 hover:bg-red-700 text-white px-6 py-3 text-sm font-semibold shadow-glow-red animate-alert-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all"
             >
               <Siren className="h-5 w-5 animate-siren-wiggle" aria-hidden />
-              Signaler une arnaque
+              Partager une expérience
             </Link>
           </div>
 

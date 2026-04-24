@@ -7,7 +7,7 @@ import { useI18n } from '@/lib/i18n/provider';
 import type {
   MaintenancePageId,
   MaintenancePreset,
-} from '@/app/admin/administration/page';
+} from '@/lib/admin-config';
 
 const CONFIG_KEY = 'hadar:admin:platform-config';
 const CONFIG_EVENT = 'hadar:config-updated';

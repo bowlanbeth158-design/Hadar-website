@@ -10,6 +10,11 @@ import {
 } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
 
+// Placeholder — remplacer par l'URL postimg de la photo ambassadeur Hadar
+// (homme souriant en sweat bleu marine, fond blanc/neutre)
+const AMBASSADOR_IMAGE_URL =
+  'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=720&h=900&q=80';
+
 const BULLETS = [
   '+10 000 signalements vérifiés',
   'Recherche instantanée',
@@ -94,18 +99,27 @@ export function HomeBanner() {
           </p>
         </div>
 
-        {/* RIGHT — floating product cards */}
+        {/* RIGHT — ambassador photo + floating product cards */}
         <div className="relative hidden lg:block">
           <div className="relative mx-auto aspect-[5/6] max-w-md">
-            {/* Shield watermark */}
-            <ShieldCheck
+            {/* Soft halo behind the person */}
+            <div
               aria-hidden
-              className="absolute inset-0 m-auto h-[380px] w-[380px] text-brand-blue/10"
+              className="absolute inset-10 rounded-full bg-gradient-to-br from-brand-sky via-white to-brand-sky blur-2xl"
             />
 
-            {/* Card 1 — High risk search result */}
+            {/* Ambassador photo */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={AMBASSADOR_IMAGE_URL}
+              alt=""
+              aria-hidden
+              className="absolute inset-x-6 bottom-0 top-4 w-auto h-[95%] object-cover object-top mx-auto rounded-[40%_40%_8%_8%/35%_35%_5%_5%]"
+            />
+
+            {/* Card 1 — High risk search result (top-left) */}
             <div
-              className="absolute top-2 left-0 w-72 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 animate-float-soft"
+              className="absolute top-6 -left-4 w-64 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 animate-float-soft"
               style={{ animationDelay: '0s' }}
             >
               <div className="flex items-center justify-between">
@@ -129,9 +143,9 @@ export function HomeBanner() {
               </div>
             </div>
 
-            {/* Card 2 — Trust / reviews */}
+            {/* Card 2 — Trust / reviews (top-right) */}
             <div
-              className="absolute top-32 right-0 w-60 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 animate-float-soft"
+              className="absolute top-2 -right-2 w-56 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-3.5 animate-float-soft"
               style={{ animationDelay: '1.5s' }}
             >
               <div className="flex items-center gap-2">
@@ -151,13 +165,14 @@ export function HomeBanner() {
                 <span className="ml-1 text-xs font-bold text-brand-navy">4.9</span>
               </div>
               <p className="mt-1 text-xs text-gray-500">
-                <span className="font-semibold text-brand-navy">2 000+</span> utilisateurs protégés
+                <span className="font-semibold text-brand-navy">2 000+</span> utilisateurs
+                protégés
               </p>
             </div>
 
-            {/* Card 3 — Comparison / free */}
+            {/* Card 3 — Comparison / free (bottom-right) */}
             <div
-              className="absolute bottom-0 left-6 w-80 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 animate-float-soft"
+              className="absolute bottom-4 -right-4 w-72 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 animate-float-soft"
               style={{ animationDelay: '3s' }}
             >
               <div className="flex items-center justify-between pb-2 border-b border-gray-100">

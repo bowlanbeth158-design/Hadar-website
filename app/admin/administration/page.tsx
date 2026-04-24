@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -17,12 +17,18 @@ import {
   Repeat,
   Bell,
   Info,
+  Wrench,
+  Coffee,
+  Rocket,
+  Image as ImageIcon,
+  Camera,
 } from 'lucide-react';
 import { PermissionToggle } from '@/components/admin/PermissionToggle';
 import {
   AdminAnnouncementBanner,
   dispatchConfigUpdate,
 } from '@/components/admin/AdminAnnouncementBanner';
+import { MaintenancePreview } from '@/components/admin/AdminMaintenanceGate';
 import { useI18n } from '@/lib/i18n/provider';
 import { translateRole } from '@/lib/i18n/helpers';
 
@@ -148,8 +154,25 @@ export type BannerMessage = {
   linkLabel?: string;
 };
 
+export type MaintenancePreset = 'short-break' | 'scheduled' | 'new-version';
+
+export const MAINTENANCE_PAGES = [
+  'dashboard',
+  'signalements',
+  'membres',
+  'utilisateurs',
+  'statistiques',
+  'annonces',
+  'assistant',
+] as const;
+export type MaintenancePageId = (typeof MAINTENANCE_PAGES)[number];
+
 type PlatformConfig = {
   maintenance: boolean;
+  maintenancePages: MaintenancePageId[];
+  maintenancePreset: MaintenancePreset;
+  maintenanceMessage: string;
+  maintenanceImage?: string;
   bannerEnabled: boolean;
   bannerType: BannerType;
   bannerMessages: BannerMessage[];
@@ -163,6 +186,9 @@ type PlatformConfig = {
 const CONFIG_KEY = 'hadar:admin:platform-config';
 const INITIAL_CONFIG: PlatformConfig = {
   maintenance: false,
+  maintenancePages: [],
+  maintenancePreset: 'short-break',
+  maintenanceMessage: '',
   bannerEnabled: false,
   bannerType: 'topbar',
   bannerMessages: [{ id: 'm1', text: '' }],
@@ -221,6 +247,51 @@ export default function Page() {
     [config, savedConfig],
   );
   const dirty = (tab === 'roles' && permsDirty) || (tab === 'config' && configDirty);
+
+  const imageInputRef = useRef<HTMLInputElement>(null);
+  const [imageUploading, setImageUploading] = useState(false);
+
+  const resizeMaintenanceImage = (file: File, size = 720): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onerror = () => reject(new Error('read-fail'));
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onerror = () => reject(new Error('img-fail'));
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          const ratio = Math.min(size / img.width, size / img.height, 1);
+          canvas.width = Math.round(img.width * ratio);
+          canvas.height = Math.round(img.height * ratio);
+          const ctx = canvas.getContext('2d');
+          if (!ctx) return reject(new Error('no-ctx'));
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          resolve(canvas.toDataURL('image/jpeg', 0.85));
+        };
+        img.src = e.target?.result as string;
+      };
+      reader.readAsDataURL(file);
+    });
+
+  const handleMaintenanceImage = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('image/')) {
+      showFlash(t('settings.account.photoErrType'));
+      if (imageInputRef.current) imageInputRef.current.value = '';
+      return;
+    }
+    try {
+      setImageUploading(true);
+      const dataUrl = await resizeMaintenanceImage(file, 720);
+      setConfig((c) => ({ ...c, maintenanceImage: dataUrl }));
+    } catch {
+      showFlash(t('settings.account.photoErr'));
+    } finally {
+      setImageUploading(false);
+      if (imageInputRef.current) imageInputRef.current.value = '';
+    }
+  };
 
   const savePerms = () => {
     window.localStorage.setItem(STORAGE_KEY, JSON.stringify(perms));
@@ -520,6 +591,171 @@ export default function Page() {
               checked={config.registrationsOpen}
               onChange={(v) => setConfig((c) => ({ ...c, registrationsOpen: v }))}
             />
+          </div>
+
+          <div className="rounded-2xl border border-gray-200 bg-gray-50/60 p-5 space-y-5">
+            <div className="inline-flex items-center gap-2">
+              <Wrench className="h-4 w-4 text-brand-blue" aria-hidden />
+              <h3 className="text-sm font-bold text-brand-navy">
+                {t('admin.maintenance.section')}
+              </h3>
+            </div>
+
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-2">
+                {t('admin.maintenance.pages')}
+              </p>
+              <div className="grid gap-2 sm:grid-cols-2">
+                {MAINTENANCE_PAGES.map((pageId) => {
+                  const on = config.maintenancePages.includes(pageId);
+                  return (
+                    <label
+                      key={pageId}
+                      className={
+                        on
+                          ? 'flex items-center gap-2 rounded-xl border-2 border-orange-400 bg-orange-50 px-3 py-2 text-sm text-brand-navy cursor-pointer transition-colors'
+                          : 'flex items-center gap-2 rounded-xl border-2 border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy cursor-pointer hover:border-gray-300 transition-colors'
+                      }
+                    >
+                      <input
+                        type="checkbox"
+                        checked={on}
+                        onChange={() =>
+                          setConfig((c) => ({
+                            ...c,
+                            maintenancePages: on
+                              ? c.maintenancePages.filter((x) => x !== pageId)
+                              : [...c.maintenancePages, pageId],
+                          }))
+                        }
+                        className="accent-orange-500"
+                      />
+                      <span className="font-medium">{t(`sidebar.${pageId}`)}</span>
+                    </label>
+                  );
+                })}
+              </div>
+              <p className="mt-2 text-[11px] text-gray-500">
+                {t('admin.maintenance.pagesHint')}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-2">
+                {t('admin.maintenance.preset.label')}
+              </p>
+              <div className="grid gap-2 sm:grid-cols-3">
+                {(
+                  [
+                    { id: 'short-break', Icon: Coffee, titleKey: 'admin.maintenance.preset.short.title', descKey: 'admin.maintenance.preset.short.desc' },
+                    { id: 'scheduled', Icon: Wrench, titleKey: 'admin.maintenance.preset.scheduled.title', descKey: 'admin.maintenance.preset.scheduled.desc' },
+                    { id: 'new-version', Icon: Rocket, titleKey: 'admin.maintenance.preset.newVersion.title', descKey: 'admin.maintenance.preset.newVersion.desc' },
+                  ] as const
+                ).map((opt) => {
+                  const on = config.maintenancePreset === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => setConfig((c) => ({ ...c, maintenancePreset: opt.id }))}
+                      aria-pressed={on}
+                      className={
+                        on
+                          ? 'flex flex-col gap-1 rounded-xl border-2 border-brand-blue bg-white p-3 text-left shadow-glow-blue'
+                          : 'flex flex-col gap-1 rounded-xl border-2 border-gray-200 bg-white p-3 text-left hover:border-gray-300'
+                      }
+                    >
+                      <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-navy">
+                        <opt.Icon className="h-3.5 w-3.5" aria-hidden />
+                        {t(opt.titleKey)}
+                      </span>
+                      <span className="text-[11px] text-gray-500">{t(opt.descKey)}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
+                {t('admin.maintenance.customMessage')}
+              </label>
+              <textarea
+                value={config.maintenanceMessage}
+                onChange={(e) =>
+                  setConfig((c) => ({ ...c, maintenanceMessage: e.target.value }))
+                }
+                rows={2}
+                placeholder={t('admin.maintenance.customMessagePlaceholder')}
+                className="w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue resize-y"
+              />
+              <p className="mt-1 text-[11px] text-gray-500">
+                {t('admin.maintenance.customMessageHint')}
+              </p>
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-1.5">
+                {t('admin.maintenance.image')}
+              </label>
+              <div className="flex items-start gap-3 flex-wrap">
+                {config.maintenanceImage ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={config.maintenanceImage}
+                    alt=""
+                    className="h-24 w-32 object-cover rounded-xl border border-gray-200"
+                  />
+                ) : (
+                  <div className="h-24 w-32 rounded-xl border-2 border-dashed border-gray-300 bg-white flex items-center justify-center text-gray-300">
+                    <ImageIcon className="h-6 w-6" aria-hidden />
+                  </div>
+                )}
+                <div className="flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={() => imageInputRef.current?.click()}
+                    disabled={imageUploading}
+                    className="inline-flex items-center gap-1.5 rounded-pill border border-brand-navy text-brand-navy px-3 py-1.5 text-xs font-semibold hover:bg-brand-navy hover:text-white disabled:opacity-60 disabled:cursor-wait transition-colors"
+                  >
+                    <Camera className="h-3.5 w-3.5" aria-hidden />
+                    {imageUploading
+                      ? t('settings.account.photoUploading')
+                      : config.maintenanceImage
+                        ? t('admin.maintenance.changeImage')
+                        : t('admin.maintenance.addImage')}
+                  </button>
+                  {config.maintenanceImage && (
+                    <button
+                      type="button"
+                      onClick={() => setConfig((c) => ({ ...c, maintenanceImage: undefined }))}
+                      className="inline-flex items-center gap-1 text-xs text-red-600 hover:text-red-700 font-medium"
+                    >
+                      <Trash2 className="h-3 w-3" aria-hidden />
+                      {t('admin.maintenance.removeImage')}
+                    </button>
+                  )}
+                </div>
+                <input
+                  ref={imageInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleMaintenanceImage}
+                />
+              </div>
+            </div>
+
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-2">
+                {t('admin.maintenance.preview')}
+              </p>
+              <MaintenancePreview
+                preset={config.maintenancePreset}
+                message={config.maintenanceMessage}
+                image={config.maintenanceImage}
+              />
+            </div>
           </div>
 
           <div className="rounded-2xl border border-gray-200 bg-gray-50/60 p-5 space-y-5">

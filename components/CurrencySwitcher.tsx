@@ -6,7 +6,7 @@ import { Check, ChevronDown } from 'lucide-react';
 type Currency = 'MAD' | 'EUR' | 'USD';
 
 const CURRENCIES: { id: Currency; label: string; symbol: string }[] = [
-  { id: 'MAD', label: 'Dirham marocain', symbol: 'DH' },
+  { id: 'MAD', label: 'Dirham marocain', symbol: 'MAD' },
   { id: 'EUR', label: 'Euro', symbol: '€' },
   { id: 'USD', label: 'Dollar américain', symbol: '$' },
 ];
@@ -66,7 +66,7 @@ export function CurrencySwitcher() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-full mt-2 w-48 rounded-xl bg-white border border-gray-200 shadow-lg overflow-hidden z-50 py-1"
+          className="absolute right-0 top-full mt-2 w-60 rounded-xl bg-white border border-gray-200 shadow-lg overflow-hidden z-50 py-1"
         >
           {CURRENCIES.map((c) => {
             const active = c.id === currency;
@@ -77,15 +77,17 @@ export function CurrencySwitcher() {
                 role="menuitemradio"
                 aria-checked={active}
                 onClick={() => select(c.id)}
-                className={`w-full flex items-center justify-between gap-2 px-3 py-2 text-sm hover:bg-gray-50 ${
-                  active ? 'text-brand-navy font-semibold' : 'text-gray-600'
-                }`}
+                className="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm hover:bg-gray-50"
               >
-                <span>
-                  <span className="font-semibold mr-2">{c.symbol}</span>
+                <span className="whitespace-nowrap">
+                  <span
+                    className={`font-semibold mr-2 ${active ? 'text-brand-navy' : 'text-gray-700'}`}
+                  >
+                    {c.symbol}
+                  </span>
                   <span className="text-gray-500">{c.label}</span>
                 </span>
-                {active && <Check className="h-4 w-4 text-brand-blue" aria-hidden />}
+                {active && <Check className="h-4 w-4 text-brand-blue shrink-0" aria-hidden />}
               </button>
             );
           })}

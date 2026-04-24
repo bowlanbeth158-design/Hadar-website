@@ -15,10 +15,10 @@ const AMBASSADOR_IMAGE_URL =
   'https://i.postimg.cc/tC71QjQp/Gemini-Generated-Image-5qi7u35qi7u35qi7-removebg-preview.png';
 
 const BULLETS = [
-  '+10 000 signalements vérifiés',
-  'Recherche instantanée',
-  '100% gratuit et anonyme',
-  'Communauté marocaine',
+  '+10 000 vérifications communautaires',
+  '100% gratuit et confidentiel',
+  'Résultat immédiat',
+  'Plateforme marocaine de confiance',
 ];
 
 export function HomeBanner() {
@@ -39,7 +39,7 @@ export function HomeBanner() {
         <div>
           <span className="inline-flex items-center gap-2 rounded-pill bg-brand-sky text-brand-navy px-3 py-1.5 text-xs font-semibold">
             <Sparkles className="h-3.5 w-3.5 text-brand-blue" aria-hidden />
-            La plateforme marocaine de prévention des fraudes
+            La plateforme marocaine de vérification des contacts
           </span>
 
           <h1 className="mt-5 text-4xl md:text-6xl font-bold tracking-tight text-brand-navy leading-[1.05]">
@@ -50,8 +50,8 @@ export function HomeBanner() {
           </h1>
 
           <p className="mt-5 max-w-xl text-base md:text-lg text-gray-500">
-            Recensez les arnaques signalées par la communauté marocaine : numéros, emails, sites,
-            RIB, comptes crypto… Un réflexe simple, avant toute transaction.
+            Plateforme de vérification des contacts. Prenez des décisions éclairées avant toute
+            transaction.
           </p>
 
           <ul className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl">
@@ -65,14 +65,13 @@ export function HomeBanner() {
 
           {/* Stat callout */}
           <div className="mt-8 flex items-baseline gap-3">
-            <span className="text-sm text-gray-500">Déjà</span>
             <span className="text-4xl md:text-5xl font-bold text-brand-navy">3 247</span>
             <span className="inline-flex items-center gap-1 rounded-pill bg-green-100 text-green-700 px-2 py-1 text-xs font-bold">
               <TrendingUp className="h-3 w-3" aria-hidden />
               +18%
             </span>
           </div>
-          <p className="mt-1 text-sm text-gray-500">arnaques bloquées ce mois-ci.</p>
+          <p className="mt-1 text-sm text-gray-500">vérifications utiles ce mois-ci.</p>
 
           {/* CTAs */}
           <div className="mt-7 flex flex-wrap items-center gap-3">
@@ -93,7 +92,7 @@ export function HomeBanner() {
           </div>
 
           <p className="mt-4 text-xs text-gray-500">
-            Sans inscription pour vérifier · Anonyme ·{' '}
+            Expérience anonyme ·{' '}
             <span className="font-semibold text-brand-navy">Made in Morocco 🇲🇦</span>
           </p>
         </div>

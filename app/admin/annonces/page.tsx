@@ -25,6 +25,11 @@ import { ExportButton } from '@/components/admin/ExportButton';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { NewCampaignModal, type CampaignDraft } from '@/components/admin/NewCampaignModal';
 import { TemplateModal, type Template, type TemplateModalMode } from '@/components/admin/TemplateModal';
+import {
+  AutomationModal,
+  type Automation as AutomationRecord,
+  type AutomationModalMode,
+} from '@/components/admin/AutomationModal';
 
 const TABS = [
   { id: 'campagnes', label: 'Campagnes', Icon: Megaphone },
@@ -65,7 +70,7 @@ const INITIAL_CAMPAIGNS: Campaign[] = [
   { id: 'c4', name: 'Alerte risque élevé — segment surveillé', channels: ['whatsapp'], status: 'en_cours', audience: 'Users à haut risque · 312', sent: 180, delivered: 172, opened: 98, clicked: 41, scheduled: 'Maintenant' },
 ];
 
-type Automation = { id: string; name: string; trigger: string; channels: string[]; active: boolean };
+type Automation = AutomationRecord;
 const INITIAL_AUTOMATIONS: Automation[] = [
   { id: 'a1', name: 'Bienvenue + vérif email', trigger: 'user.created', channels: ['email'], active: true },
   { id: 'a2', name: 'Confirmation publication', trigger: 'report.published', channels: ['email', 'banner'], active: true },
@@ -73,6 +78,8 @@ const INITIAL_AUTOMATIONS: Automation[] = [
   { id: 'a4', name: 'Demande correction + motif', trigger: 'report.needsCorrection', channels: ['email', 'banner'], active: true },
   { id: 'a5', name: 'Alerte sécurité connexion inhabituelle', trigger: 'login.unusual', channels: ['email'], active: false },
 ];
+
+const AUTOMATIONS_KEY = 'hadar:admin:automations';
 
 const INITIAL_TEMPLATES: Template[] = [
   {
@@ -369,6 +376,11 @@ export default function Page() {
     mode: TemplateModalMode;
     initial?: Partial<Template>;
   }>({ open: false, mode: 'create' });
+  const [automationModal, setAutomationModal] = useState<{
+    open: boolean;
+    mode: AutomationModalMode;
+    initial?: Partial<Automation>;
+  }>({ open: false, mode: 'create' });
 
   useEffect(() => {
     try {
@@ -376,6 +388,15 @@ export default function Page() {
       if (raw) {
         const parsed = JSON.parse(raw) as Template[];
         if (Array.isArray(parsed) && parsed.length > 0) setTemplates(parsed);
+      }
+    } catch {
+      // ignore
+    }
+    try {
+      const raw = window.localStorage.getItem(AUTOMATIONS_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as Automation[];
+        if (Array.isArray(parsed)) setAutomations(parsed);
       }
     } catch {
       // ignore
@@ -456,10 +477,36 @@ export default function Page() {
     }
   };
 
+  const persistAutomations = (next: Automation[]) => {
+    setAutomations(next);
+    try {
+      window.localStorage.setItem(AUTOMATIONS_KEY, JSON.stringify(next));
+    } catch {
+      // ignore
+    }
+  };
+
   const toggleAutomation = (id: string) => {
-    setAutomations((list) =>
-      list.map((a) => (a.id === id ? { ...a, active: !a.active } : a)),
+    persistAutomations(
+      automations.map((a) => (a.id === id ? { ...a, active: !a.active } : a)),
     );
+  };
+
+  const saveAutomation = (a: Automation) => {
+    const exists = automations.some((x) => x.id === a.id);
+    const next = exists
+      ? automations.map((x) => (x.id === a.id ? a : x))
+      : [a, ...automations];
+    persistAutomations(next);
+    setAutomationModal({ open: false, mode: 'create' });
+    showFlash(exists ? `« ${a.name} » mise à jour` : `« ${a.name} » créée`);
+  };
+
+  const deleteAutomation = (id: string) => {
+    const removed = automations.find((x) => x.id === id);
+    persistAutomations(automations.filter((x) => x.id !== id));
+    setAutomationModal({ open: false, mode: 'create' });
+    if (removed) showFlash(`« ${removed.name} » supprimée`);
   };
 
   const handleCreateCampaign = (draft: CampaignDraft) => {
@@ -633,48 +680,93 @@ export default function Page() {
       {activeTab === 'automations' && (
         <section className="rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-6">
           <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
-            <h2 className="text-lg font-bold text-brand-navy">Automations</h2>
-            <span className="text-xs text-gray-500">
-              {automations.filter((a) => a.active).length} / {automations.length} actives
-            </span>
+            <div>
+              <h2 className="text-lg font-bold text-brand-navy">Automations</h2>
+              <p className="text-xs text-gray-500">
+                {automations.filter((a) => a.active).length} / {automations.length} active
+                {automations.length > 1 ? 's' : ''} — déclencheurs automatiques liés aux events
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setAutomationModal({ open: true, mode: 'create' })}
+              className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-4 py-1.5 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
+            >
+              <Layers className="h-4 w-4" aria-hidden />
+              Nouvelle automation
+            </button>
           </div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            {automations.map((a) => (
-              <div
-                key={a.id}
-                className="rounded-xl border border-gray-200 bg-white p-4 shadow-glow-soft hover:shadow-glow-navy transition-all"
-              >
-                <div className="flex items-start justify-between gap-3 mb-2">
-                  <p className="font-semibold text-brand-navy">{a.name}</p>
-                  <div className="flex items-center gap-2">
-                    <span
-                      className={
-                        a.active
-                          ? 'inline-flex items-center rounded-pill bg-green-100 text-green-700 px-2.5 py-0.5 text-[11px] font-semibold'
-                          : 'inline-flex items-center rounded-pill bg-gray-100 text-gray-500 px-2.5 py-0.5 text-[11px] font-semibold'
-                      }
+          {automations.length === 0 ? (
+            <div className="rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center text-sm text-gray-400">
+              Aucune automation — créez-en une pour réagir aux events de la plateforme.
+            </div>
+          ) : (
+            <div className="grid gap-3 sm:grid-cols-2">
+              {automations.map((a) => (
+                <div
+                  key={a.id}
+                  className="rounded-xl border border-gray-200 bg-white p-4 shadow-glow-soft hover:shadow-glow-navy transition-all"
+                >
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <p className="font-semibold text-brand-navy">{a.name}</p>
+                    <div className="flex items-center gap-2">
+                      <span
+                        className={
+                          a.active
+                            ? 'inline-flex items-center rounded-pill bg-green-100 text-green-700 px-2.5 py-0.5 text-[11px] font-semibold'
+                            : 'inline-flex items-center rounded-pill bg-gray-100 text-gray-500 px-2.5 py-0.5 text-[11px] font-semibold'
+                        }
+                      >
+                        {a.active ? 'Actif' : 'En pause'}
+                      </span>
+                      <Toggle
+                        checked={a.active}
+                        onChange={() => toggleAutomation(a.id)}
+                        label={`Activer ${a.name}`}
+                      />
+                    </div>
+                  </div>
+                  <p className="text-xs text-gray-500">
+                    Déclencheur :{' '}
+                    <code className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-[11px]">
+                      {a.trigger}
+                    </code>
+                  </p>
+                  <div className="mt-3">
+                    <ChannelPills channels={a.channels} />
+                  </div>
+                  <div className="mt-3 flex items-center gap-1 border-t border-gray-100 pt-3">
+                    <button
+                      type="button"
+                      onClick={() => setAutomationModal({ open: true, mode: 'view', initial: a })}
+                      className="inline-flex items-center gap-1 rounded-pill border border-gray-200 text-brand-navy px-2.5 py-1 text-[11px] font-semibold hover:border-brand-blue transition-colors"
                     >
-                      {a.active ? 'Actif' : 'En pause'}
-                    </span>
-                    <Toggle
-                      checked={a.active}
-                      onChange={() => toggleAutomation(a.id)}
-                      label={`Activer ${a.name}`}
-                    />
+                      <Eye className="h-3 w-3" aria-hidden />
+                      Voir
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setAutomationModal({ open: true, mode: 'edit', initial: a })}
+                      className="inline-flex items-center gap-1 rounded-pill bg-brand-navy text-white px-2.5 py-1 text-[11px] font-semibold hover:bg-brand-blue transition-colors"
+                    >
+                      <Pencil className="h-3 w-3" aria-hidden />
+                      Modifier
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (window.confirm(`Supprimer l’automation « ${a.name} » ?`)) deleteAutomation(a.id);
+                      }}
+                      aria-label={`Supprimer ${a.name}`}
+                      className="ml-auto h-7 w-7 rounded-full hover:bg-red-50 text-red-500 flex items-center justify-center"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" aria-hidden />
+                    </button>
                   </div>
                 </div>
-                <p className="text-xs text-gray-500">
-                  Déclencheur :{' '}
-                  <code className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-[11px]">
-                    {a.trigger}
-                  </code>
-                </p>
-                <div className="mt-3">
-                  <ChannelPills channels={a.channels} />
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </section>
       )}
 
@@ -860,6 +952,15 @@ export default function Page() {
         onClose={() => setTemplateModal({ open: false, mode: 'create' })}
         onSave={saveTemplate}
         onDelete={deleteTemplate}
+      />
+
+      <AutomationModal
+        open={automationModal.open}
+        mode={automationModal.mode}
+        initial={automationModal.initial}
+        onClose={() => setAutomationModal({ open: false, mode: 'create' })}
+        onSave={saveAutomation}
+        onDelete={deleteAutomation}
       />
     </div>
   );

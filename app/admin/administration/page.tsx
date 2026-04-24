@@ -11,10 +11,34 @@ import {
   Search,
   Check,
   X,
+  Plus,
+  Trash2,
+  Megaphone,
+  Repeat,
+  Bell,
+  Info,
 } from 'lucide-react';
 import { PermissionToggle } from '@/components/admin/PermissionToggle';
+import {
+  AdminAnnouncementBanner,
+  dispatchConfigUpdate,
+} from '@/components/admin/AdminAnnouncementBanner';
 import { useI18n } from '@/lib/i18n/provider';
 import { translateRole } from '@/lib/i18n/helpers';
+
+function BannerPreview({ config }: { config: PlatformConfig }) {
+  return (
+    <AdminAnnouncementBanner
+      mode="preview"
+      config={{
+        bannerEnabled: config.bannerEnabled,
+        bannerType: config.bannerType,
+        bannerMessages: config.bannerMessages,
+        bannerIntervalSec: config.bannerIntervalSec,
+      }}
+    />
+  );
+}
 
 type Tab = 'roles' | 'logs' | 'config' | 'integrations';
 type RoleKey = 'admin' | 'mod' | 'support';
@@ -116,9 +140,20 @@ const INITIAL_INTEGRATIONS: Integration[] = [
   { id: 'analytics', name: 'Analytics anonymisé', provider: 'Plausible', active: false, endpoint: 'plausible.io/api', status: 'off' },
 ];
 
+export type BannerType = 'topbar' | 'carousel' | 'toast';
+export type BannerMessage = {
+  id: string;
+  text: string;
+  linkUrl?: string;
+  linkLabel?: string;
+};
+
 type PlatformConfig = {
   maintenance: boolean;
-  banner: string;
+  bannerEnabled: boolean;
+  bannerType: BannerType;
+  bannerMessages: BannerMessage[];
+  bannerIntervalSec: number;
   publicSearch: boolean;
   registrationsOpen: boolean;
   maxUploadMb: number;
@@ -128,12 +163,17 @@ type PlatformConfig = {
 const CONFIG_KEY = 'hadar:admin:platform-config';
 const INITIAL_CONFIG: PlatformConfig = {
   maintenance: false,
-  banner: '',
+  bannerEnabled: false,
+  bannerType: 'topbar',
+  bannerMessages: [{ id: 'm1', text: '' }],
+  bannerIntervalSec: 5,
   publicSearch: true,
   registrationsOpen: true,
   maxUploadMb: 10,
   sessionMinutes: 15,
 };
+
+const MAX_MESSAGES = 3;
 
 export default function Page() {
   const { t } = useI18n();
@@ -190,6 +230,7 @@ export default function Page() {
   const saveConfig = () => {
     window.localStorage.setItem(CONFIG_KEY, JSON.stringify(config));
     setSavedConfig(config);
+    dispatchConfigUpdate();
     showFlash(t('admin.flash.configSaved'));
   };
   const resetPerms = () => setPerms(savedPerms);
@@ -481,18 +522,191 @@ export default function Page() {
             />
           </div>
 
-          <div>
-            <label className="block text-xs font-semibold text-brand-navy mb-1.5">
-              {t('admin.config.bannerLabel')}
-            </label>
-            <input
-              type="text"
-              value={config.banner}
-              onChange={(e) => setConfig((c) => ({ ...c, banner: e.target.value }))}
-              placeholder={t('admin.config.bannerPlaceholder')}
-              className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-brand-navy focus:outline-none focus:border-brand-blue"
-            />
-            <p className="mt-1 text-xs text-gray-400">{t('admin.config.bannerHint')}</p>
+          <div className="rounded-2xl border border-gray-200 bg-gray-50/60 p-5 space-y-5">
+            <div className="flex items-center justify-between flex-wrap gap-3">
+              <div className="inline-flex items-center gap-2">
+                <Megaphone className="h-4 w-4 text-brand-blue" aria-hidden />
+                <h3 className="text-sm font-bold text-brand-navy">
+                  {t('admin.banner.section')}
+                </h3>
+              </div>
+              <PermissionToggle
+                label={t('admin.banner.enabled')}
+                checked={config.bannerEnabled}
+                onChange={(v) => setConfig((c) => ({ ...c, bannerEnabled: v }))}
+              />
+            </div>
+
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-2">
+                {t('admin.banner.type.label')}
+              </p>
+              <div className="grid gap-2 sm:grid-cols-3">
+                {(
+                  [
+                    { id: 'topbar', Icon: Bell, labelKey: 'admin.banner.type.topbar', hintKey: 'admin.banner.typeHint.topbar' },
+                    { id: 'carousel', Icon: Repeat, labelKey: 'admin.banner.type.carousel', hintKey: 'admin.banner.typeHint.carousel' },
+                    { id: 'toast', Icon: Info, labelKey: 'admin.banner.type.toast', hintKey: 'admin.banner.typeHint.toast' },
+                  ] as const
+                ).map((opt) => {
+                  const on = config.bannerType === opt.id;
+                  return (
+                    <button
+                      key={opt.id}
+                      type="button"
+                      onClick={() => setConfig((c) => ({ ...c, bannerType: opt.id }))}
+                      aria-pressed={on}
+                      className={
+                        on
+                          ? 'flex flex-col gap-1 rounded-xl border-2 border-brand-blue bg-white p-3 text-left shadow-glow-blue transition-all'
+                          : 'flex flex-col gap-1 rounded-xl border-2 border-gray-200 bg-white p-3 text-left hover:border-gray-300 transition-all'
+                      }
+                    >
+                      <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-navy">
+                        <opt.Icon className="h-3.5 w-3.5" aria-hidden />
+                        {t(opt.labelKey)}
+                      </span>
+                      <span className="text-[11px] text-gray-500">{t(opt.hintKey)}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+                  {t('admin.banner.messages')} ({config.bannerMessages.length}/{MAX_MESSAGES})
+                </p>
+                {config.bannerMessages.length < MAX_MESSAGES && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setConfig((c) => ({
+                        ...c,
+                        bannerMessages: [
+                          ...c.bannerMessages,
+                          { id: `m${Date.now()}`, text: '' },
+                        ],
+                      }))
+                    }
+                    className="inline-flex items-center gap-1 rounded-pill border border-brand-navy text-brand-navy px-3 py-1 text-xs font-semibold hover:bg-brand-navy hover:text-white transition-colors"
+                  >
+                    <Plus className="h-3 w-3" aria-hidden />
+                    {t('admin.banner.addMessage')}
+                  </button>
+                )}
+              </div>
+              <div className="space-y-2">
+                {config.bannerMessages.map((m, idx) => (
+                  <div
+                    key={m.id}
+                    className="rounded-xl border border-gray-200 bg-white p-3 space-y-2"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-semibold text-brand-navy">
+                        {t('admin.banner.msgNum', { n: idx + 1 })}
+                      </span>
+                      {config.bannerMessages.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setConfig((c) => ({
+                              ...c,
+                              bannerMessages: c.bannerMessages.filter((x) => x.id !== m.id),
+                            }))
+                          }
+                          aria-label={t('admin.banner.removeMessage')}
+                          className="h-6 w-6 rounded hover:bg-red-50 text-red-500 flex items-center justify-center"
+                        >
+                          <Trash2 className="h-3 w-3" aria-hidden />
+                        </button>
+                      )}
+                    </div>
+                    <input
+                      type="text"
+                      value={m.text}
+                      onChange={(e) =>
+                        setConfig((c) => ({
+                          ...c,
+                          bannerMessages: c.bannerMessages.map((x) =>
+                            x.id === m.id ? { ...x, text: e.target.value } : x,
+                          ),
+                        }))
+                      }
+                      placeholder={t('admin.banner.textPlaceholder')}
+                      className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm text-brand-navy focus:outline-none focus:border-brand-blue"
+                    />
+                    <div className="grid gap-2 sm:grid-cols-[1fr_1fr]">
+                      <input
+                        type="url"
+                        value={m.linkUrl ?? ''}
+                        onChange={(e) =>
+                          setConfig((c) => ({
+                            ...c,
+                            bannerMessages: c.bannerMessages.map((x) =>
+                              x.id === m.id
+                                ? { ...x, linkUrl: e.target.value || undefined }
+                                : x,
+                            ),
+                          }))
+                        }
+                        placeholder={t('admin.banner.linkUrlPlaceholder')}
+                        className="rounded-xl border border-gray-200 px-3 py-1.5 text-xs text-brand-navy focus:outline-none focus:border-brand-blue"
+                      />
+                      <input
+                        type="text"
+                        value={m.linkLabel ?? ''}
+                        onChange={(e) =>
+                          setConfig((c) => ({
+                            ...c,
+                            bannerMessages: c.bannerMessages.map((x) =>
+                              x.id === m.id
+                                ? { ...x, linkLabel: e.target.value || undefined }
+                                : x,
+                            ),
+                          }))
+                        }
+                        placeholder={t('admin.banner.linkLabelPlaceholder')}
+                        className="rounded-xl border border-gray-200 px-3 py-1.5 text-xs text-brand-navy focus:outline-none focus:border-brand-blue"
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {(config.bannerType === 'carousel' || config.bannerType === 'toast') &&
+              config.bannerMessages.length > 1 && (
+                <div>
+                  <label className="block text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-2">
+                    {t('admin.banner.intervalLabel', { n: config.bannerIntervalSec })}
+                  </label>
+                  <input
+                    type="range"
+                    min={3}
+                    max={30}
+                    step={1}
+                    value={config.bannerIntervalSec}
+                    onChange={(e) =>
+                      setConfig((c) => ({
+                        ...c,
+                        bannerIntervalSec: Number(e.target.value) || 5,
+                      }))
+                    }
+                    className="w-full accent-brand-blue"
+                  />
+                </div>
+              )}
+
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 mb-2">
+                {t('admin.banner.preview')}
+              </p>
+              <BannerPreview config={config} />
+            </div>
+
+            <p className="text-xs text-gray-400">{t('admin.banner.hint')}</p>
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">

@@ -80,7 +80,7 @@ export default function Page() {
             </div>
             <div className="flex flex-col gap-1.5">
               <Link
-                href={`/mes-signalements/${a.id}`}
+                href={`/mes-alertes/${a.id}`}
                 className="rounded-pill border border-gray-200 text-brand-navy px-3 py-1 text-xs font-medium hover:border-brand-blue transition-colors"
               >
                 Voir les détails

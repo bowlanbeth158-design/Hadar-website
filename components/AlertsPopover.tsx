@@ -159,7 +159,7 @@ export function AlertsPopover({
               {visible.map((alert) => (
                 <li key={alert.id}>
                   <Link
-                    href="/mes-alertes"
+                    href={`/mes-alertes/${alert.id}`}
                     onClick={close}
                     className="group relative flex items-stretch hover:bg-gray-50 transition-colors duration-200"
                   >

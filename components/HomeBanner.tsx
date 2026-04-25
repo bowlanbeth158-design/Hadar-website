@@ -1,15 +1,15 @@
 import Link from 'next/link';
-import { ShieldCheck, Siren, Sparkles, Search, Users, Zap } from 'lucide-react';
+import { ShieldCheck, Siren, Sparkles, Search, Users, Zap, TrendingUp } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
 
 // URL postimg de la photo ambassadeur Hadar.
 const AMBASSADOR_IMAGE_URL = 'https://i.postimg.cc/Y0V7C7w3/Hadar-man.png';
 
 const BULLETS = [
-  '+10 000 vérifications communautaires',
-  '100% gratuit et confidentiel',
+  '+10 000 vérifications',
   'Résultat immédiat',
-  'Plateforme marocaine de confiance',
+  '100% confidentiel',
+  'Communauté marocaine',
 ];
 
 export function HomeBanner() {
@@ -48,11 +48,17 @@ export function HomeBanner() {
             ))}
           </ul>
 
-          {/* Stat callout */}
-          <div className="mt-8 flex items-baseline gap-3">
-            <span className="text-4xl md:text-5xl font-bold text-brand-navy">3 247</span>
+          {/* Stat callout — number + trend badge */}
+          <div className="mt-8 flex items-center gap-3 flex-wrap">
+            <span className="text-4xl md:text-5xl font-bold text-brand-navy leading-none">
+              3 247
+            </span>
+            <span className="inline-flex items-center gap-1 rounded-pill bg-green-100 text-green-700 px-2.5 py-1 text-xs font-bold">
+              <TrendingUp className="h-3.5 w-3.5" aria-hidden />
+              +18%
+            </span>
           </div>
-          <p className="mt-1 text-sm text-gray-500">vérifications utiles ce mois-ci.</p>
+          <p className="mt-1.5 text-sm text-gray-500">vérifications utiles ce mois-ci.</p>
 
           {/* CTAs — same pulse + wiggle effect as the old header buttons */}
           <div className="mt-7 flex flex-wrap items-center gap-3">
@@ -73,8 +79,9 @@ export function HomeBanner() {
           </div>
 
           <p className="mt-4 text-xs text-gray-500">
-            Expérience anonyme ·{' '}
-            <span className="font-semibold text-brand-navy">Made in Morocco 🇲🇦</span>
+            Sans inscription <span className="text-gray-300">•</span> Anonyme{' '}
+            <span className="text-gray-300">•</span>{' '}
+            <span className="font-semibold text-brand-navy">Plateforme marocaine 🇲🇦</span>
           </p>
         </div>
 

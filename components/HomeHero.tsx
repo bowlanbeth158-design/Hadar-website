@@ -166,9 +166,9 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
       >
         {/* Animated background — floating cool-blue blobs + subtle grid */}
         <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
-          <div className="absolute -top-24 -left-20 h-96 w-96 rounded-full bg-sky-400/15 blur-3xl animate-float-soft" />
+          <div className="absolute -top-24 -left-20 h-96 w-96 rounded-full bg-sky-400/25 blur-3xl animate-float-soft" />
           <div
-            className="absolute top-32 -right-24 h-[28rem] w-[28rem] rounded-full bg-sky-400/15 blur-3xl animate-float-soft"
+            className="absolute top-32 -right-24 h-[28rem] w-[28rem] rounded-full bg-sky-400/25 blur-3xl animate-float-soft"
             style={{ animationDelay: '1.5s' }}
           />
           <div
@@ -192,7 +192,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
           <div className="relative mx-auto w-full">
             {/* Outer pulsing halo */}
             <div
-              className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-br from-sky-400/20 via-brand-sky/40 to-sky-400/20 blur-3xl opacity-70 animate-pulse"
+              className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-br from-sky-400/30 via-brand-sky/40 to-sky-400/30 blur-3xl opacity-70 animate-pulse"
               style={{ animationDuration: '4.5s' }}
               aria-hidden
             />
@@ -203,7 +203,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                 className="absolute left-1/2 top-1/2 aspect-square w-[180%] -translate-x-1/2 -translate-y-1/2 animate-[spin_10s_linear_infinite]"
                 style={{
                   background:
-                    'conic-gradient(from 0deg, transparent 0deg, transparent 230deg, #29AAE1 270deg, #DBE5F3 300deg, #29AAE1 330deg, transparent 360deg)',
+                    'conic-gradient(from 0deg, transparent 0deg, transparent 230deg, rgba(41, 170, 225, 0.45) 260deg, rgba(41, 170, 225, 0.85) 295deg, rgba(41, 170, 225, 0.45) 330deg, transparent 360deg)',
                 }}
               />
             </div>

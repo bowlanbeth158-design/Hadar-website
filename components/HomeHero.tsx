@@ -192,7 +192,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
           <div className="relative mx-auto w-full">
             {/* Outer pulsing halo */}
             <div
-              className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-br from-brand-blue/30 via-sky-400/25 to-sky-500/30 blur-3xl opacity-70 animate-pulse"
+              className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-br from-brand-blue/15 via-sky-400/15 to-sky-500/15 blur-3xl opacity-70 animate-pulse"
               style={{ animationDuration: '4.5s' }}
               aria-hidden
             />
@@ -203,7 +203,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                 className="absolute left-1/2 top-1/2 aspect-square w-[180%] -translate-x-1/2 -translate-y-1/2 animate-[spin_10s_linear_infinite]"
                 style={{
                   background:
-                    'conic-gradient(from 0deg, transparent 0deg, transparent 220deg, #29AAE1 260deg, #0078BA 290deg, #00BFEE 310deg, transparent 350deg, transparent 360deg)',
+                    'conic-gradient(from 0deg, transparent 0deg, transparent 230deg, #29AAE1 270deg, #00BFEE 300deg, #29AAE1 330deg, transparent 360deg)',
                 }}
               />
             </div>
@@ -214,7 +214,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
               <div
                 className="pointer-events-none absolute inset-0 opacity-[0.05]"
                 style={{
-                  backgroundImage: 'radial-gradient(#0078BA 1px, transparent 1px)',
+                  backgroundImage: 'radial-gradient(#29AAE1 1px, transparent 1px)',
                   backgroundSize: '22px 22px',
                   maskImage:
                     'radial-gradient(ellipse at center, black 35%, transparent 85%)',
@@ -233,22 +233,22 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
               </div>
 
               {/* Top-right floating live counter */}
-              <div className="hidden md:flex absolute top-5 right-5 z-10 items-center gap-2 rounded-pill bg-white/85 backdrop-blur-md border border-brand-blue/25 px-3 py-1.5 text-xs font-semibold text-brand-blue shadow-glow-soft animate-float-soft">
+              <div className="hidden md:flex absolute top-5 right-5 z-10 items-center gap-2 rounded-pill bg-white/85 backdrop-blur-md border border-sky-400/40 px-3 py-1.5 text-xs font-semibold text-brand-blue/80 shadow-glow-soft animate-float-soft">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
                 </span>
-                Live · <span className="bg-gradient-to-r from-brand-blue to-sky-500 bg-clip-text text-transparent">2 vérif/s</span>
+                Live · <span className="bg-gradient-to-r from-sky-400 to-sky-500 bg-clip-text text-transparent">2 vérif/s</span>
               </div>
 
               {/* Bottom-left floating monthly counter */}
               <div
-                className="hidden md:flex absolute bottom-5 left-5 z-10 items-center gap-2 rounded-pill bg-white/85 backdrop-blur-md border border-brand-blue/25 px-3 py-1.5 text-xs font-semibold text-brand-blue shadow-glow-soft animate-float-soft"
+                className="hidden md:flex absolute bottom-5 left-5 z-10 items-center gap-2 rounded-pill bg-white/85 backdrop-blur-md border border-sky-400/40 px-3 py-1.5 text-xs font-semibold text-brand-blue/80 shadow-glow-soft animate-float-soft"
                 style={{ animationDelay: '1.2s' }}
               >
-                <Sparkles className="h-3.5 w-3.5 text-brand-blue animate-sparkle-pop" aria-hidden />
+                <Sparkles className="h-3.5 w-3.5 text-sky-400 animate-sparkle-pop" aria-hidden />
                 <span>
-                  <span className="bg-gradient-to-r from-brand-blue to-sky-500 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-sky-400 to-sky-500 bg-clip-text text-transparent">
                     +12 408
                   </span>{' '}
                   ce mois
@@ -256,10 +256,10 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
               </div>
 
               {/* Decorative corner brackets */}
-              <span className="pointer-events-none absolute top-0 left-0 h-10 w-10 border-t-2 border-l-2 border-brand-blue/30 rounded-tl-[2rem]" aria-hidden />
-              <span className="pointer-events-none absolute top-0 right-0 h-10 w-10 border-t-2 border-r-2 border-brand-blue/30 rounded-tr-[2rem]" aria-hidden />
-              <span className="pointer-events-none absolute bottom-0 left-0 h-10 w-10 border-b-2 border-l-2 border-brand-blue/30 rounded-bl-[2rem]" aria-hidden />
-              <span className="pointer-events-none absolute bottom-0 right-0 h-10 w-10 border-b-2 border-r-2 border-brand-blue/30 rounded-br-[2rem]" aria-hidden />
+              <span className="pointer-events-none absolute top-0 left-0 h-10 w-10 border-t-2 border-l-2 border-sky-400/40 rounded-tl-[2rem]" aria-hidden />
+              <span className="pointer-events-none absolute top-0 right-0 h-10 w-10 border-t-2 border-r-2 border-sky-400/40 rounded-tr-[2rem]" aria-hidden />
+              <span className="pointer-events-none absolute bottom-0 left-0 h-10 w-10 border-b-2 border-l-2 border-sky-400/40 rounded-bl-[2rem]" aria-hidden />
+              <span className="pointer-events-none absolute bottom-0 right-0 h-10 w-10 border-b-2 border-r-2 border-sky-400/40 rounded-br-[2rem]" aria-hidden />
 
               {/* Real content (kept above all decorations) */}
               <div className="relative z-[1]">
@@ -274,11 +274,11 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
               </div>
 
               <h2 className="mt-5 text-3xl md:text-5xl font-bold tracking-tight">
-                <span className="bg-gradient-to-r from-brand-blue via-sky-400 to-sky-500 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-brand-blue/70 via-sky-400 to-sky-500 bg-clip-text text-transparent">
                   Lancez votre vérification
                 </span>
                 <span
-                  className="block mx-auto mt-2 h-1 w-32 md:w-48 rounded-full bg-gradient-to-r from-brand-blue via-sky-400 to-sky-500 opacity-50"
+                  className="block mx-auto mt-2 h-1 w-32 md:w-48 rounded-full bg-gradient-to-r from-brand-blue/40 via-sky-400/60 to-sky-500/60"
                   aria-hidden
                 />
               </h2>

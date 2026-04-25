@@ -3,6 +3,7 @@ import { Logo } from './Logo';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { CurrencySwitcher } from './CurrencySwitcher';
 import { UserMenu } from './UserMenu';
+import { AlertsPopover } from './AlertsPopover';
 
 const ALERT_COUNT = 8;
 
@@ -56,20 +57,7 @@ export function Header() {
               </Link>
             </li>
             <li>
-              <Link
-                href="/mes-alertes"
-                className={`inline-flex items-center gap-1.5 ${NAV_LINK_HOVER}`}
-              >
-                Mes alertes
-                {ALERT_COUNT > 0 && (
-                  <span
-                    aria-label={`${ALERT_COUNT} nouvelles alertes`}
-                    className="min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[10px] font-bold inline-flex items-center justify-center"
-                  >
-                    {ALERT_COUNT > 99 ? '99+' : ALERT_COUNT}
-                  </span>
-                )}
-              </Link>
+              <AlertsPopover count={ALERT_COUNT} />
             </li>
           </ul>
 

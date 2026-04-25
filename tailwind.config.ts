@@ -139,6 +139,10 @@ const config: Config = {
           '0%, 100%': { transform: 'scale(0.8) rotate(0deg)', opacity: '0.7' },
           '50%': { transform: 'scale(1.15) rotate(20deg)', opacity: '1' },
         },
+        shimmer: {
+          '0%': { transform: 'translateX(-120%)' },
+          '100%': { transform: 'translateX(220%)' },
+        },
       },
       animation: {
         'alert-pulse': 'alert-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite',
@@ -152,6 +156,7 @@ const config: Config = {
         'modal-pop': 'modal-pop 280ms cubic-bezier(0.16, 1, 0.3, 1)',
         'confetti-fall': 'confetti-fall linear forwards',
         'sparkle-pop': 'sparkle-pop 1.6s ease-in-out infinite',
+        shimmer: 'shimmer 5s linear infinite',
       },
     },
   },

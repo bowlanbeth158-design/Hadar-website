@@ -66,12 +66,34 @@ export function HomeBanner() {
       <div className="relative mx-auto max-w-[1440px] px-6 md:px-10 pt-4 md:pt-6 pb-12 md:pb-20 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         {/* LEFT — copy + CTAs */}
         <div>
-          <span className="inline-flex items-center gap-2 rounded-pill bg-brand-sky text-brand-navy px-3 py-1.5 text-xs font-semibold">
-            <Sparkles className="h-3.5 w-3.5 text-brand-blue" aria-hidden />
-            La plateforme marocaine de vérification des contacts
-          </span>
+          {/* "Introducing"-style pill with animated icon, gradient bg
+              and a shimmer line travelling left → right under it (5 s loop). */}
+          <div className="inline-flex flex-col">
+            <span className="relative inline-flex items-center gap-2 rounded-pill border border-white/70 bg-gradient-to-r from-brand-sky via-blue-100 to-brand-sky text-brand-navy px-4 py-1.5 text-xs font-semibold shadow-sm overflow-hidden">
+              <Sparkles
+                className="h-3.5 w-3.5 text-brand-blue animate-sparkle-pop drop-shadow"
+                aria-hidden
+              />
+              <span className="relative z-10">
+                La plateforme marocaine de vérification des contacts
+              </span>
+              {/* Shimmer light passing across the pill background */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/70 to-transparent skew-x-[-20deg] animate-shimmer"
+              />
+            </span>
 
-          <h1 className="mt-5 text-4xl md:text-6xl font-bold tracking-tight text-brand-navy leading-[1.05]">
+            {/* Underline with travelling light spot — repeats every 5 s */}
+            <div
+              aria-hidden
+              className="relative mt-2 h-[2px] overflow-hidden rounded-full bg-gradient-to-r from-transparent via-brand-sky to-transparent"
+            >
+              <span className="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-transparent via-brand-blue to-transparent animate-shimmer" />
+            </div>
+          </div>
+
+          <h1 className="mt-8 md:mt-10 text-4xl md:text-6xl font-bold tracking-tight text-brand-navy leading-[1.05]">
             Avant d&apos;acheter,<br />
             <span className="bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 bg-clip-text text-transparent">
               vérifiez.

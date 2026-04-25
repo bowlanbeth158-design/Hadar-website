@@ -15,16 +15,10 @@ const BULLETS = [
 
 export function HomeBanner() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-brand-sky via-white to-white">
-      {/* Decorative background */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-brand-blue/10 blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-sky-400/10 blur-3xl"
-      />
+    <section className="relative overflow-hidden">
+      {/* Decorative background — moved to <body> in app/layout.tsx so every
+          page shares the same atmospheric backdrop. The section itself is
+          now transparent to let the global gradient + blurs show through. */}
 
       <div className="relative mx-auto max-w-7xl px-6 md:px-10 py-12 md:py-20 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         {/* LEFT — copy + CTAs */}

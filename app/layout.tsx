@@ -48,8 +48,19 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" dir="ltr" className={`${poppins.variable} ${cairo.variable}`}>
-      <body className="min-h-screen antialiased bg-page-gradient font-sans">
+    <html lang="fr" dir="ltr" className={`${poppins.variable} ${cairo.variable} overflow-x-clip`}>
+      <body className="relative min-h-screen antialiased font-sans bg-gradient-to-br from-brand-sky via-white to-white isolate overflow-x-clip">
+        {/* Decorative brand blurs — same style as the homepage hero, anchored
+            to the viewport so every page shares the same atmospheric backdrop. */}
+        <div
+          aria-hidden
+          className="pointer-events-none fixed -top-32 -right-32 h-[420px] w-[420px] rounded-full bg-brand-blue/10 blur-3xl -z-10"
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none fixed -bottom-32 -left-32 h-[420px] w-[420px] rounded-full bg-sky-400/10 blur-3xl -z-10"
+        />
+
         <PublicMaintenanceGate>{children}</PublicMaintenanceGate>
       </body>
     </html>

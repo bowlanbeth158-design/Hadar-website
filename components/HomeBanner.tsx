@@ -198,49 +198,58 @@ export function HomeBanner() {
               </p>
             </div>
 
-            {/* Card 3 — Alertes détectées aujourd'hui (BOTTOM-RIGHT, extends right) */}
+            {/* Card 3 — Alertes aujourd'hui (BOTTOM-RIGHT, extends right) */}
             <div
-              className={`absolute bottom-6 -right-10 w-72 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 animate-float-soft ${FLOAT_CARD_HOVER}`}
+              className={`absolute bottom-6 -right-10 w-72 overflow-hidden rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 animate-float-soft ${FLOAT_CARD_HOVER}`}
               style={{ animationDelay: '3s' }}
             >
-              <div className="pb-2 border-b border-gray-100 flex items-center gap-1.5">
-                <BellRing
-                  className="h-4 w-4 text-brand-blue animate-siren-wiggle"
-                  aria-hidden
-                />
-                <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
-                  Alertes aujourd&apos;hui
-                </span>
+              {/* Warm alert-toned gradient halo in the bottom-right corner —
+                  pulses slowly to match the "live alerts" feel. */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute -bottom-12 -right-12 h-40 w-40 rounded-full bg-gradient-to-br from-yellow-300/40 via-orange-500/40 to-red-500/30 blur-3xl animate-pulse"
+              />
+
+              <div className="relative">
+                <div className="pb-2 border-b border-gray-100 flex items-center gap-1.5">
+                  <BellRing
+                    className="h-4 w-4 text-brand-blue animate-siren-wiggle"
+                    aria-hidden
+                  />
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                    Alertes aujourd&apos;hui
+                  </span>
+                </div>
+                <ul className="mt-2.5 space-y-2.5 text-xs">
+                  <li className="flex items-center justify-between">
+                    <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
+                      <span className="h-2.5 w-2.5 rounded-full bg-yellow-300 ring-2 ring-yellow-100" />
+                      Vigilance
+                    </span>
+                    <span className="text-gray-500 tabular-nums">
+                      — <CountUp to={2} />
+                    </span>
+                  </li>
+                  <li className="flex items-center justify-between">
+                    <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
+                      <span className="h-2.5 w-2.5 rounded-full bg-orange-500 ring-2 ring-orange-100" />
+                      Modérée
+                    </span>
+                    <span className="text-gray-500 tabular-nums">
+                      — <CountUp to={4} />
+                    </span>
+                  </li>
+                  <li className="flex items-center justify-between">
+                    <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
+                      <span className="h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-red-100" />
+                      Élevée
+                    </span>
+                    <span className="text-gray-500 tabular-nums">
+                      — <CountUp to={1} />
+                    </span>
+                  </li>
+                </ul>
               </div>
-              <ul className="mt-2.5 space-y-2.5 text-xs">
-                <li className="flex items-center justify-between">
-                  <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
-                    <span className="h-2.5 w-2.5 rounded-full bg-yellow-300 ring-2 ring-yellow-100" />
-                    Vigilance
-                  </span>
-                  <span className="text-gray-500 tabular-nums">
-                    — <CountUp to={2} />
-                  </span>
-                </li>
-                <li className="flex items-center justify-between">
-                  <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
-                    <span className="h-2.5 w-2.5 rounded-full bg-orange-500 ring-2 ring-orange-100" />
-                    Modérée
-                  </span>
-                  <span className="text-gray-500 tabular-nums">
-                    — <CountUp to={4} />
-                  </span>
-                </li>
-                <li className="flex items-center justify-between">
-                  <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
-                    <span className="h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-red-100" />
-                    Élevée
-                  </span>
-                  <span className="text-gray-500 tabular-nums">
-                    — <CountUp to={1} />
-                  </span>
-                </li>
-              </ul>
             </div>
           </div>
         </div>

@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
 import { CountUp } from './CountUp';
+import { OFFICIAL_LOGO_URL } from './Logo';
 
 // URL postimg de la photo ambassadeur Hadar.
 const AMBASSADOR_IMAGE_URL = 'https://i.postimg.cc/Y0V7C7w3/Hadar-man.png';
@@ -70,9 +71,12 @@ export function HomeBanner() {
               and a shimmer line travelling left → right under it (5 s loop). */}
           <div className="inline-flex flex-col">
             <span className="relative inline-flex items-center gap-2 rounded-pill border border-white/70 bg-gradient-to-r from-brand-sky via-blue-100 to-brand-sky text-brand-navy px-4 py-1.5 text-xs font-semibold shadow-sm overflow-hidden">
-              <Sparkles
-                className="h-3.5 w-3.5 text-brand-blue animate-sparkle-pop drop-shadow"
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={OFFICIAL_LOGO_URL}
+                alt=""
                 aria-hidden
+                className="h-4 w-4 object-contain animate-sparkle-pop drop-shadow"
               />
               <span className="relative z-10">
                 La plateforme marocaine de vérification des contacts

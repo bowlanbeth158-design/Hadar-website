@@ -2,9 +2,8 @@ import Link from 'next/link';
 import { ShieldCheck, Siren, Sparkles, Search, Users, Zap } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
 
-// URL postimg de la photo ambassadeur Hadar (Gemini + fond transparent via remove.bg)
-const AMBASSADOR_IMAGE_URL =
-  'https://i.postimg.cc/tC71QjQp/Gemini-Generated-Image-5qi7u35qi7u35qi7-removebg-preview.png';
+// URL postimg de la photo ambassadeur Hadar.
+const AMBASSADOR_IMAGE_URL = 'https://i.postimg.cc/Y0V7C7w3/Hadar-man.png';
 
 const BULLETS = [
   '+10 000 vérifications communautaires',

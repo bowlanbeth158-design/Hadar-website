@@ -22,7 +22,7 @@ export function PageHeading({ title, subtitle, accent = 'navy', align = 'center'
       </h1>
       {subtitle && (
         <p
-          className={`mt-3 max-w-2xl text-base md:text-lg text-gray-500 ${isLeft ? '' : 'mx-auto'}`}
+          className={`mt-3 text-base md:text-lg text-gray-500 ${isLeft ? '' : 'max-w-2xl mx-auto'}`}
         >
           {subtitle}
         </p>

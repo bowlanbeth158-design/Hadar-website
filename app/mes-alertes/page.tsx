@@ -27,7 +27,7 @@ export default function Page({ searchParams }: PageProps) {
       </div>
       <PageHeading
         title="Mes alertes"
-        subtitle="Suivez les contacts que vous surveillez et soyez notifié à chaque nouveau signalement."
+        subtitle="Suivez les contacts et recevez les mises à jour."
         align="left"
       />
       <DemoBanner />

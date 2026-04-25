@@ -3,16 +3,24 @@ import {
   ShieldCheck,
   Siren,
   Sparkles,
-  Search,
   TrendingUp,
   Star,
   AlertTriangle,
+  ArrowUp,
 } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
 import { CountUp } from './CountUp';
 
 // URL postimg de la photo ambassadeur Hadar.
 const AMBASSADOR_IMAGE_URL = 'https://i.postimg.cc/Y0V7C7w3/Hadar-man.png';
+
+// Pro hover effect shared by the 3 floating cards — pauses the soft
+// float, lifts the card 2px, scales it 3%, swaps the soft halo for a
+// stronger brand-blue glow. Smooth 300 ms easeOut.
+const FLOAT_CARD_HOVER =
+  'transition-all duration-300 ease-out cursor-default ' +
+  'hover:-translate-y-1 hover:scale-[1.03] hover:shadow-glow-blue ' +
+  'hover:[animation-play-state:paused]';
 
 const BULLETS = [
   '+10 000 vérifications',
@@ -130,28 +138,39 @@ export function HomeBanner() {
               className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top [mask-image:linear-gradient(to_bottom,black_60%,transparent_85%)] [-webkit-mask-image:linear-gradient(to_bottom,black_60%,transparent_85%)]"
             />
 
-            {/* Card 1 — Recherche instantanée (MID-LEFT, extends outside) */}
+            {/* Card 1 — Recherche instantanée (MID-LEFT, extends outside)
+                Brand-gradient panel with a decorative (non-functional)
+                search bar — Ultahost-style intro card. */}
             <div
-              className="absolute top-[38%] -left-10 w-64 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 animate-float-soft"
+              className={`absolute top-[38%] -left-10 w-72 rounded-2xl border border-white/80 bg-gradient-to-br from-brand-sky/80 via-white to-brand-sky/30 shadow-glow-soft p-4 animate-float-soft ${FLOAT_CARD_HOVER}`}
               style={{ animationDelay: '0s' }}
             >
               <div className="flex items-center gap-2">
-                <div className="h-9 w-9 rounded-full bg-brand-sky flex items-center justify-center">
-                  <Search className="h-4 w-4 text-brand-blue" aria-hidden />
-                </div>
-                <span className="text-[10px] uppercase font-bold text-brand-blue tracking-wide">
-                  Recherche
+                <Sparkles
+                  className="h-5 w-5 text-brand-blue drop-shadow-sm animate-sparkle-pop"
+                  aria-hidden
+                />
+                <span className="text-base font-bold text-brand-navy">
+                  Recherche instantanée
                 </span>
               </div>
-              <p className="mt-3 text-sm font-bold text-brand-navy leading-snug">
-                Recherche instantanée
-              </p>
               <p className="mt-1 text-xs text-gray-500">Numéro, email ou RIB…</p>
+
+              {/* Decorative pill search bar — purely visual, not clickable */}
+              <div
+                aria-hidden
+                className="mt-3 flex items-center gap-2 rounded-pill bg-white/90 backdrop-blur-sm border border-white shadow-sm px-3 py-2"
+              >
+                <span className="flex-1 text-xs text-gray-400">Vérifier un contact</span>
+                <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-navy to-brand-blue text-white shadow">
+                  <ArrowUp className="h-3.5 w-3.5" aria-hidden />
+                </span>
+              </div>
             </div>
 
             {/* Card 2 — Utilisateurs rassurés (TOP-RIGHT, beside head) */}
             <div
-              className="absolute top-4 -right-8 w-60 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-3.5 animate-float-soft"
+              className={`absolute top-4 -right-8 w-60 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-3.5 animate-float-soft ${FLOAT_CARD_HOVER}`}
               style={{ animationDelay: '1.5s' }}
             >
               <div className="flex items-center justify-between gap-2">
@@ -181,7 +200,7 @@ export function HomeBanner() {
 
             {/* Card 3 — Alertes détectées aujourd'hui (BOTTOM-RIGHT, extends right) */}
             <div
-              className="absolute bottom-6 -right-10 w-72 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 animate-float-soft"
+              className={`absolute bottom-6 -right-10 w-72 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 animate-float-soft ${FLOAT_CARD_HOVER}`}
               style={{ animationDelay: '3s' }}
             >
               <div className="pb-2 border-b border-gray-100 flex items-center gap-1.5">

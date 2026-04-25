@@ -95,23 +95,23 @@ export function HomeBanner() {
               className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-4 w-3/5 h-14 rounded-[50%] bg-brand-navy/35 blur-2xl"
             />
 
-            {/* Ambassador photo — Ultahost-style soft dissolve:
-                two stacked copies of the image, the lower one heavily
-                blurred so the bottom of the figure transitions
-                sharp → blurry → transparent into the page bg. */}
+            {/* Ambassador photo — sharp, full-quality. The fade is done by
+                an overlay below (Ultahost pattern) instead of a mask, so the
+                figure stays crisp where it shows. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={AMBASSADOR_IMAGE_URL}
               alt=""
               aria-hidden
-              className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top blur-md opacity-80 [mask-image:linear-gradient(to_bottom,transparent_50%,black_70%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_50%,black_70%,transparent_100%)]"
+              className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top"
             />
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={AMBASSADOR_IMAGE_URL}
-              alt=""
+
+            {/* Ultahost-style bottom fade — solid white at the very bottom,
+                eases up to fully transparent ~40% above. Sits on top of the
+                image, below the floating cards. */}
+            <div
               aria-hidden
-              className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top [mask-image:linear-gradient(to_bottom,black_60%,transparent_85%)] [-webkit-mask-image:linear-gradient(to_bottom,black_60%,transparent_85%)]"
+              className="pointer-events-none absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-white via-white/85 to-transparent"
             />
 
             {/* Card 1 — Search action (MID-LEFT, extends outside) */}

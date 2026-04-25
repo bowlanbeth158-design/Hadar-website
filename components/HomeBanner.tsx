@@ -1,5 +1,13 @@
 import Link from 'next/link';
-import { ShieldCheck, Siren, Sparkles, Search, Users, Zap, TrendingUp } from 'lucide-react';
+import {
+  ShieldCheck,
+  Siren,
+  Sparkles,
+  Search,
+  TrendingUp,
+  Star,
+  AlertTriangle,
+} from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
 import { CountUp } from './CountUp';
 
@@ -122,7 +130,7 @@ export function HomeBanner() {
               className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top [mask-image:linear-gradient(to_bottom,black_60%,transparent_85%)] [-webkit-mask-image:linear-gradient(to_bottom,black_60%,transparent_85%)]"
             />
 
-            {/* Card 1 — Search action (MID-LEFT, extends outside) */}
+            {/* Card 1 — Recherche instantanée (MID-LEFT, extends outside) */}
             <div
               className="absolute top-[38%] -left-10 w-64 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 animate-float-soft"
               style={{ animationDelay: '0s' }}
@@ -132,65 +140,61 @@ export function HomeBanner() {
                   <Search className="h-4 w-4 text-brand-blue" aria-hidden />
                 </div>
                 <span className="text-[10px] uppercase font-bold text-brand-blue tracking-wide">
-                  Vérification
+                  Recherche
                 </span>
               </div>
               <p className="mt-3 text-sm font-bold text-brand-navy leading-snug">
-                Vérifiez un numéro, email ou RIB
-              </p>
-              <p className="mt-1 inline-flex items-center gap-1 text-xs text-gray-500">
-                <Zap className="h-3 w-3 text-brand-blue" aria-hidden />
                 Recherche instantanée
               </p>
+              <p className="mt-1 text-xs text-gray-500">Numéro, email ou RIB…</p>
             </div>
 
-            {/* Card 2 — Community / consulted reports (TOP-RIGHT, beside head) */}
+            {/* Card 2 — Utilisateurs rassurés (TOP-RIGHT, beside head) */}
             <div
-              className="absolute top-4 -right-8 w-56 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-3.5 animate-float-soft"
+              className="absolute top-4 -right-8 w-60 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-3.5 animate-float-soft"
               style={{ animationDelay: '1.5s' }}
             >
-              <div className="flex -space-x-2">
-                <div className="h-7 w-7 rounded-full bg-grad-stat-violet ring-2 ring-white" />
-                <div className="h-7 w-7 rounded-full bg-grad-stat-green ring-2 ring-white" />
-                <div className="h-7 w-7 rounded-full bg-grad-stat-orange ring-2 ring-white" />
-                <div className="h-7 w-7 rounded-full bg-grad-stat-navy ring-2 ring-white flex items-center justify-center text-[9px] font-bold text-white">
-                  +2k
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex -space-x-2">
+                  <div className="h-7 w-7 rounded-full bg-grad-stat-violet ring-2 ring-white" />
+                  <div className="h-7 w-7 rounded-full bg-grad-stat-green ring-2 ring-white" />
+                  <div className="h-7 w-7 rounded-full bg-grad-stat-orange ring-2 ring-white" />
+                  <div className="h-7 w-7 rounded-full bg-grad-stat-navy ring-2 ring-white" />
+                </div>
+                <div className="inline-flex items-center gap-0.5">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400"
+                      aria-hidden
+                    />
+                  ))}
                 </div>
               </div>
-              <p className="mt-2.5 text-base font-bold text-brand-navy leading-tight tabular-nums">
-                <CountUp to={10000} duration={1800} prefix="+" />
+              <p className="mt-2.5 text-sm font-bold text-brand-navy leading-tight">
+                Utilisateurs rassurés
               </p>
-              <p className="text-[11px] text-gray-500">signalements consultés</p>
-              <p className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-semibold text-brand-blue">
-                <Users className="h-3 w-3" aria-hidden />
-                Communauté active marocaine
+              <p className="mt-0.5 text-[11px] text-gray-500 tabular-nums">
+                <CountUp to={300} duration={1800} prefix="+" /> recommandations partagées
               </p>
             </div>
 
-            {/* Card 3 — Risk levels overview (BOTTOM-RIGHT, wider, extends right) */}
+            {/* Card 3 — Alertes détectées aujourd'hui (BOTTOM-RIGHT, extends right) */}
             <div
               className="absolute bottom-6 -right-10 w-72 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 animate-float-soft"
               style={{ animationDelay: '3s' }}
             >
-              <div className="pb-2 border-b border-gray-100">
+              <div className="pb-2 border-b border-gray-100 flex items-center gap-1.5">
+                <AlertTriangle className="h-3.5 w-3.5 text-orange-500" aria-hidden />
                 <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
-                  Niveaux de risque
+                  Alertes détectées aujourd&apos;hui
                 </span>
               </div>
               <ul className="mt-2.5 space-y-2.5 text-xs">
                 <li className="flex items-center justify-between">
                   <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
-                    <span className="h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-green-100" />
-                    Risque faible
-                  </span>
-                  <span className="text-gray-500 tabular-nums">
-                    <CountUp to={0} /> signalement récent
-                  </span>
-                </li>
-                <li className="flex items-center justify-between">
-                  <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
                     <span className="h-2.5 w-2.5 rounded-full bg-yellow-500 ring-2 ring-yellow-100" />
-                    Risque modéré
+                    Vigilance
                   </span>
                   <span className="text-gray-500 tabular-nums">
                     <CountUp to={2} /> signalements
@@ -198,11 +202,20 @@ export function HomeBanner() {
                 </li>
                 <li className="flex items-center justify-between">
                   <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
-                    <span className="h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-red-100" />
-                    Risque élevé
+                    <span className="h-2.5 w-2.5 rounded-full bg-orange-500 ring-2 ring-orange-100" />
+                    Modéré
                   </span>
                   <span className="text-gray-500 tabular-nums">
-                    <CountUp to={7} /> signalements
+                    <CountUp to={4} /> signalements
+                  </span>
+                </li>
+                <li className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
+                    <span className="h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-red-100" />
+                    Élevé
+                  </span>
+                  <span className="text-gray-500 tabular-nums">
+                    <CountUp to={1} /> signalement
                   </span>
                 </li>
               </ul>

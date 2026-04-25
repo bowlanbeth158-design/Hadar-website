@@ -190,17 +190,6 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
               aria-hidden
             />
 
-            {/* Rotating conic-gradient border ring */}
-            <div className="absolute -inset-[2px] rounded-[2.05rem] overflow-hidden" aria-hidden>
-              <div
-                className="absolute left-1/2 top-1/2 aspect-square w-[180%] -translate-x-1/2 -translate-y-1/2"
-                style={{
-                  background:
-                    'conic-gradient(from 0deg, transparent 0deg, transparent 230deg, rgba(41, 170, 225, 0.45) 260deg, rgba(41, 170, 225, 0.85) 295deg, rgba(41, 170, 225, 0.45) 330deg, transparent 360deg)',
-                }}
-              />
-            </div>
-
             {/* Card body */}
             <div className="relative rounded-[2rem] bg-white/92 backdrop-blur-xl shadow-md px-5 md:px-12 lg:px-16 py-12 md:py-16 text-center overflow-hidden">
               {/* Subtle inner dot pattern */}

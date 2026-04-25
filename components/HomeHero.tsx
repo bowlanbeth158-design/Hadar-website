@@ -189,13 +189,13 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
 
         <div className="mx-auto max-w-[1440px] px-4 md:px-6 pt-14 md:pt-20 pb-10 md:pb-14">
           {/* Spotlight card */}
-          <div className="relative mx-auto max-w-5xl">
+          <div className="relative mx-auto w-full">
             {/* Soft halo behind card */}
             <div
               className="absolute -inset-4 rounded-[2.25rem] bg-gradient-to-br from-brand-blue/30 via-sky-400/25 to-brand-navy/25 blur-2xl opacity-70"
               aria-hidden
             />
-            <div className="relative rounded-[2rem] bg-white/95 backdrop-blur-xl border border-white shadow-glow-navy px-5 md:px-12 py-10 md:py-14 text-center">
+            <div className="relative rounded-[2rem] bg-white/95 backdrop-blur-xl border border-white shadow-glow-navy px-5 md:px-12 lg:px-16 py-10 md:py-14 text-center">
               {/* Live badge */}
               <div className="inline-flex items-center gap-2 rounded-pill bg-gradient-to-r from-brand-blue/10 via-sky-400/10 to-brand-navy/10 border border-brand-blue/25 px-4 py-1.5 text-xs md:text-sm font-semibold text-brand-navy">
                 <span className="relative flex h-2.5 w-2.5">
@@ -317,18 +317,25 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
 
               {/* Trust strip */}
               <div className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs md:text-sm text-gray-500">
-                <span className="inline-flex items-center gap-1.5">
-                  <ShieldCheck className="h-4 w-4 text-green-500" aria-hidden />
+                <span className="group inline-flex items-center gap-1.5 transition-transform hover:-translate-y-0.5">
+                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-green-700">
+                    <ShieldCheck className="h-3.5 w-3.5 animate-siren-wiggle" aria-hidden />
+                  </span>
                   Données chiffrées
                 </span>
                 <span className="text-gray-200" aria-hidden>·</span>
-                <span className="inline-flex items-center gap-1.5">
-                  <Zap className="h-4 w-4 text-orange-500" aria-hidden />
+                <span className="group inline-flex items-center gap-1.5 transition-transform hover:-translate-y-0.5">
+                  <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-orange-100 text-orange-600">
+                    <Zap className="h-3.5 w-3.5 animate-sparkle-pop" aria-hidden />
+                  </span>
                   Résultat instantané
                 </span>
                 <span className="text-gray-200" aria-hidden>·</span>
-                <span className="inline-flex items-center gap-1.5">
-                  <span className="font-semibold text-brand-navy">8</span> canaux couverts
+                <span className="group inline-flex items-center gap-1.5 transition-transform hover:-translate-y-0.5">
+                  <span className="inline-flex h-6 min-w-[1.5rem] items-center justify-center rounded-full bg-brand-blue/10 text-brand-navy text-xs font-bold animate-trend-up px-1.5">
+                    8
+                  </span>
+                  canaux couverts
                 </span>
               </div>
 

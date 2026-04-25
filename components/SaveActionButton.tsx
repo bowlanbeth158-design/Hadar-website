@@ -1,15 +1,23 @@
 'use client';
 
 import { useState } from 'react';
-import { Loader2, Check, type LucideIcon } from 'lucide-react';
+import { Loader2, Check, Save, RefreshCcw, type LucideIcon } from 'lucide-react';
 
 type Status = 'idle' | 'saving' | 'saved';
+type IconKey = 'save' | 'refresh';
+
+const ICONS: Record<IconKey, LucideIcon> = {
+  save: Save,
+  refresh: RefreshCcw,
+};
 
 type Props = {
   label: string;
   savingLabel?: string;
   savedLabel?: string;
-  Icon: LucideIcon;
+  /** Icon key — kept as a plain string so this client component can be used
+   *  from a server component without crossing the function boundary. */
+  icon: IconKey;
   className?: string;
   /** Simulated work duration (ms) before showing the success state. */
   savingMs?: number;
@@ -25,12 +33,13 @@ export function SaveActionButton({
   label,
   savingLabel = 'Enregistrement…',
   savedLabel = 'Enregistré',
-  Icon,
+  icon,
   className = '',
   savingMs = 1000,
   savedMs = 1600,
 }: Props) {
   const [status, setStatus] = useState<Status>('idle');
+  const Icon = ICONS[icon];
 
   const onClick = () => {
     if (status !== 'idle') return;

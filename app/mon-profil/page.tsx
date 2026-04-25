@@ -1,13 +1,5 @@
 import type { Metadata } from 'next';
-import {
-  Lock,
-  Siren,
-  CheckCircle2,
-  ShieldCheck,
-  Clock3,
-  RefreshCcw,
-  Save,
-} from 'lucide-react';
+import { Lock, Siren, CheckCircle2, ShieldCheck, Clock3 } from 'lucide-react';
 import { PageLayout } from '@/components/PageLayout';
 import { BackButton } from '@/components/BackButton';
 import { DemoBanner } from '@/components/DemoBanner';
@@ -136,7 +128,7 @@ export default function Page() {
               label="Enregistrer les modifications"
               savingLabel="Enregistrement…"
               savedLabel="Modifications enregistrées"
-              Icon={Save}
+              icon="save"
               className="bg-gradient-to-r from-green-500 to-emerald-600 shadow-glow-green hover:shadow-lg"
             />
           </div>
@@ -181,7 +173,7 @@ export default function Page() {
               label="Mettre à jour le mot de passe"
               savingLabel="Mise à jour…"
               savedLabel="Mot de passe mis à jour"
-              Icon={RefreshCcw}
+              icon="refresh"
               className="bg-gradient-to-r from-brand-navy to-brand-blue shadow-glow-navy hover:shadow-lg"
             />
           </div>

@@ -164,17 +164,11 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
         id="recherche"
         className="relative scroll-mt-24 overflow-hidden"
       >
-        {/* Animated background — floating cool-blue blobs + subtle grid */}
+        {/* Static background — soft cool-blue blobs + subtle grid */}
         <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
-          <div className="absolute -top-24 -left-20 h-96 w-96 rounded-full bg-sky-400/25 blur-3xl animate-float-soft" />
-          <div
-            className="absolute top-32 -right-24 h-[28rem] w-[28rem] rounded-full bg-sky-400/25 blur-3xl animate-float-soft"
-            style={{ animationDelay: '1.5s' }}
-          />
-          <div
-            className="absolute -bottom-20 left-1/3 h-72 w-72 rounded-full bg-brand-sky/30 blur-3xl animate-float-soft"
-            style={{ animationDelay: '0.8s' }}
-          />
+          <div className="absolute -top-24 -left-20 h-96 w-96 rounded-full bg-sky-400/25 blur-3xl" />
+          <div className="absolute top-32 -right-24 h-[28rem] w-[28rem] rounded-full bg-sky-400/25 blur-3xl" />
+          <div className="absolute -bottom-20 left-1/3 h-72 w-72 rounded-full bg-brand-sky/30 blur-3xl" />
           <div
             className="absolute inset-0 opacity-[0.04]"
             style={{
@@ -190,17 +184,16 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
         <div className="mx-auto max-w-[1440px] px-4 md:px-6 pt-14 md:pt-20 pb-10 md:pb-14">
           {/* Spotlight card */}
           <div className="relative mx-auto w-full">
-            {/* Outer pulsing halo */}
+            {/* Outer soft halo */}
             <div
-              className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-br from-sky-400/30 via-brand-sky/40 to-sky-400/30 blur-3xl opacity-70 animate-pulse"
-              style={{ animationDuration: '4.5s' }}
+              className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-br from-sky-400/30 via-brand-sky/40 to-sky-400/30 blur-3xl opacity-70"
               aria-hidden
             />
 
             {/* Rotating conic-gradient border ring */}
             <div className="absolute -inset-[2px] rounded-[2.05rem] overflow-hidden" aria-hidden>
               <div
-                className="absolute left-1/2 top-1/2 aspect-square w-[180%] -translate-x-1/2 -translate-y-1/2 animate-[spin_10s_linear_infinite]"
+                className="absolute left-1/2 top-1/2 aspect-square w-[180%] -translate-x-1/2 -translate-y-1/2"
                 style={{
                   background:
                     'conic-gradient(from 0deg, transparent 0deg, transparent 230deg, rgba(41, 170, 225, 0.45) 260deg, rgba(41, 170, 225, 0.85) 295deg, rgba(41, 170, 225, 0.45) 330deg, transparent 360deg)',
@@ -224,16 +217,8 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                 aria-hidden
               />
 
-              {/* Diagonal light beam sweeping across the card */}
-              <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
-                <div
-                  className="absolute -inset-y-10 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/55 to-transparent skew-x-[-20deg] animate-shimmer"
-                  style={{ animationDuration: '7s' }}
-                />
-              </div>
-
               {/* Top-right floating live counter */}
-              <div className="hidden md:flex absolute top-5 right-5 z-10 items-center gap-2 rounded-pill bg-white/85 backdrop-blur-md border border-sky-400/40 px-3 py-1.5 text-xs font-semibold text-brand-blue/80 shadow-glow-soft animate-float-soft">
+              <div className="hidden md:flex absolute top-5 right-5 z-10 items-center gap-2 rounded-pill bg-white/85 backdrop-blur-md border border-sky-400/40 px-3 py-1.5 text-xs font-semibold text-brand-blue/80 shadow-glow-soft">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
@@ -242,11 +227,8 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
               </div>
 
               {/* Bottom-left floating monthly counter */}
-              <div
-                className="hidden md:flex absolute bottom-5 left-5 z-10 items-center gap-2 rounded-pill bg-white/85 backdrop-blur-md border border-sky-400/40 px-3 py-1.5 text-xs font-semibold text-brand-blue/80 shadow-glow-soft animate-float-soft"
-                style={{ animationDelay: '1.2s' }}
-              >
-                <Sparkles className="h-3.5 w-3.5 text-sky-400 animate-sparkle-pop" aria-hidden />
+              <div className="hidden md:flex absolute bottom-5 left-5 z-10 items-center gap-2 rounded-pill bg-white/85 backdrop-blur-md border border-sky-400/40 px-3 py-1.5 text-xs font-semibold text-brand-blue/80 shadow-glow-soft">
+                <Sparkles className="h-3.5 w-3.5 text-sky-400" aria-hidden />
                 <span>
                   <span className="bg-gradient-to-r from-sky-400 to-brand-blue/70 bg-clip-text text-transparent">
                     +12 408
@@ -270,7 +252,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                   <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-500" />
                 </span>
                 Outil n°1 de vérification au Maroc
-                <Sparkles className="h-3.5 w-3.5 text-orange-500 animate-sparkle-pop" aria-hidden />
+                <Sparkles className="h-3.5 w-3.5 text-orange-500" aria-hidden />
               </div>
 
               <h2 className="mt-5 text-3xl md:text-5xl font-bold tracking-tight text-sky-400 [text-shadow:0_2px_8px_rgb(41_170_225_/_0.25)]">
@@ -381,20 +363,20 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
               <div className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs md:text-sm text-gray-500">
                 <span className="inline-flex items-center gap-2 transition-transform hover:-translate-y-0.5">
                   <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-sky via-sky-400/40 to-brand-sky text-brand-blue shadow-glow-soft border border-sky-400/40">
-                    <ShieldCheck className="h-4 w-4 animate-sparkle-pop drop-shadow" aria-hidden />
+                    <ShieldCheck className="h-4 w-4 drop-shadow" aria-hidden />
                   </span>
                   Données chiffrées
                 </span>
                 <span className="text-gray-200" aria-hidden>·</span>
                 <span className="inline-flex items-center gap-2 transition-transform hover:-translate-y-0.5">
                   <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-sky via-sky-400/40 to-brand-sky text-brand-blue shadow-glow-soft border border-sky-400/40">
-                    <Zap className="h-4 w-4 animate-sparkle-pop drop-shadow" aria-hidden />
+                    <Zap className="h-4 w-4 drop-shadow" aria-hidden />
                   </span>
                   Résultat instantané
                 </span>
                 <span className="text-gray-200" aria-hidden>·</span>
                 <span className="inline-flex items-center gap-2 transition-transform hover:-translate-y-0.5">
-                  <span className="inline-flex h-7 min-w-[1.75rem] items-center justify-center rounded-full bg-gradient-to-br from-brand-sky via-sky-400/40 to-brand-sky text-brand-blue text-xs font-bold shadow-glow-soft border border-sky-400/40 animate-sparkle-pop px-1.5">
+                  <span className="inline-flex h-7 min-w-[1.75rem] items-center justify-center rounded-full bg-gradient-to-br from-brand-sky via-sky-400/40 to-brand-sky text-brand-blue text-xs font-bold shadow-glow-soft border border-sky-400/40 px-1.5">
                     8
                   </span>
                   canaux couverts

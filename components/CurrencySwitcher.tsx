@@ -57,16 +57,19 @@ export function CurrencySwitcher() {
         aria-haspopup="true"
         aria-expanded={open}
         aria-label="Changer la devise"
-        className="inline-flex items-center gap-1.5 rounded-pill hover:bg-gray-50 px-2 py-1.5 text-xs font-semibold text-brand-navy transition-colors"
+        className="inline-flex items-center gap-1.5 rounded-pill hover:bg-gray-50 hover:shadow-glow-soft hover:scale-[1.03] px-2 py-1.5 text-xs font-semibold text-brand-navy transition-all duration-200 ease-out"
       >
         <span>{current.symbol}</span>
-        <ChevronDown className="h-3 w-3 text-gray-400" aria-hidden />
+        <ChevronDown
+          className={`h-3 w-3 text-gray-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
+          aria-hidden
+        />
       </button>
 
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-full mt-2 w-60 rounded-xl bg-white border border-gray-200 shadow-lg overflow-hidden z-50 py-1"
+          className="absolute right-0 top-full mt-2 w-60 rounded-xl bg-white border border-gray-200 shadow-lg overflow-hidden z-50 py-1 animate-fade-in-down"
         >
           {CURRENCIES.map((c) => {
             const active = c.id === currency;
@@ -77,9 +80,14 @@ export function CurrencySwitcher() {
                 role="menuitemradio"
                 aria-checked={active}
                 onClick={() => select(c.id)}
-                className="w-full flex items-center justify-between gap-2 px-3 py-2 text-sm hover:bg-gray-50"
+                className="group relative w-full flex items-center justify-between gap-2 px-3 py-2 text-sm
+                           hover:bg-gray-50 transition-colors duration-200
+                           before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2
+                           before:h-0 before:w-[3px] before:rounded-r-full
+                           before:bg-gradient-to-b before:from-brand-navy before:via-brand-blue before:to-brand-sky
+                           before:transition-all before:duration-300 hover:before:h-2/3"
               >
-                <span className="whitespace-nowrap">
+                <span className="whitespace-nowrap transition-transform duration-200 group-hover:translate-x-0.5">
                   <span
                     className={`font-semibold mr-2 ${active ? 'text-brand-navy' : 'text-gray-700'}`}
                   >

@@ -60,7 +60,7 @@ const DOTS = [
 
 export function RecentReports() {
   return (
-    <section className="mx-auto max-w-7xl px-4 md:px-6 py-10 md:py-14">
+    <section className="mx-auto max-w-[1620px] px-4 md:px-6 py-10 md:py-14">
       <h2 className="text-2xl md:text-3xl font-bold bg-grad-stat-navy bg-clip-text text-transparent text-center">
         Signalements récents de la communauté
       </h2>

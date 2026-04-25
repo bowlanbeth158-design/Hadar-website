@@ -36,7 +36,7 @@ export function Header() {
       </div>
 
       <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur border-b border-gray-200">
-        <nav className="mx-auto max-w-7xl grid grid-cols-[1fr_auto_1fr] items-center gap-6 px-6 md:px-10 py-3">
+        <nav className="mx-auto max-w-[1620px] grid grid-cols-[1fr_auto_1fr] items-center gap-6 px-6 md:px-10 py-3">
           {/* LEFT — logo */}
           <div className="flex items-center">
             <Link href="/" aria-label="Retour à l'accueil Hadar" className="shrink-0">

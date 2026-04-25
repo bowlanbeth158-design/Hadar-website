@@ -36,7 +36,7 @@ const SOCIALS = [
 export function Footer() {
   return (
     <footer className="mt-10 bg-brand-navy text-white">
-      <div className="mx-auto max-w-7xl px-4 md:px-6 py-12 grid gap-10 md:grid-cols-4">
+      <div className="mx-auto max-w-[1620px] px-4 md:px-6 py-12 grid gap-10 md:grid-cols-4">
         <div className="md:col-span-1">
           <Logo variant="white" size="md" />
           <p className="mt-4 text-sm text-white/80 leading-relaxed">

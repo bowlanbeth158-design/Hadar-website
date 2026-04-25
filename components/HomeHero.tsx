@@ -202,7 +202,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
             </div>
 
             {/* Card body */}
-            <div className="relative rounded-[2rem] bg-white/92 backdrop-blur-xl shadow-glow-blue px-5 md:px-12 lg:px-16 py-12 md:py-16 text-center overflow-hidden">
+            <div className="relative rounded-[2rem] bg-white/92 backdrop-blur-xl shadow-md px-5 md:px-12 lg:px-16 py-12 md:py-16 text-center overflow-hidden">
               {/* Subtle inner dot pattern */}
               <div
                 className="pointer-events-none absolute inset-0 opacity-[0.05]"
@@ -218,19 +218,19 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
               />
 
               {/* Top-right floating live counter */}
-              <div className="hidden md:flex absolute top-5 right-5 z-10 items-center gap-2 rounded-pill bg-white/85 backdrop-blur-md border border-sky-400/40 px-3 py-1.5 text-xs font-semibold text-brand-blue/80 shadow-glow-soft">
+              <div className="hidden md:flex absolute top-5 right-5 z-10 items-center gap-2 rounded-pill bg-white/85 backdrop-blur-md border border-sky-400/40 px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-sm">
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
                 </span>
-                Live · <span className="bg-gradient-to-r from-sky-400 to-brand-blue/70 bg-clip-text text-transparent">2 vérif/s</span>
+                Live · <span className="bg-gradient-to-r from-sky-400 to-sky-400 bg-clip-text text-transparent">2 vérif/s</span>
               </div>
 
               {/* Bottom-left floating monthly counter */}
-              <div className="hidden md:flex absolute bottom-5 left-5 z-10 items-center gap-2 rounded-pill bg-white/85 backdrop-blur-md border border-sky-400/40 px-3 py-1.5 text-xs font-semibold text-brand-blue/80 shadow-glow-soft">
+              <div className="hidden md:flex absolute bottom-5 left-5 z-10 items-center gap-2 rounded-pill bg-white/85 backdrop-blur-md border border-sky-400/40 px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-sm">
                 <Sparkles className="h-3.5 w-3.5 text-sky-400" aria-hidden />
                 <span>
-                  <span className="bg-gradient-to-r from-sky-400 to-brand-blue/70 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-sky-400 to-sky-400 bg-clip-text text-transparent">
                     +12 408
                   </span>{' '}
                   ce mois
@@ -246,7 +246,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
               {/* Real content (kept above all decorations) */}
               <div className="relative z-[1]">
               {/* Live badge */}
-              <div className="inline-flex items-center gap-2 rounded-pill bg-gradient-to-r from-sky-400/15 via-brand-sky/30 to-sky-400/15 border border-brand-blue/25 px-4 py-1.5 text-xs md:text-sm font-semibold text-brand-blue">
+              <div className="inline-flex items-center gap-2 rounded-pill bg-gradient-to-r from-sky-400/15 via-brand-sky/30 to-sky-400/15 border border-gray-200 px-4 py-1.5 text-xs md:text-sm font-semibold text-gray-700">
                 <span className="relative flex h-2.5 w-2.5">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
                   <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-500" />
@@ -284,8 +284,8 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                       onClick={() => setSelected(f.id)}
                       className={
                         isActive
-                          ? 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-gradient-to-r from-brand-blue to-brand-blue text-white px-4 py-2.5 text-sm font-medium shadow-glow-blue scale-[1.02] transition-all'
-                          : 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-white border border-gray-200 text-brand-blue px-4 py-2.5 text-sm font-medium hover:border-brand-blue hover:-translate-y-0.5 hover:shadow-glow-soft transition-all'
+                          ? 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-sky-400 text-white px-4 py-2.5 text-sm font-medium shadow-sm scale-[1.02] transition-all'
+                          : 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-white border border-gray-200 text-gray-700 px-4 py-2.5 text-sm font-medium hover:border-sky-400 hover:text-sky-400 hover:-translate-y-0.5 hover:shadow-sm transition-all'
                       }
                     >
                       <f.Icon className="h-4 w-4 shrink-0" aria-hidden />
@@ -300,9 +300,9 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                 action="/"
                 method="get"
                 onSubmit={handleSubmit}
-                className="mt-8 mx-auto max-w-3xl flex items-center gap-2 rounded-pill bg-white border-2 border-brand-blue/20 hover:border-brand-blue/40 focus-within:border-brand-blue focus-within:shadow-glow-blue shadow-glow-soft pl-5 pr-1 py-1 transition-all"
+                className="mt-8 mx-auto max-w-3xl flex items-center gap-2 rounded-pill bg-white border-2 border-gray-200 hover:border-sky-400/50 focus-within:border-sky-400 focus-within:shadow-md shadow-sm pl-5 pr-1 py-1 transition-all"
               >
-                <Search className="h-5 w-5 text-brand-blue" aria-hidden />
+                <Search className="h-5 w-5 text-gray-400" aria-hidden />
                 <input type="hidden" name="type" value={selected} />
                 <input
                   type="search"
@@ -311,7 +311,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                   onChange={handleInputChange}
                   placeholder={active.placeholder}
                   aria-label={`Rechercher un ${active.label.toLowerCase()}`}
-                  className="flex-1 bg-transparent outline-none text-brand-blue placeholder:text-gray-400 py-2.5 text-base"
+                  className="flex-1 bg-transparent outline-none text-gray-900 placeholder:text-gray-400 py-2.5 text-base"
                 />
                 <button
                   type="button"
@@ -323,7 +323,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                   className={
                     listening
                       ? 'relative p-2 text-red-500 animate-pulse'
-                      : 'p-2 text-gray-400 hover:text-brand-blue disabled:opacity-40 disabled:cursor-not-allowed'
+                      : 'p-2 text-gray-400 hover:text-gray-700 disabled:opacity-40 disabled:cursor-not-allowed'
                   }
                 >
                   {listening ? (
@@ -354,7 +354,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                 </p>
               )}
               {listening && !error && (
-                <p className="mt-3 text-sm text-brand-blue" role="status">
+                <p className="mt-3 text-sm text-sky-400" role="status">
                   Écoute en cours — parlez maintenant…
                 </p>
               )}
@@ -362,21 +362,21 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
               {/* Trust strip */}
               <div className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs md:text-sm text-gray-500">
                 <span className="inline-flex items-center gap-2 transition-transform hover:-translate-y-0.5">
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-sky via-sky-400/40 to-brand-sky text-brand-blue shadow-glow-soft border border-sky-400/40">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-sky via-sky-400/40 to-brand-sky text-sky-400 shadow-sm border border-sky-400/40">
                     <ShieldCheck className="h-4 w-4 drop-shadow" aria-hidden />
                   </span>
                   Données chiffrées
                 </span>
                 <span className="text-gray-200" aria-hidden>·</span>
                 <span className="inline-flex items-center gap-2 transition-transform hover:-translate-y-0.5">
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-sky via-sky-400/40 to-brand-sky text-brand-blue shadow-glow-soft border border-sky-400/40">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-sky via-sky-400/40 to-brand-sky text-sky-400 shadow-sm border border-sky-400/40">
                     <Zap className="h-4 w-4 drop-shadow" aria-hidden />
                   </span>
                   Résultat instantané
                 </span>
                 <span className="text-gray-200" aria-hidden>·</span>
                 <span className="inline-flex items-center gap-2 transition-transform hover:-translate-y-0.5">
-                  <span className="inline-flex h-7 min-w-[1.75rem] items-center justify-center rounded-full bg-gradient-to-br from-brand-sky via-sky-400/40 to-brand-sky text-brand-blue text-xs font-bold shadow-glow-soft border border-sky-400/40 px-1.5">
+                  <span className="inline-flex h-7 min-w-[1.75rem] items-center justify-center rounded-full bg-gradient-to-br from-brand-sky via-sky-400/40 to-brand-sky text-sky-400 text-xs font-bold shadow-sm border border-sky-400/40 px-1.5">
                     8
                   </span>
                   canaux couverts

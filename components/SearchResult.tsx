@@ -76,7 +76,7 @@ export function SearchResult({ query }: Props) {
 
       <div className="flex items-center justify-center gap-3 text-sm text-gray-500 mb-6">
         <span>
-          <span className="font-semibold text-brand-blue">{totalReports}</span> signalement ·{' '}
+          <span className="font-semibold text-gray-900">{totalReports}</span> signalement ·{' '}
           <span className={cfg.pillText}>{cfg.label}</span>
         </span>
         <div className="flex items-center gap-1.5" aria-label={`Niveau de risque : ${cfg.label}`}>
@@ -97,7 +97,7 @@ export function SearchResult({ query }: Props) {
             key={kpi.label}
             className="rounded-2xl bg-white border border-gray-200 p-5 text-center shadow-glow-soft"
           >
-            <p className="text-4xl font-bold text-brand-blue">{kpi.count}</p>
+            <p className="text-4xl font-bold text-gray-900">{kpi.count}</p>
             <p className="mt-1 text-sm text-gray-500">{kpi.label}</p>
           </div>
         ))}

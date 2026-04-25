@@ -273,17 +273,14 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                 <Sparkles className="h-3.5 w-3.5 text-orange-500 animate-sparkle-pop" aria-hidden />
               </div>
 
-              <h2 className="mt-5 text-3xl md:text-5xl font-bold tracking-tight text-brand-blue">
-                Lancez votre{' '}
-                <span className="relative inline-block">
-                  <span className="bg-gradient-to-r from-brand-blue via-sky-400 to-sky-500 bg-clip-text text-transparent">
-                    vérification
-                  </span>
-                  <span
-                    className="absolute -bottom-1 left-0 h-1 w-full rounded-full bg-gradient-to-r from-brand-blue via-sky-400 to-sky-500 opacity-40"
-                    aria-hidden
-                  />
+              <h2 className="mt-5 text-3xl md:text-5xl font-bold tracking-tight">
+                <span className="bg-gradient-to-r from-brand-blue via-sky-400 to-sky-500 bg-clip-text text-transparent">
+                  Lancez votre vérification
                 </span>
+                <span
+                  className="block mx-auto mt-2 h-1 w-32 md:w-48 rounded-full bg-gradient-to-r from-brand-blue via-sky-400 to-sky-500 opacity-50"
+                  aria-hidden
+                />
               </h2>
 
               <p className="mt-4 mx-auto max-w-2xl text-sm md:text-base text-gray-500">

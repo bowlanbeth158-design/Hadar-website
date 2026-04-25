@@ -4,6 +4,7 @@ import {
   Siren,
   Sparkles,
   TrendingUp,
+  TrendingDown,
   Star,
   BellRing,
   ArrowUp,
@@ -22,6 +23,15 @@ const FLOAT_CARD_HOVER =
   'transition-all duration-300 ease-out cursor-default ' +
   'hover:-translate-y-1 hover:scale-[1.03] hover:shadow-glow-blue ' +
   'hover:[animation-play-state:paused]';
+
+// Live verifications stats — 30-day rolling window. Wired to the
+// /api/stats endpoint when the backend lands; for now these are
+// mock values. Set `trendPercent` negative to flip the badge to red
+// + a downward animated arrow.
+const STATS_30D = {
+  verifications: 3247,
+  trendPercent: 18,
+};
 
 // Live alert counts shown on Card 3. The halo at the bottom-right
 // dynamically tints itself with the colour of whichever risk level
@@ -57,6 +67,14 @@ const BULLETS = [
 export function HomeBanner() {
   const dominantRisk = topRisk(ALERTS_TODAY);
   const haloClass = HALO_BY_TOP_RISK[dominantRisk];
+
+  const trend = STATS_30D.trendPercent;
+  const isPositiveTrend = trend >= 0;
+  const TrendIcon = isPositiveTrend ? TrendingUp : TrendingDown;
+  const trendBadgeClass = isPositiveTrend
+    ? 'bg-green-100 text-green-700'
+    : 'bg-red-100 text-red-700';
+  const trendIconAnim = isPositiveTrend ? 'animate-trend-up' : 'animate-trend-down';
 
   return (
     <section className="relative overflow-hidden">
@@ -118,17 +136,27 @@ export function HomeBanner() {
             ))}
           </ul>
 
-          {/* Stat callout — number + trend badge (animated 0 → N on mount) */}
+          {/* Live 30-day verifications callout — number + trend badge.
+              Positive trend → green badge + animated up arrow.
+              Negative trend → red badge + animated down arrow. */}
           <div className="mt-8 flex items-center gap-3 flex-wrap">
             <span className="text-4xl md:text-5xl font-bold text-brand-navy leading-none tabular-nums">
-              <CountUp to={3247} duration={1500} />
+              <CountUp to={STATS_30D.verifications} duration={1500} />
             </span>
-            <span className="inline-flex items-center gap-1 rounded-pill bg-green-100 text-green-700 px-2.5 py-1 text-xs font-bold tabular-nums">
-              <TrendingUp className="h-3.5 w-3.5" aria-hidden />
-              <CountUp to={18} prefix="+" suffix="%" />
+            <span
+              className={`inline-flex items-center gap-1 rounded-pill px-2.5 py-1 text-xs font-bold tabular-nums ${trendBadgeClass}`}
+            >
+              <TrendIcon className={`h-3.5 w-3.5 ${trendIconAnim}`} aria-hidden />
+              <CountUp
+                to={trend}
+                prefix={isPositiveTrend ? '+' : ''}
+                suffix="%"
+              />
             </span>
           </div>
-          <p className="mt-1.5 text-sm text-gray-500">vérifications utiles ce mois-ci.</p>
+          <p className="mt-1.5 text-sm text-gray-500">
+            vérifications utiles sur les 30 derniers jours.
+          </p>
 
           {/* CTAs — same pulse + wiggle effect as the old header buttons */}
           <div className="mt-7 flex flex-wrap items-center gap-3">

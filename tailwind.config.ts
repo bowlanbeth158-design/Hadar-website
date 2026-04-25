@@ -143,6 +143,14 @@ const config: Config = {
           '0%': { transform: 'translateX(-120%)' },
           '100%': { transform: 'translateX(220%)' },
         },
+        'trend-up': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-2.5px)' },
+        },
+        'trend-down': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(2.5px)' },
+        },
       },
       animation: {
         'alert-pulse': 'alert-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite',
@@ -157,6 +165,8 @@ const config: Config = {
         'confetti-fall': 'confetti-fall linear forwards',
         'sparkle-pop': 'sparkle-pop 1.6s ease-in-out infinite',
         shimmer: 'shimmer 5s linear infinite',
+        'trend-up': 'trend-up 1.4s ease-in-out infinite',
+        'trend-down': 'trend-down 1.4s ease-in-out infinite',
       },
     },
   },

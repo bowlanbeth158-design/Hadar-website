@@ -80,11 +80,19 @@ export function HomeBanner() {
 
         {/* RIGHT — ambassador photo + floating product cards (Ultahost-style) */}
         <div className="relative hidden lg:block">
-          <div className="relative mx-auto aspect-[4/5] max-w-lg">
+          <div className="relative mx-auto aspect-[4/5] max-w-xl">
             {/* Soft halo behind the person */}
             <div
               aria-hidden
-              className="absolute inset-12 rounded-full bg-gradient-to-br from-brand-sky via-white to-brand-sky blur-2xl"
+              className="absolute inset-10 rounded-full bg-gradient-to-br from-brand-sky via-white to-brand-sky blur-2xl"
+            />
+
+            {/* Contact shadow at the bottom — oval, soft, anchored under the
+                figure to give it a 3D ground feel. Sits behind the image so
+                the image mask reveals it where the photo fades out. */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-4 w-3/5 h-14 rounded-[50%] bg-brand-navy/35 blur-2xl"
             />
 
             {/* Ambassador photo — face visible top-center, fades into page background at bottom */}
@@ -93,7 +101,7 @@ export function HomeBanner() {
               src={AMBASSADOR_IMAGE_URL}
               alt=""
               aria-hidden
-              className="absolute inset-0 h-full w-full object-contain object-top [mask-image:linear-gradient(to_bottom,black_80%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_80%,transparent_100%)]"
+              className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top [mask-image:linear-gradient(to_bottom,black_80%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_80%,transparent_100%)]"
             />
 
             {/* Card 1 — Search action (MID-LEFT, extends outside) */}

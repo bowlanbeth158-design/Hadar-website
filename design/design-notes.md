@@ -105,7 +105,7 @@ colors: {
 ## Composants UI identifiés
 
 ### Header
-- **Bandeau top bleu navy** : « Rejoignez notre chaîne WhatsApp pour rester informé des alertes » (bandeau fin pleine largeur, texte blanc centré)
+- **Bandeau top bleu navy** : « Rejoignez notre chaîne WhatsApp pour rester informé des alertes en temps réel. » (bandeau fin pleine largeur, texte blanc **centré horizontalement au milieu de la page** — `text-align: center` + conteneur `flex justify-center`, le texte doit être visuellement au centre quelle que soit la largeur d'écran)
 - **Barre nav blanche** :
   - Logo « Hadar.ma » (icône H dans bouclier bleu navy + texte navy)
   - Liens : `Accueil` | `Comment ça marche` | [état connecté: `Mes alertes` avec badge rouge notif] | bouton rouge `Signaler` (avec icône gyrophare 🚨)

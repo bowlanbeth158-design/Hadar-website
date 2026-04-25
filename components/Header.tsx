@@ -16,7 +16,7 @@ const NAV_LINK_HOVER =
   // brand-themed gradient tile behind the letters
   "before:content-[''] before:absolute before:-inset-x-3 before:-inset-y-1.5 " +
   'before:rounded-lg before:-z-10 ' +
-  'before:bg-gradient-to-br before:from-brand-sky/80 before:via-brand-blue/15 before:to-brand-navy/5 ' +
+  'before:bg-gradient-to-br before:from-brand-sky/40 before:via-brand-blue/8 before:to-brand-navy/0 ' +
   'before:opacity-0 before:scale-95 ' +
   'before:transition-all before:duration-300 before:ease-out ' +
   'hover:before:opacity-100 hover:before:scale-100 ' +

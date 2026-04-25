@@ -89,6 +89,7 @@ export default function Page() {
       <PageHeading
         title="Mes signalements"
         subtitle="Suivez le statut de vos signalements et apportez des corrections si nécessaire."
+        align="left"
       />
       <DemoBanner />
 

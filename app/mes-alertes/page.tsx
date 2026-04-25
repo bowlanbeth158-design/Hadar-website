@@ -21,6 +21,7 @@ export default function Page() {
       <PageHeading
         title="Mes alertes"
         subtitle="Suivez les contacts que vous surveillez et soyez notifié à chaque nouveau signalement."
+        align="left"
       />
       <DemoBanner />
 

@@ -22,6 +22,30 @@ const FLOAT_CARD_HOVER =
   'hover:-translate-y-1 hover:scale-[1.03] hover:shadow-glow-blue ' +
   'hover:[animation-play-state:paused]';
 
+// Live alert counts shown on Card 3. The halo at the bottom-right
+// dynamically tints itself with the colour of whichever risk level
+// has the most signalements today.
+type AlertRisk = 'vigilance' | 'moderee' | 'elevee';
+const ALERTS_TODAY: Record<AlertRisk, number> = {
+  vigilance: 2,
+  moderee: 4,
+  elevee: 1,
+};
+const HALO_BY_TOP_RISK: Record<AlertRisk, string> = {
+  vigilance:
+    'bg-gradient-to-br from-yellow-200/55 via-yellow-300/45 to-yellow-400/35',
+  moderee:
+    'bg-gradient-to-br from-orange-200/55 via-orange-400/45 to-orange-500/35',
+  elevee:
+    'bg-gradient-to-br from-red-200/55 via-red-400/45 to-red-500/35',
+};
+function topRisk(counts: Record<AlertRisk, number>): AlertRisk {
+  let top: AlertRisk = 'vigilance';
+  if (counts.moderee > counts[top]) top = 'moderee';
+  if (counts.elevee > counts[top]) top = 'elevee';
+  return top;
+}
+
 const BULLETS = [
   '+10 000 vérifications',
   'Résultat immédiat',
@@ -30,6 +54,9 @@ const BULLETS = [
 ];
 
 export function HomeBanner() {
+  const dominantRisk = topRisk(ALERTS_TODAY);
+  const haloClass = HALO_BY_TOP_RISK[dominantRisk];
+
   return (
     <section className="relative overflow-hidden">
       {/* Decorative background — moved to <body> in app/layout.tsx so every
@@ -203,17 +230,19 @@ export function HomeBanner() {
               className={`absolute bottom-6 -right-10 w-72 overflow-hidden rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 animate-float-soft ${FLOAT_CARD_HOVER}`}
               style={{ animationDelay: '3s' }}
             >
-              {/* Warm alert-toned gradient halo in the bottom-right corner —
-                  pulses slowly to match the "live alerts" feel. */}
+              {/* Bottom-right gradient halo — tinted with the colour of the
+                  risk level that has the highest count today (yellow for
+                  Vigilance, orange for Modérée, red for Élevée). Pulses
+                  slowly to match the "live alerts" feel. */}
               <div
                 aria-hidden
-                className="pointer-events-none absolute -bottom-12 -right-12 h-40 w-40 rounded-full bg-gradient-to-br from-yellow-300/40 via-orange-500/40 to-red-500/30 blur-3xl animate-pulse"
+                className={`pointer-events-none absolute -bottom-12 -right-12 h-40 w-40 rounded-full blur-3xl animate-pulse ${haloClass}`}
               />
 
               <div className="relative">
                 <div className="pb-2 border-b border-gray-100 flex items-center gap-1.5">
                   <BellRing
-                    className="h-4 w-4 text-brand-blue animate-siren-wiggle"
+                    className="h-4 w-4 text-brand-blue animate-sparkle-pop"
                     aria-hidden
                   />
                   <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
@@ -227,7 +256,7 @@ export function HomeBanner() {
                       Vigilance
                     </span>
                     <span className="text-gray-500 tabular-nums">
-                      — <CountUp to={2} />
+                      — <CountUp to={ALERTS_TODAY.vigilance} />
                     </span>
                   </li>
                   <li className="flex items-center justify-between">
@@ -236,7 +265,7 @@ export function HomeBanner() {
                       Modérée
                     </span>
                     <span className="text-gray-500 tabular-nums">
-                      — <CountUp to={4} />
+                      — <CountUp to={ALERTS_TODAY.moderee} />
                     </span>
                   </li>
                   <li className="flex items-center justify-between">
@@ -245,7 +274,7 @@ export function HomeBanner() {
                       Élevée
                     </span>
                     <span className="text-gray-500 tabular-nums">
-                      — <CountUp to={1} />
+                      — <CountUp to={ALERTS_TODAY.elevee} />
                     </span>
                   </li>
                 </ul>

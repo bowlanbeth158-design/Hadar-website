@@ -5,6 +5,7 @@ import {
   Trash2,
   Archive,
   ChevronDown,
+  ChevronsDown,
   PackageX,
   Lock,
   PackageCheck,
@@ -60,12 +61,21 @@ const FILTERS: { key: FilterKey; label: string; Icon: typeof Layers }[] = [
   { key: 'deleted', label: 'Supprimées', Icon: Trash2 },
 ];
 
+// Initial cap before the user clicks "Voir plus d'alertes". Tuned so the page
+// stays scannable even if the user follows many contacts.
+const INITIAL_VISIBLE = 4;
+
+const DISCLAIMER =
+  'Les informations affichées sont basées sur les signalements et les expériences ' +
+  'des utilisateurs, vérifiées lorsque cela est possible, et fournies à titre indicatif uniquement.';
+
 export function MesAlertesList({ initialExpandId }: { initialExpandId?: string | null }) {
   const [alerts, setAlerts] = useState<Alert[]>(DEMO_ALERTS);
   const [filter, setFilter] = useState<FilterKey>('active');
   const [expanded, setExpanded] = useState<Set<string>>(
     initialExpandId ? new Set([initialExpandId]) : new Set()
   );
+  const [showAll, setShowAll] = useState(false);
   const scrolledRef = useRef(false);
 
   // When a deep link like /mes-alertes?alert=2 is opened, scroll the
@@ -96,6 +106,15 @@ export function MesAlertesList({ initialExpandId }: { initialExpandId?: string |
     () => (filter === 'all' ? alerts : alerts.filter((a) => a.status === filter)),
     [alerts, filter]
   );
+
+  const displayed = showAll ? visible : visible.slice(0, INITIAL_VISIBLE);
+  const hiddenCount = visible.length - displayed.length;
+
+  // Reset the "show all" toggle when the user switches filter so the list
+  // stays predictable.
+  useEffect(() => {
+    setShowAll(false);
+  }, [filter]);
 
   const toggleExpand = (id: string) =>
     setExpanded((prev) => {
@@ -161,7 +180,7 @@ export function MesAlertesList({ initialExpandId }: { initialExpandId?: string |
         </div>
       ) : (
         <div className="space-y-3">
-          {visible.map((a) => {
+          {displayed.map((a) => {
             const isOpen = expanded.has(a.id);
             const Icon = CHANNEL_ICON[a.channel];
             return (
@@ -299,6 +318,30 @@ export function MesAlertesList({ initialExpandId }: { initialExpandId?: string |
           })}
         </div>
       )}
+
+      {/* "Voir plus d'alertes" — only shown if some alerts of the current
+          filter are hidden behind the initial cap. */}
+      {hiddenCount > 0 && (
+        <button
+          type="button"
+          onClick={() => setShowAll(true)}
+          aria-label={`Voir ${hiddenCount} alerte${hiddenCount > 1 ? 's' : ''} de plus`}
+          className="group mt-6 mx-auto flex flex-col items-center gap-1 text-gray-400 hover:text-brand-blue transition-colors"
+        >
+          <ChevronsDown
+            className="h-7 w-7 transition-transform duration-300 ease-out group-hover:translate-y-0.5 animate-pulse"
+            aria-hidden
+          />
+          <span className="text-xs font-medium">
+            Voir {hiddenCount} alerte{hiddenCount > 1 ? 's' : ''} de plus
+          </span>
+        </button>
+      )}
+
+      {/* Legal disclaimer — required for the Moroccan jurisdiction. */}
+      <p className="mt-10 text-center text-xs text-gray-400 max-w-2xl mx-auto leading-relaxed">
+        {DISCLAIMER}
+      </p>
     </>
   );
 }

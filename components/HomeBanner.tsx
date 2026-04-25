@@ -101,7 +101,7 @@ export function HomeBanner() {
               src={AMBASSADOR_IMAGE_URL}
               alt=""
               aria-hidden
-              className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top [mask-image:linear-gradient(to_bottom,black_80%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_80%,transparent_100%)]"
+              className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top [mask-image:linear-gradient(to_bottom,black_45%,transparent_95%)] [-webkit-mask-image:linear-gradient(to_bottom,black_45%,transparent_95%)]"
             />
 
             {/* Card 1 — Search action (MID-LEFT, extends outside) */}

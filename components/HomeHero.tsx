@@ -190,12 +190,79 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
         <div className="mx-auto max-w-[1440px] px-4 md:px-6 pt-14 md:pt-20 pb-10 md:pb-14">
           {/* Spotlight card */}
           <div className="relative mx-auto w-full">
-            {/* Soft halo behind card */}
+            {/* Outer pulsing halo */}
             <div
-              className="absolute -inset-4 rounded-[2.25rem] bg-gradient-to-br from-brand-blue/30 via-sky-400/25 to-brand-navy/25 blur-2xl opacity-70"
+              className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-br from-brand-blue/30 via-sky-400/25 to-brand-navy/30 blur-3xl opacity-70 animate-pulse"
+              style={{ animationDuration: '4.5s' }}
               aria-hidden
             />
-            <div className="relative rounded-[2rem] bg-white/95 backdrop-blur-xl border border-white shadow-glow-navy px-5 md:px-12 lg:px-16 py-10 md:py-14 text-center">
+
+            {/* Rotating conic-gradient border ring */}
+            <div className="absolute -inset-[2px] rounded-[2.05rem] overflow-hidden" aria-hidden>
+              <div
+                className="absolute left-1/2 top-1/2 aspect-square w-[180%] -translate-x-1/2 -translate-y-1/2 animate-[spin_10s_linear_infinite]"
+                style={{
+                  background:
+                    'conic-gradient(from 0deg, transparent 0deg, transparent 220deg, #29AAE1 260deg, #0078BA 290deg, #00327D 310deg, transparent 350deg, transparent 360deg)',
+                }}
+              />
+            </div>
+
+            {/* Card body */}
+            <div className="relative rounded-[2rem] bg-white/92 backdrop-blur-xl shadow-glow-navy px-5 md:px-12 lg:px-16 py-12 md:py-16 text-center overflow-hidden">
+              {/* Subtle inner dot pattern */}
+              <div
+                className="pointer-events-none absolute inset-0 opacity-[0.05]"
+                style={{
+                  backgroundImage: 'radial-gradient(#00327D 1px, transparent 1px)',
+                  backgroundSize: '22px 22px',
+                  maskImage:
+                    'radial-gradient(ellipse at center, black 35%, transparent 85%)',
+                  WebkitMaskImage:
+                    'radial-gradient(ellipse at center, black 35%, transparent 85%)',
+                }}
+                aria-hidden
+              />
+
+              {/* Diagonal light beam sweeping across the card */}
+              <div className="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden>
+                <div
+                  className="absolute -inset-y-10 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/55 to-transparent skew-x-[-20deg] animate-shimmer"
+                  style={{ animationDuration: '7s' }}
+                />
+              </div>
+
+              {/* Top-right floating live counter */}
+              <div className="hidden md:flex absolute top-5 right-5 z-10 items-center gap-2 rounded-pill bg-white/85 backdrop-blur-md border border-brand-blue/25 px-3 py-1.5 text-xs font-semibold text-brand-navy shadow-glow-soft animate-float-soft">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+                </span>
+                Live · <span className="bg-gradient-to-r from-brand-blue to-brand-navy bg-clip-text text-transparent">2 vérif/s</span>
+              </div>
+
+              {/* Bottom-left floating monthly counter */}
+              <div
+                className="hidden md:flex absolute bottom-5 left-5 z-10 items-center gap-2 rounded-pill bg-white/85 backdrop-blur-md border border-brand-blue/25 px-3 py-1.5 text-xs font-semibold text-brand-navy shadow-glow-soft animate-float-soft"
+                style={{ animationDelay: '1.2s' }}
+              >
+                <Sparkles className="h-3.5 w-3.5 text-brand-blue animate-sparkle-pop" aria-hidden />
+                <span>
+                  <span className="bg-gradient-to-r from-brand-blue to-brand-navy bg-clip-text text-transparent">
+                    +12 408
+                  </span>{' '}
+                  ce mois
+                </span>
+              </div>
+
+              {/* Decorative corner brackets */}
+              <span className="pointer-events-none absolute top-0 left-0 h-10 w-10 border-t-2 border-l-2 border-brand-blue/30 rounded-tl-[2rem]" aria-hidden />
+              <span className="pointer-events-none absolute top-0 right-0 h-10 w-10 border-t-2 border-r-2 border-brand-blue/30 rounded-tr-[2rem]" aria-hidden />
+              <span className="pointer-events-none absolute bottom-0 left-0 h-10 w-10 border-b-2 border-l-2 border-brand-blue/30 rounded-bl-[2rem]" aria-hidden />
+              <span className="pointer-events-none absolute bottom-0 right-0 h-10 w-10 border-b-2 border-r-2 border-brand-blue/30 rounded-br-[2rem]" aria-hidden />
+
+              {/* Real content (kept above all decorations) */}
+              <div className="relative z-[1]">
               {/* Live badge */}
               <div className="inline-flex items-center gap-2 rounded-pill bg-gradient-to-r from-brand-blue/10 via-sky-400/10 to-brand-navy/10 border border-brand-blue/25 px-4 py-1.5 text-xs md:text-sm font-semibold text-brand-navy">
                 <span className="relative flex h-2.5 w-2.5">
@@ -340,6 +407,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
               </div>
 
               {showResult && <SearchResult query={submitted!.query} />}
+              </div>
             </div>
           </div>
         </div>

@@ -13,6 +13,9 @@ import {
   Search,
   Mic,
   MicOff,
+  ShieldCheck,
+  Zap,
+  Sparkles,
   type LucideIcon,
 } from 'lucide-react';
 import { SearchResult } from './SearchResult';
@@ -159,106 +162,178 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
     <>
       <section
         id="recherche"
-        className="mx-auto max-w-[1440px] px-4 md:px-6 pt-10 md:pt-14 pb-4 text-center scroll-mt-24"
+        className="relative scroll-mt-24 overflow-hidden"
       >
-        <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-brand-navy">
-          Lancez votre vérification
-        </h2>
-        <p className="mt-3 mx-auto max-w-2xl text-sm md:text-base text-gray-500">
-          Choisissez le type de contact puis recherchez un numéro, un email, un site web ou un
-          moyen de paiement pour vérifier s&apos;il a déjà été signalé.
-        </p>
-
-        <div
-          role="tablist"
-          aria-label="Type de contact à rechercher"
-          className="mt-8 mx-auto max-w-4xl grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3"
-        >
-          {CONTACT_TYPES.map((f) => {
-            const isActive = f.id === selected;
-            return (
-              <button
-                key={f.id}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setSelected(f.id)}
-                className={
-                  isActive
-                    ? 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-brand-navy text-white px-4 py-2.5 text-sm font-medium shadow-glow-navy'
-                    : 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-white border border-gray-200 text-brand-navy px-4 py-2.5 text-sm font-medium hover:border-brand-blue transition-colors'
-                }
-              >
-                <f.Icon className="h-4 w-4 shrink-0" aria-hidden />
-                <span className="truncate">{f.label}</span>
-              </button>
-            );
-          })}
+        {/* Animated background — floating brand blobs + subtle grid */}
+        <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
+          <div className="absolute -top-24 -left-20 h-96 w-96 rounded-full bg-brand-blue/20 blur-3xl animate-float-soft" />
+          <div
+            className="absolute top-32 -right-24 h-[28rem] w-[28rem] rounded-full bg-sky-400/20 blur-3xl animate-float-soft"
+            style={{ animationDelay: '1.5s' }}
+          />
+          <div
+            className="absolute -bottom-20 left-1/3 h-72 w-72 rounded-full bg-green-500/15 blur-3xl animate-float-soft"
+            style={{ animationDelay: '0.8s' }}
+          />
+          <div
+            className="absolute inset-0 opacity-[0.05]"
+            style={{
+              backgroundImage:
+                'linear-gradient(to right, #00327D 1px, transparent 1px), linear-gradient(to bottom, #00327D 1px, transparent 1px)',
+              backgroundSize: '44px 44px',
+              maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 75%)',
+              WebkitMaskImage: 'radial-gradient(ellipse at center, black 40%, transparent 75%)',
+            }}
+          />
         </div>
 
-        <form
-          role="search"
-          action="/"
-          method="get"
-          onSubmit={handleSubmit}
-          className="mt-8 mx-auto max-w-3xl flex items-center gap-2 rounded-pill bg-white border border-gray-200 shadow-glow-soft pl-5 pr-1 py-1"
-        >
-          <Search className="h-5 w-5 text-gray-400" aria-hidden />
-          <input type="hidden" name="type" value={selected} />
-          <input
-            type="search"
-            name="q"
-            value={inputValue}
-            onChange={handleInputChange}
-            placeholder={active.placeholder}
-            aria-label={`Rechercher un ${active.label.toLowerCase()}`}
-            className="flex-1 bg-transparent outline-none text-brand-navy placeholder:text-gray-400 py-2 text-base"
-          />
-          <button
-            type="button"
-            onClick={toggleMic}
-            disabled={!supported}
-            aria-label={listening ? 'Arrêter la recherche vocale' : 'Démarrer la recherche vocale'}
-            aria-pressed={listening}
-            title={supported ? (listening ? 'Arrêter' : 'Recherche vocale') : 'Non supporté'}
-            className={
-              listening
-                ? 'relative p-2 text-red-500 animate-pulse'
-                : 'p-2 text-gray-400 hover:text-brand-navy disabled:opacity-40 disabled:cursor-not-allowed'
-            }
-          >
-            {listening ? (
-              <>
-                <Mic className="h-5 w-5" aria-hidden />
-                <span
-                  aria-hidden
-                  className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500 animate-ping"
-                />
-              </>
-            ) : supported ? (
-              <Mic className="h-5 w-5" aria-hidden />
-            ) : (
-              <MicOff className="h-5 w-5" aria-hidden />
-            )}
-          </button>
-          <button
-            type="submit"
-            className="rounded-pill bg-green-500 hover:bg-green-700 text-white font-semibold px-5 py-2.5 text-sm shadow-glow-green transition-all"
-          >
-            Vérifier maintenant
-          </button>
-        </form>
+        <div className="mx-auto max-w-[1440px] px-4 md:px-6 pt-14 md:pt-20 pb-10 md:pb-14">
+          {/* Spotlight card */}
+          <div className="relative mx-auto max-w-5xl">
+            {/* Soft halo behind card */}
+            <div
+              className="absolute -inset-4 rounded-[2.25rem] bg-gradient-to-br from-brand-blue/30 via-sky-400/25 to-brand-navy/25 blur-2xl opacity-70"
+              aria-hidden
+            />
+            <div className="relative rounded-[2rem] bg-white/95 backdrop-blur-xl border border-white shadow-glow-navy px-5 md:px-12 py-10 md:py-14 text-center">
+              {/* Live badge */}
+              <div className="inline-flex items-center gap-2 rounded-pill bg-gradient-to-r from-brand-blue/10 via-sky-400/10 to-brand-navy/10 border border-brand-blue/25 px-4 py-1.5 text-xs md:text-sm font-semibold text-brand-navy">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
+                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-500" />
+                </span>
+                Outil n°1 de vérification au Maroc
+                <Sparkles className="h-3.5 w-3.5 text-orange-500 animate-sparkle-pop" aria-hidden />
+              </div>
 
-        {error && (
-          <p className="mt-3 text-sm text-red-500" role="status">
-            {error}
-          </p>
-        )}
-        {listening && !error && (
-          <p className="mt-3 text-sm text-brand-blue" role="status">
-            Écoute en cours — parlez maintenant…
-          </p>
-        )}
+              <h2 className="mt-5 text-3xl md:text-5xl font-bold tracking-tight text-brand-navy">
+                Lancez votre{' '}
+                <span className="relative inline-block">
+                  <span className="bg-gradient-to-r from-brand-blue via-sky-400 to-brand-navy bg-clip-text text-transparent">
+                    vérification
+                  </span>
+                  <span
+                    className="absolute -bottom-1 left-0 h-1 w-full rounded-full bg-gradient-to-r from-brand-blue via-sky-400 to-brand-navy opacity-40"
+                    aria-hidden
+                  />
+                </span>
+              </h2>
+
+              <p className="mt-4 mx-auto max-w-2xl text-sm md:text-base text-gray-500">
+                Choisissez le type de contact puis recherchez un numéro, un email, un site web ou un
+                moyen de paiement pour vérifier s&apos;il a déjà été signalé.
+              </p>
+
+              <div
+                role="tablist"
+                aria-label="Type de contact à rechercher"
+                className="mt-8 mx-auto max-w-4xl grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3"
+              >
+                {CONTACT_TYPES.map((f) => {
+                  const isActive = f.id === selected;
+                  return (
+                    <button
+                      key={f.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={isActive}
+                      onClick={() => setSelected(f.id)}
+                      className={
+                        isActive
+                          ? 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-gradient-to-r from-brand-blue to-brand-navy text-white px-4 py-2.5 text-sm font-medium shadow-glow-navy scale-[1.02] transition-all'
+                          : 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-white border border-gray-200 text-brand-navy px-4 py-2.5 text-sm font-medium hover:border-brand-blue hover:-translate-y-0.5 hover:shadow-glow-soft transition-all'
+                      }
+                    >
+                      <f.Icon className="h-4 w-4 shrink-0" aria-hidden />
+                      <span className="truncate">{f.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <form
+                role="search"
+                action="/"
+                method="get"
+                onSubmit={handleSubmit}
+                className="mt-8 mx-auto max-w-3xl flex items-center gap-2 rounded-pill bg-white border-2 border-brand-blue/20 hover:border-brand-blue/40 focus-within:border-brand-blue focus-within:shadow-glow-blue shadow-glow-soft pl-5 pr-1 py-1 transition-all"
+              >
+                <Search className="h-5 w-5 text-brand-blue" aria-hidden />
+                <input type="hidden" name="type" value={selected} />
+                <input
+                  type="search"
+                  name="q"
+                  value={inputValue}
+                  onChange={handleInputChange}
+                  placeholder={active.placeholder}
+                  aria-label={`Rechercher un ${active.label.toLowerCase()}`}
+                  className="flex-1 bg-transparent outline-none text-brand-navy placeholder:text-gray-400 py-2.5 text-base"
+                />
+                <button
+                  type="button"
+                  onClick={toggleMic}
+                  disabled={!supported}
+                  aria-label={listening ? 'Arrêter la recherche vocale' : 'Démarrer la recherche vocale'}
+                  aria-pressed={listening}
+                  title={supported ? (listening ? 'Arrêter' : 'Recherche vocale') : 'Non supporté'}
+                  className={
+                    listening
+                      ? 'relative p-2 text-red-500 animate-pulse'
+                      : 'p-2 text-gray-400 hover:text-brand-navy disabled:opacity-40 disabled:cursor-not-allowed'
+                  }
+                >
+                  {listening ? (
+                    <>
+                      <Mic className="h-5 w-5" aria-hidden />
+                      <span
+                        aria-hidden
+                        className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500 animate-ping"
+                      />
+                    </>
+                  ) : supported ? (
+                    <Mic className="h-5 w-5" aria-hidden />
+                  ) : (
+                    <MicOff className="h-5 w-5" aria-hidden />
+                  )}
+                </button>
+                <button
+                  type="submit"
+                  className="relative rounded-pill bg-gradient-to-r from-green-500 to-green-700 hover:from-green-700 hover:to-green-700 text-white font-semibold px-5 md:px-6 py-2.5 md:py-3 text-sm shadow-glow-green animate-verify-pulse transition-all"
+                >
+                  Vérifier maintenant
+                </button>
+              </form>
+
+              {error && (
+                <p className="mt-3 text-sm text-red-500" role="status">
+                  {error}
+                </p>
+              )}
+              {listening && !error && (
+                <p className="mt-3 text-sm text-brand-blue" role="status">
+                  Écoute en cours — parlez maintenant…
+                </p>
+              )}
+
+              {/* Trust strip */}
+              <div className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs md:text-sm text-gray-500">
+                <span className="inline-flex items-center gap-1.5">
+                  <ShieldCheck className="h-4 w-4 text-green-500" aria-hidden />
+                  Données chiffrées
+                </span>
+                <span className="text-gray-200" aria-hidden>·</span>
+                <span className="inline-flex items-center gap-1.5">
+                  <Zap className="h-4 w-4 text-orange-500" aria-hidden />
+                  Résultat instantané
+                </span>
+                <span className="text-gray-200" aria-hidden>·</span>
+                <span className="inline-flex items-center gap-1.5">
+                  <span className="font-semibold text-brand-navy">8</span> canaux couverts
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
 
       {showResult && <SearchResult query={submitted!.query} />}

@@ -113,7 +113,7 @@ export default function Page({ params }: { params: { id: string } }) {
   const isHighRisk = alert.risk === 'high';
 
   return (
-    <PageLayout>
+    <PageLayout narrow>
       <div className="mb-8">
         <BackButton href="/mes-alertes" label="Mes alertes" />
       </div>

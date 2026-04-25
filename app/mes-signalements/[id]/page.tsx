@@ -54,7 +54,7 @@ export default function Page({ params }: PageProps) {
   const finalPulse = STATUS_PULSE[report.status];
 
   return (
-    <PageLayout>
+    <PageLayout narrow>
       <div className="mb-8">
         <BackButton href="/mes-signalements" label="Mes signalements" />
       </div>

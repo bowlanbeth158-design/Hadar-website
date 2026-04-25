@@ -21,7 +21,7 @@ export default function Page({ searchParams }: PageProps) {
   const settingsOpen = searchParams.settings === '1';
 
   return (
-    <PageLayout>
+    <PageLayout narrow>
       <div className="mb-8">
         <BackButton />
       </div>

@@ -45,7 +45,7 @@ export default function Page() {
   const initials = `${PROFILE.firstName[0] ?? ''}${PROFILE.lastName[0] ?? ''}`.toUpperCase();
 
   return (
-    <PageLayout>
+    <PageLayout narrow>
       <div className="mb-6">
         <BackButton />
       </div>

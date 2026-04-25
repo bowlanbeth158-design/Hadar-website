@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function Page() {
   return (
-    <PageLayout>
+    <PageLayout narrow>
       <div className="mb-8">
         <BackButton />
       </div>

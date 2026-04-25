@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Award, Star } from 'lucide-react';
+import { Award, Star, X } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
 import { BadgesCriteriaModal } from './BadgesCriteriaModal';
 import { IdentityVerificationModal } from './IdentityVerificationModal';
@@ -28,6 +28,7 @@ export function ProfileIdentity({
 }: Props) {
   const [verified, setVerified] = useState(false);
   const [hydrated, setHydrated] = useState(false);
+  const [confirmRevoke, setConfirmRevoke] = useState(false);
 
   useEffect(() => {
     const raw = typeof window !== 'undefined' ? localStorage.getItem(KEY) : null;
@@ -44,43 +45,103 @@ export function ProfileIdentity({
     }
   };
 
+  const revokeVerification = () => {
+    setVerified(false);
+    setConfirmRevoke(false);
+    try {
+      localStorage.removeItem(KEY);
+    } catch {
+      // ignore
+    }
+  };
+
   return (
-    <div className="min-w-0 flex-1">
-      <h1 className="text-2xl md:text-3xl font-bold text-brand-navy inline-flex items-center gap-2 flex-wrap">
+    <div className="min-w-0 flex-1 space-y-2">
+      {/* Line 1 — Name + verified badge */}
+      <h1 className="text-2xl md:text-3xl font-bold text-brand-navy flex items-center gap-2 flex-wrap">
         <span>
           {firstName} {lastName}
         </span>
         {verified && (
-          <VerifiedBadge className="h-6 w-6 animate-fade-in" />
+          <span className="inline-flex items-center gap-1">
+            <VerifiedBadge className="h-6 w-6 animate-fade-in" />
+            <button
+              type="button"
+              onClick={() => setConfirmRevoke((v) => !v)}
+              aria-label="Annuler ma vérification d'identité"
+              className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 hover:text-red-500 transition-colors"
+            >
+              Annuler
+            </button>
+          </span>
         )}
       </h1>
 
-      {/* Badge tier — clickable, opens criteria modal */}
-      <BadgesCriteriaModal
-        highlightKey={badgeKey}
-        trigger={
-          <span className="mt-1 group inline-flex items-center gap-1.5 rounded-pill bg-white/60 backdrop-blur-sm border border-yellow-200 px-3 py-1 text-xs font-semibold text-brand-navy hover:border-brand-blue hover:bg-white hover:shadow-glow-soft hover:-translate-y-px transition-all duration-200 cursor-pointer">
-            <Award className="h-3.5 w-3.5 text-yellow-500" aria-hidden />
-            {badge}
-            <span className="inline-flex items-center gap-0.5 ml-0.5">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star
-                  key={i}
-                  className={`h-3 w-3 ${
-                    i < badgeStars ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
-                  }`}
-                  aria-hidden
-                />
-              ))}
-            </span>
-            <span className="ml-1 text-[10px] uppercase tracking-wide text-brand-blue group-hover:underline">
-              Voir les niveaux
-            </span>
-          </span>
-        }
-      />
+      {/* Inline confirmation panel for badge revocation */}
+      {verified && confirmRevoke && (
+        <div
+          role="alertdialog"
+          aria-label="Confirmer l'annulation de la vérification"
+          className="rounded-xl border border-red-200 bg-red-50 p-3 flex items-start gap-3 animate-fade-in-down"
+        >
+          <X className="h-4 w-4 text-red-500 mt-0.5 shrink-0" aria-hidden />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-red-700">
+              Retirer mon badge vérifié ?
+            </p>
+            <p className="mt-0.5 text-xs text-gray-600">
+              Vous perdrez la coche bleue. Vous pourrez relancer la vérification gratuite à
+              tout moment.
+            </p>
+            <div className="mt-2 flex items-center gap-2">
+              <button
+                type="button"
+                onClick={revokeVerification}
+                className="inline-flex items-center gap-1 rounded-pill bg-red-500 hover:bg-red-700 text-white px-3 py-1 text-xs font-semibold transition-colors"
+              >
+                Oui, retirer
+              </button>
+              <button
+                type="button"
+                onClick={() => setConfirmRevoke(false)}
+                className="text-xs font-medium text-gray-500 hover:text-brand-navy"
+              >
+                Annuler
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
-      <p className="mt-2 text-xs text-gray-500">
+      {/* Line 2 — Badge tier (Contributeur régulier + stars + voir les niveaux) */}
+      <div>
+        <BadgesCriteriaModal
+          highlightKey={badgeKey}
+          trigger={
+            <span className="group inline-flex items-center gap-1.5 rounded-pill bg-white/60 backdrop-blur-sm border border-yellow-200 px-3 py-1 text-xs font-semibold text-brand-navy hover:border-brand-blue hover:bg-white hover:shadow-glow-soft hover:-translate-y-px transition-all duration-200 cursor-pointer">
+              <Award className="h-3.5 w-3.5 text-yellow-500" aria-hidden />
+              {badge}
+              <span className="inline-flex items-center gap-0.5 ml-0.5">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`h-3 w-3 ${
+                      i < badgeStars ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'
+                    }`}
+                    aria-hidden
+                  />
+                ))}
+              </span>
+              <span className="ml-1 text-[10px] uppercase tracking-wide text-brand-blue group-hover:underline">
+                Voir les niveaux
+              </span>
+            </span>
+          }
+        />
+      </div>
+
+      {/* Line 3 — Taux de validation */}
+      <p className="text-xs text-gray-500">
         Taux de validation :{' '}
         <span className="font-semibold text-brand-navy">
           <CountUp to={validationRate} />%
@@ -88,12 +149,12 @@ export function ProfileIdentity({
       </p>
 
       {/* Identity verification CTA — only when NOT verified.
-          Hidden until hydration to avoid showing the wrong state on first paint. */}
+          Hidden until hydration to avoid flashing the wrong state on first paint. */}
       {hydrated && !verified && (
         <IdentityVerificationModal
           onVerified={markVerified}
           trigger={
-            <span className="mt-3 inline-flex items-center gap-2 rounded-pill bg-white border border-gray-200 px-3 py-1.5 text-xs font-semibold text-brand-navy hover:border-brand-blue hover:shadow-glow-soft hover:-translate-y-px transition-all duration-200 cursor-pointer">
+            <span className="mt-1 inline-flex items-center gap-2 rounded-pill bg-white border border-gray-200 px-3 py-1.5 text-xs font-semibold text-brand-navy hover:border-brand-blue hover:shadow-glow-soft hover:-translate-y-px transition-all duration-200 cursor-pointer">
               <VerifiedBadge className="h-4 w-4" />
               Activer ma vérification d&apos;identité —{' '}
               <span className="text-green-600">gratuit</span>

@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { ShieldCheck, Siren, Sparkles, Search, Users, Zap, TrendingUp } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
+import { CountUp } from './CountUp';
 
 // URL postimg de la photo ambassadeur Hadar.
 const AMBASSADOR_IMAGE_URL = 'https://i.postimg.cc/Y0V7C7w3/Hadar-man.png';
@@ -8,8 +9,8 @@ const AMBASSADOR_IMAGE_URL = 'https://i.postimg.cc/Y0V7C7w3/Hadar-man.png';
 const BULLETS = [
   '+10 000 vérifications',
   'Résultat immédiat',
-  '100% confidentiel',
   'Communauté marocaine',
+  '100% confidentiel',
 ];
 
 export function HomeBanner() {
@@ -48,14 +49,14 @@ export function HomeBanner() {
             ))}
           </ul>
 
-          {/* Stat callout — number + trend badge */}
+          {/* Stat callout — number + trend badge (animated 0 → N on mount) */}
           <div className="mt-8 flex items-center gap-3 flex-wrap">
-            <span className="text-4xl md:text-5xl font-bold text-brand-navy leading-none">
-              3 247
+            <span className="text-4xl md:text-5xl font-bold text-brand-navy leading-none tabular-nums">
+              <CountUp to={3247} duration={1500} />
             </span>
-            <span className="inline-flex items-center gap-1 rounded-pill bg-green-100 text-green-700 px-2.5 py-1 text-xs font-bold">
+            <span className="inline-flex items-center gap-1 rounded-pill bg-green-100 text-green-700 px-2.5 py-1 text-xs font-bold tabular-nums">
               <TrendingUp className="h-3.5 w-3.5" aria-hidden />
-              +18%
+              <CountUp to={18} prefix="+" suffix="%" />
             </span>
           </div>
           <p className="mt-1.5 text-sm text-gray-500">vérifications utiles ce mois-ci.</p>
@@ -156,8 +157,8 @@ export function HomeBanner() {
                   +2k
                 </div>
               </div>
-              <p className="mt-2.5 text-base font-bold text-brand-navy leading-tight">
-                +10 000
+              <p className="mt-2.5 text-base font-bold text-brand-navy leading-tight tabular-nums">
+                <CountUp to={10000} duration={1800} prefix="+" />
               </p>
               <p className="text-[11px] text-gray-500">signalements consultés</p>
               <p className="mt-1.5 inline-flex items-center gap-1 text-[11px] font-semibold text-brand-blue">
@@ -182,21 +183,27 @@ export function HomeBanner() {
                     <span className="h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-green-100" />
                     Risque faible
                   </span>
-                  <span className="text-gray-500">0 signalement récent</span>
+                  <span className="text-gray-500 tabular-nums">
+                    <CountUp to={0} /> signalement récent
+                  </span>
                 </li>
                 <li className="flex items-center justify-between">
                   <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
                     <span className="h-2.5 w-2.5 rounded-full bg-yellow-500 ring-2 ring-yellow-100" />
                     Risque modéré
                   </span>
-                  <span className="text-gray-500">2 signalements</span>
+                  <span className="text-gray-500 tabular-nums">
+                    <CountUp to={2} /> signalements
+                  </span>
                 </li>
                 <li className="flex items-center justify-between">
                   <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
                     <span className="h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-red-100" />
                     Risque élevé
                   </span>
-                  <span className="text-gray-500">7 signalements</span>
+                  <span className="text-gray-500 tabular-nums">
+                    <CountUp to={7} /> signalements
+                  </span>
                 </li>
               </ul>
             </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Phone,
   Mail,
@@ -12,11 +12,13 @@ import {
   Lock,
   PackageCheck,
   UserX,
-  Eye,
-  EyeOff,
+  Inbox,
+  Layers,
 } from 'lucide-react';
 
 type RiskLevel = 'low' | 'vigilance' | 'moderate' | 'high';
+type AlertStatus = 'active' | 'archived' | 'deleted';
+type FilterKey = 'all' | AlertStatus;
 
 type Alert = {
   id: string;
@@ -26,6 +28,7 @@ type Alert = {
   date: string;
   count: number;
   risk: RiskLevel;
+  status: AlertStatus;
   lastReportRelative: string;
   byCategory: {
     nonLivraison: number;
@@ -44,6 +47,7 @@ const DEMO_ALERTS: Alert[] = [
     date: 'il y a 2h',
     count: 5,
     risk: 'high',
+    status: 'active',
     lastReportRelative: 'il y a 2 heures',
     byCategory: {
       nonLivraison: 1,
@@ -60,6 +64,7 @@ const DEMO_ALERTS: Alert[] = [
     date: 'hier',
     count: 3,
     risk: 'moderate',
+    status: 'active',
     lastReportRelative: 'hier',
     byCategory: {
       nonLivraison: 1,
@@ -76,6 +81,7 @@ const DEMO_ALERTS: Alert[] = [
     date: 'il y a 3 jours',
     count: 1,
     risk: 'vigilance',
+    status: 'active',
     lastReportRelative: 'il y a 3 jours',
     byCategory: {
       nonLivraison: 0,
@@ -107,10 +113,34 @@ const RISK_TEXT: Record<RiskLevel, string> = {
   high: 'text-red-700',
 };
 
+const FILTERS: { key: FilterKey; label: string; Icon: typeof Layers }[] = [
+  { key: 'all', label: 'Tous', Icon: Layers },
+  { key: 'active', label: 'Actives', Icon: Inbox },
+  { key: 'archived', label: 'Archivées', Icon: Archive },
+  { key: 'deleted', label: 'Supprimées', Icon: Trash2 },
+];
+
 export function MesAlertesList() {
+  const [alerts, setAlerts] = useState<Alert[]>(DEMO_ALERTS);
+  const [filter, setFilter] = useState<FilterKey>('active');
   const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
-  const toggle = (id: string) =>
+  const counts = useMemo(
+    () => ({
+      all: alerts.length,
+      active: alerts.filter((a) => a.status === 'active').length,
+      archived: alerts.filter((a) => a.status === 'archived').length,
+      deleted: alerts.filter((a) => a.status === 'deleted').length,
+    }),
+    [alerts]
+  );
+
+  const visible = useMemo(
+    () => (filter === 'all' ? alerts : alerts.filter((a) => a.status === filter)),
+    [alerts, filter]
+  );
+
+  const toggleExpand = (id: string) =>
     setExpanded((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -118,136 +148,190 @@ export function MesAlertesList() {
       return next;
     });
 
-  const allOpen = expanded.size === DEMO_ALERTS.length;
-  const toggleAll = () => {
-    if (allOpen) setExpanded(new Set());
-    else setExpanded(new Set(DEMO_ALERTS.map((a) => a.id)));
-  };
+  const setStatus = (id: string, status: AlertStatus) =>
+    setAlerts((prev) => prev.map((a) => (a.id === id ? { ...a, status } : a)));
 
   return (
     <>
-      <div className="flex items-center justify-end mb-3">
-        <button
-          type="button"
-          onClick={toggleAll}
-          className="inline-flex items-center gap-1.5 rounded-pill border border-gray-200 text-brand-navy px-3 py-1.5 text-xs font-semibold hover:border-brand-blue hover:bg-gray-50 transition-colors"
-        >
-          {allOpen ? (
-            <>
-              <EyeOff className="h-3.5 w-3.5" aria-hidden />
-              Tout masquer
-            </>
-          ) : (
-            <>
-              <Eye className="h-3.5 w-3.5" aria-hidden />
-              Tout afficher
-            </>
-          )}
-        </button>
-      </div>
-
-      <div className="space-y-3">
-        {DEMO_ALERTS.map((a) => {
-          const isOpen = expanded.has(a.id);
+      {/* Filter pills — Tous / Actives / Archivées / Supprimées */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        {FILTERS.map((f) => {
+          const active = filter === f.key;
+          const n = counts[f.key];
           return (
-            <div
-              key={a.id}
-              className={`rounded-2xl bg-white border border-gray-200 border-l-4 ${RISK_BORDER[a.risk]} shadow-glow-soft hover:shadow-glow-navy transition-shadow overflow-hidden`}
+            <button
+              key={f.key}
+              type="button"
+              onClick={() => setFilter(f.key)}
+              aria-pressed={active}
+              className={`inline-flex items-center gap-1.5 rounded-pill px-3.5 py-1.5 text-sm font-semibold transition-all duration-200 ease-out ${
+                active
+                  ? 'bg-brand-navy text-white shadow-glow-soft'
+                  : 'bg-white border border-gray-200 text-brand-navy hover:border-brand-blue hover:bg-gray-50'
+              }`}
             >
-              <div className="p-4 flex items-start gap-4">
-                <div className="h-10 w-10 rounded-xl bg-brand-sky flex items-center justify-center shrink-0">
-                  <a.Icon className="h-5 w-5 text-brand-navy" aria-hidden />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-brand-navy truncate">{a.contact}</p>
-                  <p className="mt-1 text-sm text-gray-500">{a.summary}</p>
-                  <p className="mt-2 text-xs text-gray-400">
-                    {a.count} signalements similaires · {a.date}
-                  </p>
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <button
-                    type="button"
-                    onClick={() => toggle(a.id)}
-                    aria-expanded={isOpen}
-                    aria-controls={`alert-detail-${a.id}`}
-                    className="inline-flex items-center gap-1 rounded-pill border border-gray-200 text-brand-navy px-3 py-1 text-xs font-medium hover:border-brand-blue hover:bg-gray-50 transition-colors"
-                  >
-                    {isOpen ? 'Masquer les détails' : 'Voir les détails'}
-                    <ChevronDown
-                      className={`h-3 w-3 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-                      aria-hidden
-                    />
-                  </button>
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-brand-navy"
-                  >
-                    <Archive className="h-3 w-3" aria-hidden />
-                    Archiver
-                  </button>
-                  <button
-                    type="button"
-                    className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-red-500"
-                  >
-                    <Trash2 className="h-3 w-3" aria-hidden />
-                    Supprimer
-                  </button>
-                </div>
-              </div>
-
-              {/* Inline detail (expand/collapse) */}
-              <div
-                id={`alert-detail-${a.id}`}
-                className={`grid transition-all duration-300 ease-out ${
-                  isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+              <f.Icon className="h-3.5 w-3.5" aria-hidden />
+              {f.label}
+              <span
+                className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold ${
+                  active ? 'bg-white/20 text-white' : 'bg-brand-sky text-brand-navy'
                 }`}
               >
-                <div className="overflow-hidden">
-                  <div className="border-t border-gray-100 bg-gray-50/60 px-5 py-4">
-                    <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                      <p className={`text-base font-bold ${RISK_TEXT[a.risk]}`}>
-                        {a.count}{' '}
-                        {a.count > 1 ? 'signalements enregistrés' : 'signalement enregistré'}
-                      </p>
-                      <p className="text-xs text-gray-500">
-                        Dernier signalement : {a.lastReportRelative}
-                      </p>
-                    </div>
+                {n}
+              </span>
+            </button>
+          );
+        })}
+      </div>
 
-                    <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2.5">
-                      <KpiCard
-                        icon={PackageX}
-                        label="Non livraison"
-                        value={a.byCategory.nonLivraison}
-                        bg={RISK_BG[a.risk]}
+      {/* Empty state per filter */}
+      {visible.length === 0 ? (
+        <div className="rounded-2xl bg-white border border-gray-200 px-6 py-12 text-center">
+          <div className="mx-auto mb-3 h-14 w-14 rounded-full bg-brand-sky/40 flex items-center justify-center">
+            <Inbox className="h-7 w-7 text-brand-blue/60" aria-hidden />
+          </div>
+          <p className="text-sm font-semibold text-brand-navy mb-1">
+            {filter === 'archived' && 'Aucune alerte archivée'}
+            {filter === 'deleted' && 'Aucune alerte supprimée'}
+            {filter === 'active' && 'Aucune alerte active pour le moment'}
+            {filter === 'all' && 'Aucune alerte'}
+          </p>
+          <p className="text-xs text-gray-500 max-w-[300px] mx-auto">
+            {filter === 'active'
+              ? 'Suivez un contact après une recherche pour recevoir les nouvelles mises à jour.'
+              : 'Aucun élément à afficher dans cette catégorie.'}
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {visible.map((a) => {
+            const isOpen = expanded.has(a.id);
+            return (
+              <div
+                key={a.id}
+                className={`rounded-2xl bg-white border border-gray-200 border-l-4 ${RISK_BORDER[a.risk]} shadow-glow-soft hover:shadow-glow-navy transition-shadow overflow-hidden`}
+              >
+                <div className="p-4 flex items-start gap-4">
+                  <div className="h-10 w-10 rounded-xl bg-brand-sky flex items-center justify-center shrink-0">
+                    <a.Icon className="h-5 w-5 text-brand-navy" aria-hidden />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-semibold text-brand-navy truncate">{a.contact}</p>
+                    <p className="mt-1 text-sm text-gray-500">{a.summary}</p>
+                    <p className="mt-2 text-xs text-gray-400">
+                      {a.count} signalements similaires · {a.date}
+                    </p>
+                  </div>
+                  <div className="flex flex-col gap-1.5">
+                    <button
+                      type="button"
+                      onClick={() => toggleExpand(a.id)}
+                      aria-expanded={isOpen}
+                      aria-controls={`alert-detail-${a.id}`}
+                      className="inline-flex items-center gap-1 rounded-pill border border-gray-200 text-brand-navy px-3 py-1 text-xs font-medium hover:border-brand-blue hover:bg-gray-50 transition-colors"
+                    >
+                      {isOpen ? 'Masquer les détails' : 'Voir les détails'}
+                      <ChevronDown
+                        className={`h-3 w-3 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+                        aria-hidden
                       />
-                      <KpiCard
-                        icon={Lock}
-                        label="Bloqué après paiement"
-                        value={a.byCategory.bloqueApresPaiement}
-                        bg={RISK_BG[a.risk]}
-                      />
-                      <KpiCard
-                        icon={PackageCheck}
-                        label="Produit non conforme"
-                        value={a.byCategory.produitNonConforme}
-                        bg={RISK_BG[a.risk]}
-                      />
-                      <KpiCard
-                        icon={UserX}
-                        label="Usurpation d'identité"
-                        value={a.byCategory.usurpation}
-                        bg={RISK_BG[a.risk]}
-                      />
+                    </button>
+                    {a.status !== 'archived' && (
+                      <button
+                        type="button"
+                        onClick={() => setStatus(a.id, 'archived')}
+                        className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-brand-navy transition-colors"
+                      >
+                        <Archive className="h-3 w-3" aria-hidden />
+                        Archiver
+                      </button>
+                    )}
+                    {a.status === 'archived' && (
+                      <button
+                        type="button"
+                        onClick={() => setStatus(a.id, 'active')}
+                        className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-brand-navy transition-colors"
+                      >
+                        <Inbox className="h-3 w-3" aria-hidden />
+                        Restaurer
+                      </button>
+                    )}
+                    {a.status !== 'deleted' && (
+                      <button
+                        type="button"
+                        onClick={() => setStatus(a.id, 'deleted')}
+                        className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-red-500 transition-colors"
+                      >
+                        <Trash2 className="h-3 w-3" aria-hidden />
+                        Supprimer
+                      </button>
+                    )}
+                    {a.status === 'deleted' && (
+                      <button
+                        type="button"
+                        onClick={() => setStatus(a.id, 'active')}
+                        className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-brand-navy transition-colors"
+                      >
+                        <Inbox className="h-3 w-3" aria-hidden />
+                        Restaurer
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Inline detail (expand/collapse) */}
+                <div
+                  id={`alert-detail-${a.id}`}
+                  className={`grid transition-all duration-300 ease-out ${
+                    isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+                  }`}
+                >
+                  <div className="overflow-hidden">
+                    <div className="border-t border-gray-100 bg-gray-50/60 px-5 py-4">
+                      <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+                        <p className={`text-base font-bold ${RISK_TEXT[a.risk]}`}>
+                          {a.count}{' '}
+                          {a.count > 1 ? 'signalements enregistrés' : 'signalement enregistré'}
+                        </p>
+                        <p className="text-xs text-gray-500">
+                          Dernier signalement : {a.lastReportRelative}
+                        </p>
+                      </div>
+
+                      <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2.5">
+                        <KpiCard
+                          icon={PackageX}
+                          label="Non livraison"
+                          value={a.byCategory.nonLivraison}
+                          bg={RISK_BG[a.risk]}
+                        />
+                        <KpiCard
+                          icon={Lock}
+                          label="Bloqué après paiement"
+                          value={a.byCategory.bloqueApresPaiement}
+                          bg={RISK_BG[a.risk]}
+                        />
+                        <KpiCard
+                          icon={PackageCheck}
+                          label="Produit non conforme"
+                          value={a.byCategory.produitNonConforme}
+                          bg={RISK_BG[a.risk]}
+                        />
+                        <KpiCard
+                          icon={UserX}
+                          label="Usurpation d'identité"
+                          value={a.byCategory.usurpation}
+                          bg={RISK_BG[a.risk]}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
+      )}
     </>
   );
 }

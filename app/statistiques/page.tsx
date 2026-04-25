@@ -27,7 +27,7 @@ import { AnimatedDonut } from '@/components/AnimatedDonut';
 export const metadata: Metadata = {
   title: 'Statistiques de la plateforme',
   description:
-    'Analysez l’évolution et les tendances des signalements sur Hadar.ma.',
+    'Analysez l’évolution et les tendances des signalements sur Hadar.',
 };
 
 const GLOBAL_STATS: {

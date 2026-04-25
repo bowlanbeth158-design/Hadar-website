@@ -20,41 +20,56 @@ import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { PeriodTabs } from './PeriodTabs';
 import { RefreshButton } from './RefreshButton';
 import { ExportButton } from './ExportButton';
-import { daysBetween, frNumber, periodMultiplier, scale, relativeNow } from '@/lib/period';
+import { daysBetween, frNumber, periodMultiplier, scale } from '@/lib/period';
+import { useI18n } from '@/lib/i18n/provider';
+
+function relativeNowT(
+  t: (k: string, p?: Record<string, string | number>) => string,
+  secondsAgo: number,
+): string {
+  if (secondsAgo < 10) return t('stats.rel.now');
+  if (secondsAgo < 60) return t('stats.rel.seconds', { n: secondsAgo });
+  const minutes = Math.floor(secondsAgo / 60);
+  if (minutes < 60) return t('stats.rel.minutes', { n: minutes });
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return t('stats.rel.hours', { n: hours });
+  const days = Math.floor(hours / 24);
+  return t('stats.rel.days', { n: days });
+}
 
 type Tab = 'global' | 'problems' | 'channels' | 'ux';
 
-const TABS: { id: Tab; label: string }[] = [
-  { id: 'global', label: 'Vue globale' },
-  { id: 'problems', label: 'Analyse des problèmes' },
-  { id: 'channels', label: 'Analyse des canaux' },
-  { id: 'ux', label: 'Expérience utilisateur' },
+const TABS: { id: Tab; labelKey: string }[] = [
+  { id: 'global', labelKey: 'stats.tab.global' },
+  { id: 'problems', labelKey: 'stats.tab.problems' },
+  { id: 'channels', labelKey: 'stats.tab.channels' },
+  { id: 'ux', labelKey: 'stats.tab.ux' },
 ];
 
 const GLOBAL_KPIS_BASE: {
   base: number | null;
   display: string;
-  label: string;
+  labelKey: string;
   gradient: string;
   glow: string;
   Icon: LucideIcon;
   deltaPct: number | null;
-  deltaLabel: string;
+  deltaKey: string;
 }[] = [
-  { base: 1820, display: '', label: 'Total signalements', gradient: 'bg-grad-stat-violet', glow: 'shadow-glow-violet', Icon: Siren, deltaPct: -10, deltaLabel: 'vs période précédente' },
-  { base: 1300, display: '', label: 'Signalements traités', gradient: 'bg-grad-stat-green', glow: 'shadow-glow-green', Icon: Copy, deltaPct: 8, deltaLabel: 'vs période précédente' },
-  { base: null, display: '71%', label: 'Taux de traitement', gradient: 'bg-grad-stat-red', glow: 'shadow-glow-red', Icon: TrendingUp, deltaPct: null, deltaLabel: '+3 pts vs période précédente' },
-  { base: null, display: '36:35:10', label: 'Temps moyen de traitement', gradient: 'bg-grad-stat-orange', glow: 'shadow-glow-orange', Icon: Clock, deltaPct: null, deltaLabel: '-5% vs période précédente' },
+  { base: 1820, display: '', labelKey: 'stats.kpi.totalReports', gradient: 'bg-grad-stat-violet', glow: 'shadow-glow-violet', Icon: Siren, deltaPct: -10, deltaKey: 'stats.delta.vsPrevious' },
+  { base: 1300, display: '', labelKey: 'stats.kpi.processedReports', gradient: 'bg-grad-stat-green', glow: 'shadow-glow-green', Icon: Copy, deltaPct: 8, deltaKey: 'stats.delta.vsPrevious' },
+  { base: null, display: '71%', labelKey: 'stats.kpi.processingRate', gradient: 'bg-grad-stat-red', glow: 'shadow-glow-red', Icon: TrendingUp, deltaPct: null, deltaKey: 'stats.delta.plus3pts' },
+  { base: null, display: '36:35:10', labelKey: 'stats.kpi.avgProcessingTime', gradient: 'bg-grad-stat-orange', glow: 'shadow-glow-orange', Icon: Clock, deltaPct: null, deltaKey: 'stats.delta.minus5pct' },
 ];
 
 const RISK_KPIS_BASE = [
-  { value: '3,35', pct: '', base: null as number | null, label: 'Intensité moy. signalements par contact', cls: 'bg-grad-alert-red shadow-glow-red' },
-  { value: '', pct: '44%', base: 800, label: 'Vigilance (1 à 2)', cls: 'bg-grad-stat-sky shadow-glow-sky' },
-  { value: '', pct: '36%', base: 670, label: 'Modéré (3 à 4)', cls: 'bg-grad-alert-yellow shadow-glow-yellow' },
-  { value: '', pct: '20%', base: 350, label: 'Élevé (≥ 5)', cls: 'bg-grad-stat-green shadow-glow-green' },
+  { value: '3,35', pct: '', base: null as number | null, labelKey: 'stats.risk.intensity', cls: 'bg-grad-alert-red shadow-glow-red' },
+  { value: '', pct: '44%', base: 800, labelKey: 'stats.risk.vigilance', cls: 'bg-grad-stat-sky shadow-glow-sky' },
+  { value: '', pct: '36%', base: 670, labelKey: 'stats.risk.moderate', cls: 'bg-grad-alert-yellow shadow-glow-yellow' },
+  { value: '', pct: '20%', base: 350, labelKey: 'stats.risk.high', cls: 'bg-grad-stat-green shadow-glow-green' },
 ];
 
-type Bar = { label: string; value: number; color: string };
+type Bar = { key: string; label: string; value: number; color: string };
 
 function BarChart({ bars, showPct, refreshKey }: { bars: Bar[]; showPct: boolean; refreshKey: number }) {
   const total = bars.reduce((s, b) => s + b.value, 0);
@@ -68,9 +83,9 @@ function BarChart({ bars, showPct, refreshKey }: { bars: Bar[]; showPct: boolean
             ? `${Math.round((b.value / total) * 100)}%`
             : b.value.toLocaleString('fr-FR').replace(/,/g, ' ');
           return (
-            <div key={b.label} className="flex flex-col items-center h-full justify-end group">
+            <div key={b.key} className="flex flex-col items-center h-full justify-end group">
               <span className="text-xs font-bold text-brand-navy mb-1 transition-transform group-hover:scale-110">
-                <AnimatedCounter key={`${refreshKey}-${b.label}-${showPct}`} value={labelValue} />
+                <AnimatedCounter key={`${refreshKey}-${b.key}-${showPct}`} value={labelValue} />
               </span>
               <div
                 className={`w-full ${b.color} rounded-t-xl transition-all duration-700 group-hover:brightness-110 group-hover:shadow-glow-navy cursor-pointer`}
@@ -143,52 +158,53 @@ function ComparisonCard({
 }
 
 const CHANNELS = [
-  { id: 'telephone', label: 'Téléphone', value: 101, Icon: Phone },
-  { id: 'whatsapp', label: 'WhatsApp', value: 600, Icon: MessageCircle },
-  { id: 'email', label: 'Email', value: 46, Icon: Mail },
-  { id: 'rib', label: 'RIB', value: 168, Icon: CreditCard },
-  { id: 'site_web', label: 'Site web', value: 210, Icon: Globe },
-  { id: 'reseaux', label: 'Réseaux sociaux', value: 300, Icon: AtSign },
-  { id: 'binance', label: 'Binance', value: 120, Icon: Coins },
-  { id: 'paypal', label: 'PayPal', value: 35, Icon: Wallet },
+  { id: 'telephone', labelKey: 'channel.phone', value: 101, Icon: Phone },
+  { id: 'whatsapp', labelKey: 'channel.whatsapp', value: 600, Icon: MessageCircle },
+  { id: 'email', labelKey: 'channel.email', value: 46, Icon: Mail },
+  { id: 'rib', labelKey: 'channel.rib', value: 168, Icon: CreditCard },
+  { id: 'site_web', labelKey: 'channel.website', value: 210, Icon: Globe },
+  { id: 'reseaux', labelKey: 'channel.socialMedia', value: 300, Icon: AtSign },
+  { id: 'binance', labelKey: 'channel.binance', value: 120, Icon: Coins },
+  { id: 'paypal', labelKey: 'channel.paypal', value: 35, Icon: Wallet },
 ];
 
 const PROBLEMS = [
-  { id: 'non_livraison', label: 'Non livraison', value: 200, color: 'bg-orange-500' },
-  { id: 'bloque', label: 'Bloqué', value: 1020, color: 'bg-red-500' },
-  { id: 'non_conforme', label: 'Non conforme', value: 500, color: 'bg-yellow-500' },
-  { id: 'usurpation', label: 'Usurpation', value: 100, color: 'bg-brand-navy' },
+  { id: 'non_livraison', labelKey: 'stats.problem.nonLivraison', value: 200, color: 'bg-orange-500' },
+  { id: 'bloque', labelKey: 'stats.problem.bloque', value: 1020, color: 'bg-red-500' },
+  { id: 'non_conforme', labelKey: 'stats.problem.nonConforme', value: 500, color: 'bg-yellow-500' },
+  { id: 'usurpation', labelKey: 'stats.problem.usurpation', value: 100, color: 'bg-brand-navy' },
 ];
 
 const UX_KPIS_BASE = [
-  { base: 15000 as number | null, display: '', label: 'Visites', cls: 'bg-grad-stat-sky shadow-glow-sky' },
-  { base: 8500 as number | null, display: '', label: 'Inscriptions', cls: 'bg-grad-stat-green shadow-glow-green' },
-  { base: 950 as number | null, display: '', label: 'Utilisateurs actifs', cls: 'bg-grad-stat-red shadow-glow-red' },
-  { base: null, display: '57%', label: 'Taux de conversion', cls: 'bg-grad-stat-orange shadow-glow-orange' },
+  { base: 15000 as number | null, display: '', labelKey: 'stats.ux.visits', cls: 'bg-grad-stat-sky shadow-glow-sky' },
+  { base: 8500 as number | null, display: '', labelKey: 'stats.ux.signups', cls: 'bg-grad-stat-green shadow-glow-green' },
+  { base: 950 as number | null, display: '', labelKey: 'stats.ux.activeUsers', cls: 'bg-grad-stat-red shadow-glow-red' },
+  { base: null, display: '57%', labelKey: 'stats.ux.conversionRate', cls: 'bg-grad-stat-orange shadow-glow-orange' },
 ];
 
 const SATISFACTION = [
-  { value: '4.2 / 5', label: 'Score de satisfaction' },
-  { value: '84%', label: 'Taux de satisfaction' },
-  { value: '16%', label: "Taux d'insatisfaction" },
-  { value: '62%', label: 'Taux de retour' },
+  { value: '4.2 / 5', labelKey: 'stats.satisfaction.score' },
+  { value: '84%', labelKey: 'stats.satisfaction.rate' },
+  { value: '16%', labelKey: 'stats.satisfaction.dissatisfaction' },
+  { value: '62%', labelKey: 'stats.satisfaction.return' },
 ];
 
 export function AdminStats() {
+  const { t } = useI18n();
   const [tab, setTab] = useState<Tab>('global');
   const [hybridMode, setHybridMode] = useState<'count' | 'pct'>('count');
   const [selectedProblem, setSelectedProblem] = useState(PROBLEMS[1]!.id);
   const [selectedChannel, setSelectedChannel] = useState(CHANNELS[1]!.id);
   const [refreshKey, setRefreshKey] = useState(0);
   const [periodIndex, setPeriodIndex] = useState(4);
-  const [periodLabel, setPeriodLabel] = useState('365 jours');
+  const [periodLabel, setPeriodLabel] = useState(t('period.365d'));
   const [rangeDays, setRangeDays] = useState<number | undefined>(undefined);
   const [lastUpdate, setLastUpdate] = useState<Date>(() => new Date());
   const [, setTick] = useState(0);
 
   useEffect(() => {
-    const t = window.setInterval(() => setTick((n) => n + 1), 15_000);
-    return () => window.clearInterval(t);
+    const timer = window.setInterval(() => setTick((n) => n + 1), 15_000);
+    return () => window.clearInterval(timer);
   }, []);
 
   const mult = periodMultiplier(periodIndex, rangeDays);
@@ -232,13 +248,18 @@ export function AdminStats() {
   const selectedC = channels.find((c) => c.id === selectedChannel) ?? channels[0]!;
 
   const exportRows = (): (string | number)[][] => {
-    const rows: (string | number)[][] = [['Section', 'Indicateur', 'Valeur', 'Delta / Période']];
-    globalKpis.forEach((k) => rows.push(['Vue globale', k.label, k.display, k.deltaLabel]));
-    riskKpis.forEach((k) => rows.push(['Niveaux de risque', k.label, k.value, k.pct]));
-    problems.forEach((p) => rows.push(['Problèmes', p.label, p.value, periodLabel]));
-    channels.forEach((c) => rows.push(['Canaux', c.label, c.value, periodLabel]));
-    uxKpis.forEach((k) => rows.push(['UX', k.label, k.display, periodLabel]));
-    SATISFACTION.forEach((k) => rows.push(['Satisfaction', k.label, k.value, periodLabel]));
+    const rows: (string | number)[][] = [[
+      t('stats.export.col.section'),
+      t('stats.export.col.indicator'),
+      t('stats.export.col.value'),
+      t('stats.export.col.deltaPeriod'),
+    ]];
+    globalKpis.forEach((k) => rows.push([t('stats.export.section.global'), t(k.labelKey), k.display, t(k.deltaKey)]));
+    riskKpis.forEach((k) => rows.push([t('stats.export.section.risk'), t(k.labelKey), k.value, k.pct]));
+    problems.forEach((p) => rows.push([t('stats.export.section.problems'), t(p.labelKey), p.value, periodLabel]));
+    channels.forEach((c) => rows.push([t('stats.export.section.channels'), t(c.labelKey), c.value, periodLabel]));
+    uxKpis.forEach((k) => rows.push([t('stats.export.section.ux'), t(k.labelKey), k.display, periodLabel]));
+    SATISFACTION.forEach((k) => rows.push([t('stats.export.section.satisfaction'), t(k.labelKey), k.value, periodLabel]));
     return rows;
   };
 
@@ -248,9 +269,12 @@ export function AdminStats() {
     <div>
       <div className="flex items-center justify-between flex-wrap gap-3 mb-8">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">Statistiques</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">
+            {t('page.statistiques.title')}
+          </h1>
           <p className="mt-1 text-sm text-gray-500">
-            Période : <span className="font-semibold text-brand-navy">{periodLabel}</span>
+            {t('period.label')} :{' '}
+            <span className="font-semibold text-brand-navy">{periodLabel}</span>
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -277,14 +301,14 @@ export function AdminStats() {
       </div>
 
       <nav role="tablist" className="flex flex-wrap justify-center gap-2 mb-8">
-        {TABS.map((t) => {
-          const on = t.id === tab;
+        {TABS.map((item) => {
+          const on = item.id === tab;
           return (
             <button
-              key={t.id}
+              key={item.id}
               role="tab"
               aria-selected={on}
-              onClick={() => setTab(t.id)}
+              onClick={() => setTab(item.id)}
               type="button"
               className={
                 on
@@ -292,7 +316,7 @@ export function AdminStats() {
                   : 'rounded-pill border border-brand-navy text-brand-navy px-5 py-2 text-sm font-medium hover:bg-brand-navy hover:text-white hover:shadow-glow-navy hover:scale-[1.03] transition-all'
               }
             >
-              {t.label}
+              {t(item.labelKey)}
             </button>
           );
         })}
@@ -302,19 +326,19 @@ export function AdminStats() {
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
           {globalKpis.map((k) => (
             <div
-              key={k.label}
+              key={k.labelKey}
               className={`${k.gradient} ${k.glow} text-white rounded-2xl p-5 flex flex-col gap-2 cursor-default hover:scale-[1.03] hover:brightness-110 transition-all duration-300`}
             >
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-3xl font-bold">
-                    <AnimatedCounter key={`${refreshKey}-${k.label}-${factor}`} value={k.display} />
+                    <AnimatedCounter key={`${refreshKey}-${k.labelKey}-${factor}`} value={k.display} />
                   </p>
-                  <p className="text-sm font-medium opacity-90 mt-1">{k.label}</p>
+                  <p className="text-sm font-medium opacity-90 mt-1">{t(k.labelKey)}</p>
                 </div>
                 <k.Icon className="h-7 w-7 opacity-70 transition-transform group-hover:rotate-6" aria-hidden />
               </div>
-              <p className="text-xs text-white/80">{k.deltaLabel}</p>
+              <p className="text-xs text-white/80">{t(k.deltaKey)}</p>
             </div>
           ))}
         </section>
@@ -324,14 +348,14 @@ export function AdminStats() {
         <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
           {riskKpis.map((k) => (
             <div
-              key={k.label}
+              key={k.labelKey}
               className={`${k.cls} text-white rounded-2xl p-5 cursor-default hover:scale-[1.03] hover:brightness-110 transition-all duration-300`}
             >
               <p className="text-3xl font-bold">
-                <AnimatedCounter key={`${refreshKey}-${k.label}-${factor}`} value={k.value} />
+                <AnimatedCounter key={`${refreshKey}-${k.labelKey}-${factor}`} value={k.value} />
               </p>
               {k.pct && <p className="text-sm font-semibold opacity-90">{k.pct}</p>}
-              <p className="mt-1 text-xs font-medium opacity-90">{k.label}</p>
+              <p className="mt-1 text-xs font-medium opacity-90">{t(k.labelKey)}</p>
             </div>
           ))}
         </section>
@@ -341,33 +365,33 @@ export function AdminStats() {
         <div className="grid gap-4 lg:grid-cols-2">
           <section className="rounded-2xl bg-blue-50 border border-blue-200 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-              <h3 className="text-lg font-bold text-brand-navy">Répartition</h3>
+              <h3 className="text-lg font-bold text-brand-navy">{t('stats.section.repartition')}</h3>
               <div className="inline-flex rounded-pill bg-gray-100 p-1 text-xs">
-                <button type="button" onClick={() => setHybridMode('count')} className={`px-3 py-1 rounded-pill transition-colors ${hybridMode === 'count' ? 'bg-brand-navy text-white shadow-glow-navy' : 'text-gray-500'}`}>Nombre</button>
-                <button type="button" onClick={() => setHybridMode('pct')} className={`px-3 py-1 rounded-pill transition-colors ${hybridMode === 'pct' ? 'bg-brand-navy text-white shadow-glow-navy' : 'text-gray-500'}`}>%</button>
+                <button type="button" onClick={() => setHybridMode('count')} className={`px-3 py-1 rounded-pill transition-colors ${hybridMode === 'count' ? 'bg-brand-navy text-white shadow-glow-navy' : 'text-gray-500'}`}>{t('stats.chart.count')}</button>
+                <button type="button" onClick={() => setHybridMode('pct')} className={`px-3 py-1 rounded-pill transition-colors ${hybridMode === 'pct' ? 'bg-brand-navy text-white shadow-glow-navy' : 'text-gray-500'}`}>{t('stats.chart.pct')}</button>
               </div>
             </div>
             <BarChart
               bars={[
-                { label: 'En cours', value: scale(200, factor), color: 'bg-orange-500' },
-                { label: 'Publié', value: scale(1020, factor), color: 'bg-green-500' },
-                { label: 'Refusé', value: scale(500, factor), color: 'bg-red-500' },
-                { label: 'À corriger', value: scale(100, factor), color: 'bg-brand-blue' },
+                { key: 'en_cours', label: t('status.en_cours'), value: scale(200, factor), color: 'bg-orange-500' },
+                { key: 'publie', label: t('status.publie'), value: scale(1020, factor), color: 'bg-green-500' },
+                { key: 'non_retenu', label: t('status.non_retenu'), value: scale(500, factor), color: 'bg-red-500' },
+                { key: 'a_corriger', label: t('status.a_corriger'), value: scale(100, factor), color: 'bg-brand-blue' },
               ]}
               showPct={hybridMode === 'pct'}
               refreshKey={refreshKey}
             />
           </section>
           <ComparisonCard
-            title="Variation des signalements"
-            subtitle="Comparaison avec la période précédente"
-            prev={{ label: '2025 — période précédente', value: Math.max(1, Math.round(2120 * factor)) }}
-            curr={{ label: '2026 — période actuelle', value: scale(1820, factor) }}
+            title={t('stats.section.variation')}
+            subtitle={t('stats.section.comparison')}
+            prev={{ label: t('stats.cmp.previous'), value: Math.max(1, Math.round(2120 * factor)) }}
+            curr={{ label: t('stats.cmp.current'), value: scale(1820, factor) }}
             delta={(() => {
               const p = Math.max(1, Math.round(2120 * factor));
               const c = scale(1820, factor);
               const pct = Math.round(((c - p) / p) * 100);
-              return `${pct >= 0 ? '+' : ''}${pct}% vs période précédente`;
+              return t('stats.deltaFormat', { pct: `${pct >= 0 ? '+' : ''}${pct}` });
             })()}
             refreshKey={refreshKey}
             tint="bg-blue-50"
@@ -379,10 +403,10 @@ export function AdminStats() {
         <div className="grid gap-4 lg:grid-cols-2">
           <section className="rounded-2xl bg-blue-50 border border-blue-200 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
             <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-              <h3 className="text-lg font-bold text-brand-navy">Répartition des problèmes</h3>
+              <h3 className="text-lg font-bold text-brand-navy">{t('stats.section.problemDist')}</h3>
               <div className="inline-flex rounded-pill bg-gray-100 p-1 text-xs">
-                <button type="button" onClick={() => setHybridMode('count')} className={`px-3 py-1 rounded-pill transition-colors ${hybridMode === 'count' ? 'bg-brand-navy text-white shadow-glow-navy' : 'text-gray-500'}`}>Nombre</button>
-                <button type="button" onClick={() => setHybridMode('pct')} className={`px-3 py-1 rounded-pill transition-colors ${hybridMode === 'pct' ? 'bg-brand-navy text-white shadow-glow-navy' : 'text-gray-500'}`}>%</button>
+                <button type="button" onClick={() => setHybridMode('count')} className={`px-3 py-1 rounded-pill transition-colors ${hybridMode === 'count' ? 'bg-brand-navy text-white shadow-glow-navy' : 'text-gray-500'}`}>{t('stats.chart.count')}</button>
+                <button type="button" onClick={() => setHybridMode('pct')} className={`px-3 py-1 rounded-pill transition-colors ${hybridMode === 'pct' ? 'bg-brand-navy text-white shadow-glow-navy' : 'text-gray-500'}`}>{t('stats.chart.pct')}</button>
               </div>
             </div>
             <div className="flex flex-wrap justify-center gap-2 mb-4">
@@ -397,21 +421,25 @@ export function AdminStats() {
                       : 'rounded-pill bg-gray-100 text-gray-600 px-3 py-1 text-xs font-medium hover:bg-brand-navy hover:text-white hover:shadow-glow-navy hover:scale-[1.05] transition-all'
                   }
                 >
-                  {p.label}
+                  {t(p.labelKey)}
                 </button>
               ))}
             </div>
-            <BarChart bars={problems} showPct={hybridMode === 'pct'} refreshKey={refreshKey} />
+            <BarChart
+              bars={problems.map((p) => ({ key: p.id, label: t(p.labelKey), value: p.value, color: p.color }))}
+              showPct={hybridMode === 'pct'}
+              refreshKey={refreshKey}
+            />
           </section>
           <ComparisonCard
-            title={`Évolution — ${selectedP.label}`}
-            subtitle="Comparaison avec la période précédente"
-            prev={{ label: '2025 — période précédente', value: Math.max(1, Math.round(1370 * factor)) }}
-            curr={{ label: '2026 — période actuelle', value: selectedP.value }}
+            title={t('stats.section.evolution', { label: t(selectedP.labelKey) })}
+            subtitle={t('stats.section.comparison')}
+            prev={{ label: t('stats.cmp.previous'), value: Math.max(1, Math.round(1370 * factor)) }}
+            curr={{ label: t('stats.cmp.current'), value: selectedP.value }}
             delta={(() => {
               const p = Math.max(1, Math.round(1370 * factor));
               const pct = Math.round(((selectedP.value - p) / p) * 100);
-              return `${pct >= 0 ? '+' : ''}${pct}% vs période précédente`;
+              return t('stats.deltaFormat', { pct: `${pct >= 0 ? '+' : ''}${pct}` });
             })()}
             refreshKey={refreshKey}
             tint="bg-blue-50"
@@ -436,7 +464,7 @@ export function AdminStats() {
                   }
                 >
                   <c.Icon className="h-3.5 w-3.5" aria-hidden />
-                  {c.label}
+                  {t(c.labelKey)}
                 </button>
               );
             })}
@@ -444,7 +472,7 @@ export function AdminStats() {
           <div className="grid gap-4 lg:grid-cols-2">
             <section className="rounded-2xl bg-blue-50 border border-blue-200 shadow-glow-soft p-6 hover:shadow-glow-navy hover:border-brand-blue transition-all duration-300">
               <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-                <h3 className="text-lg font-bold text-brand-navy">Distribution par canal</h3>
+                <h3 className="text-lg font-bold text-brand-navy">{t('stats.section.channelDist')}</h3>
                 <div className="inline-flex rounded-pill bg-gray-100 p-1 text-xs">
                   <button
                     type="button"
@@ -455,7 +483,7 @@ export function AdminStats() {
                         : 'text-gray-500'
                     }`}
                   >
-                    Nombre
+                    {t('stats.chart.count')}
                   </button>
                   <button
                     type="button"
@@ -466,25 +494,25 @@ export function AdminStats() {
                         : 'text-gray-500'
                     }`}
                   >
-                    %
+                    {t('stats.chart.pct')}
                   </button>
                 </div>
               </div>
               <BarChart
-                bars={channels.map((c) => ({ label: c.label, value: c.value, color: 'bg-grad-stat-navy shadow-glow-navy' }))}
+                bars={channels.map((c) => ({ key: c.id, label: t(c.labelKey), value: c.value, color: 'bg-grad-stat-navy shadow-glow-navy' }))}
                 showPct={hybridMode === 'pct'}
                 refreshKey={refreshKey}
               />
             </section>
             <ComparisonCard
-              title={`Évolution — ${selectedC.label}`}
-              subtitle="Comparaison avec la période précédente"
-              prev={{ label: '2025 — période précédente', value: Math.max(1, Math.round(850 * factor)) }}
-              curr={{ label: '2026 — période actuelle', value: selectedC.value }}
+              title={t('stats.section.evolution', { label: t(selectedC.labelKey) })}
+              subtitle={t('stats.section.comparison')}
+              prev={{ label: t('stats.cmp.previous'), value: Math.max(1, Math.round(850 * factor)) }}
+              curr={{ label: t('stats.cmp.current'), value: selectedC.value }}
               delta={(() => {
                 const p = Math.max(1, Math.round(850 * factor));
                 const pct = Math.round(((selectedC.value - p) / p) * 100);
-                return `${pct >= 0 ? '+' : ''}${pct}% vs période précédente`;
+                return t('stats.deltaFormat', { pct: `${pct >= 0 ? '+' : ''}${pct}` });
               })()}
               refreshKey={refreshKey}
               tint="bg-blue-50"
@@ -498,34 +526,34 @@ export function AdminStats() {
           <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-8">
             {uxKpis.map((k) => (
               <div
-                key={k.label}
+                key={k.labelKey}
                 className={`${k.cls} text-white rounded-2xl p-5 cursor-default hover:scale-[1.03] hover:brightness-110 transition-all duration-300`}
               >
                 <p className="text-3xl font-bold">
                   <AnimatedCounter
-                    key={`${refreshKey}-${k.label}-${factor}`}
+                    key={`${refreshKey}-${k.labelKey}-${factor}`}
                     value={k.display}
                   />
                 </p>
-                <p className="mt-1 text-sm font-medium opacity-90">{k.label}</p>
+                <p className="mt-1 text-sm font-medium opacity-90">{t(k.labelKey)}</p>
               </div>
             ))}
           </section>
 
           <div className="grid gap-4 lg:grid-cols-2 mb-8">
             <section className="rounded-2xl bg-violet-50 border border-violet-200 shadow-glow-soft p-6 hover:shadow-glow-violet hover:border-violet-400 transition-all duration-300">
-              <h3 className="text-lg font-bold text-brand-navy mb-4">Signalements vs Vérifications</h3>
+              <h3 className="text-lg font-bold text-brand-navy mb-4">{t('stats.section.reportsVsVerifs')}</h3>
               <div className="space-y-3">
                 {[
-                  { label: 'Signalements', value: 300, pct: 31, color: 'bg-grad-stat-violet shadow-glow-violet' },
-                  { label: 'Vérifications', value: 650, pct: 69, color: 'bg-grad-stat-navy shadow-glow-navy' },
+                  { key: 'reports', labelKey: 'stats.ux.reports', value: 300, pct: 31, color: 'bg-grad-stat-violet shadow-glow-violet' },
+                  { key: 'verifs', labelKey: 'stats.ux.verifications', value: 650, pct: 69, color: 'bg-grad-stat-navy shadow-glow-navy' },
                 ].map((r) => (
-                  <div key={r.label}>
+                  <div key={r.key}>
                     <div className="flex items-center justify-between text-sm mb-1">
-                      <span className="text-brand-navy font-medium">{r.label}</span>
+                      <span className="text-brand-navy font-medium">{t(r.labelKey)}</span>
                       <span className="text-brand-navy font-bold">
-                        <AnimatedCounter key={`${refreshKey}-${r.label}-v`} value={`${r.value}`} /> —{' '}
-                        <AnimatedCounter key={`${refreshKey}-${r.label}-p`} value={`${r.pct}%`} />
+                        <AnimatedCounter key={`${refreshKey}-${r.key}-v`} value={`${r.value}`} /> —{' '}
+                        <AnimatedCounter key={`${refreshKey}-${r.key}-p`} value={`${r.pct}%`} />
                       </span>
                     </div>
                     <div className="h-2.5 rounded-pill bg-gray-100 overflow-hidden">
@@ -537,16 +565,16 @@ export function AdminStats() {
             </section>
 
             <section className="rounded-2xl bg-violet-50 border border-violet-200 shadow-glow-soft p-6 hover:shadow-glow-violet hover:border-violet-400 transition-all duration-300">
-              <h3 className="text-lg font-bold text-brand-navy mb-4">Temps moyen par usage</h3>
+              <h3 className="text-lg font-bold text-brand-navy mb-4">{t('stats.section.avgTimePerUsage')}</h3>
               <div className="space-y-3">
                 {[
-                  { label: 'Signalement', value: '5 min 23 sec', pct: 70, color: 'bg-grad-stat-violet shadow-glow-violet' },
-                  { label: 'Vérification', value: '2 min 13 sec', pct: 30, color: 'bg-grad-stat-navy shadow-glow-navy' },
+                  { key: 'report', labelKey: 'stats.ux.report', valueKey: 'stats.time.report', pct: 70, color: 'bg-grad-stat-violet shadow-glow-violet' },
+                  { key: 'verif', labelKey: 'stats.ux.verification', valueKey: 'stats.time.verification', pct: 30, color: 'bg-grad-stat-navy shadow-glow-navy' },
                 ].map((r) => (
-                  <div key={r.label}>
+                  <div key={r.key}>
                     <div className="flex items-center justify-between text-sm mb-1">
-                      <span className="text-brand-navy font-medium">{r.label}</span>
-                      <span className="text-brand-navy font-bold">{r.value}</span>
+                      <span className="text-brand-navy font-medium">{t(r.labelKey)}</span>
+                      <span className="text-brand-navy font-bold">{t(r.valueKey)}</span>
                     </div>
                     <div className="h-2.5 rounded-pill bg-gray-100 overflow-hidden">
                       <div className={`h-full rounded-pill ${r.color} transition-all duration-700`} style={{ width: `${r.pct}%` }} />
@@ -560,13 +588,13 @@ export function AdminStats() {
           <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {SATISFACTION.map((c) => (
               <div
-                key={c.label}
+                key={c.labelKey}
                 className="rounded-2xl bg-violet-500/10 border border-violet-500/20 shadow-glow-violet p-5 text-center cursor-default hover:scale-[1.03] hover:bg-violet-500/20 transition-all duration-300"
               >
                 <p className="text-3xl font-bold text-violet-500">
-                  <AnimatedCounter key={`${refreshKey}-${c.label}`} value={c.value} />
+                  <AnimatedCounter key={`${refreshKey}-${c.labelKey}`} value={c.value} />
                 </p>
-                <p className="mt-1 text-xs text-gray-600">{c.label}</p>
+                <p className="mt-1 text-xs text-gray-600">{t(c.labelKey)}</p>
               </div>
             ))}
           </section>
@@ -574,7 +602,7 @@ export function AdminStats() {
       )}
 
       <p className="mt-6 text-xs text-gray-400 text-right">
-        Dernière mise à jour : {relativeNow(secondsAgo)}
+        {t('stats.lastUpdate', { time: relativeNowT(t, secondsAgo) })}
       </p>
     </div>
   );

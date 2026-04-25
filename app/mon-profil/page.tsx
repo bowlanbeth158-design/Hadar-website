@@ -7,7 +7,7 @@ import { DemoBanner } from '@/components/DemoBanner';
 
 export const metadata: Metadata = {
   title: 'Mon profil',
-  description: 'Gérez votre identité, votre mot de passe et vos préférences sur Hadar.ma.',
+  description: 'Gérez votre identité, votre mot de passe et vos préférences sur Hadar.',
 };
 
 export default function Page() {

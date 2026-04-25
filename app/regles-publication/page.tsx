@@ -5,7 +5,7 @@ import { loadLegal } from '@/lib/loadLegal';
 export const metadata: Metadata = {
   title: 'Règles de publication',
   description:
-    'Règles et critères de publication des signalements sur la plateforme Hadar.ma.',
+    'Règles et critères de publication des signalements sur la plateforme Hadar.',
 };
 
 export default async function Page() {

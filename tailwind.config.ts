@@ -88,6 +88,34 @@ const config: Config = {
         'glow-sky':    '0 10px 30px -8px rgb(0 191 238 / 0.45), 0 0 0 1px rgb(0 191 238 / 0.05)',
         'glow-yellow': '0 10px 30px -8px rgb(216 193 0 / 0.45), 0 0 0 1px rgb(216 193 0 / 0.05)',
       },
+      keyframes: {
+        'alert-pulse': {
+          '0%': { boxShadow: '0 0 0 0 rgba(238, 68, 68, 0.55)' },
+          '70%': { boxShadow: '0 0 0 14px rgba(238, 68, 68, 0)' },
+          '100%': { boxShadow: '0 0 0 0 rgba(238, 68, 68, 0)' },
+        },
+        'verify-pulse': {
+          '0%': { boxShadow: '0 0 0 0 rgba(34, 196, 94, 0.55)' },
+          '70%': { boxShadow: '0 0 0 14px rgba(34, 196, 94, 0)' },
+          '100%': { boxShadow: '0 0 0 0 rgba(34, 196, 94, 0)' },
+        },
+        'siren-wiggle': {
+          '0%, 92%, 100%': { transform: 'rotate(0deg)' },
+          '94%': { transform: 'rotate(-14deg)' },
+          '96%': { transform: 'rotate(14deg)' },
+          '98%': { transform: 'rotate(-8deg)' },
+        },
+        'float-soft': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-8px)' },
+        },
+      },
+      animation: {
+        'alert-pulse': 'alert-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+        'verify-pulse': 'verify-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+        'siren-wiggle': 'siren-wiggle 4s ease-in-out infinite',
+        'float-soft': 'float-soft 5s ease-in-out infinite',
+      },
     },
   },
   plugins: [typography],

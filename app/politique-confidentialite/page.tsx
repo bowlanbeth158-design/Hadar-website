@@ -5,7 +5,7 @@ import { loadLegal } from '@/lib/loadLegal';
 export const metadata: Metadata = {
   title: 'Politique de confidentialité',
   description:
-    'Politique de confidentialité Hadar.ma — comment nous protégeons et traitons vos informations.',
+    'Politique de confidentialité Hadar — comment nous protégeons et traitons vos informations.',
 };
 
 export default async function Page() {

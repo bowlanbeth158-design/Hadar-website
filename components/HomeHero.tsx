@@ -157,13 +157,16 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
 
   return (
     <>
-      <section className="mx-auto max-w-5xl px-4 md:px-6 pt-10 md:pt-14 pb-4 text-center">
-        <h1 className="text-4xl md:text-6xl font-bold tracking-tight text-brand-navy">
-          Avant d&apos;acheter, vérifiez.
-        </h1>
-        <p className="mt-5 mx-auto max-w-2xl text-base md:text-lg text-gray-500">
-          Recherchez un numéro, un email, un site web ou un moyen de paiement pour vérifier
-          s&apos;il a déjà été signalé.
+      <section
+        id="recherche"
+        className="mx-auto max-w-5xl px-4 md:px-6 pt-10 md:pt-14 pb-4 text-center scroll-mt-24"
+      >
+        <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-brand-navy">
+          Lancez votre vérification
+        </h2>
+        <p className="mt-3 mx-auto max-w-2xl text-sm md:text-base text-gray-500">
+          Choisissez le type de contact puis recherchez un numéro, un email, un site web ou un
+          moyen de paiement pour vérifier s&apos;il a déjà été signalé.
         </p>
 
         <div

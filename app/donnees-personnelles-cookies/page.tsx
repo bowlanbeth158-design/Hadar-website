@@ -5,7 +5,7 @@ import { loadLegal } from '@/lib/loadLegal';
 export const metadata: Metadata = {
   title: 'Données personnelles & cookies',
   description:
-    "Politique de traitement des données personnelles et gestion des cookies sur Hadar.ma.",
+    "Politique de traitement des données personnelles et gestion des cookies sur Hadar.",
 };
 
 export default async function Page() {

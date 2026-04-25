@@ -36,7 +36,7 @@ export function UserMenu() {
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="true"
         aria-expanded={open}
-        className="inline-flex items-center gap-2 rounded-pill border border-gray-200 bg-white text-brand-navy px-3 py-1.5 text-sm font-semibold hover:border-brand-blue transition-colors"
+        className="inline-flex items-center gap-2 rounded-pill border border-gray-200 bg-white text-brand-navy px-5 py-2 text-sm font-semibold hover:border-brand-blue hover:shadow-glow-soft transition-all"
       >
         <UserCircle2 className="h-5 w-5 text-gray-400" aria-hidden />
         <span className="hidden md:inline">Mon compte</span>
@@ -46,7 +46,7 @@ export function UserMenu() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-full mt-2 w-56 rounded-xl bg-white border border-gray-200 shadow-lg overflow-hidden z-50 py-1"
+          className="absolute right-0 top-full mt-2 w-60 rounded-xl bg-white border border-gray-200 shadow-lg overflow-hidden z-50 py-1"
         >
           {ITEMS.map(({ href, label, Icon }) => (
             <Link

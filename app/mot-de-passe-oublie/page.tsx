@@ -4,7 +4,7 @@ import { AuthCard } from '@/components/AuthCard';
 
 export const metadata: Metadata = {
   title: 'Mot de passe oublié',
-  description: 'Réinitialisez votre mot de passe Hadar.ma.',
+  description: 'Réinitialisez votre mot de passe Hadar.',
 };
 
 export default function Page() {

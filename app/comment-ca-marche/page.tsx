@@ -7,7 +7,7 @@ import { PageHeading } from '@/components/PageHeading';
 export const metadata: Metadata = {
   title: 'Comment ça marche',
   description:
-    'Découvrez comment vérifier un contact, signaler un profil suspect, vous protéger et suivre vos alertes sur Hadar.ma.',
+    'Découvrez comment vérifier un contact, signaler un profil suspect, vous protéger et suivre vos alertes sur Hadar.',
 };
 
 const STEPS: {

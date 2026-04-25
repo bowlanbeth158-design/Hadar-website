@@ -1,6 +1,7 @@
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { SupportFab } from '@/components/SupportFab';
+import { HomeBanner } from '@/components/HomeBanner';
 import { HomeHero } from '@/components/HomeHero';
 import { PlatformStats } from '@/components/PlatformStats';
 import { RecentReports } from '@/components/RecentReports';
@@ -17,6 +18,7 @@ export default function HomePage({ searchParams }: { searchParams: SearchParams 
       <Header />
 
       <main>
+        <HomeBanner />
         <HomeHero initialType={type} initialQuery={query} />
         <PlatformStats />
         <RecentReports />

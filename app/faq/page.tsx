@@ -8,7 +8,7 @@ import { parseFaq } from '@/lib/parseFaq';
 
 export const metadata: Metadata = {
   title: 'FAQ',
-  description: 'Foire aux questions — réponses aux interrogations fréquentes sur Hadar.ma.',
+  description: 'Foire aux questions — réponses aux interrogations fréquentes sur Hadar.',
 };
 
 export default async function Page() {
@@ -22,7 +22,7 @@ export default async function Page() {
       </div>
       <PageHeading
         title="Foire aux questions"
-        subtitle="Les réponses aux questions les plus fréquentes sur Hadar.ma."
+        subtitle="Les réponses aux questions les plus fréquentes sur Hadar."
         accent="gradient"
       />
       <FaqAccordion items={items} />

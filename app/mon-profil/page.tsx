@@ -9,10 +9,16 @@ import {
   Clock3,
   RefreshCcw,
   Save,
+  Award,
 } from 'lucide-react';
 import { PageLayout } from '@/components/PageLayout';
 import { BackButton } from '@/components/BackButton';
 import { DemoBanner } from '@/components/DemoBanner';
+import { CountUp } from '@/components/CountUp';
+import { AvatarUpload } from '@/components/AvatarUpload';
+import { VerifiedBadge } from '@/components/VerifiedBadge';
+import { BadgesCriteriaModal } from '@/components/BadgesCriteriaModal';
+import { IdentityVerificationModal } from '@/components/IdentityVerificationModal';
 
 export const metadata: Metadata = {
   title: 'Mon profil',
@@ -25,8 +31,10 @@ const PROFILE = {
   email: 'mohamedossama.moussaoui@gmail.com',
   contactType: 'mohamedossama.moussaoui@gmail.com',
   badge: 'Contributeur régulier',
+  badgeKey: 'regulier',
   badgeStars: 4,
   validationRate: 100,
+  verified: false,
   stats: {
     sent: 5,
     published: 5,
@@ -46,79 +54,100 @@ export default function Page() {
 
       <DemoBanner />
 
-      {/* Hero card — avatar + identity + watermark */}
-      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-sky/60 via-white to-brand-sky/30 border border-gray-200 shadow-glow-soft p-6 md:p-8 mb-4">
-        {/* Decorative H watermark */}
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -right-4 top-1/2 -translate-y-1/2 select-none"
-        >
-          <span className="block text-[180px] md:text-[220px] font-extrabold leading-none text-brand-navy/5 tracking-tighter">
-            H
-          </span>
-        </div>
+      {/* Hero card — avatar + identity */}
+      <section className="rounded-2xl bg-gradient-to-br from-brand-sky/60 via-white to-brand-sky/30 border border-gray-200 shadow-glow-soft p-6 md:p-8 mb-4">
+        <div className="flex flex-col md:flex-row md:items-center gap-5">
+          <AvatarUpload initials={initials} />
 
-        <div className="relative flex flex-col md:flex-row md:items-center gap-5">
-          <div className="h-20 w-20 md:h-24 md:w-24 rounded-full bg-gradient-to-br from-brand-navy via-brand-blue to-brand-sky text-white flex items-center justify-center text-2xl md:text-3xl font-bold shadow-glow-navy shrink-0">
-            {initials}
-          </div>
-
-          <div className="min-w-0">
-            <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">
-              {PROFILE.firstName} {PROFILE.lastName}
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl md:text-3xl font-bold text-brand-navy inline-flex items-center gap-2 flex-wrap">
+              <span>
+                {PROFILE.firstName} {PROFILE.lastName}
+              </span>
+              {PROFILE.verified && (
+                <VerifiedBadge className="h-6 w-6" />
+              )}
             </h1>
-            <p className="mt-1 text-sm text-brand-navy/80 inline-flex items-center gap-1.5 flex-wrap">
-              {PROFILE.badge}
-              <span className="inline-flex items-center gap-0.5">
-                {Array.from({ length: 5 }).map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`h-3.5 w-3.5 ${
-                      i < PROFILE.badgeStars
-                        ? 'text-yellow-400 fill-yellow-400'
-                        : 'text-gray-300'
-                    }`}
-                    aria-hidden
-                  />
-                ))}
+
+            {/* Badge tier — clickable, opens criteria modal */}
+            <BadgesCriteriaModal
+              highlightKey={PROFILE.badgeKey}
+              trigger={
+                <span className="mt-1 group inline-flex items-center gap-1.5 rounded-pill bg-white/60 backdrop-blur-sm border border-yellow-200 px-3 py-1 text-xs font-semibold text-brand-navy hover:border-brand-blue hover:bg-white hover:shadow-glow-soft hover:-translate-y-px transition-all duration-200 cursor-pointer">
+                  <Award className="h-3.5 w-3.5 text-yellow-500" aria-hidden />
+                  {PROFILE.badge}
+                  <span className="inline-flex items-center gap-0.5 ml-0.5">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`h-3 w-3 ${
+                          i < PROFILE.badgeStars
+                            ? 'text-yellow-400 fill-yellow-400'
+                            : 'text-gray-300'
+                        }`}
+                        aria-hidden
+                      />
+                    ))}
+                  </span>
+                  <span className="ml-1 text-[10px] uppercase tracking-wide text-brand-blue group-hover:underline">
+                    Voir les niveaux
+                  </span>
+                </span>
+              }
+            />
+
+            <p className="mt-2 text-xs text-gray-500">
+              Taux de validation :{' '}
+              <span className="font-semibold text-brand-navy">
+                <CountUp to={PROFILE.validationRate} />%
               </span>
             </p>
-            <p className="mt-1 text-xs text-gray-500">
-              Taux de validation : <span className="font-semibold text-brand-navy">{PROFILE.validationRate}%</span>
-            </p>
+
+            {/* Identity verification CTA — shown only when not verified */}
+            {!PROFILE.verified && (
+              <IdentityVerificationModal
+                trigger={
+                  <span className="mt-3 inline-flex items-center gap-2 rounded-pill bg-white border border-gray-200 px-3 py-1.5 text-xs font-semibold text-brand-navy hover:border-brand-blue hover:shadow-glow-soft hover:-translate-y-px transition-all duration-200 cursor-pointer">
+                    <VerifiedBadge className="h-4 w-4" />
+                    Activer ma vérification d&apos;identité —{' '}
+                    <span className="text-green-600">gratuit</span>
+                  </span>
+                }
+              />
+            )}
           </div>
         </div>
       </section>
 
-      {/* 4 KPI cards */}
+      {/* 4 KPI cards with animated counters */}
       <section className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
         <KpiCard
           icon={Siren}
-          value={PROFILE.stats.sent}
           label="Signalements envoyés"
           gradient="bg-grad-alert-red"
-          glow="shadow-glow-red"
+          glow="hover:shadow-glow-red"
+          value={<CountUp to={PROFILE.stats.sent} />}
         />
         <KpiCard
           icon={CheckCircle2}
-          value={PROFILE.stats.published}
           label="Signalements publiés"
           gradient="bg-grad-alert-green"
-          glow="shadow-glow-green"
+          glow="hover:shadow-glow-green"
+          value={<CountUp to={PROFILE.stats.published} />}
         />
         <KpiCard
           icon={ShieldCheck}
-          value={PROFILE.stats.verifications}
           label="Vérifications réalisées"
           gradient="bg-grad-stat-sky"
-          glow="shadow-glow-sky"
+          glow="hover:shadow-glow-sky"
+          value={<CountUp to={PROFILE.stats.verifications} />}
         />
         <KpiCard
           icon={Clock3}
-          value={PROFILE.stats.lastReport}
           label="Dernier signalement"
           gradient="bg-grad-alert-orange"
-          glow="shadow-glow-orange"
+          glow="hover:shadow-glow-orange"
+          value={PROFILE.stats.lastReport}
         />
       </section>
 
@@ -245,14 +274,14 @@ function KpiCard({
   glow,
 }: {
   icon: typeof Siren;
-  value: number | string;
+  value: React.ReactNode;
   label: string;
   gradient: string;
   glow: string;
 }) {
   return (
     <div
-      className={`group relative overflow-hidden rounded-2xl ${gradient} text-white p-4 shadow-md hover:${glow} hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-200 ease-out`}
+      className={`group relative overflow-hidden rounded-2xl ${gradient} text-white p-4 shadow-md ${glow} hover:-translate-y-0.5 hover:scale-[1.02] transition-all duration-200 ease-out`}
     >
       <Icon
         className="absolute right-3 top-1/2 -translate-y-1/2 h-7 w-7 text-white/40"

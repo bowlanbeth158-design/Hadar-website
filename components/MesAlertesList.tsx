@@ -1,10 +1,7 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Phone,
-  Mail,
-  Globe,
   Trash2,
   Archive,
   ChevronDown,
@@ -15,82 +12,15 @@ import {
   Inbox,
   Layers,
 } from 'lucide-react';
+import {
+  CHANNEL_ICON,
+  DEMO_ALERTS,
+  type Alert,
+  type AlertStatus,
+  type RiskLevel,
+} from '@/lib/mock/alerts';
 
-type RiskLevel = 'low' | 'vigilance' | 'moderate' | 'high';
-type AlertStatus = 'active' | 'archived' | 'deleted';
 type FilterKey = 'all' | AlertStatus;
-
-type Alert = {
-  id: string;
-  Icon: typeof Phone;
-  contact: string;
-  summary: string;
-  date: string;
-  count: number;
-  risk: RiskLevel;
-  status: AlertStatus;
-  lastReportRelative: string;
-  byCategory: {
-    nonLivraison: number;
-    bloqueApresPaiement: number;
-    produitNonConforme: number;
-    usurpation: number;
-  };
-};
-
-const DEMO_ALERTS: Alert[] = [
-  {
-    id: '1',
-    Icon: Phone,
-    contact: '+212 6 12 34 •• ••',
-    summary: '2 nouveaux signalements sur ce numéro cette semaine.',
-    date: 'il y a 2h',
-    count: 5,
-    risk: 'high',
-    status: 'active',
-    lastReportRelative: 'il y a 2 heures',
-    byCategory: {
-      nonLivraison: 1,
-      bloqueApresPaiement: 2,
-      produitNonConforme: 2,
-      usurpation: 0,
-    },
-  },
-  {
-    id: '2',
-    Icon: Mail,
-    contact: 'contact@arnaqu••.com',
-    summary: 'Signalement « Non livraison » ajouté par un autre utilisateur.',
-    date: 'hier',
-    count: 3,
-    risk: 'moderate',
-    status: 'active',
-    lastReportRelative: 'hier',
-    byCategory: {
-      nonLivraison: 1,
-      bloqueApresPaiement: 1,
-      produitNonConforme: 1,
-      usurpation: 0,
-    },
-  },
-  {
-    id: '3',
-    Icon: Globe,
-    contact: 'https://boutique-sus••.ma',
-    summary: 'Vigilance : 1 nouveau signalement « Produit non conforme ».',
-    date: 'il y a 3 jours',
-    count: 1,
-    risk: 'vigilance',
-    status: 'active',
-    lastReportRelative: 'il y a 3 jours',
-    byCategory: {
-      nonLivraison: 0,
-      bloqueApresPaiement: 0,
-      produitNonConforme: 1,
-      usurpation: 0,
-    },
-  },
-];
 
 const RISK_BORDER: Record<RiskLevel, string> = {
   low: 'border-l-green-500',
@@ -130,10 +60,27 @@ const FILTERS: { key: FilterKey; label: string; Icon: typeof Layers }[] = [
   { key: 'deleted', label: 'Supprimées', Icon: Trash2 },
 ];
 
-export function MesAlertesList() {
+export function MesAlertesList({ initialExpandId }: { initialExpandId?: string | null }) {
   const [alerts, setAlerts] = useState<Alert[]>(DEMO_ALERTS);
   const [filter, setFilter] = useState<FilterKey>('active');
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [expanded, setExpanded] = useState<Set<string>>(
+    initialExpandId ? new Set([initialExpandId]) : new Set()
+  );
+  const scrolledRef = useRef(false);
+
+  // When a deep link like /mes-alertes?alert=2 is opened, scroll the
+  // chosen alert into view and ensure it's visible (use the 'all' filter
+  // if the chosen alert isn't active, so the user always sees it).
+  useEffect(() => {
+    if (!initialExpandId || scrolledRef.current) return;
+    const target = alerts.find((a) => a.id === initialExpandId);
+    if (target && target.status !== 'active') setFilter('all');
+    const el = document.getElementById(`alert-card-${initialExpandId}`);
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      scrolledRef.current = true;
+    }
+  }, [initialExpandId, alerts]);
 
   const counts = useMemo(
     () => ({
@@ -216,14 +163,16 @@ export function MesAlertesList() {
         <div className="space-y-3">
           {visible.map((a) => {
             const isOpen = expanded.has(a.id);
+            const Icon = CHANNEL_ICON[a.channel];
             return (
               <div
                 key={a.id}
+                id={`alert-card-${a.id}`}
                 className={`rounded-2xl bg-white border border-gray-200 border-l-4 ${RISK_BORDER[a.risk]} shadow-glow-soft hover:shadow-glow-navy transition-shadow overflow-hidden`}
               >
                 <div className="p-4 flex items-start gap-4">
                   <div className="h-10 w-10 rounded-xl bg-brand-sky flex items-center justify-center shrink-0">
-                    <a.Icon className="h-5 w-5 text-brand-navy" aria-hidden />
+                    <Icon className="h-5 w-5 text-brand-navy" aria-hidden />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-brand-navy truncate">{a.contact}</p>

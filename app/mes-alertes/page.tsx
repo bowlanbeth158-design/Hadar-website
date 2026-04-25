@@ -12,7 +12,14 @@ export const metadata: Metadata = {
     'Suivez les alertes sur les contacts que vous surveillez et recevez une notification à chaque nouveau signalement.',
 };
 
-export default function Page() {
+type PageProps = {
+  searchParams: { alert?: string; settings?: string };
+};
+
+export default function Page({ searchParams }: PageProps) {
+  const initialExpandId = searchParams.alert ?? null;
+  const settingsOpen = searchParams.settings === '1';
+
   return (
     <PageLayout>
       <div className="mb-8">
@@ -27,10 +34,10 @@ export default function Page() {
 
       <div className="flex items-center justify-between mb-6">
         <p className="text-sm text-gray-500">3 alertes actives · 3 nouvelles notifications</p>
-        <NotificationSettingsModal />
+        <NotificationSettingsModal defaultOpen={settingsOpen} />
       </div>
 
-      <MesAlertesList />
+      <MesAlertesList initialExpandId={initialExpandId} />
     </PageLayout>
   );
 }

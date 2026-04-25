@@ -2,18 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import {
-  BellOff,
-  ChevronsDown,
-  Clock3,
-  CreditCard,
-  Globe,
-  Mail,
-  Phone,
-  Settings,
-} from 'lucide-react';
-
-type RiskLevel = 'low' | 'vigilance' | 'moderate' | 'high';
+import { BellOff, ChevronsDown, Clock3, Settings } from 'lucide-react';
+import { CHANNEL_ICON, DEMO_ALERTS, type Alert, type RiskLevel } from '@/lib/mock/alerts';
 
 // Same brand-themed hover stack used by the other nav links (color shift,
 // 1px lift, brand-gradient tile behind letters, gradient underline).
@@ -38,54 +28,9 @@ const RISK_BAR: Record<RiskLevel, string> = {
   high: 'bg-red-500',
 };
 
-type Alert = {
-  id: string;
-  Icon: typeof Phone;
-  contact: string;
-  message: string;
-  time: string;
-  risk: RiskLevel;
-};
-
-// Demo data — to be replaced by real API call later.
-const DEMO_ALERTS: Alert[] = [
-  {
-    id: '1',
-    Icon: Phone,
-    contact: '212 600 00 00 00',
-    message: 'Un nouveau signalement a été publié.',
-    time: 'il y a 1 heure',
-    risk: 'low',
-  },
-  {
-    id: '2',
-    Icon: Globe,
-    contact: 'www.mushtarik.com',
-    message: 'Un nouveau signalement a été publié.',
-    time: 'il y a 2 heures',
-    risk: 'vigilance',
-  },
-  {
-    id: '3',
-    Icon: CreditCard,
-    contact: '50XX XXXX XXXX XX86',
-    message: 'Un nouveau signalement a été publié.',
-    time: 'il y a 5 heures',
-    risk: 'high',
-  },
-  {
-    id: '4',
-    Icon: Mail,
-    contact: 'mohamedossama.moussaoui@gmail.com',
-    message: 'Un nouveau signalement a été publié.',
-    time: 'il y a 1 jour',
-    risk: 'vigilance',
-  },
-];
-
 export function AlertsPopover({
   count,
-  alerts = DEMO_ALERTS,
+  alerts = DEMO_ALERTS.filter((a) => a.status === 'active'),
 }: {
   count: number;
   alerts?: Alert[];
@@ -144,7 +89,7 @@ export function AlertsPopover({
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
             <h3 className="text-base font-bold text-brand-navy">Mes alertes</h3>
             <Link
-              href="/mes-alertes"
+              href="/mes-alertes?settings=1"
               onClick={close}
               className="text-xs text-brand-blue font-semibold inline-flex items-center gap-1 hover:underline"
             >
@@ -156,36 +101,39 @@ export function AlertsPopover({
           {/* Body */}
           {hasAlerts ? (
             <ul className="divide-y divide-gray-100 max-h-[420px] overflow-y-auto">
-              {visible.map((alert) => (
-                <li key={alert.id}>
-                  <Link
-                    href={`/mes-alertes/${alert.id}`}
-                    onClick={close}
-                    className="group relative flex items-stretch hover:bg-gray-50 transition-colors duration-200"
-                  >
-                    <span
-                      className={`w-1 shrink-0 ${RISK_BAR[alert.risk]}`}
-                      aria-hidden
-                    />
-                    <div className="flex-1 px-4 py-3 min-w-0">
-                      <div className="flex items-center gap-2 text-sm font-semibold text-brand-navy">
-                        <alert.Icon className="h-4 w-4 text-gray-400 shrink-0" aria-hidden />
-                        <span className="truncate">{alert.contact}</span>
+              {visible.map((alert) => {
+                const Icon = CHANNEL_ICON[alert.channel];
+                return (
+                  <li key={alert.id}>
+                    <Link
+                      href={`/mes-alertes?alert=${alert.id}`}
+                      onClick={close}
+                      className="group relative flex items-stretch hover:bg-gray-50 transition-colors duration-200"
+                    >
+                      <span
+                        className={`w-1 shrink-0 ${RISK_BAR[alert.risk]}`}
+                        aria-hidden
+                      />
+                      <div className="flex-1 px-4 py-3 min-w-0">
+                        <div className="flex items-center gap-2 text-sm font-semibold text-brand-navy">
+                          <Icon className="h-4 w-4 text-gray-400 shrink-0" aria-hidden />
+                          <span className="truncate">{alert.contact}</span>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-0.5">{alert.message}</p>
+                        <div className="flex items-center justify-between mt-2 text-xs">
+                          <span className="text-gray-400 inline-flex items-center gap-1">
+                            <Clock3 className="h-3 w-3" aria-hidden />
+                            {alert.lastReportRelative}
+                          </span>
+                          <span className="text-brand-blue font-semibold group-hover:underline">
+                            Voir les détails
+                          </span>
+                        </div>
                       </div>
-                      <p className="text-xs text-gray-500 mt-0.5">{alert.message}</p>
-                      <div className="flex items-center justify-between mt-2 text-xs">
-                        <span className="text-gray-400 inline-flex items-center gap-1">
-                          <Clock3 className="h-3 w-3" aria-hidden />
-                          {alert.time}
-                        </span>
-                        <span className="text-brand-blue font-semibold group-hover:underline">
-                          Voir les détails
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                </li>
-              ))}
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           ) : (
             <div className="px-5 py-10 text-center">

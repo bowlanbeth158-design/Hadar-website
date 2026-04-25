@@ -113,6 +113,14 @@ const config: Config = {
           '0%': { opacity: '0', transform: 'translateY(-6px) scale(0.98)' },
           '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
         },
+        'fade-in': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        'modal-pop': {
+          '0%': { opacity: '0', transform: 'translateY(12px) scale(0.96)' },
+          '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+        },
       },
       animation: {
         'alert-pulse': 'alert-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite',
@@ -120,6 +128,8 @@ const config: Config = {
         'siren-wiggle': 'siren-wiggle 4s ease-in-out infinite',
         'float-soft': 'float-soft 5s ease-in-out infinite',
         'fade-in-down': 'fade-in-down 180ms cubic-bezier(0.16, 1, 0.3, 1)',
+        'fade-in': 'fade-in 200ms ease-out',
+        'modal-pop': 'modal-pop 280ms cubic-bezier(0.16, 1, 0.3, 1)',
       },
     },
   },

@@ -78,7 +78,7 @@ export function HomeBanner() {
             </Link>
           </div>
 
-          <p className="mt-4 text-xs text-gray-500">
+          <p className="mt-8 md:mt-10 text-xs text-gray-500">
             Sans inscription <span className="text-gray-300">•</span> Anonyme{' '}
             <span className="text-gray-300">•</span>{' '}
             <span className="font-semibold text-brand-navy">Plateforme marocaine 🇲🇦</span>

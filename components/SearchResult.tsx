@@ -62,7 +62,7 @@ export function SearchResult({ query }: Props) {
   const totalReports = 0;
 
   return (
-    <section className="mx-auto max-w-[1440px] px-4 md:px-6 pb-4" aria-label="Résultat de recherche">
+    <div className="mt-8 pt-8 border-t border-gray-200/70" aria-label="Résultat de recherche">
       <p className="sr-only">Résultat pour {query}</p>
 
       <div className="flex justify-center mb-4">
@@ -104,6 +104,6 @@ export function SearchResult({ query }: Props) {
       </div>
 
       <p className={`mt-6 text-center text-sm font-medium ${cfg.pillText}`}>{cfg.message}</p>
-    </section>
+    </div>
   );
 }

@@ -331,12 +331,12 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                   <span className="font-semibold text-brand-navy">8</span> canaux couverts
                 </span>
               </div>
+
+              {showResult && <SearchResult query={submitted!.query} />}
             </div>
           </div>
         </div>
       </section>
-
-      {showResult && <SearchResult query={submitted!.query} />}
     </>
   );
 }

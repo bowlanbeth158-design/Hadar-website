@@ -9,9 +9,18 @@ const ALERT_COUNT = 8;
 // "Pro" hover effect for the main nav links — combines:
 //   1. color shift to brand-blue
 //   2. subtle 1px lift (feels alive)
-//   3. animated gradient underline (navy → blue → sky) growing from center
+//   3. soft brand-themed gradient "tile" fading in BEHIND the letters
+//   4. animated gradient underline (navy → blue → sky) growing from center
 const NAV_LINK_HOVER =
-  'relative hover:text-brand-blue transition-all duration-200 ease-out hover:-translate-y-px ' +
+  'isolate relative hover:text-brand-blue transition-all duration-200 ease-out hover:-translate-y-px ' +
+  // brand-themed gradient tile behind the letters
+  "before:content-[''] before:absolute before:-inset-x-3 before:-inset-y-1.5 " +
+  'before:rounded-lg before:-z-10 ' +
+  'before:bg-gradient-to-br before:from-brand-sky/80 before:via-brand-blue/15 before:to-brand-navy/5 ' +
+  'before:opacity-0 before:scale-95 ' +
+  'before:transition-all before:duration-300 before:ease-out ' +
+  'hover:before:opacity-100 hover:before:scale-100 ' +
+  // animated gradient underline
   "after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-[-8px] " +
   'after:h-[2px] after:w-0 after:rounded-full ' +
   'after:bg-gradient-to-r after:from-brand-navy after:via-brand-blue after:to-brand-sky ' +

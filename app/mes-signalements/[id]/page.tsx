@@ -4,12 +4,14 @@ import { Pencil, Trash2, Paperclip, AlertCircle } from 'lucide-react';
 import { PageLayout } from '@/components/PageLayout';
 import { BackButton } from '@/components/BackButton';
 import { DemoBanner } from '@/components/DemoBanner';
+import { PublishedCelebration } from '@/components/PublishedCelebration';
 import {
   REPORT_CHANNEL_LABEL,
   STATUS_BADGE,
   STATUS_LABEL,
   USER_REPORTS,
   timelineFor,
+  type ReportStatus,
 } from '@/lib/mock/user-reports';
 
 export const metadata: Metadata = {
@@ -26,11 +28,22 @@ const STATUS_COLOR_TEXT: Record<string, string> = {
   refuse: 'text-red-600',
 };
 
+// Brand-coloured pulse animation applied to the LAST step of the timeline,
+// matching the report's final decision per the brand charter.
+const STATUS_PULSE: Record<ReportStatus, string> = {
+  en_attente: 'animate-pulse-yellow',
+  publie: 'animate-verify-pulse',
+  a_corriger: 'animate-pulse-orange',
+  refuse: 'animate-alert-pulse',
+};
+
 export default function Page({ params }: PageProps) {
   const report = USER_REPORTS.find((r) => r.id === params.id);
   if (!report) notFound();
 
   const steps = timelineFor(report);
+  const lastStepIdx = steps.length - 1;
+  const finalPulse = STATUS_PULSE[report.status];
 
   return (
     <PageLayout>
@@ -38,6 +51,8 @@ export default function Page({ params }: PageProps) {
         <BackButton href="/mes-signalements" label="Mes signalements" />
       </div>
       <DemoBanner />
+
+      {report.status === 'publie' && <PublishedCelebration />}
 
       <div className="flex items-center gap-2 flex-wrap mb-3">
         <span
@@ -84,7 +99,9 @@ export default function Page({ params }: PageProps) {
                   }`}
                 />
               )}
-              <span className={`relative z-10 h-6 w-6 rounded-full ${s.color} shadow`} />
+              <span
+                className={`relative z-10 h-6 w-6 rounded-full ${s.color} shadow ${i === lastStepIdx ? finalPulse : ''}`}
+              />
               <p className="mt-2 text-xs font-semibold text-brand-navy">{s.label}</p>
               <p className="text-[10px] text-gray-400">{s.date}</p>
             </li>

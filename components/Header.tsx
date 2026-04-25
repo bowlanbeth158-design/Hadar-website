@@ -10,8 +10,8 @@ const ALERT_COUNT = 8;
 export function Header() {
   return (
     <>
-      <div className="w-full bg-brand-navy text-white text-xs md:text-sm py-2 px-4 text-center">
-        Rejoignez notre chaîne WhatsApp pour rester informé des alertes en temps réel.
+      <div className="w-full bg-brand-navy text-white text-xs md:text-sm py-2 px-4 flex items-center justify-center text-center">
+        <span>Rejoignez notre chaîne WhatsApp pour rester informé des alertes en temps réel.</span>
       </div>
 
       <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur border-b border-gray-200">

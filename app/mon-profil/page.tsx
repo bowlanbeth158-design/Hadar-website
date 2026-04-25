@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import {
   Lock,
-  Star,
   Trash2,
   Siren,
   CheckCircle2,
@@ -9,16 +8,13 @@ import {
   Clock3,
   RefreshCcw,
   Save,
-  Award,
 } from 'lucide-react';
 import { PageLayout } from '@/components/PageLayout';
 import { BackButton } from '@/components/BackButton';
 import { DemoBanner } from '@/components/DemoBanner';
 import { CountUp } from '@/components/CountUp';
 import { AvatarUpload } from '@/components/AvatarUpload';
-import { VerifiedBadge } from '@/components/VerifiedBadge';
-import { BadgesCriteriaModal } from '@/components/BadgesCriteriaModal';
-import { IdentityVerificationModal } from '@/components/IdentityVerificationModal';
+import { ProfileIdentity } from '@/components/ProfileIdentity';
 
 export const metadata: Metadata = {
   title: 'Mon profil',
@@ -34,7 +30,6 @@ const PROFILE = {
   badgeKey: 'regulier',
   badgeStars: 4,
   validationRate: 100,
-  verified: false,
   stats: {
     sent: 5,
     published: 5,
@@ -59,63 +54,14 @@ export default function Page() {
         <div className="flex flex-col md:flex-row md:items-center gap-5">
           <AvatarUpload initials={initials} />
 
-          <div className="min-w-0 flex-1">
-            <h1 className="text-2xl md:text-3xl font-bold text-brand-navy inline-flex items-center gap-2 flex-wrap">
-              <span>
-                {PROFILE.firstName} {PROFILE.lastName}
-              </span>
-              {PROFILE.verified && (
-                <VerifiedBadge className="h-6 w-6" />
-              )}
-            </h1>
-
-            {/* Badge tier — clickable, opens criteria modal */}
-            <BadgesCriteriaModal
-              highlightKey={PROFILE.badgeKey}
-              trigger={
-                <span className="mt-1 group inline-flex items-center gap-1.5 rounded-pill bg-white/60 backdrop-blur-sm border border-yellow-200 px-3 py-1 text-xs font-semibold text-brand-navy hover:border-brand-blue hover:bg-white hover:shadow-glow-soft hover:-translate-y-px transition-all duration-200 cursor-pointer">
-                  <Award className="h-3.5 w-3.5 text-yellow-500" aria-hidden />
-                  {PROFILE.badge}
-                  <span className="inline-flex items-center gap-0.5 ml-0.5">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`h-3 w-3 ${
-                          i < PROFILE.badgeStars
-                            ? 'text-yellow-400 fill-yellow-400'
-                            : 'text-gray-300'
-                        }`}
-                        aria-hidden
-                      />
-                    ))}
-                  </span>
-                  <span className="ml-1 text-[10px] uppercase tracking-wide text-brand-blue group-hover:underline">
-                    Voir les niveaux
-                  </span>
-                </span>
-              }
-            />
-
-            <p className="mt-2 text-xs text-gray-500">
-              Taux de validation :{' '}
-              <span className="font-semibold text-brand-navy">
-                <CountUp to={PROFILE.validationRate} />%
-              </span>
-            </p>
-
-            {/* Identity verification CTA — shown only when not verified */}
-            {!PROFILE.verified && (
-              <IdentityVerificationModal
-                trigger={
-                  <span className="mt-3 inline-flex items-center gap-2 rounded-pill bg-white border border-gray-200 px-3 py-1.5 text-xs font-semibold text-brand-navy hover:border-brand-blue hover:shadow-glow-soft hover:-translate-y-px transition-all duration-200 cursor-pointer">
-                    <VerifiedBadge className="h-4 w-4" />
-                    Activer ma vérification d&apos;identité —{' '}
-                    <span className="text-green-600">gratuit</span>
-                  </span>
-                }
-              />
-            )}
-          </div>
+          <ProfileIdentity
+            firstName={PROFILE.firstName}
+            lastName={PROFILE.lastName}
+            badge={PROFILE.badge}
+            badgeKey={PROFILE.badgeKey}
+            badgeStars={PROFILE.badgeStars}
+            validationRate={PROFILE.validationRate}
+          />
         </div>
       </section>
 

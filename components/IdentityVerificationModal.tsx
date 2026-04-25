@@ -1,11 +1,20 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { X, IdCard, ScanFace, ShieldCheck, Sparkles } from 'lucide-react';
+import { X, IdCard, ScanFace, ShieldCheck, Sparkles, Loader2, Check } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
 
-export function IdentityVerificationModal({ trigger }: { trigger: React.ReactNode }) {
+type Status = 'idle' | 'pending' | 'done';
+
+export function IdentityVerificationModal({
+  trigger,
+  onVerified,
+}: {
+  trigger: React.ReactNode;
+  onVerified?: () => void;
+}) {
   const [open, setOpen] = useState(false);
+  const [status, setStatus] = useState<Status>('idle');
 
   useEffect(() => {
     if (!open) return;
@@ -101,16 +110,46 @@ export function IdentityVerificationModal({ trigger }: { trigger: React.ReactNod
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="rounded-pill border border-gray-200 bg-white text-brand-navy px-4 py-2 text-sm font-medium hover:border-brand-blue hover:bg-gray-50 transition-colors"
+                  disabled={status === 'pending'}
+                  className="rounded-pill border border-gray-200 bg-white text-brand-navy px-4 py-2 text-sm font-medium hover:border-brand-blue hover:bg-gray-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   Plus tard
                 </button>
                 <button
                   type="button"
-                  className="inline-flex items-center gap-1.5 rounded-pill bg-gradient-to-r from-brand-navy to-brand-blue text-white px-5 py-2 text-sm font-semibold shadow-glow-blue hover:shadow-glow-navy hover:-translate-y-px transition-all"
+                  disabled={status !== 'idle'}
+                  onClick={() => {
+                    setStatus('pending');
+                    // Simulated verification — replace with real API call
+                    setTimeout(() => {
+                      setStatus('done');
+                      onVerified?.();
+                      setTimeout(() => {
+                        setOpen(false);
+                        setStatus('idle');
+                      }, 900);
+                    }, 1200);
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-pill bg-gradient-to-r from-brand-navy to-brand-blue text-white px-5 py-2 text-sm font-semibold shadow-glow-blue hover:shadow-glow-navy hover:-translate-y-px transition-all disabled:opacity-90 disabled:cursor-not-allowed"
                 >
-                  <ShieldCheck className="h-4 w-4" aria-hidden />
-                  Démarrer — gratuit
+                  {status === 'pending' && (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                      Vérification…
+                    </>
+                  )}
+                  {status === 'done' && (
+                    <>
+                      <Check className="h-4 w-4" aria-hidden />
+                      Vérifié !
+                    </>
+                  )}
+                  {status === 'idle' && (
+                    <>
+                      <ShieldCheck className="h-4 w-4" aria-hidden />
+                      Démarrer — gratuit
+                    </>
+                  )}
                 </button>
               </div>
             </div>

@@ -1,8 +1,16 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Eye, Layers, Clock4, CheckCircle2, AlertCircle, XCircle } from 'lucide-react';
+import {
+  Eye,
+  Layers,
+  Clock4,
+  CheckCircle2,
+  AlertCircle,
+  XCircle,
+  ChevronsDown,
+} from 'lucide-react';
 import {
   REPORT_CHANNEL_ICON,
   REPORT_CHANNEL_LABEL,
@@ -24,8 +32,15 @@ const FILTERS: { key: FilterKey; label: string; Icon: typeof Layers }[] = [
   { key: 'refuse', label: 'Refusés', Icon: XCircle },
 ];
 
+// Initial cap before the user clicks "Voir plus de signalements".
+const INITIAL_VISIBLE = 4;
+
+const CONFIDENTIALITY_TITLE = 'Vos signalements sont traités de manière confidentielle';
+const CONFIDENTIALITY_BODY = 'Seuls vous et nos équipes ont accès à vos signalements.';
+
 export function MesSignalementsList({ reports = USER_REPORTS }: { reports?: Report[] }) {
   const [filter, setFilter] = useState<FilterKey>('all');
+  const [showAll, setShowAll] = useState(false);
 
   const counts = useMemo(
     () => ({
@@ -42,6 +57,15 @@ export function MesSignalementsList({ reports = USER_REPORTS }: { reports?: Repo
     () => (filter === 'all' ? reports : reports.filter((r) => r.status === filter)),
     [reports, filter]
   );
+
+  const displayed = showAll ? visible : visible.slice(0, INITIAL_VISIBLE);
+  const hiddenCount = visible.length - displayed.length;
+
+  // Reset the "show all" toggle when the user switches filter so the list
+  // stays predictable.
+  useEffect(() => {
+    setShowAll(false);
+  }, [filter]);
 
   return (
     <>
@@ -91,7 +115,7 @@ export function MesSignalementsList({ reports = USER_REPORTS }: { reports?: Repo
         </div>
       ) : (
         <div className="space-y-3">
-          {visible.map((r) => {
+          {displayed.map((r) => {
             const Icon = REPORT_CHANNEL_ICON[r.channel];
             return (
               <div
@@ -131,6 +155,31 @@ export function MesSignalementsList({ reports = USER_REPORTS }: { reports?: Repo
           })}
         </div>
       )}
+
+      {/* "Voir plus de signalements" — only shown if some reports of the
+          current filter are hidden behind the initial cap. */}
+      {hiddenCount > 0 && (
+        <button
+          type="button"
+          onClick={() => setShowAll(true)}
+          aria-label={`Voir ${hiddenCount} signalement${hiddenCount > 1 ? 's' : ''} de plus`}
+          className="group mt-6 mx-auto flex flex-col items-center gap-1 text-gray-400 hover:text-brand-blue transition-colors"
+        >
+          <ChevronsDown
+            className="h-7 w-7 transition-transform duration-300 ease-out group-hover:translate-y-0.5 animate-pulse"
+            aria-hidden
+          />
+          <span className="text-xs font-medium">
+            Voir {hiddenCount} signalement{hiddenCount > 1 ? 's' : ''} de plus
+          </span>
+        </button>
+      )}
+
+      {/* Confidentiality footer — required for the user-side, two lines */}
+      <div className="mt-10 text-center">
+        <p className="text-sm font-semibold text-brand-navy">{CONFIDENTIALITY_TITLE}</p>
+        <p className="mt-1 text-xs text-gray-400 max-w-xl mx-auto">{CONFIDENTIALITY_BODY}</p>
+      </div>
     </>
   );
 }

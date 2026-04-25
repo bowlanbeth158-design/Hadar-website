@@ -318,21 +318,21 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
               {/* Trust strip */}
               <div className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs md:text-sm text-gray-500">
                 <span className="inline-flex items-center gap-2 transition-transform hover:-translate-y-0.5">
-                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-brand-blue via-sky-400 to-brand-navy text-white shadow-glow-blue">
-                    <ShieldCheck className="h-5 w-5 animate-siren-wiggle drop-shadow" aria-hidden />
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-blue via-sky-400 to-brand-navy text-white shadow-glow-blue">
+                    <ShieldCheck className="h-4 w-4 animate-sparkle-pop drop-shadow" aria-hidden />
                   </span>
                   Données chiffrées
                 </span>
                 <span className="text-gray-200" aria-hidden>·</span>
                 <span className="inline-flex items-center gap-2 transition-transform hover:-translate-y-0.5">
-                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-brand-blue via-sky-400 to-brand-navy text-white shadow-glow-blue">
-                    <Zap className="h-5 w-5 animate-sparkle-pop drop-shadow" aria-hidden />
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-blue via-sky-400 to-brand-navy text-white shadow-glow-blue">
+                    <Zap className="h-4 w-4 animate-sparkle-pop drop-shadow" aria-hidden />
                   </span>
                   Résultat instantané
                 </span>
                 <span className="text-gray-200" aria-hidden>·</span>
                 <span className="inline-flex items-center gap-2 transition-transform hover:-translate-y-0.5">
-                  <span className="inline-flex h-9 min-w-[2.25rem] items-center justify-center rounded-full bg-gradient-to-br from-brand-blue via-sky-400 to-brand-navy text-white text-sm font-bold shadow-glow-blue animate-trend-up px-2">
+                  <span className="inline-flex h-7 min-w-[1.75rem] items-center justify-center rounded-full bg-gradient-to-br from-brand-blue via-sky-400 to-brand-navy text-white text-xs font-bold shadow-glow-blue animate-sparkle-pop px-1.5">
                     8
                   </span>
                   canaux couverts

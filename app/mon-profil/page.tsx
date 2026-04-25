@@ -15,6 +15,7 @@ import { DemoBanner } from '@/components/DemoBanner';
 import { CountUp } from '@/components/CountUp';
 import { AvatarUpload } from '@/components/AvatarUpload';
 import { ProfileIdentity } from '@/components/ProfileIdentity';
+import { PhoneVerifyField } from '@/components/PhoneVerifyField';
 
 export const metadata: Metadata = {
   title: 'Mon profil',
@@ -24,8 +25,10 @@ export const metadata: Metadata = {
 const PROFILE = {
   firstName: 'Mohamed Ossama',
   lastName: 'MOUSSAOUI',
+  /** Email used at sign-up — read-only. All transactional mails go here. */
   email: 'mohamedossama.moussaoui@gmail.com',
-  contactType: 'mohamedossama.moussaoui@gmail.com',
+  /** Phone number — verified via WhatsApp 5-digit code. */
+  phone: '212 6 12 34 56 78',
   badge: 'Contributeur régulier',
   badgeKey: 'regulier',
   badgeStars: 4,
@@ -110,11 +113,9 @@ export default function Page() {
             <Field label="Prénom" name="firstName" defaultValue={PROFILE.firstName} />
             <Field label="Nom de famille" name="lastName" defaultValue={PROFILE.lastName} />
             <div className="sm:col-span-2">
-              <Field
-                label="Type de contact"
-                name="contactType"
-                defaultValue={PROFILE.contactType}
-                hint="Inclure l’indicatif pays (ex : 212…), sans 0 ni +"
+              <PhoneVerifyField
+                defaultValue={PROFILE.phone}
+                hint="Inclure l’indicatif pays (ex : 212…), sans 0 ni +. Vous recevrez le code par WhatsApp."
               />
             </div>
             <div className="sm:col-span-2">
@@ -123,6 +124,8 @@ export default function Page() {
                 type="email"
                 name="email"
                 defaultValue={PROFILE.email}
+                readOnly
+                hint="Email utilisé à l’inscription — c’est l’adresse à laquelle nous envoyons les notifications. Non modifiable ici."
               />
             </div>
           </div>
@@ -246,6 +249,7 @@ function Field({
   defaultValue,
   placeholder,
   hint,
+  readOnly = false,
 }: {
   label: string;
   name: string;
@@ -253,6 +257,7 @@ function Field({
   defaultValue?: string;
   placeholder?: string;
   hint?: string;
+  readOnly?: boolean;
 }) {
   return (
     <div>
@@ -268,7 +273,12 @@ function Field({
         type={type}
         defaultValue={defaultValue}
         placeholder={placeholder}
-        className="w-full rounded-pill border border-gray-200 bg-white px-4 py-2.5 text-sm text-brand-navy placeholder:text-gray-400 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all"
+        readOnly={readOnly}
+        className={`w-full rounded-pill border px-4 py-2.5 text-sm text-brand-navy placeholder:text-gray-400 outline-none transition-all ${
+          readOnly
+            ? 'border-gray-200 bg-gray-50 cursor-default'
+            : 'border-gray-200 bg-white focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20'
+        }`}
       />
       {hint && <p className="mt-1.5 text-[11px] text-gray-400">{hint}</p>}
     </div>

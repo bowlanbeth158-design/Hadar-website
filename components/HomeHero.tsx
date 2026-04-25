@@ -159,7 +159,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
     <>
       <section
         id="recherche"
-        className="mx-auto max-w-[1620px] px-4 md:px-6 pt-10 md:pt-14 pb-4 text-center scroll-mt-24"
+        className="mx-auto max-w-[1440px] px-4 md:px-6 pt-10 md:pt-14 pb-4 text-center scroll-mt-24"
       >
         <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-brand-navy">
           Lancez votre vérification

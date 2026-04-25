@@ -28,7 +28,7 @@ const KPI_STATS: {
 
 export function PlatformStats() {
   return (
-    <section className="mx-auto max-w-[1620px] px-4 md:px-6 py-10 md:py-14">
+    <section className="mx-auto max-w-[1440px] px-4 md:px-6 py-10 md:py-14">
       <h2 className="text-2xl md:text-3xl font-bold bg-grad-stat-navy bg-clip-text text-transparent text-center">
         Statistiques de la plateforme
       </h2>

@@ -53,38 +53,49 @@ Batches à venir : espace utilisateur (mes alertes, mes signalements, profil), m
 
 ---
 
-## Palette de couleurs (détectée sur maquettes)
+## Palette de couleurs — charte officielle
 
-| Rôle | Couleur approx. | Usage |
+> 📘 **Source de vérité : [`design/brand.md`](./brand.md)** (planches "Brand Colors" + "Components" livrées par le propriétaire en avril 2026).
+> La section ci-dessous en est un résumé. En cas de divergence, `brand.md` prévaut.
+
+### Primary
+| Rôle | HEX | Usage |
 |---|---|---|
-| Bleu principal (navy) | `#0B2C5C` → `#0F3880` | Titres H1/H2, logo, bandeau top, footer, boutons primaires actifs |
-| Bleu accent | `#1E5FC1` | Stat « Utilisateurs actifs », liens |
-| Bleu ciel | `#29B6F6` / `#0EA5E9` | Stat « Vérifications réalisées » |
-| Rouge | `#DC2626` / `#E53E3E` | Bouton « Signaler », stat rouge, badge notification |
-| Vert (success) | `#22C55E` / `#16A34A` | Bouton « Vérifier maintenant », pill « Aucun signalement détecté », feu vert risque faible |
-| Vert foncé | `#15803D` | Stat « Montant signalé » |
-| Violet | `#8B5CF6` / `#A78BFA` | Stat « Contacts signalés », step 2 « Examen » |
-| Orange | `#F59E0B` / `#FB923C` | Stat « Dernier signalement », bouton flottant « Support », step 3 « Modération » |
-| Jaune | `#FACC15` | Feu tricolore risque modéré |
-| Gris texte | `#6B7280` | Textes secondaires |
-| Gris bordure | `#E5E7EB` | Bordures input / cards |
-| Fond page | dégradé `#EAF2FB` → `#FFFFFF` | Arrière-plan dégradé bleu très clair |
-| Blanc | `#FFFFFF` | Cards, modal |
+| Bleu principal | `#0078BA` | Boutons primaires, liens, accents |
+| Bleu navy | `#00327D` | Titres H1/H2, header/footer, logo |
+| Bleu très clair | `#DBE5F3` | Fonds alternés, hover doux |
+| Blanc | `#FFFFFF` | Fond par défaut |
+
+### Secondary (gris)
+`#989898` · `#A4A4A4` · `#E1E1E1` · `#F7F9FB`
+
+### Accent (familles saturée + pastel)
+| Rouge | `#EE4444` / `#C0272D` / pastel `#F8B8B8` |
+| Vert | `#22C45E` / `#009145` / pastel `#BAFFCC` |
+| Orange | `#F29B11` / `#FFB500` / pastel `#FBD185` |
+| Jaune | `#D8C100` / `#FBED21` / pastel `#FFF5A3` |
+| Bleu ciel | `#00BFEE` / `#29AAE1` |
+| Violet | `#8652FB` / `#BCA6F9` |
+
+### Dégradés (cards KPI, alertes, timeline)
+Définis dans `brand.md` §3. 13 dégradés normalisés : 6 "Statistique", 4 "Alertes notification", 3 "État de signalement". Direction par défaut 135°.
 
 ### Variables Tailwind cibles (à mettre dans `tailwind.config.ts`)
 
+Voir le bloc complet prêt à copier dans `brand.md` §7 (tokens `colors` + `backgroundImage` pour les dégradés).
+
+Résumé :
+
 ```ts
 colors: {
-  brand: {
-    navy:   '#0B2C5C',  // primary dark
-    blue:   '#1E5FC1',  // primary
-    sky:    '#0EA5E9',
-    red:    '#DC2626',
-    green:  '#16A34A',
-    violet: '#8B5CF6',
-    orange: '#F59E0B',
-    yellow: '#FACC15',
-  },
+  brand: { navy: '#00327D', blue: '#0078BA', sky: '#DBE5F3' },
+  red:    { 100: '#F8B8B8', 500: '#EE4444', 700: '#C0272D' },
+  green:  { 100: '#BAFFCC', 500: '#22C45E', 700: '#009145' },
+  orange: { 100: '#FBD185', 500: '#F29B11', 600: '#FFB500' },
+  yellow: { 100: '#FFF5A3', 300: '#FBED21', 500: '#D8C100' },
+  sky:    { 400: '#29AAE1', 500: '#00BFEE' },
+  violet: { 200: '#BCA6F9', 500: '#8652FB' },
+  // + gray 50/200/400/500
 }
 ```
 
@@ -231,12 +242,14 @@ colors: {
 
 ## Niveaux de risque (4 paliers — basés sur le nombre de signalements)
 
+> Seuils **figés par le propriétaire** (avril 2026). Couleurs alignées sur la charte officielle `brand.md`.
+
 | Niveau | Code | Couleur | Seuil | Message à afficher |
 |---|---|---|---|---|
-| 🟢 Faible | `faible` | vert `#16A34A` | 0 signalement | « Aucun signalement détecté. Vous pouvez continuer, tout en restant vigilant. » |
-| 🟡 Vigilance | `vigilance` | jaune `#FACC15` | 1 à 2 signalements | « Quelques signalements ont été enregistrés. Nous vous invitons à vérifier les informations avant de continuer. » |
-| 🟠 Modéré | `modere` | orange `#F97316` | 3 à 4 signalements | « Plusieurs signalements ont été enregistrés. La prudence est recommandée avant toute interaction. » |
-| 🔴 Élevé | `eleve` | rouge `#DC2626` | ≥ 5 signalements | « Un nombre important de signalements a été enregistré. Nous vous recommandons d'être particulièrement vigilant. » |
+| 🟢 Faible | `faible` | vert `#22C45E` | 0 signalement | « Aucun signalement détecté. Vous pouvez continuer, tout en restant vigilant. » |
+| 🟡 Vigilance | `vigilance` | jaune `#D8C100` | 1 à 2 signalements | « Quelques signalements ont été enregistrés. Nous vous invitons à vérifier les informations avant de continuer. » |
+| 🟠 Modéré | `modere` | orange `#F29B11` | 3 à 4 signalements | « Plusieurs signalements ont été enregistrés. La prudence est recommandée avant toute interaction. » |
+| 🔴 Élevé | `eleve` | rouge `#EE4444` | ≥ 5 signalements | « Un nombre important de signalements a été enregistré. Nous vous recommandons d'être particulièrement vigilant. » |
 
 ### Logique de calcul (pseudo-code)
 
@@ -288,6 +301,28 @@ function computeRiskLevel(reportCount: number): RiskLevel {
 - Checkbox requise : « Je confirme que les informations fournies respectent les règles de la plateforme. »
 - Bouton primary rouge : `📢 Envoyer le signalement`
 - Note bas : « Les informations fournies sont utilisées uniquement dans le cadre du signalement et restent confidentielles. »
+
+### Widget de rating (après soumission)
+
+> Ajouté avril 2026 (spec propriétaire). Source des stats satisfaction de l'écran admin `/admin/statistiques` page 4 (cf `admin-notes.md` §Écran 9 Page 4).
+
+**Déclencheur** : affiché immédiatement après soumission réussie d'un signalement, dans une modal ou un encart sous le message de confirmation.
+
+**Contenu** :
+- Titre : « Notez votre expérience »
+- Rating 1 à 5 étoiles (click pour sélectionner ; survol pour preview)
+- Textarea optionnelle : « Un commentaire ? » (max 500 caractères)
+- Bouton primary vert : `Envoyer ma note`
+- Lien secondaire : `Plus tard` (skip, l'utilisateur peut noter plus tard via `Mes signalements`)
+
+**Règles** :
+- Un seul rating par signalement (`UNIQUE (reportId)` sur table `ReportRating`)
+- Modifiable par l'utilisateur tant que le signalement n'est pas archivé
+- Alimente les 4 KPI admin :
+  - `Score de satisfaction` = moyenne globale (ex : `4.2 / 5`)
+  - `Taux de satisfaction` = % de notes `≥ 4`
+  - `Taux d'insatisfaction` = % de notes `≤ 2`
+  - `Taux de retour` = % d'utilisateurs ayant soumis ≥ 2 signalements sur la période
 
 ### Règles de validation (Zod — côté client **et** serveur)
 
@@ -893,9 +928,7 @@ tauxValidation = signalementsValides / signalementsEnvoyés × 100
 
 ### Statuts d'un signalement
 
-> ⚠️ **Conflit à résoudre** : Le propriétaire a confirmé 5 statuts (`SUBMITTED`, `UNDER_REVIEW`, `PUBLISHED`, `REJECTED`, `ARCHIVED`), **mais** la maquette « Mes signalements » introduit un nouveau statut **« À corriger »** non prévu, et n'affiche pas `ARCHIVED` dans les onglets utilisateur.
->
-> **Hypothèse retenue (à valider)** : `À corriger` est en fait un sous-état où le modérateur demande une modification à l'auteur avant publication ; `ARCHIVED` reste un statut backend (résultat d'une suppression / retrait) qui sort de la liste utilisateur.
+> ✅ **Résolu (conflit antérieur)** : les maquettes admin (avril 2026) confirment **5 statuts visibles à l'utilisateur** (`SUBMITTED`, `UNDER_REVIEW`, `NEEDS_CORRECTION`, `PUBLISHED`, `REJECTED`) + 1 statut backend (`ARCHIVED`). Le statut **`NEEDS_CORRECTION` (À corriger)** est officiel — il déclenche un aller-retour admin → user. Détails du workflow ci-dessous.
 
 #### Modèle proposé
 
@@ -934,6 +967,38 @@ SUBMITTED / UNDER_REVIEW / NEEDS_CORRECTION ──► ARCHIVED (suppression par 
 ```
 
 Toute transition est loggée dans l'audit log (horodatage + acteur + ancien/nouveau statut + motif si rejet).
+
+#### Workflow `NEEDS_CORRECTION` (À corriger) — détail user
+
+Déclenché quand l'admin sélectionne `À corriger` sur l'écran de modération admin (cf `admin-notes.md` §Écran 3).
+
+**1. Notifications envoyées à l'auteur** (immédiates)
+- **In-app** : badge cloche rouge sur la nav (`Mes alertes`) + badge sur l'onglet `À corriger` de la liste « Mes signalements »
+- **Email transactionnel** :
+  - Sujet : « Votre signalement #2454 nécessite des corrections »
+  - Corps : récap signalement + motif de l'admin + lien direct `/mes-signalements/2454/corriger`
+  - From : `noreply@hadar.ma` (ou `support@`)
+  - Template à valider avec le propriétaire
+
+**2. Écran de correction côté user** (`/mes-signalements/[id]/corriger`)
+- Encart en haut : fond bleu très clair `#DBE5F3`, bordure gauche navy `#00327D`, icône info
+  - Titre : « L'équipe Hadar a demandé des corrections »
+  - Texte : motif intégral écrit par l'admin
+  - Date de la demande
+- Formulaire pré-rempli avec les valeurs actuelles du signalement (mêmes champs que la création)
+- L'utilisateur peut modifier tous les champs sauf l'ID
+- Bouton primaire (vert) : `Soumettre les corrections`
+- Bouton secondaire : `Annuler` (revient à la liste sans modifier)
+
+**3. Transition de statut à la resoumission**
+- `NEEDS_CORRECTION` → `UNDER_REVIEW` (repasse en file de modération)
+- L'admin reçoit une notification : « Signalement #2454 corrigé et resoumis »
+- Trace dans l'audit log : ancien contenu / nouveau contenu / motif initial / horodatages
+
+**4. Affichage dans la liste « Mes signalements »**
+- Onglet dédié `À corriger (N)` (point bleu)
+- Card avec bordure gauche navy, badge `À corriger` sur le statut
+- CTA primaire de la card : `Corriger maintenant →`
 
 ### Sécurité critique pour cette page
 

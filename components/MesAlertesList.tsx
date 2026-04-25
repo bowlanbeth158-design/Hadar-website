@@ -99,18 +99,28 @@ const RISK_BORDER: Record<RiskLevel, string> = {
   high: 'border-l-red-500',
 };
 
-const RISK_BG: Record<RiskLevel, string> = {
-  low: 'bg-green-500',
-  vigilance: 'bg-yellow-300',
-  moderate: 'bg-orange-500',
-  high: 'bg-red-500',
+// Brand gradient tokens (defined in tailwind.config.ts → backgroundImage)
+const RISK_GRADIENT: Record<RiskLevel, string> = {
+  low: 'bg-grad-alert-green',
+  vigilance: 'bg-grad-alert-yellow',
+  moderate: 'bg-grad-alert-orange',
+  high: 'bg-grad-alert-red',
 };
 
-const RISK_TEXT: Record<RiskLevel, string> = {
-  low: 'text-green-700',
-  vigilance: 'text-yellow-700',
-  moderate: 'text-orange-700',
-  high: 'text-red-700',
+// Soft tinted gradient for the expanded panel background
+const RISK_PANEL_TINT: Record<RiskLevel, string> = {
+  low: 'bg-gradient-to-br from-green-100/50 via-white to-green-100/20',
+  vigilance: 'bg-gradient-to-br from-yellow-100/60 via-white to-yellow-100/20',
+  moderate: 'bg-gradient-to-br from-orange-100/50 via-white to-orange-100/20',
+  high: 'bg-gradient-to-br from-red-100/50 via-white to-red-100/20',
+};
+
+// Colored halo on hover, matching the risk level
+const RISK_GLOW: Record<RiskLevel, string> = {
+  low: 'hover:shadow-glow-green',
+  vigilance: 'hover:shadow-glow-yellow',
+  moderate: 'hover:shadow-glow-orange',
+  high: 'hover:shadow-glow-red',
 };
 
 const FILTERS: { key: FilterKey; label: string; Icon: typeof Layers }[] = [
@@ -287,9 +297,13 @@ export function MesAlertesList() {
                   }`}
                 >
                   <div className="overflow-hidden">
-                    <div className="border-t border-gray-100 bg-gray-50/60 px-5 py-4">
+                    <div
+                      className={`border-t border-gray-100 px-5 py-5 ${RISK_PANEL_TINT[a.risk]}`}
+                    >
                       <div className="flex flex-wrap items-baseline gap-x-4 gap-y-1">
-                        <p className={`text-base font-bold ${RISK_TEXT[a.risk]}`}>
+                        <p
+                          className={`text-lg font-extrabold tracking-tight bg-clip-text text-transparent ${RISK_GRADIENT[a.risk]}`}
+                        >
                           {a.count}{' '}
                           {a.count > 1 ? 'signalements enregistrés' : 'signalement enregistré'}
                         </p>
@@ -303,25 +317,29 @@ export function MesAlertesList() {
                           icon={PackageX}
                           label="Non livraison"
                           value={a.byCategory.nonLivraison}
-                          bg={RISK_BG[a.risk]}
+                          gradient={RISK_GRADIENT[a.risk]}
+                          glow={RISK_GLOW[a.risk]}
                         />
                         <KpiCard
                           icon={Lock}
                           label="Bloqué après paiement"
                           value={a.byCategory.bloqueApresPaiement}
-                          bg={RISK_BG[a.risk]}
+                          gradient={RISK_GRADIENT[a.risk]}
+                          glow={RISK_GLOW[a.risk]}
                         />
                         <KpiCard
                           icon={PackageCheck}
                           label="Produit non conforme"
                           value={a.byCategory.produitNonConforme}
-                          bg={RISK_BG[a.risk]}
+                          gradient={RISK_GRADIENT[a.risk]}
+                          glow={RISK_GLOW[a.risk]}
                         />
                         <KpiCard
                           icon={UserX}
                           label="Usurpation d'identité"
                           value={a.byCategory.usurpation}
-                          bg={RISK_BG[a.risk]}
+                          gradient={RISK_GRADIENT[a.risk]}
+                          glow={RISK_GLOW[a.risk]}
                         />
                       </div>
                     </div>
@@ -340,22 +358,28 @@ function KpiCard({
   icon: Icon,
   label,
   value,
-  bg,
+  gradient,
+  glow,
 }: {
   icon: typeof PackageX;
   label: string;
   value: number;
-  bg: string;
+  gradient: string;
+  glow: string;
 }) {
   return (
-    <div className="rounded-xl bg-white border border-gray-200 p-2.5 flex flex-col items-start gap-1.5">
+    <div
+      className={`group rounded-xl bg-white border border-gray-200 p-2.5 flex flex-col items-start gap-1.5 transition-all duration-200 ease-out hover:-translate-y-0.5 hover:scale-[1.02] hover:border-transparent ${glow}`}
+    >
       <span
-        className={`inline-flex items-center gap-1 rounded-pill ${bg} text-white px-2 py-0.5 text-[10px] font-semibold max-w-full`}
+        className={`inline-flex items-center gap-1 rounded-pill ${gradient} text-white px-2 py-0.5 text-[10px] font-semibold max-w-full shadow-sm group-hover:shadow-md transition-shadow`}
       >
         <Icon className="h-3 w-3 shrink-0" aria-hidden />
         <span className="truncate">{label}</span>
       </span>
-      <span className="text-xl font-bold text-brand-navy">{value}</span>
+      <span className={`text-xl font-bold bg-clip-text text-transparent ${gradient}`}>
+        {value}
+      </span>
     </div>
   );
 }

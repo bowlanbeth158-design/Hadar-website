@@ -166,7 +166,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
       >
         {/* Animated background — floating cool-blue blobs + subtle grid */}
         <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
-          <div className="absolute -top-24 -left-20 h-96 w-96 rounded-full bg-brand-blue/15 blur-3xl animate-float-soft" />
+          <div className="absolute -top-24 -left-20 h-96 w-96 rounded-full bg-sky-400/15 blur-3xl animate-float-soft" />
           <div
             className="absolute top-32 -right-24 h-[28rem] w-[28rem] rounded-full bg-sky-400/15 blur-3xl animate-float-soft"
             style={{ animationDelay: '1.5s' }}
@@ -192,7 +192,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
           <div className="relative mx-auto w-full">
             {/* Outer pulsing halo */}
             <div
-              className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-br from-brand-blue/15 via-sky-400/15 to-brand-sky/40 blur-3xl opacity-70 animate-pulse"
+              className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-br from-sky-400/20 via-brand-sky/40 to-sky-400/20 blur-3xl opacity-70 animate-pulse"
               style={{ animationDuration: '4.5s' }}
               aria-hidden
             />
@@ -203,7 +203,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                 className="absolute left-1/2 top-1/2 aspect-square w-[180%] -translate-x-1/2 -translate-y-1/2 animate-[spin_10s_linear_infinite]"
                 style={{
                   background:
-                    'conic-gradient(from 0deg, transparent 0deg, transparent 230deg, #29AAE1 270deg, #0078BA 300deg, #29AAE1 330deg, transparent 360deg)',
+                    'conic-gradient(from 0deg, transparent 0deg, transparent 230deg, #29AAE1 270deg, #DBE5F3 300deg, #29AAE1 330deg, transparent 360deg)',
                 }}
               />
             </div>
@@ -238,7 +238,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
                 </span>
-                Live · <span className="bg-gradient-to-r from-sky-400 to-brand-blue bg-clip-text text-transparent">2 vérif/s</span>
+                Live · <span className="bg-gradient-to-r from-sky-400 to-brand-blue/70 bg-clip-text text-transparent">2 vérif/s</span>
               </div>
 
               {/* Bottom-left floating monthly counter */}
@@ -248,7 +248,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
               >
                 <Sparkles className="h-3.5 w-3.5 text-sky-400 animate-sparkle-pop" aria-hidden />
                 <span>
-                  <span className="bg-gradient-to-r from-sky-400 to-brand-blue bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r from-sky-400 to-brand-blue/70 bg-clip-text text-transparent">
                     +12 408
                   </span>{' '}
                   ce mois
@@ -264,7 +264,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
               {/* Real content (kept above all decorations) */}
               <div className="relative z-[1]">
               {/* Live badge */}
-              <div className="inline-flex items-center gap-2 rounded-pill bg-gradient-to-r from-brand-blue/10 via-sky-400/10 to-brand-sky/20 border border-brand-blue/25 px-4 py-1.5 text-xs md:text-sm font-semibold text-brand-blue">
+              <div className="inline-flex items-center gap-2 rounded-pill bg-gradient-to-r from-sky-400/15 via-brand-sky/30 to-sky-400/15 border border-brand-blue/25 px-4 py-1.5 text-xs md:text-sm font-semibold text-brand-blue">
                 <span className="relative flex h-2.5 w-2.5">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
                   <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-green-500" />
@@ -380,21 +380,21 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
               {/* Trust strip */}
               <div className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs md:text-sm text-gray-500">
                 <span className="inline-flex items-center gap-2 transition-transform hover:-translate-y-0.5">
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-blue via-sky-400 to-brand-blue text-white shadow-glow-blue">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-sky via-sky-400/40 to-brand-sky text-brand-blue shadow-glow-soft border border-sky-400/40">
                     <ShieldCheck className="h-4 w-4 animate-sparkle-pop drop-shadow" aria-hidden />
                   </span>
                   Données chiffrées
                 </span>
                 <span className="text-gray-200" aria-hidden>·</span>
                 <span className="inline-flex items-center gap-2 transition-transform hover:-translate-y-0.5">
-                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-blue via-sky-400 to-brand-blue text-white shadow-glow-blue">
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-sky via-sky-400/40 to-brand-sky text-brand-blue shadow-glow-soft border border-sky-400/40">
                     <Zap className="h-4 w-4 animate-sparkle-pop drop-shadow" aria-hidden />
                   </span>
                   Résultat instantané
                 </span>
                 <span className="text-gray-200" aria-hidden>·</span>
                 <span className="inline-flex items-center gap-2 transition-transform hover:-translate-y-0.5">
-                  <span className="inline-flex h-7 min-w-[1.75rem] items-center justify-center rounded-full bg-gradient-to-br from-brand-blue via-sky-400 to-brand-blue text-white text-xs font-bold shadow-glow-blue animate-sparkle-pop px-1.5">
+                  <span className="inline-flex h-7 min-w-[1.75rem] items-center justify-center rounded-full bg-gradient-to-br from-brand-sky via-sky-400/40 to-brand-sky text-brand-blue text-xs font-bold shadow-glow-soft border border-sky-400/40 animate-sparkle-pop px-1.5">
                     8
                   </span>
                   canaux couverts

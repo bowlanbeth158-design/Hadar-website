@@ -6,6 +6,17 @@ import { UserMenu } from './UserMenu';
 
 const ALERT_COUNT = 8;
 
+// "Pro" hover effect for the main nav links — combines:
+//   1. color shift to brand-blue
+//   2. subtle 1px lift (feels alive)
+//   3. animated gradient underline (navy → blue → sky) growing from center
+const NAV_LINK_HOVER =
+  'relative hover:text-brand-blue transition-all duration-200 ease-out hover:-translate-y-px ' +
+  "after:content-[''] after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-[-8px] " +
+  'after:h-[2px] after:w-0 after:rounded-full ' +
+  'after:bg-gradient-to-r after:from-brand-navy after:via-brand-blue after:to-brand-sky ' +
+  'after:transition-all after:duration-300 after:ease-out hover:after:w-full';
+
 export function Header() {
   return (
     <>
@@ -26,19 +37,19 @@ export function Header() {
           {/* CENTER — nav (page-centered, sharing the same central axis as the WhatsApp banner) */}
           <ul className="hidden md:flex items-center gap-8 text-sm font-medium text-brand-navy">
             <li>
-              <Link href="/" className="hover:text-brand-blue transition-colors">
+              <Link href="/" className={`inline-block ${NAV_LINK_HOVER}`}>
                 Accueil
               </Link>
             </li>
             <li>
-              <Link href="/comment-ca-marche" className="hover:text-brand-blue transition-colors">
+              <Link href="/comment-ca-marche" className={`inline-block ${NAV_LINK_HOVER}`}>
                 Comment ça marche
               </Link>
             </li>
             <li>
               <Link
                 href="/mes-alertes"
-                className="inline-flex items-center gap-1.5 hover:text-brand-blue transition-colors"
+                className={`inline-flex items-center gap-1.5 ${NAV_LINK_HOVER}`}
               >
                 Mes alertes
                 {ALERT_COUNT > 0 && (

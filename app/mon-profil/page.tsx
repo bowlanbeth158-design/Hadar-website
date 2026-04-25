@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import {
   Lock,
-  Trash2,
   Siren,
   CheckCircle2,
   ShieldCheck,
@@ -16,6 +15,8 @@ import { CountUp } from '@/components/CountUp';
 import { AvatarUpload } from '@/components/AvatarUpload';
 import { ProfileIdentity } from '@/components/ProfileIdentity';
 import { PhoneVerifyField } from '@/components/PhoneVerifyField';
+import { SaveActionButton } from '@/components/SaveActionButton';
+import { DeleteAccountSection } from '@/components/DeleteAccountSection';
 
 export const metadata: Metadata = {
   title: 'Mon profil',
@@ -131,13 +132,13 @@ export default function Page() {
           </div>
 
           <div className="mt-6 flex justify-end">
-            <button
-              type="button"
-              className="inline-flex items-center gap-1.5 rounded-pill bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-2.5 text-sm font-semibold shadow-glow-green hover:shadow-lg hover:-translate-y-px transition-all duration-200 ease-out"
-            >
-              <Save className="h-4 w-4" aria-hidden />
-              Enregistrer les modifications
-            </button>
+            <SaveActionButton
+              label="Enregistrer les modifications"
+              savingLabel="Enregistrement…"
+              savedLabel="Modifications enregistrées"
+              Icon={Save}
+              className="bg-gradient-to-r from-green-500 to-emerald-600 shadow-glow-green hover:shadow-lg"
+            />
           </div>
         </section>
 
@@ -176,35 +177,19 @@ export default function Page() {
           </div>
 
           <div className="mt-6 flex justify-end">
-            <button
-              type="button"
-              className="inline-flex items-center gap-1.5 rounded-pill bg-gradient-to-r from-brand-navy to-brand-blue text-white px-5 py-2.5 text-sm font-semibold shadow-glow-navy hover:shadow-lg hover:-translate-y-px transition-all duration-200 ease-out"
-            >
-              <RefreshCcw className="h-4 w-4" aria-hidden />
-              Mettre à jour le mot de passe
-            </button>
+            <SaveActionButton
+              label="Mettre à jour le mot de passe"
+              savingLabel="Mise à jour…"
+              savedLabel="Mot de passe mis à jour"
+              Icon={RefreshCcw}
+              className="bg-gradient-to-r from-brand-navy to-brand-blue shadow-glow-navy hover:shadow-lg"
+            />
           </div>
         </section>
       </div>
 
-      {/* Danger zone */}
-      <section className="mt-6 rounded-2xl bg-red-50 border border-red-100 p-6 shadow-glow-red">
-        <h2 className="text-lg font-bold text-red-700 mb-2 flex items-center gap-2">
-          <Trash2 className="h-5 w-5" aria-hidden />
-          Zone dangereuse
-        </h2>
-        <p className="text-sm text-gray-600 mb-4">
-          La suppression de votre compte est irréversible après 30 jours. Les signalements publiés
-          seront conservés en mode anonyme.
-        </p>
-        <button
-          type="button"
-          className="inline-flex items-center gap-1.5 rounded-pill bg-red-500 text-white px-5 py-2 text-sm font-semibold shadow-glow-red hover:shadow-lg hover:-translate-y-px transition-all duration-200 ease-out"
-        >
-          <Trash2 className="h-4 w-4" aria-hidden />
-          Supprimer mon compte
-        </button>
-      </section>
+      {/* Danger zone — interactive (sad/happy modal flow) */}
+      <DeleteAccountSection />
 
       <p className="mt-10 text-center text-xs text-gray-400">
         Vos informations sont protégées et traitées de manière confidentielle.

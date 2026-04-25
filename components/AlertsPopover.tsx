@@ -3,15 +3,14 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import {
-  Bell,
   BellOff,
   ChevronsDown,
+  Clock3,
   CreditCard,
   Globe,
   Mail,
   Phone,
   Settings,
-  Clock3,
 } from 'lucide-react';
 
 type RiskLevel = 'low' | 'vigilance' | 'moderate' | 'high';

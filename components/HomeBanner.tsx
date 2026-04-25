@@ -5,7 +5,7 @@ import {
   Sparkles,
   TrendingUp,
   Star,
-  AlertTriangle,
+  BellRing,
   ArrowUp,
 } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
@@ -204,37 +204,40 @@ export function HomeBanner() {
               style={{ animationDelay: '3s' }}
             >
               <div className="pb-2 border-b border-gray-100 flex items-center gap-1.5">
-                <AlertTriangle className="h-3.5 w-3.5 text-orange-500" aria-hidden />
+                <BellRing
+                  className="h-4 w-4 text-brand-blue animate-siren-wiggle"
+                  aria-hidden
+                />
                 <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
-                  Alertes détectées aujourd&apos;hui
+                  Alertes aujourd&apos;hui
                 </span>
               </div>
               <ul className="mt-2.5 space-y-2.5 text-xs">
                 <li className="flex items-center justify-between">
                   <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
-                    <span className="h-2.5 w-2.5 rounded-full bg-yellow-500 ring-2 ring-yellow-100" />
+                    <span className="h-2.5 w-2.5 rounded-full bg-yellow-300 ring-2 ring-yellow-100" />
                     Vigilance
                   </span>
                   <span className="text-gray-500 tabular-nums">
-                    <CountUp to={2} /> signalements
+                    — <CountUp to={2} />
                   </span>
                 </li>
                 <li className="flex items-center justify-between">
                   <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
                     <span className="h-2.5 w-2.5 rounded-full bg-orange-500 ring-2 ring-orange-100" />
-                    Modéré
+                    Modérée
                   </span>
                   <span className="text-gray-500 tabular-nums">
-                    <CountUp to={4} /> signalements
+                    — <CountUp to={4} />
                   </span>
                 </li>
                 <li className="flex items-center justify-between">
                   <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
                     <span className="h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-red-100" />
-                    Élevé
+                    Élevée
                   </span>
                   <span className="text-gray-500 tabular-nums">
-                    <CountUp to={1} /> signalement
+                    — <CountUp to={1} />
                   </span>
                 </li>
               </ul>

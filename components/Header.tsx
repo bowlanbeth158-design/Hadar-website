@@ -30,9 +30,17 @@ const NAV_LINK_HOVER =
 export function Header() {
   return (
     <>
-      {/* Top WhatsApp strip — full-width centered on the page */}
-      <div className="w-full bg-brand-navy text-white text-xs md:text-sm py-2 px-4 text-center">
-        Rejoignez notre chaîne WhatsApp pour rester informé des alertes en temps réel.
+      {/* Top WhatsApp strip — full-width centered on the page,
+          same brand-navy → blue gradient + soft radial glow as the
+          support widget header. */}
+      <div className="relative w-full bg-gradient-to-br from-brand-navy via-brand-blue to-brand-navy text-white text-xs md:text-sm py-2 px-4 text-center overflow-hidden">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-40 mix-blend-overlay bg-[radial-gradient(circle_at_top_right,white,transparent_60%)]"
+        />
+        <span className="relative">
+          Rejoignez notre chaîne WhatsApp pour rester informé des alertes en temps réel.
+        </span>
       </div>
 
       <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur border-b border-gray-200">

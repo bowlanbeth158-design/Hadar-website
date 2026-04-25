@@ -138,11 +138,11 @@ export function HomeBanner() {
               className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top [mask-image:linear-gradient(to_bottom,black_60%,transparent_85%)] [-webkit-mask-image:linear-gradient(to_bottom,black_60%,transparent_85%)]"
             />
 
-            {/* Card 1 — Recherche instantanée (MID-LEFT, extends outside)
+            {/* Card 1 — Recherche instantanée (MID-LEFT, extends well outside)
                 Brand-gradient panel with a decorative (non-functional)
                 search bar — Ultahost-style intro card. */}
             <div
-              className={`absolute top-[38%] -left-10 w-72 rounded-2xl border border-white/80 bg-gradient-to-br from-brand-sky/80 via-white to-brand-sky/30 shadow-glow-soft p-4 animate-float-soft ${FLOAT_CARD_HOVER}`}
+              className={`absolute top-[38%] -left-24 w-72 rounded-2xl border border-white/80 bg-gradient-to-br from-brand-sky/80 via-white to-brand-sky/30 shadow-glow-soft p-4 animate-float-soft ${FLOAT_CARD_HOVER}`}
               style={{ animationDelay: '0s' }}
             >
               <div className="flex items-center gap-2">
@@ -154,14 +154,14 @@ export function HomeBanner() {
                   Recherche instantanée
                 </span>
               </div>
-              <p className="mt-1 text-xs text-gray-500">Numéro, email ou RIB…</p>
+              <p className="mt-1 text-xs text-gray-500">Vérifier un contact</p>
 
               {/* Decorative pill search bar — purely visual, not clickable */}
               <div
                 aria-hidden
                 className="mt-3 flex items-center gap-2 rounded-pill bg-white/90 backdrop-blur-sm border border-white shadow-sm px-3 py-2"
               >
-                <span className="flex-1 text-xs text-gray-400">Vérifier un contact</span>
+                <span className="flex-1 text-xs text-gray-400">Numéro, email ou RIB…</span>
                 <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-navy to-brand-blue text-white shadow">
                   <ArrowUp className="h-3.5 w-3.5" aria-hidden />
                 </span>

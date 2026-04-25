@@ -37,6 +37,14 @@ const STATUS_PULSE: Record<ReportStatus, string> = {
   refuse: 'animate-alert-pulse',
 };
 
+// Soft tinted gradient applied to the timeline card per decision.
+const STATUS_TIMELINE_TINT: Record<ReportStatus, string> = {
+  en_attente: 'bg-gradient-to-br from-yellow-100/60 via-white to-yellow-100/20',
+  publie: 'bg-gradient-to-br from-green-100/60 via-white to-green-100/20',
+  a_corriger: 'bg-gradient-to-br from-orange-100/60 via-white to-orange-100/20',
+  refuse: 'bg-gradient-to-br from-red-100/60 via-white to-red-100/20',
+};
+
 export default function Page({ params }: PageProps) {
   const report = USER_REPORTS.find((r) => r.id === params.id);
   if (!report) notFound();
@@ -73,7 +81,9 @@ export default function Page({ params }: PageProps) {
         {REPORT_CHANNEL_LABEL[report.channel]} — soumis le {report.submittedDate}
       </p>
 
-      <div className="mt-8 rounded-2xl bg-white border border-gray-200 p-6 shadow-glow-soft">
+      <div
+        className={`mt-8 rounded-2xl border border-gray-200 p-6 shadow-glow-soft ${STATUS_TIMELINE_TINT[report.status]}`}
+      >
         <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-wide mb-4">
           Timeline
         </h2>

@@ -95,13 +95,23 @@ export function HomeBanner() {
               className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-4 w-3/5 h-14 rounded-[50%] bg-brand-navy/35 blur-2xl"
             />
 
-            {/* Ambassador photo — face visible top-center, fades into page background at bottom */}
+            {/* Ambassador photo — Ultahost-style soft dissolve:
+                two stacked copies of the image, the lower one heavily
+                blurred so the bottom of the figure transitions
+                sharp → blurry → transparent into the page bg. */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={AMBASSADOR_IMAGE_URL}
               alt=""
               aria-hidden
-              className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]"
+              className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top blur-md opacity-80 [mask-image:linear-gradient(to_bottom,transparent_50%,black_70%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_50%,black_70%,transparent_100%)]"
+            />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={AMBASSADOR_IMAGE_URL}
+              alt=""
+              aria-hidden
+              className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top [mask-image:linear-gradient(to_bottom,black_60%,transparent_85%)] [-webkit-mask-image:linear-gradient(to_bottom,black_60%,transparent_85%)]"
             />
 
             {/* Card 1 — Search action (MID-LEFT, extends outside) */}

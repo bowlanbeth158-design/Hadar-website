@@ -19,7 +19,7 @@ export function HomeBanner() {
           page shares the same atmospheric backdrop. The section itself is
           now transparent to let the global gradient + blurs show through. */}
 
-      <div className="relative mx-auto max-w-[1440px] px-6 md:px-10 py-12 md:py-20 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+      <div className="relative mx-auto max-w-[1440px] px-6 md:px-10 pt-4 md:pt-6 pb-12 md:pb-20 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
         {/* LEFT — copy + CTAs */}
         <div>
           <span className="inline-flex items-center gap-2 rounded-pill bg-brand-sky text-brand-navy px-3 py-1.5 text-xs font-semibold">

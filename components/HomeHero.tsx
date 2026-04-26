@@ -179,7 +179,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
     <>
       <section
         id="recherche"
-        className="relative scroll-mt-24 overflow-hidden bg-white isolate"
+        className="relative scroll-mt-24 overflow-hidden bg-gradient-to-b from-brand-sky/25 via-white to-white isolate"
       >
         {/* Static background — only a centered subtle grid, no side blobs */}
         <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>

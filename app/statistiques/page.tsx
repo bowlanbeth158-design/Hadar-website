@@ -32,11 +32,18 @@ type DisplayMode = 'count' | 'percent';
 
 // French number formatter — 1245 → "1 245"
 function fmtCount(n: number): string {
-  return n.toLocaleString('fr-FR').replace(/,/g, ' ').replace(/ /g, ' ');
+  return n.toLocaleString('fr-FR').replace(/,/g, ' ').replace(/ /g, ' ');
 }
 
 function fmtMAD(n: number): string {
   return `${fmtCount(n)} MAD`;
+}
+
+// Format a (count, pct) pair according to the chart's display mode.
+// - 'count'   → "1 245"
+// - 'percent' → "50%"   (single % suffix; never double)
+function fmtBar(count: number, pct: number, mode: DisplayMode): string {
+  return mode === 'count' ? fmtCount(count) : `${pct}%`;
 }
 
 // One snapshot of the page numbers per analysis period. Real values will
@@ -52,14 +59,14 @@ type Snapshot = {
     montant: number; // MAD
     dernier: string; // e.g. "il y a 12 min"
   };
-  problems: { count: number; pct: number }[];   // 4 entries
-  channels: { count: number; pct: number }[];   // 4 entries
-  activity: { count: number; pct: number }[];   // 4 entries
-  status:   { count: number }[];                 // 3 entries
-  evolutionPct: number;       // donut %
-  evolutionThisCount: number; // big red pill
-  evolutionTodayCount: number;// small red pill
-  processingPct: number;      // bottom progress bar
+  problems: { count: number; pct: number }[];
+  channels: { count: number; pct: number }[];
+  activity: { count: number; pct: number }[];
+  status:   { count: number }[];
+  evolutionPct: number;
+  evolutionThisCount: number;
+  evolutionTodayCount: number;
+  processingPct: number;
 };
 
 const DATA: Record<Period, Snapshot> = {
@@ -229,6 +236,9 @@ const STATUS_LABELS: { label: string; color: string; glow: string }[] = [
 const CHART_CARD =
   'rounded-2xl bg-gradient-to-br from-brand-sky/30 via-white to-brand-sky/35 backdrop-blur-sm border border-white/70 p-6 shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-0.5 transition-all duration-300 ease-out';
 
+// Compact Nombre / % toggle — small enough to dock next to a chart's
+// title. Each chart owns its own DisplayMode state, so toggling one
+// chart never silently re-formats the others.
 function DisplayModeToggle({
   value,
   onChange,
@@ -240,7 +250,7 @@ function DisplayModeToggle({
     <div
       role="tablist"
       aria-label="Format des chiffres"
-      className="inline-flex items-center rounded-pill bg-white/70 backdrop-blur-sm border border-white/80 p-1 shadow-sm"
+      className="inline-flex items-center rounded-pill bg-white/70 backdrop-blur-sm border border-white/80 p-0.5 shadow-sm"
     >
       <button
         type="button"
@@ -250,8 +260,8 @@ function DisplayModeToggle({
         title="Afficher en nombre"
         className={
           value === 'count'
-            ? 'inline-flex items-center gap-1 rounded-pill bg-grad-stat-navy text-white px-3 py-1 text-xs font-semibold shadow-glow-navy'
-            : 'inline-flex items-center gap-1 rounded-pill text-brand-navy/70 hover:text-brand-navy px-3 py-1 text-xs font-medium transition-colors'
+            ? 'inline-flex items-center gap-1 rounded-pill bg-grad-stat-navy text-white px-2.5 py-1 text-[11px] font-semibold shadow-glow-navy'
+            : 'inline-flex items-center gap-1 rounded-pill text-brand-navy/70 hover:text-brand-navy px-2.5 py-1 text-[11px] font-medium transition-colors'
         }
       >
         <Hash className="h-3 w-3" aria-hidden />
@@ -265,8 +275,8 @@ function DisplayModeToggle({
         title="Afficher en pourcentage"
         className={
           value === 'percent'
-            ? 'inline-flex items-center gap-1 rounded-pill bg-grad-stat-navy text-white px-3 py-1 text-xs font-semibold shadow-glow-navy'
-            : 'inline-flex items-center gap-1 rounded-pill text-brand-navy/70 hover:text-brand-navy px-3 py-1 text-xs font-medium transition-colors'
+            ? 'inline-flex items-center gap-1 rounded-pill bg-grad-stat-navy text-white px-2.5 py-1 text-[11px] font-semibold shadow-glow-navy'
+            : 'inline-flex items-center gap-1 rounded-pill text-brand-navy/70 hover:text-brand-navy px-2.5 py-1 text-[11px] font-medium transition-colors'
         }
       >
         <Percent className="h-3 w-3" aria-hidden />
@@ -276,13 +286,34 @@ function DisplayModeToggle({
   );
 }
 
+// Reusable chart-card title row with a docked DisplayModeToggle.
+function ChartHeader({
+  title,
+  mode,
+  setMode,
+}: {
+  title: string;
+  mode: DisplayMode;
+  setMode: (m: DisplayMode) => void;
+}) {
+  return (
+    <div className="flex items-center justify-between gap-3 mb-5">
+      <h2 className="text-lg font-bold text-brand-navy">{title}</h2>
+      <DisplayModeToggle value={mode} onChange={setMode} />
+    </div>
+  );
+}
+
 export default function Page() {
   const [period, setPeriod] = useState<Period>('month');
-  const [mode, setMode] = useState<DisplayMode>('count');
-  const data = DATA[period];
 
-  const fmtBar = (count: number, pct: number) =>
-    mode === 'count' ? fmtCount(count) : `${pct}%`;
+  // One DisplayMode per chart, so the toggle on each chart is independent.
+  const [problemsMode, setProblemsMode] = useState<DisplayMode>('count');
+  const [channelsMode, setChannelsMode] = useState<DisplayMode>('count');
+  const [activityMode, setActivityMode] = useState<DisplayMode>('count');
+  const [statusMode,   setStatusMode]   = useState<DisplayMode>('count');
+
+  const data = DATA[period];
 
   // Build the 6 KPI cards from the period snapshot.
   const globalCards: {
@@ -317,12 +348,6 @@ export default function Page() {
 
       <StatsPeriodTabs value={period} onChange={setPeriod} />
 
-      {/* Display-mode toggle — placed under the period tabs so it controls
-          the format of the bar / pill / card numbers across every chart. */}
-      <div className="flex justify-center mb-6">
-        <DisplayModeToggle value={mode} onChange={setMode} />
-      </div>
-
       <section
         aria-label="Indicateurs globaux"
         className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
@@ -345,7 +370,7 @@ export default function Page() {
 
       <section className="mt-8 grid gap-4 lg:grid-cols-2">
         <div className={CHART_CARD}>
-          <h2 className="text-lg font-bold text-brand-navy mb-5">Types de problèmes signalés</h2>
+          <ChartHeader title="Types de problèmes signalés" mode={problemsMode} setMode={setProblemsMode} />
           <ul className="space-y-4">
             {PROBLEM_LABELS.map((p, i) => {
               const d = data.problems[i]!;
@@ -357,7 +382,7 @@ export default function Page() {
                       {p.label}
                     </span>
                     <span className="text-sm font-bold text-brand-navy tabular-nums">
-                      {fmtBar(d.count, d.pct)}
+                      {fmtBar(d.count, d.pct, problemsMode)}
                     </span>
                   </div>
                   <div className="h-2 rounded-pill bg-white/60 overflow-hidden border border-white/50">
@@ -373,7 +398,7 @@ export default function Page() {
         </div>
 
         <div className={CHART_CARD}>
-          <h2 className="text-lg font-bold text-brand-navy mb-5">Canaux plus signalés</h2>
+          <ChartHeader title="Canaux plus signalés" mode={channelsMode} setMode={setChannelsMode} />
           <div className="grid grid-cols-2 gap-3">
             {CHANNEL_LABELS.map((c, i) => {
               const d = data.channels[i]!;
@@ -389,7 +414,7 @@ export default function Page() {
                   <div
                     className={`mt-3 inline-flex items-center justify-center rounded-pill ${c.badgeBg} text-white text-sm font-bold px-3 py-1 tabular-nums`}
                   >
-                    {fmtBar(d.count, d.pct)}
+                    {fmtBar(d.count, d.pct, channelsMode)}
                   </div>
                 </div>
               );
@@ -400,9 +425,7 @@ export default function Page() {
 
       <section className="mt-4 grid gap-4 lg:grid-cols-2">
         <div className={CHART_CARD}>
-          <h2 className="text-lg font-bold text-brand-navy mb-5">
-            Niveau d&apos;activité des signalements
-          </h2>
+          <ChartHeader title="Niveau d'activité des signalements" mode={activityMode} setMode={setActivityMode} />
           <div className="flex items-end gap-4 h-56 px-2">
             <div className="flex flex-col justify-between h-full text-[10px] text-gray-400 pr-2">
               {[80, 70, 60, 50, 40, 30, 20, 10, 0].map((v) => (
@@ -415,7 +438,7 @@ export default function Page() {
                 return (
                   <div key={a.label} className="group flex flex-col items-center h-full justify-end cursor-default">
                     <span className="text-xs font-bold text-brand-navy mb-1 tabular-nums group-hover:scale-110 transition-transform">
-                      {fmtBar(d.count, d.pct)}
+                      {fmtBar(d.count, d.pct, activityMode)}
                     </span>
                     <div
                       className={`w-full ${a.gradient} rounded-t-xl shadow-md transition-[height,filter] duration-700 ease-out group-hover:brightness-110 group-hover:shadow-lg`}
@@ -458,9 +481,17 @@ export default function Page() {
       </section>
 
       <section className={`mt-4 ${CHART_CARD}`}>
-        <h2 className="text-lg font-bold text-brand-navy text-center mb-5">
-          Statut des signalements
-        </h2>
+        {/* Status header — title is centred but the toggle still docks
+            on the right so the user can switch modes for this chart. */}
+        <div className="flex items-center justify-center gap-3 mb-5 relative">
+          <h2 className="text-lg font-bold text-brand-navy text-center">
+            Statut des signalements
+          </h2>
+          <div className="absolute right-0">
+            <DisplayModeToggle value={statusMode} onChange={setStatusMode} />
+          </div>
+        </div>
+
         <div className="flex flex-wrap justify-center gap-3 mb-5">
           {STATUS_LABELS.map((s, i) => {
             const d = data.status[i]!;
@@ -472,7 +503,7 @@ export default function Page() {
               >
                 <Siren className="h-4 w-4 group-hover:animate-sparkle-pop" aria-hidden />
                 <span className="text-base font-bold tabular-nums">
-                  <AnimatedCounter value={mode === 'count' ? fmtCount(d.count) : `${pct}%`} />
+                  <AnimatedCounter value={fmtBar(d.count, pct, statusMode)} />
                 </span>
                 <span className="text-xs opacity-90">{s.label}</span>
               </div>

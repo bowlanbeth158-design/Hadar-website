@@ -1,3 +1,6 @@
+'use client';
+
+import { useRef } from 'react';
 import { UserRound, Clock, ChevronsRight, Sparkles } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
 
@@ -106,6 +109,24 @@ const RISK_STYLE: Record<RiskLevel, RiskStyle> = {
 };
 
 export function RecentReports() {
+  // Ref to the horizontally-scrollable cards container so the swipe-hint
+  // chevron can scroll the next batch of cards into view on click.
+  const scrollerRef = useRef<HTMLDivElement>(null);
+
+  const scrollNext = () => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    // Scroll by ~75% of the visible width so two cards roughly slide in.
+    const step = Math.round(el.clientWidth * 0.75);
+    const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
+    if (atEnd) {
+      // Wrap back to the start when we've reached the end.
+      el.scrollTo({ left: 0, behavior: 'smooth' });
+    } else {
+      el.scrollBy({ left: step, behavior: 'smooth' });
+    }
+  };
+
   return (
     <section className="mx-auto max-w-[1440px] px-4 md:px-6 py-10 md:py-14">
       {/* "Live update" pill — upgraded with a soft brand-blue halo, a
@@ -143,7 +164,10 @@ export function RecentReports() {
       {/* Wrapper sits relative so the swipe-hint chevron can dock on the
           right edge regardless of how far the carousel has been scrolled. */}
       <div className="relative mt-6">
-        <div className="overflow-x-auto snap-x snap-mandatory pb-6 -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth">
+        <div
+          ref={scrollerRef}
+          className="overflow-x-auto snap-x snap-mandatory pb-6 -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth"
+        >
           <ul className="flex gap-4">
             {DEMO_REPORTS.map((r, i) => {
               const style = RISK_STYLE[r.risk];
@@ -205,7 +229,16 @@ export function RecentReports() {
                     </div>
 
                     <h3 className="text-sm font-semibold text-brand-navy flex items-start gap-1.5 relative">
-                      <VerifiedBadge className="h-4 w-4 shrink-0 mt-0.5" />
+                      {/* Animated VerifiedBadge — soft brand-blue pulsing
+                          halo behind the badge + sparkle-pop on the SVG
+                          itself so the "vérifié" cue reads as live. */}
+                      <span className="relative inline-flex h-4 w-4 shrink-0 mt-0.5">
+                        <span
+                          aria-hidden
+                          className="absolute inset-0 rounded-full bg-brand-blue/30 blur-md animate-pulse"
+                        />
+                        <VerifiedBadge className="relative h-4 w-4 animate-sparkle-pop drop-shadow-sm" />
+                      </span>
                       <span>{r.title}</span>
                     </h3>
 
@@ -232,20 +265,23 @@ export function RecentReports() {
           </ul>
         </div>
 
-        {/* Swipe-hint chevron — only on lg+ where 4 of 6 cards are
-            visible and 2 are hidden to the right. Floats gently up-down
-            and pulses horizontally to suggest "more cards, swipe right". */}
-        <div
-          aria-hidden
-          className="hidden lg:flex pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 z-10 flex-col items-center gap-1"
+        {/* Swipe-hint chevron — clickable button on lg+ that scrolls the
+            cards container by ~75% of its width on each press. Wraps to
+            the start when reaching the end so the user can keep cycling
+            through the feed. */}
+        <button
+          type="button"
+          onClick={scrollNext}
+          aria-label="Voir les signalements suivants"
+          className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 flex-col items-center gap-1 group cursor-pointer"
         >
-          <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-br from-brand-sky via-blue-100 to-brand-sky text-brand-navy border border-brand-blue/30 shadow-glow-blue animate-float-soft">
+          <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-br from-brand-sky via-blue-100 to-brand-sky text-brand-navy border border-brand-blue/30 shadow-glow-blue animate-float-soft group-hover:scale-110 group-hover:shadow-glow-navy transition-all duration-300">
             <ChevronsRight className="h-6 w-6 animate-trend-up" aria-hidden />
           </span>
-          <span className="text-[10px] font-semibold uppercase tracking-wider text-brand-navy/70">
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-brand-navy/70 group-hover:text-brand-navy transition-colors">
             Glisser
           </span>
-        </div>
+        </button>
       </div>
 
       <p className="mt-4 text-xs text-gray-400 text-center max-w-3xl mx-auto">

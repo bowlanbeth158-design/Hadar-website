@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Mail } from 'lucide-react';
+import { Mail, Users, RefreshCw } from 'lucide-react';
 import { Logo } from './Logo';
 import {
   LinkedInIcon,
@@ -46,16 +46,39 @@ export function Footer() {
             Plateforme de vérification des contacts. Prenez des décisions éclairées avant toute
             transaction.
           </p>
-          <ul className="mt-4 space-y-1 text-xs text-white/70">
-            <li className="flex items-center gap-2">
-              <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-green-500" />
-              Données issues des contributions utilisateurs
-            </li>
-            <li className="flex items-center gap-2">
-              <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-white" />
-              Mise à jour en temps réel
-            </li>
-          </ul>
+          {/* Trust pills — replaces the bullet list with two animated
+              status badges. Pulsing green dot on the first; rotating
+              refresh icon on the second. Each pill has a shimmer light
+              passing across the background every 5s. */}
+          <div className="mt-4 flex flex-wrap gap-2">
+            <span className="relative inline-flex items-center gap-2 rounded-pill bg-white/10 hover:bg-white/15 border border-white/20 px-3 py-1.5 text-xs font-medium text-white/90 overflow-hidden transition-colors">
+              <span className="relative flex h-2 w-2">
+                <span
+                  aria-hidden
+                  className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-70"
+                />
+                <span
+                  aria-hidden
+                  className="relative inline-flex h-2 w-2 rounded-full bg-green-500"
+                />
+              </span>
+              <Users className="h-3.5 w-3.5 text-green-300" aria-hidden />
+              <span className="relative z-10">Données issues des contributions utilisateurs</span>
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-[-20deg] animate-shimmer"
+              />
+            </span>
+
+            <span className="relative inline-flex items-center gap-2 rounded-pill bg-white/10 hover:bg-white/15 border border-white/20 px-3 py-1.5 text-xs font-medium text-white/90 overflow-hidden transition-colors">
+              <RefreshCw className="h-3.5 w-3.5 text-sky-300 animate-spin [animation-duration:6s]" aria-hidden />
+              <span className="relative z-10">Mise à jour en temps réel</span>
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-[-20deg] animate-shimmer"
+              />
+            </span>
+          </div>
         </div>
 
         <div>

@@ -24,67 +24,80 @@ type RiskConfig = {
   iconAnim: string;
   pillAnim: string;
   pillGlow: string;
+  cardAuraBg: string;
 };
 
+// Owner-confirmed labels (April 26 2026):
+//   Faible    → "Aucun signalement détecté"
+//   Vigilance → "Des signalements ont été détectés"
+//   Modéré    → "Plusieurs signalements ont été détectés"
+//   Élevé     → "Plusieurs signalements ont été détectés"   (same as modéré)
+//
+// Bottom-message variants:
+//   Faible    → "Aucun signalement détecté. Vérifiez avant de poursuivre."
+//   Vigilance → "Un signalement a été enregistré. Vérifiez avant de poursuivre."
+//   Modéré +
+//   Élevé     → "Des signalements ont été enregistrés. Vérifiez avant de poursuivre."
 const RISK_CONFIG: Record<RiskLevel, RiskConfig> = {
   faible: {
-    label: 'Risque faible',
+    label: 'faible',
     pillBg: 'bg-green-100',
     pillText: 'text-green-700',
-    pillBorder: 'border-green-500/30',
+    pillBorder: 'border-green-500/40',
     pillLabel: 'Aucun signalement détecté',
-    message: 'Vous pouvez poursuivre vos vérifications pour prendre une décision éclairée.',
+    message: 'Aucun signalement détecté. Vérifiez avant de poursuivre.',
     dotIndex: 0,
     Icon: CheckCircle2,
     iconAnim: 'animate-sparkle-pop',
     pillAnim: 'animate-verify-pulse',
     pillGlow: 'shadow-glow-green',
+    cardAuraBg: 'bg-green-500/15',
   },
   vigilance: {
-    label: 'Vigilance requise',
+    label: 'vigilance',
     pillBg: 'bg-yellow-100',
     pillText: 'text-yellow-500',
-    pillBorder: 'border-yellow-500/40',
-    pillLabel: 'Signalements détectés',
-    message:
-      'Quelques signalements ont été enregistrés. Vérifiez les informations avant de continuer.',
+    pillBorder: 'border-yellow-500/50',
+    pillLabel: 'Des signalements ont été détectés',
+    message: 'Un signalement a été enregistré. Vérifiez avant de poursuivre.',
     dotIndex: 1,
     Icon: AlertCircle,
     iconAnim: 'animate-sparkle-pop',
     pillAnim: 'animate-pulse-yellow',
     pillGlow: 'shadow-glow-yellow',
+    cardAuraBg: 'bg-yellow-300/20',
   },
   modere: {
-    label: 'Risque modéré',
+    label: 'modéré',
     pillBg: 'bg-orange-100',
-    pillText: 'text-orange-600',
-    pillBorder: 'border-orange-500/40',
-    pillLabel: 'Plusieurs signalements',
-    message:
-      'Plusieurs signalements ont été enregistrés. La prudence est recommandée avant toute interaction.',
+    pillText: 'text-orange-500',
+    pillBorder: 'border-orange-500/50',
+    pillLabel: 'Plusieurs signalements ont été détectés',
+    message: 'Des signalements ont été enregistrés. Vérifiez avant de poursuivre.',
     dotIndex: 2,
     Icon: AlertTriangle,
     iconAnim: 'animate-siren-wiggle',
     pillAnim: 'animate-pulse-orange',
     pillGlow: 'shadow-glow-orange',
+    cardAuraBg: 'bg-orange-500/20',
   },
   eleve: {
-    label: 'Risque élevé',
+    label: 'élevé',
     pillBg: 'bg-red-100',
     pillText: 'text-red-700',
-    pillBorder: 'border-red-500/40',
-    pillLabel: 'Signalements nombreux',
-    message:
-      'Un nombre important de signalements a été enregistré. Soyez particulièrement vigilant.',
+    pillBorder: 'border-red-500/50',
+    pillLabel: 'Plusieurs signalements ont été détectés',
+    message: 'Des signalements ont été enregistrés. Vérifiez avant de poursuivre.',
     dotIndex: 3,
     Icon: AlertOctagon,
     iconAnim: 'animate-siren-wiggle',
     pillAnim: 'animate-alert-pulse',
     pillGlow: 'shadow-glow-red',
+    cardAuraBg: 'bg-red-500/20',
   },
 };
 
-const DOT_COLORS = ['bg-green-500', 'bg-yellow-500', 'bg-orange-500', 'bg-red-500'];
+const DOT_COLORS = ['bg-green-500', 'bg-yellow-300', 'bg-orange-500', 'bg-red-500'];
 
 const KPI_LABELS = [
   'Non livraison',
@@ -93,49 +106,108 @@ const KPI_LABELS = [
   "Usurpation d'identité",
 ];
 
-// Per-risk KPI counts and total. Wired as static demo values for now;
-// will be swapped for the real /api/search response when the backend lands.
-const KPIS_BY_RISK: Record<RiskLevel, number[]> = {
-  faible: [0, 0, 0, 0],
-  vigilance: [1, 0, 1, 0],
-  modere: [3, 2, 1, 1],
-  eleve: [8, 5, 3, 2],
+type DemoData = {
+  risk: RiskLevel;
+  reports: number;
+  kpis: number[];
+  // Hours since the last signalement. null = no signalement at all.
+  lastReportedHoursAgo: number | null;
 };
 
-const TOTAL_REPORTS: Record<RiskLevel, number> = {
-  faible: 0,
-  vigilance: 2,
-  modere: 7,
-  eleve: 18,
+// Demo mapping (until /api/search lands). Counts respect the owner spec:
+//   0 reports     → faible
+//   1-2 reports   → vigilance
+//   3-4 reports   → modéré
+//   5+ reports    → élevé
+const DEMO: Record<string, DemoData> = {
+  'info@mushtarik.com': {
+    risk: 'faible',
+    reports: 0,
+    kpis: [0, 0, 0, 0],
+    lastReportedHoursAgo: null,
+  },
+  'info@mushtarik01.com': {
+    risk: 'vigilance',
+    reports: 2,
+    kpis: [1, 0, 1, 0],
+    lastReportedHoursAgo: 12,
+  },
+  'info@mushtarik02.com': {
+    risk: 'modere',
+    reports: 4,
+    kpis: [2, 1, 1, 0],
+    lastReportedHoursAgo: 24 * 5,
+  },
+  'info@mushtarik03.com': {
+    risk: 'eleve',
+    reports: 12,
+    kpis: [5, 3, 2, 2],
+    lastReportedHoursAgo: 24 * 21,
+  },
 };
 
-// Demo mapping: 4 known emails resolve to specific risk levels so the
-// owner can preview the animation per tier. Anything else falls back
-// to "faible".
-function getRiskFromQuery(query: string): RiskLevel {
+function getDemo(query: string): DemoData {
   const normalized = query.trim().toLowerCase();
-  if (normalized === 'info@mushtarik01.com') return 'vigilance';
-  if (normalized === 'info@mushtarik02.com') return 'modere';
-  if (normalized === 'info@mushtarik03.com') return 'eleve';
-  return 'faible';
+  return DEMO[normalized] ?? DEMO['info@mushtarik.com']!;
+}
+
+// Owner-spec relative-time formatter:
+//   < 1h          → "à l'instant"
+//   1-23h         → "il y a 1 heure" / "il y a X heures"
+//   24-47h        → "hier"
+//   2-6 jours     → "il y a X jours"
+//   7-29 jours    → "il y a 1 semaine" / "il y a X semaines"
+//   30-364 jours  → "il y a 1 mois" / "il y a X mois"
+//   365+ jours    → "il y a 1 an" / "il y a X ans"
+function formatRelativeTime(hoursAgo: number): string {
+  if (hoursAgo < 1) return "à l'instant";
+  if (hoursAgo < 24) {
+    const h = Math.round(hoursAgo);
+    return h === 1 ? 'il y a 1 heure' : `il y a ${h} heures`;
+  }
+  const days = Math.floor(hoursAgo / 24);
+  if (days < 2) return 'hier';
+  if (days < 7) return `il y a ${days} jours`;
+  if (days < 30) {
+    const w = Math.floor(days / 7);
+    return w === 1 ? 'il y a 1 semaine' : `il y a ${w} semaines`;
+  }
+  if (days < 365) {
+    const m = Math.floor(days / 30);
+    return m === 1 ? 'il y a 1 mois' : `il y a ${m} mois`;
+  }
+  const y = Math.floor(days / 365);
+  return y === 1 ? 'il y a 1 an' : `il y a ${y} ans`;
 }
 
 export function SearchResult({ query }: Props) {
-  const risk = getRiskFromQuery(query);
-  const cfg = RISK_CONFIG[risk];
+  const demo = getDemo(query);
+  const cfg = RISK_CONFIG[demo.risk];
   const Icon = cfg.Icon;
-  const kpis = KPIS_BY_RISK[risk];
-  const totalReports = TOTAL_REPORTS[risk];
-  const reportLabel = totalReports === 1 ? 'signalement' : 'signalements';
+  const reportLabel = demo.reports === 1 ? 'signalement' : 'signalements';
+
+  const lastReportText =
+    demo.lastReportedHoursAgo !== null
+      ? `Dernier signalement : ${formatRelativeTime(demo.lastReportedHoursAgo)}`
+      : 'Aucun signalement récent';
 
   return (
     <div
-      key={risk}
-      className="mt-8 pt-8 border-t border-gray-200/70 animate-fade-in-down"
+      key={demo.risk}
+      className="mt-8 pt-8 border-t border-gray-200/70 animate-fade-in-down relative isolate"
       aria-label="Résultat de recherche"
     >
       <p className="sr-only">Résultat pour {query}</p>
 
+      {/* Risk-coloured aura behind the whole result block — soft blur,
+          tint the section in the matching risk colour so the eye picks
+          up the verdict before reading any text. */}
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute -inset-4 rounded-[2rem] ${cfg.cardAuraBg} blur-3xl opacity-80 -z-10`}
+      />
+
+      {/* Headline pill */}
       <div className="flex justify-center mb-4">
         <div
           className={`inline-flex items-center gap-2 rounded-pill ${cfg.pillBg} ${cfg.pillText} border ${cfg.pillBorder} px-4 py-2 text-sm font-semibold ${cfg.pillGlow} ${cfg.pillAnim}`}
@@ -145,13 +217,24 @@ export function SearchResult({ query }: Props) {
         </div>
       </div>
 
-      <div className="flex items-center justify-center gap-3 text-sm text-gray-500 mb-6">
+      {/* Info line: X signalements • Dernier signalement : … • Risque : … */}
+      <div className="flex items-center justify-center gap-x-3 gap-y-1 text-sm text-gray-500 mb-6 flex-wrap">
         <span>
-          <span className="font-semibold text-gray-900 tabular-nums">{totalReports}</span>{' '}
-          {reportLabel} ·{' '}
-          <span className={`${cfg.pillText} font-semibold`}>{cfg.label}</span>
+          <span className="font-semibold text-gray-900 tabular-nums">{demo.reports}</span>{' '}
+          {reportLabel}
         </span>
-        <div className="flex items-center gap-1.5" aria-label={`Niveau de risque : ${cfg.label}`}>
+        <span aria-hidden className="text-gray-300">•</span>
+        <span>{lastReportText}</span>
+        <span aria-hidden className="text-gray-300">•</span>
+        <span>
+          Risque :{' '}
+          <span className={`${cfg.pillText} font-semibold capitalize`}>{cfg.label}</span>
+        </span>
+
+        <div
+          className="flex items-center gap-1.5 ml-1"
+          aria-label={`Niveau de risque : ${cfg.label}`}
+        >
           {DOT_COLORS.map((color, i) => {
             const isActive = i === cfg.dotIndex;
             return (
@@ -173,24 +256,35 @@ export function SearchResult({ query }: Props) {
         </div>
       </div>
 
+      {/* KPI cards */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {KPI_LABELS.map((label, i) => (
           <div
             key={label}
             className="rounded-2xl bg-white border border-gray-200 p-5 text-center shadow-glow-soft"
           >
-            <p className="text-4xl font-bold text-gray-900 tabular-nums">{kpis[i] ?? 0}</p>
+            <p className="text-4xl font-bold text-gray-900 tabular-nums">{demo.kpis[i] ?? 0}</p>
             <p className="mt-1 text-sm text-gray-500">{label}</p>
           </div>
         ))}
       </div>
 
-      <p
-        key={`msg-${risk}`}
-        className={`mt-6 text-center text-sm font-medium ${cfg.pillText} animate-fade-in-down`}
-      >
-        {cfg.message}
-      </p>
+      {/* Bottom message — risk-coloured pill with a shimmer light passing
+          across so it reads as freshly computed. Pill style mirrors the
+          headline pill so the section feels framed by the same colour
+          on top and bottom. */}
+      <div className="mt-6 flex justify-center">
+        <span
+          key={`msg-${demo.risk}`}
+          className={`relative inline-flex items-center rounded-pill ${cfg.pillBg} ${cfg.pillText} border ${cfg.pillBorder} px-5 py-2.5 text-sm font-semibold ${cfg.pillGlow} overflow-hidden animate-fade-in-down`}
+        >
+          <span className="relative z-10">{cfg.message}</span>
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/70 to-transparent skew-x-[-20deg] animate-shimmer"
+          />
+        </span>
+      </div>
     </div>
   );
 }

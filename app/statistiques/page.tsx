@@ -45,11 +45,13 @@ const GLOBAL_STATS: {
   { label: 'Dernier signalement', value: 'il y a 2 h', gradient: 'bg-grad-stat-orange', glow: 'shadow-glow-orange', Icon: Clock },
 ];
 
-const PROBLEMS: { label: string; pct: number; Icon: LucideIcon }[] = [
-  { label: 'Non livraison', pct: 50, Icon: PackageX },
-  { label: 'Blocage après paiement', pct: 25, Icon: Ban },
-  { label: 'Produit non conforme', pct: 15, Icon: AlertTriangle },
-  { label: "Usurpation d'identité", pct: 5, Icon: VenetianMask },
+// Per-problem colour stops so each progress bar gets its own gradient
+// instead of every row using the same brand-blue.
+const PROBLEMS: { label: string; pct: number; Icon: LucideIcon; gradient: string }[] = [
+  { label: 'Non livraison', pct: 50, Icon: PackageX, gradient: 'bg-grad-stat-red' },
+  { label: 'Blocage après paiement', pct: 25, Icon: Ban, gradient: 'bg-grad-stat-orange' },
+  { label: 'Produit non conforme', pct: 15, Icon: AlertTriangle, gradient: 'bg-grad-alert-yellow' },
+  { label: "Usurpation d'identité", pct: 5, Icon: VenetianMask, gradient: 'bg-grad-stat-violet' },
 ];
 
 const CHANNELS: { label: string; pct: number; Icon: LucideIcon; accent: string; badgeBg: string }[] = [
@@ -58,36 +60,38 @@ const CHANNELS: { label: string; pct: number; Icon: LucideIcon; accent: string; 
     pct: 35,
     Icon: CreditCard,
     accent: 'border-orange-500',
-    badgeBg: 'bg-orange-500',
+    badgeBg: 'bg-grad-stat-orange',
   },
   {
     label: 'WhatsApp',
     pct: 17,
     Icon: MessageCircle,
     accent: 'border-green-500',
-    badgeBg: 'bg-green-500',
+    badgeBg: 'bg-grad-stat-green',
   },
   {
     label: 'Réseaux sociaux',
     pct: 15,
     Icon: AtSign,
     accent: 'border-violet-500',
-    badgeBg: 'bg-violet-500',
+    badgeBg: 'bg-grad-stat-violet',
   },
   {
     label: 'Site web',
     pct: 7,
     Icon: Globe,
     accent: 'border-brand-blue',
-    badgeBg: 'bg-brand-blue',
+    badgeBg: 'bg-grad-stat-navy',
   },
 ];
 
-const ACTIVITY: { label: string; pct: number; color: string }[] = [
-  { label: 'Faible', pct: 10, color: 'bg-brand-blue' },
-  { label: 'Vigilance', pct: 30, color: 'bg-yellow-500' },
-  { label: 'Modéré', pct: 80, color: 'bg-orange-500' },
-  { label: 'Élevé', pct: 45, color: 'bg-red-500' },
+// Each activity tier gets its own brand-stat gradient so the bar
+// chart reads as a coloured staircase rather than four flat solids.
+const ACTIVITY: { label: string; pct: number; gradient: string }[] = [
+  { label: 'Faible', pct: 10, gradient: 'bg-grad-stat-navy' },
+  { label: 'Vigilance', pct: 30, gradient: 'bg-grad-alert-yellow' },
+  { label: 'Modéré', pct: 80, gradient: 'bg-grad-stat-orange' },
+  { label: 'Élevé', pct: 45, gradient: 'bg-grad-stat-red' },
 ];
 
 const STATUS: {
@@ -97,13 +101,20 @@ const STATUS: {
   textColor: string;
   glow: string;
 }[] = [
-  { label: 'Signalements soumis', value: '1 900', color: 'bg-orange-500', textColor: 'text-white', glow: 'shadow-glow-orange' },
-  { label: 'Signalements refusés', value: '655', color: 'bg-gray-400', textColor: 'text-white', glow: 'shadow-glow-soft' },
-  { label: 'Signalements publiés', value: '1 245', color: 'bg-green-500', textColor: 'text-white', glow: 'shadow-glow-green' },
+  { label: 'Signalements soumis', value: '1 900', color: 'bg-grad-stat-orange', textColor: 'text-white', glow: 'shadow-glow-orange' },
+  { label: 'Signalements refusés', value: '655', color: 'bg-grad-stat-navy', textColor: 'text-white', glow: 'shadow-glow-soft' },
+  { label: 'Signalements publiés', value: '1 245', color: 'bg-grad-stat-green', textColor: 'text-white', glow: 'shadow-glow-green' },
 ];
 
 // Donut evolution value (center %)
 const EVOLUTION_PCT = 12;
+
+// Shared chart-card surface — soft sky-tinted gradient background so the
+// charts and diagrams sit on a consistent on-brand wash instead of flat
+// white. Keeps text legibility with the diagonal pulling brand-sky/30
+// → white → brand-sky/35 across the card.
+const CHART_CARD =
+  'rounded-2xl bg-gradient-to-br from-brand-sky/30 via-white to-brand-sky/35 backdrop-blur-sm border border-white/70 p-6 shadow-glow-soft';
 
 export default function Page() {
   const processingPct = 65;
@@ -140,7 +151,7 @@ export default function Page() {
       </section>
 
       <section className="mt-8 grid gap-4 lg:grid-cols-2">
-        <div className="rounded-2xl bg-white border border-gray-200 p-6 shadow-glow-soft">
+        <div className={CHART_CARD}>
           <h2 className="text-lg font-bold text-brand-navy mb-5">Types de problèmes signalés</h2>
           <ul className="space-y-4">
             {PROBLEMS.map((p) => (
@@ -152,9 +163,9 @@ export default function Page() {
                   </span>
                   <span className="text-sm font-bold text-brand-navy">{p.pct}%</span>
                 </div>
-                <div className="h-1.5 rounded-pill bg-gray-100 overflow-hidden">
+                <div className="h-2 rounded-pill bg-white/60 overflow-hidden border border-white/50">
                   <div
-                    className="h-full rounded-pill bg-brand-blue"
+                    className={`h-full rounded-pill ${p.gradient}`}
                     style={{ width: `${p.pct}%` }}
                   />
                 </div>
@@ -163,22 +174,22 @@ export default function Page() {
           </ul>
         </div>
 
-        <div className="rounded-2xl bg-white border border-gray-200 p-6 shadow-glow-soft">
+        <div className={CHART_CARD}>
           <h2 className="text-lg font-bold text-brand-navy mb-5">Canaux plus signalés</h2>
           <div className="grid grid-cols-2 gap-3">
             {CHANNELS.map((c) => {
               const cardGlow =
-                c.badgeBg === 'bg-orange-500'
+                c.badgeBg === 'bg-grad-stat-orange'
                   ? 'shadow-glow-orange'
-                  : c.badgeBg === 'bg-green-500'
+                  : c.badgeBg === 'bg-grad-stat-green'
                     ? 'shadow-glow-green'
-                    : c.badgeBg === 'bg-violet-500'
+                    : c.badgeBg === 'bg-grad-stat-violet'
                       ? 'shadow-glow-violet'
                       : 'shadow-glow-blue';
               return (
                 <div
                   key={c.label}
-                  className={`rounded-2xl bg-white border-2 ${c.accent} ${cardGlow} p-4`}
+                  className={`rounded-2xl bg-white/80 border-2 ${c.accent} ${cardGlow} p-4 backdrop-blur-sm`}
                 >
                   <div className="flex items-center gap-2 text-sm font-semibold text-brand-navy">
                     <c.Icon className="h-4 w-4" aria-hidden />
@@ -197,7 +208,7 @@ export default function Page() {
       </section>
 
       <section className="mt-4 grid gap-4 lg:grid-cols-2">
-        <div className="rounded-2xl bg-white border border-gray-200 p-6">
+        <div className={CHART_CARD}>
           <h2 className="text-lg font-bold text-brand-navy mb-5">
             Niveau d&apos;activité des signalements
           </h2>
@@ -212,7 +223,7 @@ export default function Page() {
                 <div key={a.label} className="flex flex-col items-center h-full justify-end">
                   <span className="text-xs font-bold text-brand-navy mb-1">{a.pct}%</span>
                   <div
-                    className={`w-full ${a.color} rounded-t-xl`}
+                    className={`w-full ${a.gradient} rounded-t-xl shadow-md`}
                     style={{ height: `${a.pct}%` }}
                   />
                   <span className="mt-2 text-xs font-medium text-gray-500">{a.label}</span>
@@ -222,19 +233,19 @@ export default function Page() {
           </div>
         </div>
 
-        <div className="rounded-2xl bg-white border border-gray-200 p-6">
+        <div className={CHART_CARD}>
           <h2 className="text-lg font-bold text-brand-navy mb-5">Evolution des signalements</h2>
           <div className="grid grid-cols-2 gap-4 items-center">
             <div className="space-y-4">
               <div>
                 <p className="text-sm text-gray-500">+{EVOLUTION_PCT}% vs semaine dernière</p>
-                <span className="mt-1 inline-flex items-center rounded-pill bg-red-500 text-white font-bold px-4 py-1.5 text-sm shadow-glow-red">
+                <span className="mt-1 inline-flex items-center rounded-pill bg-grad-stat-red text-white font-bold px-4 py-1.5 text-sm shadow-glow-red">
                   <AnimatedCounter value="1 900" />
                 </span>
               </div>
               <div>
                 <p className="text-sm text-gray-500">+45% aujourd&apos;hui</p>
-                <span className="mt-1 inline-flex items-center rounded-pill bg-red-500 text-white font-bold px-4 py-1.5 text-sm shadow-glow-red">
+                <span className="mt-1 inline-flex items-center rounded-pill bg-grad-stat-red text-white font-bold px-4 py-1.5 text-sm shadow-glow-red">
                   <AnimatedCounter value="345" />
                 </span>
               </div>
@@ -246,7 +257,7 @@ export default function Page() {
         </div>
       </section>
 
-      <section className="mt-4 rounded-2xl bg-white border border-gray-200 p-6 shadow-glow-soft">
+      <section className={`mt-4 ${CHART_CARD}`}>
         <h2 className="text-lg font-bold text-brand-navy text-center mb-5">
           Statut des signalements
         </h2>
@@ -264,9 +275,9 @@ export default function Page() {
             </div>
           ))}
         </div>
-        <div className="relative h-2 rounded-pill bg-gray-100 overflow-hidden">
+        <div className="relative h-2 rounded-pill bg-white/60 overflow-hidden border border-white/50">
           <div
-            className="absolute inset-y-0 left-0 rounded-pill bg-brand-navy"
+            className="absolute inset-y-0 left-0 rounded-pill bg-grad-stat-navy"
             style={{ width: `${processingPct}%` }}
           />
         </div>

@@ -151,10 +151,32 @@ const config: Config = {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(2.5px)' },
         },
-        // Single-segment dot travel — visible during the first third
-        // of the cycle, then hidden. Combined with per-segment delays
-        // (0s / 1s / 2s on a 3 s cycle) the three connectors read as
-        // a single dot relayed from card 1 → 2 → 3 → 4.
+        // Process-step connector ball animations — the dot starts at the
+        // source card's right edge in the source colour, travels along the
+        // dashed line, and arrives at the destination card's left edge in
+        // the destination colour. background-color and box-shadow halo
+        // both interpolate so the dot visibly shifts hue mid-flight.
+        // Slow 6s cycle with fade-in/fade-out at the line endpoints.
+        'travel-1-to-2': {
+          '0%':   { left: '-4%',  backgroundColor: '#0078BA', boxShadow: '0 0 14px 3px rgba(0, 120, 186, 0.65)', opacity: '0' },
+          '15%':  { left: '8%',   backgroundColor: '#0078BA', boxShadow: '0 0 14px 3px rgba(0, 120, 186, 0.65)', opacity: '1' },
+          '85%':  { left: '92%',  backgroundColor: '#8652FB', boxShadow: '0 0 14px 3px rgba(134, 82, 251, 0.65)', opacity: '1' },
+          '100%': { left: '104%', backgroundColor: '#8652FB', boxShadow: '0 0 14px 3px rgba(134, 82, 251, 0.65)', opacity: '0' },
+        },
+        'travel-2-to-3': {
+          '0%':   { left: '-4%',  backgroundColor: '#8652FB', boxShadow: '0 0 14px 3px rgba(134, 82, 251, 0.65)', opacity: '0' },
+          '15%':  { left: '8%',   backgroundColor: '#8652FB', boxShadow: '0 0 14px 3px rgba(134, 82, 251, 0.65)', opacity: '1' },
+          '85%':  { left: '92%',  backgroundColor: '#F29B11', boxShadow: '0 0 14px 3px rgba(242, 155, 17, 0.65)', opacity: '1' },
+          '100%': { left: '104%', backgroundColor: '#F29B11', boxShadow: '0 0 14px 3px rgba(242, 155, 17, 0.65)', opacity: '0' },
+        },
+        'travel-3-to-4': {
+          '0%':   { left: '-4%',  backgroundColor: '#F29B11', boxShadow: '0 0 14px 3px rgba(242, 155, 17, 0.65)', opacity: '0' },
+          '15%':  { left: '8%',   backgroundColor: '#F29B11', boxShadow: '0 0 14px 3px rgba(242, 155, 17, 0.65)', opacity: '1' },
+          '85%':  { left: '92%',  backgroundColor: '#22C45E', boxShadow: '0 0 14px 3px rgba(34, 196, 94, 0.65)', opacity: '1' },
+          '100%': { left: '104%', backgroundColor: '#22C45E', boxShadow: '0 0 14px 3px rgba(34, 196, 94, 0.65)', opacity: '0' },
+        },
+        // Single-segment legacy dot travel (used only if needed); kept
+        // for backwards compatibility.
         'connector-travel': {
           '0%':   { left: '-10%', opacity: '0', transform: 'translateY(-50%) scale(0.5)' },
           '5%':   { opacity: '1', transform: 'translateY(-50%) scale(1)' },
@@ -178,6 +200,13 @@ const config: Config = {
         shimmer: 'shimmer 5s linear infinite',
         'trend-up': 'trend-up 1.4s ease-in-out infinite',
         'trend-down': 'trend-down 1.4s ease-in-out infinite',
+        // Slow, deliberate connector animations — 6s per cycle so the eye
+        // has time to follow the colour-shift mid-flight rather than
+        // rushing past. 0.8s and 1.6s staggered start so the three balls
+        // ripple from card 1 → 4 in a continuous left-to-right flow.
+        'travel-1-to-2': 'travel-1-to-2 6s ease-in-out infinite',
+        'travel-2-to-3': 'travel-2-to-3 6s ease-in-out infinite 0.8s',
+        'travel-3-to-4': 'travel-3-to-4 6s ease-in-out infinite 1.6s',
         'connector-travel': 'connector-travel 3s cubic-bezier(0.4, 0, 0.2, 1) infinite',
       },
     },

@@ -10,7 +10,7 @@ type Step = {
   iconBorder: string;      // ring around the icon square
   iconColor: string;       // the lucide stroke colour
   titleColor: string;      // the step title text colour
-  stepLabelColor: string;  // the small "Step" caption colour
+  stepLabelColor: string;  // the small "Étape" caption colour
   numberColor: string;     // the giant background watermark digit colour
   topAccent: string;       // soft oval that sits on top of the card
   bottomBar: string;       // gradient bar at the bottom of the card
@@ -130,18 +130,20 @@ export function ProcessSteps() {
                 </span>
 
                 {/* Icon square — light tint of the step colour, soft ring,
-                    coloured stroke. Scales gently on card hover. */}
+                    coloured stroke. Scales gently on card hover. The
+                    Lucide icon itself runs `animate-sparkle-pop` on card
+                    hover only — same rhythm as the banner pill icon. */}
                 <div
-                  className={`relative inline-flex items-center justify-center h-12 w-12 rounded-2xl ${s.iconBg} ${s.iconBorder} ${s.iconColor} transition-transform duration-300 ease-out group-hover:scale-105`}
+                  className={`relative inline-flex items-center justify-center h-12 w-12 rounded-2xl ${s.iconBg} ${s.iconBorder} ${s.iconColor} transition-transform duration-300 ease-out group-hover:scale-110`}
                   aria-hidden
                 >
-                  <s.Icon className="h-6 w-6" />
+                  <s.Icon className="h-6 w-6 group-hover:animate-sparkle-pop drop-shadow-sm" />
                 </div>
 
                 <p
                   className={`mt-5 text-xs font-semibold uppercase tracking-[0.2em] ${s.stepLabelColor}`}
                 >
-                  Step
+                  Étape
                 </p>
                 <h3 className={`mt-1 text-lg md:text-xl font-bold ${s.titleColor}`}>
                   {s.title}

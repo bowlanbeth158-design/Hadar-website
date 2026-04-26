@@ -1,4 +1,4 @@
-import { UserRound, Clock } from 'lucide-react';
+import { UserRound, Clock, ChevronsRight, Sparkles } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
 
 type RiskLevel = 'vigilance' | 'modere' | 'eleve';
@@ -108,12 +108,21 @@ const RISK_STYLE: Record<RiskLevel, RiskStyle> = {
 export function RecentReports() {
   return (
     <section className="mx-auto max-w-[1440px] px-4 md:px-6 py-10 md:py-14">
-      {/* "Live update" badge — same shimmer-pill recipe as the banner pill */}
+      {/* "Live update" pill — upgraded with a soft brand-blue halo, a
+          tiny Sparkles icon, the pulsing green dot, the count, and the
+          shimmer light. Floats gently up-down (animate-float-soft). */}
       <div className="flex justify-center">
-        <span className="relative inline-flex items-center gap-2 rounded-pill border border-white/70 bg-gradient-to-r from-brand-sky via-blue-100 to-brand-sky text-brand-navy px-3 py-1 text-xs font-semibold shadow-sm overflow-hidden">
+        <span className="relative inline-flex items-center gap-2 rounded-pill border border-white/80 bg-gradient-to-r from-brand-sky via-blue-100 to-brand-sky text-brand-navy px-4 py-1.5 text-xs md:text-sm font-semibold shadow-glow-blue overflow-hidden animate-float-soft">
+          <Sparkles className="h-3.5 w-3.5 text-brand-blue animate-sparkle-pop" aria-hidden />
           <span className="relative flex h-2 w-2">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+            <span
+              aria-hidden
+              className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75"
+            />
+            <span
+              aria-hidden
+              className="relative inline-flex h-2 w-2 rounded-full bg-green-500"
+            />
           </span>
           <span className="relative z-10">Mis à jour en direct</span>
           <span
@@ -131,93 +140,112 @@ export function RecentReports() {
         Les 6 derniers signalements publiés par la communauté
       </p>
 
-      <div className="mt-6 overflow-x-auto snap-x snap-mandatory pb-6 -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth">
-        <ul className="flex gap-4">
-          {DEMO_REPORTS.map((r, i) => {
-            const style = RISK_STYLE[r.risk];
-            return (
-              <li
-                key={r.id}
-                className="snap-start shrink-0 w-[82%] sm:w-[48%] md:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-3rem)/4)] animate-fade-in-down"
-                style={{ animationDelay: `${i * 90}ms`, animationFillMode: 'both' }}
-              >
-                {/* Translucent gradient card — same recipe as the banner's
-                    "Recherche instantanée" panel: brand-sky tint top-left,
-                    fades to white in the middle, picks up brand-sky again
-                    bottom-right. Keeps the page palette homogeneous instead
-                    of stamping a hard white box on the sky-tinted backdrop. */}
-                <article
-                  className="group relative h-full rounded-2xl bg-gradient-to-br from-brand-sky/35 via-white to-brand-sky/45 backdrop-blur-sm border border-white/70 p-5 pt-6 flex flex-col shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1 transition-all duration-300 ease-out overflow-hidden"
+      {/* Wrapper sits relative so the swipe-hint chevron can dock on the
+          right edge regardless of how far the carousel has been scrolled. */}
+      <div className="relative mt-6">
+        <div className="overflow-x-auto snap-x snap-mandatory pb-6 -mx-4 px-4 md:mx-0 md:px-0 scroll-smooth">
+          <ul className="flex gap-4">
+            {DEMO_REPORTS.map((r, i) => {
+              const style = RISK_STYLE[r.risk];
+              return (
+                <li
+                  key={r.id}
+                  className="snap-start shrink-0 w-[82%] sm:w-[48%] md:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-3rem)/4)] animate-fade-in-down"
+                  style={{ animationDelay: `${i * 90}ms`, animationFillMode: 'both' }}
                 >
-                  {/* Risk-coloured top stripe — gradient fades to the right
-                      so the colour reads as an accent, not a heavy border. */}
-                  <div
-                    aria-hidden
-                    className={`absolute top-0 inset-x-0 h-1 ${style.stripe}`}
-                  />
+                  {/* Translucent gradient card — same recipe as the banner's
+                      "Recherche instantanée" panel: brand-sky tint top-left,
+                      fades to white in the middle, picks up brand-sky again
+                      bottom-right. Keeps the page palette homogeneous instead
+                      of stamping a hard white box on the sky-tinted backdrop. */}
+                  <article
+                    className="group relative h-full rounded-2xl bg-gradient-to-br from-brand-sky/35 via-white to-brand-sky/45 backdrop-blur-sm border border-white/70 p-5 pt-6 flex flex-col shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1 transition-all duration-300 ease-out overflow-hidden"
+                  >
+                    {/* Risk-coloured top stripe — gradient fades to the right
+                        so the colour reads as an accent, not a heavy border. */}
+                    <div
+                      aria-hidden
+                      className={`absolute top-0 inset-x-0 h-1 ${style.stripe}`}
+                    />
 
-                  {/* Shimmer light passes diagonally across on hover */}
-                  <span
-                    aria-hidden
-                    className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/60 to-transparent skew-x-[-20deg] opacity-0 group-hover:opacity-100 group-hover:animate-shimmer"
-                  />
+                    {/* Shimmer light passes diagonally across on hover */}
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/60 to-transparent skew-x-[-20deg] opacity-0 group-hover:opacity-100 group-hover:animate-shimmer"
+                    />
 
-                  <div className="flex items-start justify-between mb-3 relative">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-start justify-between mb-3 relative">
+                      <div className="flex items-center gap-2">
+                        <span
+                          aria-hidden
+                          className="h-8 w-8 rounded-full bg-gradient-to-br from-white via-brand-sky to-white flex items-center justify-center border border-brand-blue/30 shadow-sm group-hover:scale-110 transition-transform"
+                        >
+                          <UserRound className="h-4 w-4 text-brand-navy" aria-hidden />
+                        </span>
+                        <span className="text-xs font-medium text-gray-500">
+                          Utilisateur anonyme
+                        </span>
+                      </div>
+
+                      {/* Risk badge — pill with pulsing dot in the matching colour */}
                       <span
-                        aria-hidden
-                        className="h-8 w-8 rounded-full bg-gradient-to-br from-white via-brand-sky to-white flex items-center justify-center border border-brand-blue/30 shadow-sm group-hover:scale-110 transition-transform"
+                        className={`inline-flex items-center gap-1.5 rounded-pill ${style.bg} ${style.text} border ${style.border} px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide backdrop-blur-sm`}
+                        aria-label={`Niveau de risque : ${style.label}`}
                       >
-                        <UserRound className="h-4 w-4 text-brand-navy" aria-hidden />
-                      </span>
-                      <span className="text-xs font-medium text-gray-500">
-                        Utilisateur anonyme
+                        <span className="relative flex h-1.5 w-1.5">
+                          <span
+                            className={`absolute inline-flex h-full w-full animate-ping rounded-full ${style.dot} opacity-60`}
+                          />
+                          <span
+                            className={`relative inline-flex h-1.5 w-1.5 rounded-full ${style.dot}`}
+                          />
+                        </span>
+                        {style.label}
                       </span>
                     </div>
 
-                    {/* Risk badge — pill with pulsing dot in the matching colour */}
-                    <span
-                      className={`inline-flex items-center gap-1.5 rounded-pill ${style.bg} ${style.text} border ${style.border} px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide backdrop-blur-sm`}
-                      aria-label={`Niveau de risque : ${style.label}`}
-                    >
-                      <span className="relative flex h-1.5 w-1.5">
-                        <span
-                          className={`absolute inline-flex h-full w-full animate-ping rounded-full ${style.dot} opacity-60`}
-                        />
-                        <span
-                          className={`relative inline-flex h-1.5 w-1.5 rounded-full ${style.dot}`}
-                        />
+                    <h3 className="text-sm font-semibold text-brand-navy flex items-start gap-1.5 relative">
+                      <VerifiedBadge className="h-4 w-4 shrink-0 mt-0.5" />
+                      <span>{r.title}</span>
+                    </h3>
+
+                    <p className="mt-2 text-sm text-gray-600 leading-relaxed flex-1 relative">
+                      {r.description}
+                    </p>
+
+                    <div className="mt-4 flex items-center justify-between text-xs border-t border-white/60 pt-3 relative">
+                      <span className="inline-flex items-center gap-1 text-gray-600">
+                        <span className="font-bold text-base bg-gradient-to-r from-brand-navy to-brand-blue bg-clip-text text-transparent tabular-nums">
+                          {r.similar}
+                        </span>
+                        <span className="text-gray-500">similaires</span>
                       </span>
-                      {style.label}
-                    </span>
-                  </div>
-
-                  <h3 className="text-sm font-semibold text-brand-navy flex items-start gap-1.5 relative">
-                    <VerifiedBadge className="h-4 w-4 shrink-0 mt-0.5" />
-                    <span>{r.title}</span>
-                  </h3>
-
-                  <p className="mt-2 text-sm text-gray-600 leading-relaxed flex-1 relative">
-                    {r.description}
-                  </p>
-
-                  <div className="mt-4 flex items-center justify-between text-xs border-t border-white/60 pt-3 relative">
-                    <span className="inline-flex items-center gap-1 text-gray-600">
-                      <span className="font-bold text-base bg-gradient-to-r from-brand-navy to-brand-blue bg-clip-text text-transparent tabular-nums">
-                        {r.similar}
+                      <span className="inline-flex items-center gap-1 text-gray-500">
+                        <Clock className="h-3 w-3" aria-hidden />
+                        {r.date}
                       </span>
-                      <span className="text-gray-500">similaires</span>
-                    </span>
-                    <span className="inline-flex items-center gap-1 text-gray-500">
-                      <Clock className="h-3 w-3" aria-hidden />
-                      {r.date}
-                    </span>
-                  </div>
-                </article>
-              </li>
-            );
-          })}
-        </ul>
+                    </div>
+                  </article>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+
+        {/* Swipe-hint chevron — only on lg+ where 4 of 6 cards are
+            visible and 2 are hidden to the right. Floats gently up-down
+            and pulses horizontally to suggest "more cards, swipe right". */}
+        <div
+          aria-hidden
+          className="hidden lg:flex pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 z-10 flex-col items-center gap-1"
+        >
+          <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-br from-brand-sky via-blue-100 to-brand-sky text-brand-navy border border-brand-blue/30 shadow-glow-blue animate-float-soft">
+            <ChevronsRight className="h-6 w-6 animate-trend-up" aria-hidden />
+          </span>
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-brand-navy/70">
+            Glisser
+          </span>
+        </div>
       </div>
 
       <p className="mt-4 text-xs text-gray-400 text-center max-w-3xl mx-auto">

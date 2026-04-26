@@ -162,7 +162,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
     <>
       <section
         id="recherche"
-        className="relative scroll-mt-24 overflow-hidden"
+        className="relative scroll-mt-24 overflow-hidden bg-white"
       >
         {/* Static background — only a centered subtle grid, no side blobs */}
         <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
@@ -181,14 +181,8 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
         <div className="mx-auto max-w-[1440px] px-4 md:px-6 pt-14 md:pt-20 pb-10 md:pb-14">
           {/* Spotlight card */}
           <div className="relative mx-auto w-full">
-            {/* Outer soft halo (uniform — no diagonal accent) */}
-            <div
-              className="absolute -inset-6 rounded-[2.5rem] bg-brand-sky/40 blur-3xl opacity-60"
-              aria-hidden
-            />
-
-            {/* Card body */}
-            <div className="relative rounded-[2rem] bg-white/92 backdrop-blur-xl shadow-md px-5 md:px-12 lg:px-16 py-12 md:py-16 text-center overflow-hidden">
+            {/* Card body — pure white, no halo */}
+            <div className="relative rounded-[2rem] bg-white shadow-md px-5 md:px-12 lg:px-16 py-12 md:py-16 text-center overflow-hidden">
               {/* Subtle inner dot pattern */}
               <div
                 className="pointer-events-none absolute inset-0 opacity-[0.05]"

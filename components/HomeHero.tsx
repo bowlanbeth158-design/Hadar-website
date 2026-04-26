@@ -164,11 +164,8 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
         id="recherche"
         className="relative scroll-mt-24 overflow-hidden"
       >
-        {/* Static background — soft cool-blue blobs + subtle grid */}
+        {/* Static background — only a centered subtle grid, no side blobs */}
         <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
-          <div className="absolute top-32 -left-24 h-[28rem] w-[28rem] rounded-full bg-sky-400/25 blur-3xl" />
-          <div className="absolute top-32 -right-24 h-[28rem] w-[28rem] rounded-full bg-sky-400/25 blur-3xl" />
-          <div className="absolute -bottom-20 left-1/3 h-72 w-72 rounded-full bg-brand-sky/30 blur-3xl" />
           <div
             className="absolute inset-0 opacity-[0.04]"
             style={{

@@ -5,8 +5,7 @@ type Step = {
   title: string;
   description: string;
   Icon: LucideIcon;
-  // Tailwind colour fragments — we keep them as strings rather than
-  // template-literals so JIT picks them up.
+  // Tailwind colour fragments — kept as strings so JIT picks them up.
   iconBg: string;          // rounded square behind the icon
   iconBorder: string;      // ring around the icon square
   iconColor: string;       // the lucide stroke colour
@@ -16,18 +15,19 @@ type Step = {
   topAccent: string;       // soft oval that sits on top of the card
   bottomBar: string;       // gradient bar at the bottom of the card
   shadow: string;          // outer glow shadow
-  dotBg: string;           // travelling dot bg colour for the connector
-  dotShadow: string;       // travelling dot glow colour for the connector
-  lineFrom: string;        // connector dashed-line gradient start
-  lineTo: string;          // connector dashed-line gradient end
+  // Connector-segment animation (only set on steps 1, 2, 3 — the
+  // segment that carries the dot from THIS card to the next).
+  travelAnim: string;
+  // Static line gradient for the dashed connector (source → target).
+  lineFrom: string;
+  lineTo: string;
 };
 
 const STEPS: Step[] = [
   {
     n: 1,
     title: 'Signalement',
-    description:
-      'Un utilisateur partage un signalement sur un contact ou un moyen de paiement.',
+    description: 'Une expérience est signalée par un utilisateur.',
     Icon: Siren,
     iconBg: 'bg-brand-blue/10',
     iconBorder: 'ring-1 ring-brand-blue/20',
@@ -38,15 +38,14 @@ const STEPS: Step[] = [
     topAccent: 'bg-gradient-to-b from-brand-blue/30 to-transparent',
     bottomBar: 'bg-gradient-to-r from-brand-blue via-brand-blue/50 to-transparent',
     shadow: 'shadow-glow-blue',
-    dotBg: 'bg-brand-blue',
-    dotShadow: 'rgb(0 120 186 / 0.7)',
+    travelAnim: 'animate-travel-1-to-2',
     lineFrom: '#0078BA',
     lineTo: '#8652FB',
   },
   {
     n: 2,
     title: 'Examen',
-    description: 'Le contenu est examiné selon les règles de la plateforme.',
+    description: 'Le contenu est vérifié selon les règles de la plateforme.',
     Icon: ScanLine,
     iconBg: 'bg-violet-500/10',
     iconBorder: 'ring-1 ring-violet-500/25',
@@ -57,15 +56,14 @@ const STEPS: Step[] = [
     topAccent: 'bg-gradient-to-b from-violet-500/30 to-transparent',
     bottomBar: 'bg-gradient-to-r from-violet-500 via-violet-500/50 to-transparent',
     shadow: 'shadow-glow-violet',
-    dotBg: 'bg-violet-500',
-    dotShadow: 'rgb(134 82 251 / 0.7)',
+    travelAnim: 'animate-travel-2-to-3',
     lineFrom: '#8652FB',
     lineTo: '#F29B11',
   },
   {
     n: 3,
     title: 'Modération',
-    description: 'Le contenu peut être modifié ou supprimé si nécessaire.',
+    description: 'Le contenu peut être ajusté ou refusé si nécessaire.',
     Icon: PencilLine,
     iconBg: 'bg-orange-500/10',
     iconBorder: 'ring-1 ring-orange-500/25',
@@ -76,15 +74,14 @@ const STEPS: Step[] = [
     topAccent: 'bg-gradient-to-b from-orange-500/30 to-transparent',
     bottomBar: 'bg-gradient-to-r from-orange-500 via-orange-500/50 to-transparent',
     shadow: 'shadow-glow-orange',
-    dotBg: 'bg-orange-500',
-    dotShadow: 'rgb(242 155 17 / 0.7)',
+    travelAnim: 'animate-travel-3-to-4',
     lineFrom: '#F29B11',
     lineTo: '#22C45E',
   },
   {
     n: 4,
     title: 'Publication',
-    description: 'Les signalements conformes sont publiés sur la plateforme.',
+    description: 'Les contenus conformes sont publiés sur la plateforme.',
     Icon: Layers,
     iconBg: 'bg-green-500/10',
     iconBorder: 'ring-1 ring-green-500/25',
@@ -95,8 +92,7 @@ const STEPS: Step[] = [
     topAccent: 'bg-gradient-to-b from-green-500/30 to-transparent',
     bottomBar: 'bg-gradient-to-r from-green-500 via-green-500/50 to-transparent',
     shadow: 'shadow-glow-green',
-    dotBg: 'bg-green-500',
-    dotShadow: 'rgb(34 196 94 / 0.7)',
+    travelAnim: '',
     lineFrom: '',
     lineTo: '',
   },
@@ -106,7 +102,7 @@ export function ProcessSteps() {
   return (
     <section className="mx-auto max-w-[1440px] px-4 md:px-6 py-10 md:py-14">
       <h2 className="text-2xl md:text-3xl font-bold bg-grad-stat-navy bg-clip-text text-transparent text-center">
-        Processus des signalements
+        Processus de vérification des signalements
       </h2>
 
       <div className="relative mt-10">
@@ -116,7 +112,7 @@ export function ProcessSteps() {
             return (
               <div
                 key={s.n}
-                className={`relative rounded-3xl bg-white border border-gray-200 ${s.shadow} pt-7 px-6 pb-7 overflow-visible transition-all hover:-translate-y-1 hover:shadow-glow-navy duration-300 ease-out`}
+                className={`group relative rounded-3xl bg-white border border-gray-200 ${s.shadow} pt-7 px-6 pb-7 overflow-visible transition-all hover:-translate-y-1 hover:shadow-glow-navy duration-300 ease-out`}
               >
                 {/* Soft coloured oval sitting just above the card top —
                     gives the "step receives the relay" cue from the design. */}
@@ -158,14 +154,18 @@ export function ProcessSteps() {
                   className={`pointer-events-none absolute bottom-3 left-6 right-6 h-1 rounded-full ${s.bottomBar}`}
                 />
 
-                {/* Connector to the next card (only on lg+, only between cards 1-2-3) */}
+                {/* Connector to the next card — only on lg+, only between
+                    cards 1-2-3. The travelling dot uses a per-segment
+                    keyframe (travel-1-to-2 / 2-to-3 / 3-to-4) that
+                    interpolates background-color and box-shadow so the
+                    dot visibly shifts hue mid-flight. */}
                 {!isLast && (
                   <div
                     aria-hidden
                     className="hidden lg:block absolute top-12 -right-8 h-0.5 w-8 pointer-events-none"
                   >
                     {/* Dashed line with a left → right colour gradient
-                        from this step's colour to the next step's colour. */}
+                        from this step's colour to the next step's. */}
                     <span
                       className="absolute inset-0 rounded-full"
                       style={{
@@ -178,15 +178,12 @@ export function ProcessSteps() {
                       }}
                     />
 
-                    {/* Travelling dot — coloured glow, fades in/out, with
-                        a per-segment delay so the three dots relay one
-                        after the other (0 s → 1 s → 2 s on a 3 s loop). */}
+                    {/* Travelling dot — colour-shifts mid-flight. The
+                        keyframe sets `left`, `background-color`, `box-
+                        shadow`, and `opacity` so the dot fades in,
+                        slides across, hue-shifts, and fades out. */}
                     <span
-                      className={`absolute top-1/2 h-3 w-3 rounded-full ${s.dotBg} animate-connector-travel`}
-                      style={{
-                        animationDelay: `${i}s`,
-                        boxShadow: `0 0 12px 2px ${s.dotShadow}`,
-                      }}
+                      className={`absolute top-1/2 -translate-y-1/2 h-3 w-3 rounded-full ${s.travelAnim}`}
                     />
                   </div>
                 )}

@@ -151,6 +151,17 @@ const config: Config = {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(2.5px)' },
         },
+        // Single-segment dot travel — visible during the first third
+        // of the cycle, then hidden. Combined with per-segment delays
+        // (0s / 1s / 2s on a 3 s cycle) the three connectors read as
+        // a single dot relayed from card 1 → 2 → 3 → 4.
+        'connector-travel': {
+          '0%':   { left: '-10%', opacity: '0', transform: 'translateY(-50%) scale(0.5)' },
+          '5%':   { opacity: '1', transform: 'translateY(-50%) scale(1)' },
+          '28%':  { opacity: '1', transform: 'translateY(-50%) scale(1)' },
+          '33%':  { left: '110%', opacity: '0', transform: 'translateY(-50%) scale(0.5)' },
+          '100%': { left: '110%', opacity: '0', transform: 'translateY(-50%) scale(0.5)' },
+        },
       },
       animation: {
         'alert-pulse': 'alert-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite',
@@ -167,6 +178,7 @@ const config: Config = {
         shimmer: 'shimmer 5s linear infinite',
         'trend-up': 'trend-up 1.4s ease-in-out infinite',
         'trend-down': 'trend-down 1.4s ease-in-out infinite',
+        'connector-travel': 'connector-travel 3s cubic-bezier(0.4, 0, 0.2, 1) infinite',
       },
     },
   },

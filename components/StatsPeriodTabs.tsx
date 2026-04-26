@@ -1,12 +1,20 @@
 'use client';
 
-import { useState } from 'react';
+export type Period = 'today' | 'yesterday' | 'week' | 'month';
 
-const PERIODS = ['Aujourd’hui', 'Hier', 'Derniers 7 jours', 'Derniers 30 jours'] as const;
+export const PERIODS: { id: Period; label: string }[] = [
+  { id: 'today',     label: 'Aujourd’hui' },
+  { id: 'yesterday', label: 'Hier' },
+  { id: 'week',      label: 'Derniers 7 jours' },
+  { id: 'month',     label: 'Derniers 30 jours' },
+];
 
-export function StatsPeriodTabs() {
-  const [active, setActive] = useState<(typeof PERIODS)[number]>(PERIODS[0]);
+type Props = {
+  value: Period;
+  onChange: (id: Period) => void;
+};
 
+export function StatsPeriodTabs({ value, onChange }: Props) {
   return (
     <div
       role="tablist"
@@ -14,21 +22,21 @@ export function StatsPeriodTabs() {
       className="flex flex-wrap justify-center gap-3 mb-8"
     >
       {PERIODS.map((p) => {
-        const isActive = p === active;
+        const isActive = p.id === value;
         return (
           <button
-            key={p}
+            key={p.id}
             type="button"
             role="tab"
             aria-selected={isActive}
-            onClick={() => setActive(p)}
+            onClick={() => onChange(p.id)}
             className={
               isActive
-                ? 'rounded-pill bg-brand-navy text-white px-5 py-2 text-sm font-semibold shadow-glow-navy'
-                : 'rounded-pill bg-gray-100 text-gray-500 px-5 py-2 text-sm font-medium hover:bg-gray-200 transition-colors'
+                ? 'rounded-pill bg-grad-stat-navy text-white px-5 py-2 text-sm font-semibold shadow-glow-navy scale-[1.03] transition-all'
+                : 'rounded-pill bg-white/70 backdrop-blur-sm border border-white/80 text-brand-navy/70 px-5 py-2 text-sm font-medium hover:bg-white hover:text-brand-navy hover:-translate-y-0.5 hover:shadow-sm transition-all'
             }
           >
-            {p}
+            {p.label}
           </button>
         );
       })}

@@ -177,10 +177,27 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
 
   return (
     <>
+      {/* Section uses a fully-transparent top edge that fades into a
+          solid sky-tinted band, then resolves to white well before the
+          verification card. The transparent strip lets the banner's
+          body wash continue uninterrupted into the section so there's
+          no visible seam where one section ends and the next begins.
+          `isolate` still creates the new stacking context that keeps
+          the body's fixed corner blobs from bleeding through onto the
+          verification card. */}
       <section
         id="recherche"
-        className="relative scroll-mt-24 overflow-hidden bg-gradient-to-b from-brand-sky/25 via-white to-white isolate"
+        className="relative scroll-mt-24 overflow-hidden isolate"
       >
+        {/* Soft transition layer — anchored to the top of the section,
+            takes over from the banner's body wash with the same brand-
+            sky tint and fades to transparent before the verification
+            card. Sits above the body but below the section content. */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute top-0 inset-x-0 h-72 bg-gradient-to-b from-brand-sky/45 via-brand-sky/15 to-transparent -z-10"
+        />
+
         {/* Static background — only a centered subtle grid, no side blobs */}
         <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
           <div

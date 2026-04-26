@@ -24,13 +24,16 @@ const POLICY_LINKS = [
   { href: '/regles-publication', label: 'Règles de publication' },
 ];
 
+// Placeholder URLs — to be updated with the official Hadar accounts when
+// they're live. Each handle follows the convention "hadar-ma" / "hadar.ma"
+// / "@hadar.ma" / "@hadar_ma" depending on the platform's slug rules.
 const SOCIALS = [
-  { Icon: LinkedInIcon, label: 'LinkedIn' },
-  { Icon: FacebookIcon, label: 'Facebook' },
-  { Icon: InstagramIcon, label: 'Instagram' },
-  { Icon: TikTokIcon, label: 'TikTok' },
-  { Icon: XIcon, label: 'X' },
-  { Icon: YouTubeIcon, label: 'YouTube' },
+  { Icon: LinkedInIcon, label: 'LinkedIn', href: 'https://www.linkedin.com/company/hadar-ma' },
+  { Icon: FacebookIcon, label: 'Facebook', href: 'https://www.facebook.com/hadar.ma' },
+  { Icon: InstagramIcon, label: 'Instagram', href: 'https://www.instagram.com/hadar.ma' },
+  { Icon: TikTokIcon, label: 'TikTok', href: 'https://www.tiktok.com/@hadar.ma' },
+  { Icon: XIcon, label: 'X', href: 'https://twitter.com/hadar_ma' },
+  { Icon: YouTubeIcon, label: 'YouTube', href: 'https://www.youtube.com/@hadar-ma' },
 ];
 
 export function Footer() {
@@ -85,24 +88,27 @@ export function Footer() {
           <h3 className="text-sm font-semibold mb-3">Contactez-nous</h3>
           <a
             href="mailto:support@hadar.ma"
-            className="inline-flex items-center gap-2 text-sm text-white/90 hover:text-white"
+            className="group inline-flex items-center gap-2 rounded-pill bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 px-3 py-2 text-sm font-medium text-white/90 hover:text-white transition-all"
           >
-            <Mail className="h-4 w-4" aria-hidden /> support@hadar.ma
+            <Mail className="h-4 w-4 group-hover:scale-110 transition-transform" aria-hidden />
+            support@hadar.ma
           </a>
           <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-white/60">
             Suivez-nous
           </p>
-          <div className="mt-2 flex gap-2">
-            {SOCIALS.map(({ Icon, label }) => (
-              <span
+          <div className="mt-2 flex gap-2 flex-wrap">
+            {SOCIALS.map(({ Icon, label, href }) => (
+              <a
                 key={label}
-                role="img"
-                aria-label={`${label} — lien bientôt disponible`}
-                title={`${label} — bientôt`}
-                className="h-9 w-9 rounded-full bg-white/10 text-white/60 flex items-center justify-center cursor-not-allowed"
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                title={label}
+                className="h-9 w-9 rounded-full bg-white/10 hover:bg-white/20 border border-white/10 hover:border-white/40 text-white/80 hover:text-white flex items-center justify-center transition-all hover:-translate-y-0.5"
               >
                 <Icon className="h-4 w-4" aria-hidden />
-              </span>
+              </a>
             ))}
           </div>
         </div>

@@ -184,9 +184,9 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
         <div className="mx-auto max-w-[1440px] px-4 md:px-6 pt-14 md:pt-20 pb-10 md:pb-14">
           {/* Spotlight card */}
           <div className="relative mx-auto w-full">
-            {/* Outer soft halo */}
+            {/* Outer soft halo (uniform — no diagonal accent) */}
             <div
-              className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-br from-sky-400/30 via-brand-sky/40 to-sky-400/30 blur-3xl opacity-70"
+              className="absolute -inset-6 rounded-[2.5rem] bg-brand-sky/40 blur-3xl opacity-60"
               aria-hidden
             />
 

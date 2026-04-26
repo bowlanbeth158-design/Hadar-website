@@ -84,7 +84,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
   const [error, setError] = useState<string | null>(null);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
 
-  // Live active-users counter — drifts between 20 and 65, updates every 3s.
+  // Live active-users counter — drifts between 20 and 65, updates every 5s.
   // Seeded at 27 so SSR and first client render match (no hydration mismatch).
   const [activeUsers, setActiveUsers] = useState(27);
 
@@ -99,7 +99,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
         const next = prev + change;
         return Math.max(20, Math.min(65, next));
       });
-    }, 3000);
+    }, 5000);
     return () => clearInterval(interval);
   }, []);
 
@@ -232,13 +232,14 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
               </div>
 
               {/* Bottom-left floating monthly counter — animated CountUp,
-                  rolling 30-day window wording. */}
+                  rolling 30-day window wording with a vertical-bar separator. */}
               <div className="hidden md:flex absolute bottom-5 left-5 z-10 items-center gap-2 rounded-pill bg-white/85 backdrop-blur-md border border-brand-blue/40 px-3 py-1.5 text-xs font-semibold text-brand-navy shadow-sm">
                 <Sparkles className="h-3.5 w-3.5 text-brand-blue animate-sparkle-pop" aria-hidden />
                 <span>
                   <span className="bg-gradient-to-r from-brand-navy to-brand-blue bg-clip-text text-transparent tabular-nums">
                     +<CountUp to={12408} duration={1800} />
-                  </span>{' '}
+                  </span>
+                  <span className="mx-1.5 text-gray-300" aria-hidden>|</span>
                   30 derniers jours
                 </span>
               </div>

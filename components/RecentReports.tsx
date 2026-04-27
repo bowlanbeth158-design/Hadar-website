@@ -1,7 +1,7 @@
 'use client';
 
-import { useRef } from 'react';
-import { UserRound, Clock, ChevronsRight, Sparkles } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { UserRound, Clock, ChevronsLeft, ChevronsRight, Sparkles } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
 
 type RiskLevel = 'vigilance' | 'modere' | 'eleve';
@@ -110,22 +110,45 @@ const RISK_STYLE: Record<RiskLevel, RiskStyle> = {
 
 export function RecentReports() {
   // Ref to the horizontally-scrollable cards container so the swipe-hint
-  // chevron can scroll the next batch of cards into view on click.
+  // chevrons can scroll the next/previous batch of cards into view on click.
   const scrollerRef = useRef<HTMLDivElement>(null);
+  // canScrollLeft toggles the visibility of the LEFT chevron — it stays
+  // hidden at the very start of the carousel and appears as soon as the
+  // user has scrolled even one pixel to the right, so the cue only shows
+  // up when going back is actually meaningful.
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
 
-  const scrollNext = () => {
+  useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el) return;
+    const update = () => setCanScrollLeft(el.scrollLeft > 4);
+    update();
+    el.addEventListener('scroll', update, { passive: true });
+    window.addEventListener('resize', update);
+    return () => {
+      el.removeEventListener('scroll', update);
+      window.removeEventListener('resize', update);
+    };
+  }, []);
+
+  const scrollByStep = (direction: 1 | -1) => {
     const el = scrollerRef.current;
     if (!el) return;
     // Scroll by ~75% of the visible width so two cards roughly slide in.
-    const step = Math.round(el.clientWidth * 0.75);
-    const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
-    if (atEnd) {
-      // Wrap back to the start when we've reached the end.
-      el.scrollTo({ left: 0, behavior: 'smooth' });
-    } else {
-      el.scrollBy({ left: step, behavior: 'smooth' });
+    const step = Math.round(el.clientWidth * 0.75) * direction;
+    if (direction > 0) {
+      const atEnd = el.scrollLeft + el.clientWidth >= el.scrollWidth - 4;
+      if (atEnd) {
+        // Wrap back to the start when we've reached the end.
+        el.scrollTo({ left: 0, behavior: 'smooth' });
+        return;
+      }
     }
+    el.scrollBy({ left: step, behavior: 'smooth' });
   };
+
+  const scrollNext = () => scrollByStep(1);
+  const scrollPrev = () => scrollByStep(-1);
 
   return (
     <section className="mx-auto max-w-[1440px] px-4 md:px-6 py-10 md:py-14">
@@ -265,10 +288,35 @@ export function RecentReports() {
           </ul>
         </div>
 
-        {/* Swipe-hint chevron — clickable button on lg+ that scrolls the
-            cards container by ~75% of its width on each press. Wraps to
-            the start when reaching the end so the user can keep cycling
-            through the feed. */}
+        {/* Swipe-hint chevron LEFT — only rendered once the carousel has
+            actually been scrolled away from the start, so the back arrow
+            doesn't appear redundant on first load. Same visual recipe as
+            the right chevron but mirrored, with an opacity transition so
+            its appearance feels smooth instead of popping in. */}
+        <button
+          type="button"
+          onClick={scrollPrev}
+          aria-label="Voir les signalements précédents"
+          aria-hidden={!canScrollLeft}
+          tabIndex={canScrollLeft ? 0 : -1}
+          className={`hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 flex-col items-center gap-1 group cursor-pointer transition-all duration-300 ${
+            canScrollLeft
+              ? 'opacity-100 translate-x-0 pointer-events-auto'
+              : 'opacity-0 -translate-x-2 pointer-events-none'
+          }`}
+        >
+          <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-br from-brand-sky via-blue-100 to-brand-sky text-brand-navy border border-brand-blue/30 shadow-glow-blue animate-float-soft group-hover:scale-110 group-hover:shadow-glow-navy transition-all duration-300">
+            <ChevronsLeft className="h-6 w-6 animate-trend-up" aria-hidden />
+          </span>
+          <span className="text-[10px] font-semibold uppercase tracking-wider text-brand-navy/70 group-hover:text-brand-navy transition-colors">
+            Retour
+          </span>
+        </button>
+
+        {/* Swipe-hint chevron RIGHT — clickable button on lg+ that scrolls
+            the cards container by ~75% of its width on each press. Wraps
+            to the start when reaching the end so the user can keep
+            cycling through the feed. Always visible. */}
         <button
           type="button"
           onClick={scrollNext}

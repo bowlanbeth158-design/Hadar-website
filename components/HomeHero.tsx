@@ -189,13 +189,18 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
         id="recherche"
         className="relative scroll-mt-24 overflow-hidden isolate"
       >
-        {/* Soft transition layer — anchored to the top of the section,
-            takes over from the banner's body wash with the same brand-
-            sky tint and fades to transparent before the verification
-            card. Sits above the body but below the section content. */}
+        {/* Soft transition layer — anchored to the top of the section
+            but starting fully TRANSPARENT so there is no hard colour step
+            at the boundary with the banner above. The sky tint ramps up
+            gradually, peaks roughly in the middle of the band, then fades
+            back out before the verification card so the eye reads it as
+            a gentle wash rather than a "line". h-[26rem] gives the
+            gradient enough vertical space to breathe; both endpoints stay
+            transparent so any underlying body wash bleeds through cleanly.
+            Sits above the body but below the section content. */}
         <div
           aria-hidden
-          className="pointer-events-none absolute top-0 inset-x-0 h-72 bg-gradient-to-b from-brand-sky/45 via-brand-sky/15 to-transparent -z-10"
+          className="pointer-events-none absolute top-0 inset-x-0 h-[26rem] bg-gradient-to-b from-transparent via-brand-sky/30 to-transparent -z-10"
         />
 
         {/* Static background — only a centered subtle grid, no side blobs */}

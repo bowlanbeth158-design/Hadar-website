@@ -162,14 +162,17 @@ const config: Config = {
           '92%': { opacity: '1', transform: 'scale(1)' },
           '100%': { opacity: '0', transform: 'scale(0.6)' },
         },
-        // 360° rotation for the banner trust badges. The spin happens
-        // in the first 35 % of the cycle (~2.1 s of the 6 s loop) then
-        // the badge rests at 0° for the rest of the cycle so the
-        // movement reads as a deliberate "flip" rather than a CD-style
-        // continuous turn.
+        // 3D 360° "coin flip" for the banner trust badges. Uses
+        // perspective + rotateY so the badge actually pivots in space
+        // (you can see it tilt edge-on mid-rotation) instead of
+        // spinning flat in the plane like a CD. Perspective is set
+        // inline on the transform itself so we don't need a perspective
+        // wrapper around each badge. The flip happens in the first
+        // 35 % of the 6 s cycle then the badge rests facing the user
+        // at rotateY(360deg) (visually identical to 0deg) for the rest.
         'badge-spin': {
-          '0%':         { transform: 'rotate(0deg)' },
-          '35%, 100%':  { transform: 'rotate(360deg)' },
+          '0%':         { transform: 'perspective(420px) rotateY(0deg)' },
+          '35%, 100%':  { transform: 'perspective(420px) rotateY(360deg)' },
         },
         // Stripe shimmer — used by the RecentReports cards' top
         // accent strip. Background-position drifts from right to left

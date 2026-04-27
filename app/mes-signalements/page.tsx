@@ -17,8 +17,8 @@ export default function Page() {
         <BackButton />
       </div>
       <PageHeading
-        title="Mes signalements"
-        subtitle="Suivez l’état de vos signalements en temps réel."
+        titleKey="userPages.reports.title"
+        subtitleKey="userPages.reports.subtitle"
         align="left"
       />
       <DemoBanner />

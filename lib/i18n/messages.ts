@@ -1143,6 +1143,19 @@ const fr: Dict = {
   'statsPage.evolution.today': '+45% aujourd’hui',
   'statsPage.cta.verify': 'Vérifier maintenant',
   'statsPage.cta.share': 'Partager une expérience',
+
+  // ===== User space — page-level headings + demo banner =====
+  'userPages.alerts.title': 'Mes alertes',
+  'userPages.alerts.subtitle': 'Suivez les contacts et recevez les mises à jour.',
+  'userPages.alerts.stats': '{active} alertes actives · {newNotifs} nouvelles notifications',
+  'userPages.reports.title': 'Mes signalements',
+  'userPages.reports.subtitle': 'Suivez l’état de vos signalements en temps réel.',
+  'userPages.profile.title': 'Mon profil',
+  'userPages.profile.subtitle': 'Gérez vos informations personnelles et votre sécurité.',
+  'userPages.demoBanner.label': 'Aperçu',
+  'userPages.demoBanner.body':
+    '— cette page montre la structure de l’espace utilisateur. L’authentification sera activée prochainement. En attendant,',
+  'userPages.demoBanner.cta': 'créez votre compte',
 };
 
 const en: Dict = {
@@ -2268,6 +2281,19 @@ const en: Dict = {
   'statsPage.evolution.today': '+45% today',
   'statsPage.cta.verify': 'Verify now',
   'statsPage.cta.share': 'Share an experience',
+
+  // ===== User space — page-level headings + demo banner =====
+  'userPages.alerts.title': 'My alerts',
+  'userPages.alerts.subtitle': 'Follow contacts and receive updates.',
+  'userPages.alerts.stats': '{active} active alerts · {newNotifs} new notifications',
+  'userPages.reports.title': 'My reports',
+  'userPages.reports.subtitle': 'Track your reports in real time.',
+  'userPages.profile.title': 'My profile',
+  'userPages.profile.subtitle': 'Manage your personal info and security.',
+  'userPages.demoBanner.label': 'Preview',
+  'userPages.demoBanner.body':
+    '— this page shows the structure of the user area. Authentication will be enabled soon. In the meantime,',
+  'userPages.demoBanner.cta': 'create your account',
 };
 
 const ar: Dict = {
@@ -3394,6 +3420,19 @@ const ar: Dict = {
   'statsPage.evolution.today': '+45% اليوم',
   'statsPage.cta.verify': 'تحقّق الآن',
   'statsPage.cta.share': 'شارك تجربة',
+
+  // ===== User space — page-level headings + demo banner =====
+  'userPages.alerts.title': 'تنبيهاتي',
+  'userPages.alerts.subtitle': 'تابع جهات الاتصال واستقبل التحديثات.',
+  'userPages.alerts.stats': '{active} تنبيهات نشطة · {newNotifs} إشعارات جديدة',
+  'userPages.reports.title': 'بلاغاتي',
+  'userPages.reports.subtitle': 'تابع حالة بلاغاتك في الوقت الفعلي.',
+  'userPages.profile.title': 'ملفي الشخصي',
+  'userPages.profile.subtitle': 'أدر معلوماتك الشخصية والأمان.',
+  'userPages.demoBanner.label': 'معاينة',
+  'userPages.demoBanner.body':
+    '— تعرض هذه الصفحة بنية فضاء المستخدم. سيتم تفعيل المصادقة قريباً. في غضون ذلك،',
+  'userPages.demoBanner.cta': 'أنشئ حسابك',
 };
 
 export const MESSAGES: Record<Locale, Dict> = { fr, en, ar };

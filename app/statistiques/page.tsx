@@ -27,6 +27,7 @@ import { PageHeading } from '@/components/PageHeading';
 import { StatsPeriodTabs, type Period } from '@/components/StatsPeriodTabs';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { AnimatedDonut } from '@/components/AnimatedDonut';
+import { useCurrency } from '@/lib/currency/provider';
 
 type DisplayMode = 'count' | 'percent';
 
@@ -35,9 +36,9 @@ function fmtCount(n: number): string {
   return n.toLocaleString('fr-FR').replace(/,/g, ' ').replace(/ /g, ' ');
 }
 
-function fmtMAD(n: number): string {
-  return `${fmtCount(n)} MAD`;
-}
+// fmtMAD removed — the "Montant signalé" KPI now goes through the
+// CurrencyProvider's format() helper so it follows the active
+// currency picked from the header switcher (MAD / EUR / USD).
 
 function fmtBar(count: number, pct: number, mode: DisplayMode): string {
   return mode === 'count' ? fmtCount(count) : `${pct}%`;
@@ -375,6 +376,11 @@ export default function Page() {
   const [channelsMode, setChannelsMode] = useState<DisplayMode>('count');
   const [activityMode, setActivityMode] = useState<DisplayMode>('count');
 
+  // Currency-aware formatter — same provider as the homepage KPI,
+  // so both surfaces stay in lock-step when the user toggles
+  // currencies in the header.
+  const { format: formatCurrency } = useCurrency();
+
   const data = DATA[period];
 
   const problemsTrigger = `${period}-${problemsMode}`;
@@ -392,7 +398,7 @@ export default function Page() {
     { label: 'Signalements enregistrés',  value: fmtCount(data.global.signalements),  gradient: 'bg-grad-stat-red',    glow: 'shadow-glow-red',    Icon: Siren      },
     { label: 'Contacts signalés',         value: fmtCount(data.global.contacts),      gradient: 'bg-grad-stat-violet', glow: 'shadow-glow-violet', Icon: Smartphone },
     { label: 'Vérifications réalisées',   value: `+${fmtCount(data.global.verifications)}`, gradient: 'bg-grad-stat-sky', glow: 'shadow-glow-sky', Icon: ShieldCheck },
-    { label: 'Montant signalé',           value: fmtMAD(data.global.montant),         gradient: 'bg-grad-stat-green',  glow: 'shadow-glow-green',  Icon: Wallet     },
+    { label: 'Montant signalé',           value: formatCurrency(data.global.montant), gradient: 'bg-grad-stat-green',  glow: 'shadow-glow-green',  Icon: Wallet     },
     { label: 'Dernier signalement',       value: data.global.dernier,                 gradient: 'bg-grad-stat-orange', glow: 'shadow-glow-orange', Icon: Clock      },
   ];
 

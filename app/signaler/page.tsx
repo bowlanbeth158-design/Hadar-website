@@ -39,8 +39,10 @@ const TRUST_BADGES = [
     Icon: UserCheck,
     title: 'Vérifié',
     desc: 'Examiné avant publication',
-    pill: 'bg-gradient-to-r from-orange-100 to-orange-100/70 text-orange-500',
-    ring: 'border-orange-500/30',
+    // text-brand-navy on the orange-100 wash gives high contrast — the
+    // earlier text-orange-500 disappeared into the pill background.
+    pill: 'bg-gradient-to-r from-orange-100 to-orange-100/70 text-brand-navy',
+    ring: 'border-orange-500/40',
   },
 ];
 
@@ -73,6 +75,11 @@ const PROCESS = [
     chip: 'bg-green-500/10 text-green-700',
   },
 ];
+
+// Wider wrapper so the trust pills row fits "Vérifié · Examiné avant
+// publication" without truncation, and the form below matches that
+// width edge-to-edge.
+const WRAPPER = 'mx-auto max-w-4xl';
 
 export default function Page() {
   return (
@@ -109,14 +116,8 @@ export default function Page() {
         accent="red"
       />
 
-      {/* Trust badges + form share the same max-w-3xl wrapper so the
-          three pills row above lines up exactly with the form card
-          below — owner asked for matching widths. */}
-      <div className="mx-auto max-w-3xl">
-        {/* Three trust pills in a 3-column grid so each cell takes the
-            same width and the row reaches the wrapper edges. Icons run
-            animate-sparkle-pop continuously (no hover gate) per owner
-            request. */}
+      {/* Trust badges row + form share the same max-w-4xl wrapper. */}
+      <div className={WRAPPER}>
         <div className="mb-8 grid grid-cols-1 sm:grid-cols-3 gap-3">
           {TRUST_BADGES.map(({ Icon, title, desc, pill, ring }) => (
             <span
@@ -131,14 +132,12 @@ export default function Page() {
           ))}
         </div>
 
-        {/* The form — full width of the wrapper so it visually matches
-            the trust-badges row above (max-w-3xl is now applied here,
-            not on the form itself). */}
         <ReportForm />
       </div>
 
-      {/* Post-submit process */}
-      <section className="mt-10 mx-auto max-w-3xl">
+      {/* Post-submit process — same width wrapper so the row aligns
+          vertically with the form above. */}
+      <section className={`mt-10 ${WRAPPER}`}>
         <h2 className="text-center text-lg md:text-xl font-bold text-brand-navy mb-6">
           Que se passe-t-il après votre signalement&nbsp;?
         </h2>

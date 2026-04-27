@@ -1,6 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  detectUnsafeContent,
+  MODERATION_HINT,
+} from '@/lib/moderationWords';
 import {
   Megaphone,
   UploadCloud,
@@ -204,10 +208,16 @@ export function ReportForm() {
 
   const activeContact = CONTACT_TYPES.find((c) => c.id === contactType) ?? CONTACT_TYPES[0]!;
 
+  // Live content moderation on the description. Recomputed on every
+  // keystroke; cheap (single regex scan per forbidden lemma over a
+  // <=300-char string).
+  const moderation = useMemo(() => detectUnsafeContent(description), [description]);
+
   const canSubmit =
     accepted &&
     problemType !== null &&
     description.trim() !== '' &&
+    !moderation.blocked &&
     evidenceFiles.length > 0 &&
     phase === 'idle';
 
@@ -387,11 +397,38 @@ export function ReportForm() {
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Décrivez brièvement la situation (informations factuelles uniquement)"
-          className="w-full rounded-xl bg-white/85 backdrop-blur-sm border border-gray-200 px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue focus:shadow-sm transition-all resize-y"
+          aria-invalid={moderation.blocked}
+          aria-describedby={moderation.blocked ? 'description-moderation' : 'description-hint'}
+          className={
+            moderation.blocked
+              ? 'w-full rounded-xl bg-white/85 backdrop-blur-sm border border-red-500 ring-2 ring-red-500/20 px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-red-500 focus:shadow-sm transition-all resize-y'
+              : 'w-full rounded-xl bg-white/85 backdrop-blur-sm border border-gray-200 px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue focus:shadow-sm transition-all resize-y'
+          }
         />
-        <p className="mt-2 text-xs text-red-500">
-          Merci de décrire la situation de manière factuelle. Évitez les jugements ou accusations.
-        </p>
+        {moderation.blocked ? (
+          <div
+            id="description-moderation"
+            role="alert"
+            className="mt-2 rounded-xl border border-red-500/30 bg-red-50 px-3 py-2.5 text-xs text-red-700 space-y-1.5"
+          >
+            <p className="font-semibold flex items-start gap-1.5">
+              <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-px" aria-hidden />
+              {moderation.message}
+            </p>
+            <p className="text-red-700/80">{MODERATION_HINT}</p>
+            <p className="text-red-700/60">
+              Mot{moderation.matchedWords.length > 1 ? 's' : ''} détecté
+              {moderation.matchedWords.length > 1 ? 's' : ''} :{' '}
+              <span className="font-mono font-semibold">
+                {moderation.matchedWords.join(', ')}
+              </span>
+            </p>
+          </div>
+        ) : (
+          <p id="description-hint" className="mt-2 text-xs text-red-500">
+            Merci de décrire la situation de manière factuelle. Évitez les jugements ou accusations.
+          </p>
+        )}
       </div>
 
       <div>

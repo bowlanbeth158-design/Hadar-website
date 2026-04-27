@@ -1,9 +1,12 @@
+'use client';
+
 import Link from 'next/link';
 import { Logo } from './Logo';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { CurrencySwitcher } from './CurrencySwitcher';
 import { UserMenu } from './UserMenu';
 import { AlertsPopover } from './AlertsPopover';
+import { useI18n } from '@/lib/i18n/provider';
 
 const ALERT_COUNT = 8;
 
@@ -28,6 +31,8 @@ const NAV_LINK_HOVER =
   'after:transition-all after:duration-300 after:ease-out hover:after:w-full';
 
 export function Header() {
+  const { t } = useI18n();
+
   return (
     <>
       {/* Top WhatsApp strip — full-width centered on the page,
@@ -38,16 +43,14 @@ export function Header() {
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-40 mix-blend-overlay bg-[radial-gradient(circle_at_top_right,white,transparent_60%)]"
         />
-        <span className="relative">
-          Rejoignez notre chaîne WhatsApp pour rester informé des alertes en temps réel.
-        </span>
+        <span className="relative">{t('header.whatsappStrip')}</span>
       </div>
 
       <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur border-b border-gray-200">
         <nav className="mx-auto max-w-[1440px] grid grid-cols-[1fr_auto_1fr] items-center gap-6 px-6 md:px-10 py-3">
           {/* LEFT — logo */}
           <div className="flex items-center">
-            <Link href="/" aria-label="Retour à l'accueil Hadar" className="shrink-0">
+            <Link href="/" aria-label={t('header.homeAria')} className="shrink-0">
               <Logo size="lg" />
             </Link>
           </div>
@@ -56,12 +59,12 @@ export function Header() {
           <ul className="hidden md:flex items-center gap-8 text-sm font-medium text-brand-navy">
             <li>
               <Link href="/" className={`inline-block ${NAV_LINK_HOVER}`}>
-                Accueil
+                {t('nav.home')}
               </Link>
             </li>
             <li>
               <Link href="/comment-ca-marche" className={`inline-block ${NAV_LINK_HOVER}`}>
-                Comment ça marche
+                {t('nav.howItWorks')}
               </Link>
             </li>
             <li>

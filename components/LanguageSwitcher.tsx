@@ -2,28 +2,24 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Check, ChevronDown } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/provider';
+import type { Locale } from '@/lib/i18n/messages';
 
-type Language = 'fr' | 'ar' | 'en';
-
-const LANGUAGES: { id: Language; label: string; native: string; flag: string }[] = [
-  { id: 'fr', label: 'Français', native: 'Français', flag: '🇫🇷' },
-  { id: 'ar', label: 'Arabe', native: 'العربية', flag: '🇲🇦' },
-  { id: 'en', label: 'Anglais', native: 'English', flag: '🇬🇧' },
+const LANGUAGES: { id: Locale; native: string; flag: string }[] = [
+  { id: 'fr', native: 'Français', flag: '🇫🇷' },
+  { id: 'ar', native: 'العربية', flag: '🇲🇦' },
+  { id: 'en', native: 'English', flag: '🇬🇧' },
 ];
 
-const KEY = 'hadar:lang';
-
 export function LanguageSwitcher() {
-  const [lang, setLang] = useState<Language>('fr');
+  // Single source of truth for the active locale: the i18n provider
+  // (mounted in app/layout.tsx). Removes the previous local-only
+  // `hadar:lang` localStorage flag that was orphaned from the
+  // provider's `hadar:settings:lang`, so changing the language now
+  // ACTUALLY swaps every translated surface across the site.
+  const { locale, setLocale, t } = useI18n();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const stored = (typeof window !== 'undefined' && localStorage.getItem(KEY)) as
-      | Language
-      | null;
-    if (stored && LANGUAGES.some((l) => l.id === stored)) setLang(stored);
-  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -41,13 +37,12 @@ export function LanguageSwitcher() {
     };
   }, [open]);
 
-  const select = (id: Language) => {
-    setLang(id);
-    localStorage.setItem(KEY, id);
+  const select = (id: Locale) => {
+    setLocale(id);
     setOpen(false);
   };
 
-  const current = LANGUAGES.find((l) => l.id === lang)!;
+  const current = LANGUAGES.find((l) => l.id === locale)!;
 
   return (
     <div ref={rootRef} className="relative">
@@ -56,7 +51,7 @@ export function LanguageSwitcher() {
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="true"
         aria-expanded={open}
-        aria-label="Changer la langue"
+        aria-label={t('langSwitcher.label')}
         className="inline-flex items-center gap-1.5 rounded-pill hover:bg-gray-50 hover:shadow-glow-soft hover:scale-[1.03] px-2 py-1.5 text-xs font-semibold text-brand-navy transition-all duration-200 ease-out"
       >
         <span aria-hidden className="text-base leading-none">
@@ -75,7 +70,7 @@ export function LanguageSwitcher() {
           className="absolute right-0 top-full mt-2 w-44 rounded-xl bg-white border border-gray-200 shadow-lg overflow-hidden z-50 py-1 animate-fade-in-down"
         >
           {LANGUAGES.map((l) => {
-            const active = l.id === lang;
+            const active = l.id === locale;
             return (
               <button
                 key={l.id}

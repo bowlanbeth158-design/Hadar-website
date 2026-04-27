@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Poppins, Cairo } from 'next/font/google';
 import './globals.css';
 import { PublicMaintenanceGate } from '@/components/PublicMaintenanceGate';
+import { I18nProvider } from '@/lib/i18n/provider';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -61,7 +62,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           className="pointer-events-none fixed -top-32 -left-32 h-[420px] w-[420px] rounded-full bg-sky-400/10 blur-3xl -z-10"
         />
 
-        <PublicMaintenanceGate>{children}</PublicMaintenanceGate>
+        <I18nProvider>
+          <PublicMaintenanceGate>{children}</PublicMaintenanceGate>
+        </I18nProvider>
       </body>
     </html>
   );

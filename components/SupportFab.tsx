@@ -4,605 +4,392 @@ import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import {
   MessageCircle,
   X,
-  ChevronRight,
-  ChevronDown,
-  ChevronLeft,
-  Globe,
-  ArrowRight,
-  Search,
   Home,
   MessageSquare,
   HelpCircle,
-  Ticket,
-  Mail,
-  Inbox,
+  Folder,
+  Search,
   Send,
-  Check,
+  Mail,
+  ChevronRight,
   Loader2,
-  Plus,
 } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/provider';
 import { OFFICIAL_LOGO_URL } from './Logo';
 
-type Tab = 'accueil' | 'messages' | 'aide' | 'tickets';
-type View = 'main' | 'message' | 'article';
-type Lang = 'fr' | 'ar' | 'en';
+type Tab = 'home' | 'messages' | 'help' | 'tickets';
 
-type Article = {
+const POPULAR_QUESTIONS = ['q1', 'q2', 'q3', 'q4'] as const;
+
+const HELP_CATEGORIES: { id: 'verification' | 'signalement' | 'compte' | 'alertes'; items: string[] }[] = [
+  { id: 'verification', items: ['q1', 'q2', 'q3', 'q4'] },
+  { id: 'signalement',  items: ['q1', 'q2', 'q3', 'q4'] },
+  { id: 'compte',       items: ['q1', 'q2', 'q3', 'q4'] },
+  { id: 'alertes',      items: ['q1', 'q2', 'q3'] },
+];
+
+type DemoTicket = {
   id: string;
-  title: string;
-  body: string;
+  titleKey: string;
+  status: 'review' | 'validated' | 'replied';
+  timeKey: string;
 };
 
-const HELP_ARTICLES: Article[] = [
-  {
-    id: '1',
-    title: 'Comment Hadar protège-t-il mes données personnelles ?',
-    body:
-      'Vos signalements sont chiffrés en transit (TLS 1.3) et au repos (AES-256). Seule notre équipe de modération peut accéder aux données nécessaires à la vérification, et tout accès est tracé dans un journal d’audit. Vos informations ne sont jamais revendues à des tiers.',
-  },
-  {
-    id: '2',
-    title: 'Comment fonctionne la modération des signalements ?',
-    body:
-      'Chaque signalement passe par un cycle : Soumis → En cours d’examen → Décision (Publié, À corriger ou Refusé). Notre équipe vérifie les preuves fournies et compare avec d’autres signalements similaires avant validation. Vous recevez une notification à chaque étape.',
-  },
-  {
-    id: '3',
-    title: 'Que signifient les 4 niveaux de risque ?',
-    body:
-      '🟢 Faible — aucun signalement récent. 🟡 Vigilance — 1 à 2 signalements. 🟠 Modéré — 3 à 4 signalements. 🔴 Élevé — 5 signalements ou plus. Le niveau est calculé automatiquement et mis à jour en temps réel.',
-  },
-  {
-    id: '4',
-    title: 'Comment activer la vérification d’identité gratuite ?',
-    body:
-      'Rendez-vous sur Mon profil et cliquez sur « Activer ma vérification d’identité — gratuit ». Suivez les 3 étapes : photo de votre CIN (recto + verso), reconnaissance faciale (Face ID), puis validation manuelle sous 24 heures.',
-  },
+const DEMO_TICKETS: DemoTicket[] = [
+  { id: 't1', titleKey: 'chatbot.tickets.t1.title', status: 'review',    timeKey: 'chatbot.tickets.t1.time' },
+  { id: 't2', titleKey: 'chatbot.tickets.t2.title', status: 'validated', timeKey: 'chatbot.tickets.t2.time' },
+  { id: 't3', titleKey: 'chatbot.tickets.t3.title', status: 'replied',   timeKey: 'chatbot.tickets.t3.time' },
 ];
 
-const TABS: { id: Tab; label: string; Icon: typeof Home }[] = [
-  { id: 'accueil', label: 'Accueil', Icon: Home },
-  { id: 'messages', label: 'Messages', Icon: MessageSquare },
-  { id: 'aide', label: 'Aide', Icon: HelpCircle },
-  { id: 'tickets', label: 'Tickets', Icon: Ticket },
-];
-
-const LANGS: { id: Lang; label: string; flag: string }[] = [
-  { id: 'fr', label: 'Français', flag: '🇫🇷' },
-  { id: 'ar', label: 'العربية', flag: '🇲🇦' },
-  { id: 'en', label: 'English', flag: '🇬🇧' },
-];
-
-const LANG_KEY = 'hadar:support-lang';
+const STATUS_STYLE: Record<DemoTicket['status'], { dot: string; bg: string; text: string; key: string }> = {
+  review:    { dot: 'bg-yellow-300', bg: 'bg-yellow-100', text: 'text-yellow-700', key: 'chatbot.tickets.status.review' },
+  validated: { dot: 'bg-green-500',  bg: 'bg-green-100',  text: 'text-green-700',  key: 'chatbot.tickets.status.validated' },
+  replied:   { dot: 'bg-blue-400',   bg: 'bg-blue-100',   text: 'text-blue-700',   key: 'chatbot.tickets.status.replied' },
+};
 
 export function SupportFab() {
+  const { t, dir } = useI18n();
   const [open, setOpen] = useState(false);
-  const [tab, setTab] = useState<Tab>('accueil');
-  const [view, setView] = useState<View>('main');
-  const [activeArticle, setActiveArticle] = useState<Article | null>(null);
-  const [query, setQuery] = useState('');
-  const [lang, setLang] = useState<Lang>('fr');
-  const [langOpen, setLangOpen] = useState(false);
+  const [tab, setTab] = useState<Tab>('home');
 
-  // Restore stored language
-  useEffect(() => {
-    const stored = typeof window !== 'undefined' ? localStorage.getItem(LANG_KEY) : null;
-    if (stored && LANGS.some((l) => l.id === stored)) setLang(stored as Lang);
-  }, []);
-
-  // ESC closes the right thing depending on the current state
+  // Allow Esc to close the panel.
   useEffect(() => {
     if (!open) return;
     const onEsc = (e: KeyboardEvent) => {
-      if (e.key !== 'Escape') return;
-      if (langOpen) setLangOpen(false);
-      else if (view !== 'main') setView('main');
-      else setOpen(false);
+      if (e.key === 'Escape') setOpen(false);
     };
     window.addEventListener('keydown', onEsc);
     return () => window.removeEventListener('keydown', onEsc);
-  }, [open, view, langOpen]);
-
-  // Reset sub-view when switching tabs
-  useEffect(() => {
-    setView('main');
-    setActiveArticle(null);
-    setQuery('');
-  }, [tab]);
-
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return HELP_ARTICLES;
-    return HELP_ARTICLES.filter((a) => a.title.toLowerCase().includes(q));
-  }, [query]);
-
-  const openArticle = (a: Article) => {
-    setActiveArticle(a);
-    setView('article');
-  };
-
-  const goBack = () => {
-    setView('main');
-    setActiveArticle(null);
-  };
-
-  const pickLang = (id: Lang) => {
-    setLang(id);
-    try {
-      localStorage.setItem(LANG_KEY, id);
-    } catch {
-      // ignore quota errors
-    }
-    setLangOpen(false);
-  };
-
-  const currentLang = LANGS.find((l) => l.id === lang)!;
+  }, [open]);
 
   return (
     <>
-      {/* Floating chat panel */}
+      {/* Floating launcher — swaps icon when the panel is open. */}
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-label={open ? t('chatbot.close') : t('chatbot.openLabel')}
+        aria-expanded={open}
+        className="fixed bottom-6 right-6 z-50 inline-flex items-center justify-center h-14 w-14 rounded-full bg-gradient-to-br from-brand-navy via-brand-blue to-brand-navy text-white shadow-glow-blue hover:scale-105 transition-transform duration-200"
+      >
+        {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
+      </button>
+
       {open && (
         <div
           role="dialog"
-          aria-label="Centre d’aide Hadar"
-          className="fixed bottom-24 right-5 z-40 w-[calc(100vw-40px)] sm:w-[380px] h-[640px] max-h-[calc(100vh-130px)] rounded-2xl bg-white shadow-glow-navy overflow-hidden flex flex-col animate-modal-pop"
+          aria-modal="false"
+          aria-label={t('chatbot.brand')}
+          dir={dir}
+          className="fixed bottom-24 right-4 sm:right-6 z-50 w-[min(380px,calc(100vw-2rem))] h-[min(620px,calc(100vh-7rem))] bg-white rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-gray-200 animate-fade-in-down"
         >
-          {/* Top brand-navy section */}
-          <div className="relative bg-gradient-to-br from-brand-navy via-brand-blue to-brand-navy text-white px-5 pt-5 pb-14 shrink-0">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute inset-0 opacity-40 mix-blend-overlay bg-[radial-gradient(circle_at_top_right,white,transparent_60%)]"
-            />
-
-            <div className="relative flex items-start justify-between gap-3">
-              <div className="flex items-center gap-2">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={OFFICIAL_LOGO_URL}
-                  alt=""
-                  aria-hidden
-                  className="h-6 w-6 object-contain brightness-0 invert opacity-90"
-                />
-                <span className="text-xs font-semibold tracking-wide opacity-90">
-                  Hadar Support
-                </span>
-              </div>
-
-              <div className="relative flex items-center gap-2">
-                {/* Language switcher */}
-                <button
-                  type="button"
-                  aria-label="Changer de langue"
-                  aria-expanded={langOpen}
-                  onClick={() => setLangOpen((v) => !v)}
-                  className="relative h-8 w-8 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-sm flex items-center justify-center transition-colors"
-                >
-                  <Globe className="h-4 w-4" aria-hidden />
-                  <span className="absolute -bottom-1 -right-1 text-[10px]">
-                    {currentLang.flag}
-                  </span>
-                </button>
-
-                {/* Minimize */}
-                <button
-                  type="button"
-                  aria-label="Réduire"
-                  onClick={() => setOpen(false)}
-                  className="h-8 w-8 rounded-full bg-white/15 hover:bg-white/25 backdrop-blur-sm flex items-center justify-center transition-colors"
-                >
-                  <ChevronDown className="h-4 w-4" aria-hidden />
-                </button>
-
-                {/* Language popover */}
-                {langOpen && (
-                  <div className="absolute top-full right-0 mt-2 w-44 rounded-xl bg-white text-brand-navy border border-gray-200 shadow-xl z-10 overflow-hidden animate-fade-in-down">
-                    {LANGS.map((l) => {
-                      const active = l.id === lang;
-                      return (
-                        <button
-                          key={l.id}
-                          type="button"
-                          role="menuitemradio"
-                          aria-checked={active}
-                          onClick={() => pickLang(l.id)}
-                          className={`w-full flex items-center justify-between gap-2 px-3 py-2 text-sm hover:bg-gray-50 ${
-                            active ? 'font-semibold' : 'text-gray-600'
-                          }`}
-                        >
-                          <span className="inline-flex items-center gap-2">
-                            <span className="text-base leading-none">{l.flag}</span>
-                            {l.label}
-                          </span>
-                          {active && <Check className="h-4 w-4 text-brand-blue" aria-hidden />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
+          {/* Header — brand gradient strip with the logo and brand name. */}
+          <div className="relative bg-gradient-to-br from-brand-navy via-brand-blue to-brand-navy text-white px-5 py-4">
+            <div className="flex items-center gap-2.5">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={OFFICIAL_LOGO_URL}
+                alt=""
+                aria-hidden
+                className="h-7 w-7 object-contain bg-white/95 rounded-md p-1"
+              />
+              <span className="text-base font-semibold">{t('chatbot.brand')}</span>
             </div>
-
-            <p className="relative mt-4 text-sm">Bonjour 👋</p>
-            <h2 className="relative mt-1 text-2xl font-bold leading-tight">
-              {view === 'message'
-                ? 'Envoyez-nous un message'
-                : view === 'article'
-                  ? 'Centre d’aide'
-                  : 'Comment pouvons-nous vous aider ?'}
-            </h2>
           </div>
 
-          {/* Body — scrollable, lives below the curved overlap with header */}
-          <div className="flex-1 overflow-y-auto px-5 pb-4 -mt-7">
-            {view === 'message' ? (
-              <MessageForm onBack={goBack} />
-            ) : view === 'article' && activeArticle ? (
-              <ArticleView article={activeArticle} onBack={goBack} />
-            ) : tab === 'accueil' ? (
-              <AccueilContent
-                articles={filtered}
-                query={query}
-                setQuery={setQuery}
-                onArticleClick={openArticle}
-                onMessageClick={() => setView('message')}
-              />
-            ) : tab === 'messages' ? (
-              <MessagesEmpty onStart={() => setView('message')} />
-            ) : tab === 'aide' ? (
-              <AideContent
-                articles={filtered}
-                query={query}
-                setQuery={setQuery}
-                onArticleClick={openArticle}
-              />
-            ) : (
-              <TicketsEmpty onCreate={() => setView('message')} />
-            )}
+          {/* Tab content — scrollable. */}
+          <div className="flex-1 min-h-0 overflow-y-auto bg-gray-50">
+            {tab === 'home'     && <HomeTab onJump={(target) => setTab(target)} />}
+            {tab === 'messages' && <MessagesTab />}
+            {tab === 'help'     && <HelpTab />}
+            {tab === 'tickets'  && <TicketsTab />}
           </div>
 
-          {/* Bottom navigation tabs */}
-          <nav className="shrink-0 border-t border-gray-100 bg-white px-2 py-2 flex items-center justify-around">
-            {TABS.map((t) => {
-              const active = tab === t.id;
-              return (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => setTab(t.id)}
-                  aria-pressed={active}
-                  className={`group flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg transition-colors ${
-                    active ? 'text-brand-navy' : 'text-gray-400 hover:text-brand-navy'
-                  }`}
-                >
-                  <t.Icon
-                    className={`h-5 w-5 transition-transform duration-200 ${
-                      active ? 'scale-110' : 'group-hover:scale-110'
-                    }`}
-                    aria-hidden
-                  />
-                  <span className={`text-[10px] font-semibold ${active ? '' : 'opacity-80'}`}>
-                    {t.label}
-                  </span>
-                </button>
-              );
-            })}
-          </nav>
+          {/* Bottom navigation — 4 tabs. */}
+          <BottomNav tab={tab} setTab={setTab} />
         </div>
       )}
-
-      {/* FAB — always visible */}
-      <button
-        type="button"
-        aria-label={open ? 'Fermer le centre d’aide' : 'Ouvrir le centre d’aide'}
-        aria-expanded={open}
-        onClick={() => setOpen((v) => !v)}
-        className="fixed bottom-5 right-5 z-50 h-14 w-14 rounded-full bg-gradient-to-br from-brand-navy via-brand-blue to-brand-navy text-white shadow-glow-navy hover:scale-110 hover:shadow-glow-blue transition-all duration-200 ease-out flex items-center justify-center"
-      >
-        {open ? (
-          <X className="h-5 w-5 animate-fade-in" aria-hidden />
-        ) : (
-          <MessageCircle className="h-6 w-6 animate-fade-in" aria-hidden />
-        )}
-      </button>
     </>
   );
 }
 
-/* ---------- TAB CONTENT ---------- */
-
-function AccueilContent({
-  articles,
-  query,
-  setQuery,
-  onArticleClick,
-  onMessageClick,
-}: {
-  articles: Article[];
-  query: string;
-  setQuery: (v: string) => void;
-  onArticleClick: (a: Article) => void;
-  onMessageClick: () => void;
-}) {
+// ---------------------------------------------------------------------
+// PAGE 1 — Accueil
+// ---------------------------------------------------------------------
+function HomeTab({ onJump }: { onJump: (t: Tab) => void }) {
+  const { t } = useI18n();
   return (
-    <>
-      {/* "Send us a message" overlapping card */}
-      <button
-        type="button"
-        onClick={onMessageClick}
-        className="group w-full text-left relative block rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 hover:shadow-glow-blue hover:-translate-y-0.5 transition-all duration-200"
-      >
-        <div className="flex items-center justify-between gap-3">
-          <div className="min-w-0">
-            <p className="text-sm font-bold text-brand-navy">Envoyez-nous un message</p>
-            <p className="text-xs text-gray-500 mt-0.5">Nous répondons instantanément</p>
-          </div>
-          <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-brand-navy to-brand-blue text-white shadow-glow-soft group-hover:scale-110 group-hover:translate-x-0.5 transition-transform">
-            <ArrowRight className="h-4 w-4" aria-hidden />
-          </span>
-        </div>
-      </button>
-
-      <SearchInput value={query} onChange={setQuery} />
-
-      <ArticleList articles={articles} onClick={onArticleClick} query={query} />
-    </>
-  );
-}
-
-function AideContent({
-  articles,
-  query,
-  setQuery,
-  onArticleClick,
-}: {
-  articles: Article[];
-  query: string;
-  setQuery: (v: string) => void;
-  onArticleClick: (a: Article) => void;
-}) {
-  return (
-    <>
-      <SearchInput value={query} onChange={setQuery} />
-      <p className="mt-4 mb-2 px-1 text-[11px] uppercase tracking-wide font-semibold text-gray-500">
-        Articles populaires
-      </p>
-      <ArticleList articles={articles} onClick={onArticleClick} query={query} />
-    </>
-  );
-}
-
-function MessagesEmpty({ onStart }: { onStart: () => void }) {
-  return (
-    <div className="mt-10 px-4 text-center">
-      <div className="mx-auto mb-3 inline-flex h-14 w-14 items-center justify-center rounded-full bg-brand-sky/40 border border-brand-sky">
-        <Mail className="h-6 w-6 text-brand-blue" aria-hidden />
+    <div className="p-5 space-y-5">
+      <div>
+        <p className="text-2xl text-brand-navy">{t('chatbot.home.greeting')}</p>
+        <h2 className="mt-1 text-xl font-bold text-brand-navy leading-tight">
+          {t('chatbot.home.title')}
+        </h2>
       </div>
-      <p className="text-sm font-semibold text-brand-navy">Aucun message</p>
-      <p className="mt-1 text-xs text-gray-500 max-w-[260px] mx-auto leading-relaxed">
-        Vos conversations avec notre équipe apparaîtront ici.
-      </p>
+
       <button
         type="button"
-        onClick={onStart}
-        className="mt-4 inline-flex items-center gap-1.5 rounded-pill bg-gradient-to-r from-brand-navy to-brand-blue text-white px-4 py-2 text-xs font-semibold shadow-glow-blue hover:shadow-glow-navy hover:-translate-y-px transition-all"
+        onClick={() => onJump('messages')}
+        className="group w-full flex items-center justify-between gap-3 rounded-2xl bg-white border border-gray-200 hover:border-brand-blue/50 hover:shadow-glow-soft transition-all px-4 py-3.5 text-left"
       >
-        <Send className="h-3.5 w-3.5" aria-hidden />
-        Démarrer une conversation
+        <span>
+          <p className="text-sm font-semibold text-brand-navy">{t('chatbot.home.cta.title')}</p>
+          <p className="text-xs text-gray-500 mt-0.5">{t('chatbot.home.cta.subtitle')}</p>
+        </span>
+        <ChevronRight className="h-4 w-4 text-gray-400 group-hover:text-brand-blue group-hover:translate-x-0.5 transition-all" aria-hidden />
       </button>
+
+      <button
+        type="button"
+        onClick={() => onJump('help')}
+        className="w-full flex items-center gap-2 rounded-pill bg-white border border-gray-200 hover:border-brand-blue/50 px-3.5 py-2 text-sm text-gray-500 transition-colors"
+      >
+        <Search className="h-4 w-4" aria-hidden />
+        {t('chatbot.home.search.placeholder')}
+      </button>
+
+      <div>
+        <p className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-2">
+          {t('chatbot.home.popular.title')}
+        </p>
+        <ul className="space-y-1.5">
+          {POPULAR_QUESTIONS.map((q) => (
+            <li key={q}>
+              <button
+                type="button"
+                onClick={() => onJump('help')}
+                className="group w-full flex items-center justify-between gap-3 rounded-xl bg-white hover:bg-brand-sky/30 border border-gray-200 hover:border-brand-blue/40 px-3.5 py-2.5 text-sm text-brand-navy transition-colors text-left"
+              >
+                <span className="line-clamp-2">{t(`chatbot.home.popular.${q}`)}</span>
+                <ChevronRight className="h-4 w-4 text-gray-400 shrink-0 group-hover:text-brand-blue group-hover:translate-x-0.5 transition-all" aria-hidden />
+              </button>
+            </li>
+          ))}
+        </ul>
+        <button
+          type="button"
+          onClick={() => onJump('help')}
+          className="mt-3 w-full text-xs font-semibold text-brand-blue hover:text-brand-navy transition-colors"
+        >
+          {t('chatbot.home.viewAll')}
+        </button>
+      </div>
     </div>
   );
 }
 
-function TicketsEmpty({ onCreate }: { onCreate: () => void }) {
-  return (
-    <div className="mt-10 px-4 text-center">
-      <div className="mx-auto mb-3 inline-flex h-14 w-14 items-center justify-center rounded-full bg-brand-sky/40 border border-brand-sky">
-        <Ticket className="h-6 w-6 text-brand-blue" aria-hidden />
-      </div>
-      <p className="text-sm font-semibold text-brand-navy">Aucun ticket ouvert</p>
-      <p className="mt-1 text-xs text-gray-500 max-w-[260px] mx-auto leading-relaxed">
-        Vous n’avez aucune demande de support en cours.
-      </p>
-      <button
-        type="button"
-        onClick={onCreate}
-        className="mt-4 inline-flex items-center gap-1.5 rounded-pill bg-gradient-to-r from-brand-navy to-brand-blue text-white px-4 py-2 text-xs font-semibold shadow-glow-blue hover:shadow-glow-navy hover:-translate-y-px transition-all"
-      >
-        <Plus className="h-3.5 w-3.5" aria-hidden />
-        Créer un ticket
-      </button>
-    </div>
-  );
-}
-
-/* ---------- SUB-VIEWS ---------- */
-
-function ArticleView({ article, onBack }: { article: Article; onBack: () => void }) {
-  return (
-    <article className="bg-white rounded-2xl border border-gray-200 shadow-glow-soft p-4">
-      <button
-        type="button"
-        onClick={onBack}
-        className="inline-flex items-center gap-1 text-xs font-semibold text-brand-blue hover:text-brand-navy transition-colors"
-      >
-        <ChevronLeft className="h-3.5 w-3.5" aria-hidden />
-        Retour
-      </button>
-      <h3 className="mt-3 text-base font-bold text-brand-navy leading-snug">{article.title}</h3>
-      <p className="mt-3 text-sm text-gray-600 leading-relaxed">{article.body}</p>
-    </article>
-  );
-}
-
-function MessageForm({ onBack }: { onBack: () => void }) {
-  type Status = 'idle' | 'sending' | 'sent';
-  const [status, setStatus] = useState<Status>('idle');
-  const [subject, setSubject] = useState('');
-  const [body, setBody] = useState('');
+// ---------------------------------------------------------------------
+// PAGE 2 — Messages
+// ---------------------------------------------------------------------
+function MessagesTab() {
+  const { t } = useI18n();
+  const [draft, setDraft] = useState('');
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
 
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!subject.trim() || !body.trim()) return;
-    setStatus('sending');
+    if (!draft.trim() || sending) return;
+    setSending(true);
     setTimeout(() => {
-      setStatus('sent');
-    }, 900);
+      setSending(false);
+      setSent(true);
+      setDraft('');
+      setTimeout(() => setSent(false), 3000);
+    }, 700);
   };
 
-  if (status === 'sent') {
-    return (
-      <div className="bg-white rounded-2xl border border-gray-200 shadow-glow-soft p-5 text-center">
-        <div className="mx-auto mb-3 inline-flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-green-400 to-emerald-500 shadow-glow-green animate-modal-pop">
-          <Check className="h-7 w-7 text-white animate-fade-in" aria-hidden />
-        </div>
-        <p className="text-sm font-bold text-brand-navy">Message envoyé !</p>
-        <p className="mt-1 text-xs text-gray-500 max-w-[260px] mx-auto">
-          Notre équipe revient vers vous dans les plus brefs délais.
+  return (
+    <div className="flex flex-col h-full">
+      <div className="px-5 pt-5">
+        <h2 className="text-xl font-bold text-brand-navy">{t('chatbot.messages.title')}</h2>
+        <p className="text-sm text-gray-500 mt-0.5">{t('chatbot.messages.subtitle')}</p>
+        <p className="mt-3 inline-flex items-center gap-1.5 rounded-pill bg-green-100 text-green-700 px-3 py-1 text-xs font-semibold">
+          <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
+          {t('chatbot.messages.status')}
         </p>
-        <button
-          type="button"
-          onClick={onBack}
-          className="mt-4 inline-flex items-center gap-1 rounded-pill border border-gray-200 text-brand-navy px-4 py-2 text-xs font-semibold hover:border-brand-blue hover:bg-gray-50 transition-colors"
-        >
-          <ChevronLeft className="h-3.5 w-3.5" aria-hidden />
-          Retour
-        </button>
-      </div>
-    );
-  }
-
-  return (
-    <form
-      onSubmit={onSubmit}
-      className="bg-white rounded-2xl border border-gray-200 shadow-glow-soft p-4"
-    >
-      <button
-        type="button"
-        onClick={onBack}
-        className="inline-flex items-center gap-1 text-xs font-semibold text-brand-blue hover:text-brand-navy transition-colors"
-      >
-        <ChevronLeft className="h-3.5 w-3.5" aria-hidden />
-        Retour
-      </button>
-
-      <div className="mt-3 space-y-3">
-        <div>
-          <label htmlFor="msg-subject" className="block text-xs font-semibold text-brand-navy mb-1">
-            Sujet
-          </label>
-          <input
-            id="msg-subject"
-            type="text"
-            required
-            value={subject}
-            onChange={(e) => setSubject(e.target.value)}
-            placeholder="Ex : Question sur la vérification"
-            className="w-full rounded-pill border border-gray-200 bg-white px-3.5 py-2 text-sm text-brand-navy placeholder:text-gray-400 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all"
-          />
-        </div>
-        <div>
-          <label htmlFor="msg-body" className="block text-xs font-semibold text-brand-navy mb-1">
-            Votre message
-          </label>
-          <textarea
-            id="msg-body"
-            required
-            rows={5}
-            value={body}
-            onChange={(e) => setBody(e.target.value)}
-            placeholder="Décrivez votre demande…"
-            className="w-full rounded-2xl border border-gray-200 bg-white px-3.5 py-2.5 text-sm text-brand-navy placeholder:text-gray-400 focus:border-brand-blue focus:ring-2 focus:ring-brand-blue/20 outline-none transition-all resize-none"
-          />
-        </div>
       </div>
 
-      <button
-        type="submit"
-        disabled={status !== 'idle' || !subject.trim() || !body.trim()}
-        className="mt-4 w-full inline-flex items-center justify-center gap-1.5 rounded-pill bg-gradient-to-r from-brand-navy to-brand-blue text-white px-4 py-2.5 text-sm font-semibold shadow-glow-blue hover:shadow-glow-navy hover:-translate-y-px disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200"
-      >
-        {status === 'sending' ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-            Envoi en cours…
-          </>
+      <div className="flex-1 px-5 py-6 flex items-center justify-center text-center">
+        {sent ? (
+          <div className="space-y-2">
+            <Mail className="h-8 w-8 text-green-500 mx-auto" aria-hidden />
+            <p className="text-sm font-semibold text-brand-navy">{t('chatbot.notif.sent')}</p>
+          </div>
         ) : (
-          <>
-            <Send className="h-4 w-4" aria-hidden />
-            Envoyer
-          </>
+          <div className="space-y-1 text-sm text-gray-500">
+            <p className="font-medium text-brand-navy">{t('chatbot.messages.empty.title')}</p>
+            <p>{t('chatbot.messages.empty.subtitle')}</p>
+          </div>
         )}
-      </button>
-    </form>
-  );
-}
+      </div>
 
-/* ---------- SHARED PIECES ---------- */
-
-function SearchInput({
-  value,
-  onChange,
-}: {
-  value: string;
-  onChange: (v: string) => void;
-}) {
-  return (
-    <div className="mt-5 relative">
-      <Search
-        className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
-        aria-hidden
-      />
-      <input
-        type="search"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="Rechercher de l’aide"
-        className="w-full rounded-pill bg-gray-100 border-0 pl-10 pr-4 py-2.5 text-sm text-brand-navy placeholder:text-gray-400 focus:bg-white focus:ring-2 focus:ring-brand-blue/20 focus:outline-none transition-all"
-      />
+      <form
+        onSubmit={onSubmit}
+        className="border-t border-gray-200 bg-white p-3 flex items-center gap-2"
+      >
+        <input
+          type="text"
+          value={draft}
+          onChange={(e) => setDraft(e.target.value)}
+          placeholder={t('chatbot.messages.input.placeholder')}
+          className="flex-1 rounded-pill border border-gray-200 bg-gray-50 px-4 py-2 text-sm text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue focus:bg-white transition-colors"
+        />
+        <button
+          type="submit"
+          disabled={!draft.trim() || sending}
+          aria-label={t('chatbot.messages.send')}
+          className="inline-flex items-center justify-center h-9 w-9 rounded-full bg-brand-blue text-white hover:bg-brand-navy disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        >
+          {sending ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Send className="h-4 w-4" aria-hidden />}
+        </button>
+      </form>
     </div>
   );
 }
 
-function ArticleList({
-  articles,
-  onClick,
-  query,
-}: {
-  articles: Article[];
-  onClick: (a: Article) => void;
-  query: string;
-}) {
-  if (articles.length === 0) {
-    return (
-      <div className="mt-6 px-4 text-center">
-        <div className="mx-auto mb-2 inline-flex h-12 w-12 items-center justify-center rounded-full bg-gray-100">
-          <Inbox className="h-5 w-5 text-gray-400" aria-hidden />
-        </div>
-        <p className="text-sm font-semibold text-brand-navy">Aucun résultat</p>
-        <p className="mt-1 text-xs text-gray-500">
-          Aucun article ne correspond à « {query} ».
-        </p>
-      </div>
-    );
-  }
+// ---------------------------------------------------------------------
+// PAGE 3 — Aide
+// ---------------------------------------------------------------------
+function HelpTab() {
+  const { t } = useI18n();
+  const [query, setQuery] = useState('');
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return HELP_CATEGORIES.map((cat) => ({
+      ...cat,
+      items: cat.items.filter((it) =>
+        q === '' ? true : t(`chatbot.help.${cat.id}.${it}`).toLowerCase().includes(q),
+      ),
+    })).filter((cat) => cat.items.length > 0);
+  }, [query, t]);
 
   return (
-    <ul className="mt-3 space-y-1.5">
-      {articles.map((a) => (
-        <li key={a.id}>
+    <div className="p-5 space-y-4">
+      <div>
+        <h2 className="text-xl font-bold text-brand-navy">{t('chatbot.help.title')}</h2>
+        <p className="text-sm text-gray-500 mt-0.5">{t('chatbot.help.subtitle')}</p>
+      </div>
+
+      <div className="relative">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" aria-hidden />
+        <input
+          type="search"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={t('chatbot.help.search.placeholder')}
+          className="w-full rounded-pill bg-white border border-gray-200 pl-9 pr-3 py-2 text-sm text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue transition-colors"
+        />
+      </div>
+
+      {filtered.length === 0 ? (
+        <p className="text-center text-sm text-gray-400 py-6">{t('chatbot.empty')}</p>
+      ) : (
+        filtered.map((cat) => (
+          <div key={cat.id}>
+            <p className="text-xs font-semibold uppercase tracking-wide text-brand-blue mb-2">
+              {t(`chatbot.help.cat.${cat.id}`)}
+            </p>
+            <ul className="space-y-1">
+              {cat.items.map((it) => (
+                <li key={it}>
+                  <button
+                    type="button"
+                    className="group w-full flex items-center justify-between gap-3 rounded-xl bg-white hover:bg-brand-sky/30 border border-gray-200 hover:border-brand-blue/40 px-3.5 py-2.5 text-sm text-brand-navy transition-colors text-left"
+                  >
+                    <span className="line-clamp-2">{t(`chatbot.help.${cat.id}.${it}`)}</span>
+                    <ChevronRight className="h-4 w-4 text-gray-400 shrink-0 group-hover:text-brand-blue group-hover:translate-x-0.5 transition-all" aria-hidden />
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------
+// PAGE 4 — Suivi
+// ---------------------------------------------------------------------
+function TicketsTab() {
+  const { t } = useI18n();
+  return (
+    <div className="p-5 space-y-4">
+      <div>
+        <h2 className="text-xl font-bold text-brand-navy">{t('chatbot.tickets.title')}</h2>
+        <p className="text-sm text-gray-500 mt-0.5">{t('chatbot.tickets.subtitle')}</p>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2.5">
+        <div className="rounded-xl bg-gradient-to-br from-brand-sky/40 to-white border border-brand-blue/20 p-3 text-center">
+          <p className="text-2xl font-bold tabular-nums bg-grad-stat-navy bg-clip-text text-transparent">
+            2
+          </p>
+          <p className="text-xs text-gray-600">{t('chatbot.tickets.stats.active')}</p>
+        </div>
+        <div className="rounded-xl bg-gradient-to-br from-green-100 to-white border border-green-500/20 p-3 text-center">
+          <p className="text-2xl font-bold tabular-nums text-green-700">5</p>
+          <p className="text-xs text-gray-600">{t('chatbot.tickets.stats.resolved')}</p>
+        </div>
+      </div>
+
+      <ul className="space-y-2">
+        {DEMO_TICKETS.map((tk) => {
+          const s = STATUS_STYLE[tk.status];
+          return (
+            <li key={tk.id}>
+              <button
+                type="button"
+                className="w-full text-left rounded-xl bg-white border border-gray-200 hover:border-brand-blue/40 hover:shadow-glow-soft p-3.5 transition-all"
+              >
+                <p className="text-sm font-semibold text-brand-navy">{t(tk.titleKey)}</p>
+                <p className={`mt-1 inline-flex items-center gap-1.5 rounded-pill ${s.bg} ${s.text} px-2 py-0.5 text-[11px] font-semibold`}>
+                  <span aria-hidden className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
+                  {t(s.key)}
+                </p>
+                <p className="mt-1.5 text-xs text-gray-400">{t(tk.timeKey)}</p>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------
+// Bottom navigation
+// ---------------------------------------------------------------------
+function BottomNav({ tab, setTab }: { tab: Tab; setTab: (t: Tab) => void }) {
+  const { t } = useI18n();
+  const items: { id: Tab; Icon: typeof Home; label: string }[] = [
+    { id: 'home',     Icon: Home,           label: t('chatbot.tab.home') },
+    { id: 'messages', Icon: MessageSquare,  label: t('chatbot.tab.messages') },
+    { id: 'help',     Icon: HelpCircle,     label: t('chatbot.tab.help') },
+    { id: 'tickets',  Icon: Folder,         label: t('chatbot.tab.tickets') },
+  ];
+
+  return (
+    <nav className="border-t border-gray-200 bg-white grid grid-cols-4">
+      {items.map(({ id, Icon, label }) => {
+        const active = id === tab;
+        return (
           <button
+            key={id}
             type="button"
-            onClick={() => onClick(a)}
-            className="group w-full text-left flex items-center justify-between gap-3 rounded-xl bg-gray-100 hover:bg-brand-sky/30 px-4 py-3 text-sm text-brand-navy transition-colors"
+            onClick={() => setTab(id)}
+            className={`flex flex-col items-center justify-center gap-0.5 py-2.5 text-[10px] font-medium transition-colors ${
+              active ? 'text-brand-blue' : 'text-gray-400 hover:text-brand-navy'
+            }`}
           >
-            <span className="line-clamp-2 font-medium">{a.title}</span>
-            <ChevronRight
-              className="h-4 w-4 text-gray-400 shrink-0 transition-all duration-200 group-hover:text-brand-blue group-hover:translate-x-0.5"
-              aria-hidden
-            />
+            <Icon className={`h-5 w-5 ${active ? 'text-brand-blue' : ''}`} aria-hidden />
+            {label}
           </button>
-        </li>
-      ))}
-    </ul>
+        );
+      })}
+    </nav>
   );
 }

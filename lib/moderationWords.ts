@@ -1,137 +1,101 @@
 /**
- * Content moderation for user-submitted reports.
+ * Content moderation for user-submitted reports — simple version.
  *
- * Detects direct insults, accusations, and defamatory terms across
- * French, English, classical Arabic, darija Arabic, and darija
- * written in Latin letters / arabizi.
+ * Detects direct insults, accusations, and defamatory terms.
+ * Languages covered: French, English, classical / darija Arabic,
+ * darija written in Latin letters / arabizi.
  *
- * detectUnsafeContent(text) returns:
- *   { blocked, matchedWords, message }
- *
- * Source file is ASCII-safe: all regex literals use \uXXXX escape
- * sequences for Unicode codepoints. Arabic vocabulary strings
- * inside the FORBIDDEN_WORDS array are also \u-escaped so the
- * file does not depend on the editor's handling of RTL text.
+ * Implementation deliberately avoids any Unicode regex literals
+ * so the source file is build-pipeline safe. The forbidden words
+ * are stored as plain string literals; matching is done via
+ * lowercase substring includes (with whole-word check for Latin
+ * tokens).
  */
 
 export const MODERATION_MESSAGE =
-  "Merci d'éviter les accusations directes. Décrivez uniquement les faits observés.";
+  "Merci d'eviter les accusations directes. Decrivez uniquement les faits observes.";
 
 export const MODERATION_EXAMPLE =
-  'Exemple : Paiement effectué le 12/04, produit non reçu, plus de réponse.';
+  'Exemple : Paiement effectue le 12/04, produit non recu, plus de reponse.';
 
 // Forbidden vocabulary. Plurals and common variants are listed
-// explicitly so the matcher stays simple (whole-word lookup).
+// explicitly so the matcher stays simple.
 export const FORBIDDEN_WORDS: string[] = [
   // ---------- French ----------
   'escroc', 'escrocs', 'escroquerie',
   'arnaqueur', 'arnaqueurs', 'arnaqueuse', 'arnaque',
-  'voleur', 'voleurs', 'voleuse', 'voleuses', 'vol',
-  'fraudeur', 'fraudeurs', 'fraudeuse', 'fraude',
+  'voleur', 'voleurs', 'voleuse', 'voleuses',
+  'fraudeur', 'fraudeurs', 'fraudeuse',
   'menteur', 'menteurs', 'menteuse',
   'criminel', 'criminels', 'criminelle',
   'voyou', 'voyous',
   'salaud', 'salopard',
   'connard', 'connards',
-  'enfoire',
 
   // ---------- English ----------
   'scammer', 'scammers', 'scam',
   'thief', 'thieves',
-  'fraud', 'fraudster', 'fraudsters',
+  'fraudster', 'fraudsters',
   'liar', 'liars',
-  'criminal', 'criminals',
   'crook', 'crooks',
   'cheater', 'cheaters',
   'asshole',
 
-  // ---------- Classical / standard Arabic (\u-escaped) ----------
-  'نصاب',                         // nassab
-  'النصاب',             // al-nassab
-  'نصابين',             // nassabin
-  'نصابون',             // nassabun
-  'شفار',                         // chaffar
-  'الشفار',             // al-chaffar
-  'شفارين',             // chaffarin
-  'محتال',                   // mohtal
-  'المحتال',       // al-mohtal
-  'محتالين',       // mohtalin
-  'سارق',                         // sariq
-  'السارق',             // al-sariq
-  'سارقين',             // sariqin
-  'سراق',                         // surraq
-  'كذاب',                         // kaddab
-  'الكذاب',             // al-kaddab
-  'كذابين',             // kaddabin
-  'لص',                                     // liss
-  'اللص',                         // al-liss
-  'لصوص',                         // lusus
-  'حرامي',                   // harami
-  'الحرامي',       // al-harami
-  'حرامية',             // haramiya
-  'مجرم',                         // mojrim
-  'المجرم',             // al-mojrim
-  'مجرمين',             // mojrimin
-  'كلب',                               // kalb
-  'كلاب',                         // kilab
+  // ---------- Classical / standard Arabic ----------
+  'نصاب',
+  'النصاب',
+  'نصابين',
+  'نصابون',
+  'شفار',
+  'الشفار',
+  'محتال',
+  'المحتال',
+  'سارق',
+  'السارق',
+  'سراق',
+  'كذاب',
+  'الكذاب',
+  'لص',
+  'اللص',
+  'لصوص',
+  'حرامي',
+  'الحرامي',
+  'مجرم',
+  'المجرم',
 
   // ---------- Darija Arabic in Latin letters / arabizi ----------
-  'chafar', 'cheffar', 'chfar', 'chafara',
-  'nassab', 'nsab', 'nassb',
-  '7rami', 'harami', 'hrami', 'haramy',
-  'keddab', 'kedab', 'kdab', 'kdeb', 'kadab',
+  'chafar', 'cheffar', 'chfar',
+  'nassab', 'nsab',
+  '7rami', 'harami', 'hrami',
+  'keddab', 'kedab', 'kdab',
   'mhtal', 'm7tal',
   'mecheft',
-  'wld lhram', 'weld lhram',
-  '7chouma', 'hchouma',
 ];
 
-// All regex use \uXXXX escapes — the source file is ASCII-safe.
-const COMBINING_MARKS = /[̀-ͯ]/g;          // Latin diacritics
-const ARABIC_BLOCK_TEST = /[؀-ۿ]/;
-const ALEF_VARIANTS = /[إأآا]/g; // إ أ آ ا
-const TAA_MARBUTA = /ة/g;                       // ة
-const ALEF_MAQSURA = /ى/g;                      // ى
-const NON_ALLOWED = /[^a-z0-9؀-ۿ\s]/g;
-const TRIPLE_REPEAT = /(.)\1{2,}/g;
-const WHITESPACE = /\s+/g;
+const NORMALIZED_FORBIDDEN = FORBIDDEN_WORDS.map((w) => w.toLowerCase());
 
-const ALEF_TARGET = 'ا';   // ا
-const HEH_TARGET = 'ه';    // ه
-const YEH_TARGET = 'ي';    // ي
-
-/**
- * Normalize an arbitrary user string into a canonical lowercase form
- * suitable for whole-word comparison against the forbidden list.
- */
-export function normalize(text: string): string {
-  if (!text) return '';
-  let n = text.toLowerCase();
-  n = n.normalize('NFD').replace(COMBINING_MARKS, '');
-  n = n
-    .replace(ALEF_VARIANTS, ALEF_TARGET)
-    .replace(TAA_MARBUTA, HEH_TARGET)
-    .replace(ALEF_MAQSURA, YEH_TARGET);
-  n = n.replace(TRIPLE_REPEAT, '$1$1');
-  n = n.replace(NON_ALLOWED, ' ');
-  n = n.replace(WHITESPACE, ' ').trim();
-  return n;
+// Heuristic: does the word contain any non-ASCII char? If so we
+// treat it as an Arabic-script word and use substring match.
+function isNonAscii(s: string): boolean {
+  for (let i = 0; i < s.length; i++) {
+    if (s.charCodeAt(i) > 127) return true;
+  }
+  return false;
 }
-
-const NORMALIZED_FORBIDDEN = FORBIDDEN_WORDS.map(normalize);
 
 function escapeRegex(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function matchesWord(normText: string, normWord: string): boolean {
-  if (!normWord) return false;
-  const isArabicScript = ARABIC_BLOCK_TEST.test(normWord);
-  if (isArabicScript) {
-    return normText.includes(normWord);
+function matchesWord(text: string, word: string): boolean {
+  if (!word) return false;
+  if (isNonAscii(word)) {
+    return text.includes(word);
   }
-  const re = new RegExp(`(?:^|\\s)${escapeRegex(normWord)}(?=$|\\s)`);
-  return re.test(normText);
+  // ASCII / arabizi token: anchored on whitespace or start/end so
+  // "scam" fires inside "this is a scam!" but not inside "scampi".
+  const re = new RegExp('(?:^|\\s)' + escapeRegex(word) + '(?=$|\\s|\\W)');
+  return re.test(text);
 }
 
 export type ModerationResult = {
@@ -144,12 +108,31 @@ export function detectUnsafeContent(text: string): ModerationResult {
   if (!text || text.trim() === '') {
     return { blocked: false, matchedWords: [], message: '' };
   }
-  const norm = normalize(text);
+  // Lowercase + collapse whitespace; strip the most common Latin
+  // accents via a string-replace map (no Unicode regex).
+  let lower = text.toLowerCase();
+  lower = lower
+    .split('é').join('e')
+    .split('è').join('e')
+    .split('ê').join('e')
+    .split('ë').join('e')
+    .split('à').join('a')
+    .split('â').join('a')
+    .split('î').join('i')
+    .split('ï').join('i')
+    .split('ô').join('o')
+    .split('ö').join('o')
+    .split('û').join('u')
+    .split('ù').join('u')
+    .split('ü').join('u')
+    .split('ç').join('c');
+  lower = lower.replace(/\s+/g, ' ').trim();
+
   const matched: string[] = [];
   for (let i = 0; i < FORBIDDEN_WORDS.length; i++) {
     const original = FORBIDDEN_WORDS[i]!;
     const normalizedWord = NORMALIZED_FORBIDDEN[i]!;
-    if (matchesWord(norm, normalizedWord)) {
+    if (matchesWord(lower, normalizedWord)) {
       matched.push(original);
     }
   }
@@ -158,4 +141,26 @@ export function detectUnsafeContent(text: string): ModerationResult {
     matchedWords: matched,
     message: matched.length > 0 ? MODERATION_MESSAGE : '',
   };
+}
+
+export function normalize(text: string): string {
+  // Kept for any future test that imports this — same logic as
+  // detectUnsafeContent's normalisation step.
+  let lower = (text || '').toLowerCase();
+  lower = lower
+    .split('é').join('e')
+    .split('è').join('e')
+    .split('ê').join('e')
+    .split('ë').join('e')
+    .split('à').join('a')
+    .split('â').join('a')
+    .split('î').join('i')
+    .split('ï').join('i')
+    .split('ô').join('o')
+    .split('ö').join('o')
+    .split('û').join('u')
+    .split('ù').join('u')
+    .split('ü').join('u')
+    .split('ç').join('c');
+  return lower.replace(/\s+/g, ' ').trim();
 }

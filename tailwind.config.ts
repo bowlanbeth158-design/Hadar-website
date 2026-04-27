@@ -184,14 +184,16 @@ const config: Config = {
           '33%':  { left: '110%', opacity: '0', transform: 'translateY(-50%) scale(0.5)' },
           '100%': { left: '110%', opacity: '0', transform: 'translateY(-50%) scale(0.5)' },
         },
-        // One-shot card highlight — used on the Canaux plus signalés cards
-        // every time the period or the count/% mode changes. Brief brand-
-        // blue ring expands out and fades, leaving a quick "this card just
-        // updated" cue. forwards keeps the final transparent state.
+        // One-shot card highlight — Canaux plus signalés cards on the
+        // statistiques page on every period / mode change. Toned-down
+        // version per owner feedback: smaller ring spread, lower alpha,
+        // lighter brightness boost so the cue feels like a "soft ping"
+        // rather than a flashbang. forwards keeps the final transparent
+        // resting state.
         'card-flash': {
           '0%':   { boxShadow: '0 0 0 0 rgba(0, 120, 186, 0)',     filter: 'brightness(1)' },
-          '20%':  { boxShadow: '0 0 0 6px rgba(0, 120, 186, 0.55)', filter: 'brightness(1.12)' },
-          '60%':  { boxShadow: '0 0 0 12px rgba(0, 120, 186, 0)',   filter: 'brightness(1.05)' },
+          '25%':  { boxShadow: '0 0 0 3px rgba(0, 120, 186, 0.30)', filter: 'brightness(1.04)' },
+          '70%':  { boxShadow: '0 0 0 6px rgba(0, 120, 186, 0)',    filter: 'brightness(1.02)' },
           '100%': { boxShadow: '0 0 0 0 rgba(0, 120, 186, 0)',     filter: 'brightness(1)' },
         },
       },
@@ -218,8 +220,9 @@ const config: Config = {
         'travel-2-to-3': 'travel-2-to-3 6s ease-in-out infinite 0.8s',
         'travel-3-to-4': 'travel-3-to-4 6s ease-in-out infinite 1.6s',
         'connector-travel': 'connector-travel 3s cubic-bezier(0.4, 0, 0.2, 1) infinite',
-        // One-shot card flash for chart cards on data update.
-        'card-flash': 'card-flash 1.2s ease-out forwards',
+        // One-shot card flash — duration nudged down 1.2s → 0.9s alongside
+        // the toned-down ring so the cue stays brief and discreet.
+        'card-flash': 'card-flash 0.9s ease-out forwards',
       },
     },
   },

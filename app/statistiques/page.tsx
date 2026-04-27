@@ -286,20 +286,22 @@ function DisplayModeToggle({
   );
 }
 
-// Reusable chart-card title row with a docked DisplayModeToggle.
+// Reusable chart-card title row with an optional docked DisplayModeToggle.
 function ChartHeader({
   title,
   mode,
   setMode,
 }: {
   title: string;
-  mode: DisplayMode;
-  setMode: (m: DisplayMode) => void;
+  mode?: DisplayMode;
+  setMode?: (m: DisplayMode) => void;
 }) {
   return (
     <div className="flex items-center justify-between gap-3 mb-5">
       <h2 className="text-lg font-bold text-brand-navy">{title}</h2>
-      <DisplayModeToggle value={mode} onChange={setMode} />
+      {mode !== undefined && setMode !== undefined && (
+        <DisplayModeToggle value={mode} onChange={setMode} />
+      )}
     </div>
   );
 }
@@ -307,11 +309,11 @@ function ChartHeader({
 export default function Page() {
   const [period, setPeriod] = useState<Period>('month');
 
-  // One DisplayMode per chart, so the toggle on each chart is independent.
+  // One DisplayMode per chart that supports it. Status no longer has a
+  // toggle (per owner request), so it always shows raw counts.
   const [problemsMode, setProblemsMode] = useState<DisplayMode>('count');
   const [channelsMode, setChannelsMode] = useState<DisplayMode>('count');
   const [activityMode, setActivityMode] = useState<DisplayMode>('count');
-  const [statusMode,   setStatusMode]   = useState<DisplayMode>('count');
 
   const data = DATA[period];
 
@@ -330,9 +332,6 @@ export default function Page() {
     { label: 'Montant signalé',           value: fmtMAD(data.global.montant),         gradient: 'bg-grad-stat-green',  glow: 'shadow-glow-green',  Icon: Wallet     },
     { label: 'Dernier signalement',       value: data.global.dernier,                 gradient: 'bg-grad-stat-orange', glow: 'shadow-glow-orange', Icon: Clock      },
   ];
-
-  // Status total used for percentage mode on the status pills.
-  const statusTotal = data.status.reduce((s, r) => s + r.count, 0);
 
   return (
     <PageLayout>
@@ -382,7 +381,7 @@ export default function Page() {
                       {p.label}
                     </span>
                     <span className="text-sm font-bold text-brand-navy tabular-nums">
-                      {fmtBar(d.count, d.pct, problemsMode)}
+                      <AnimatedCounter value={fmtBar(d.count, d.pct, problemsMode)} duration={900} />
                     </span>
                   </div>
                   <div className="h-2 rounded-pill bg-white/60 overflow-hidden border border-white/50">
@@ -414,7 +413,7 @@ export default function Page() {
                   <div
                     className={`mt-3 inline-flex items-center justify-center rounded-pill ${c.badgeBg} text-white text-sm font-bold px-3 py-1 tabular-nums`}
                   >
-                    {fmtBar(d.count, d.pct, channelsMode)}
+                    <AnimatedCounter value={fmtBar(d.count, d.pct, channelsMode)} duration={900} />
                   </div>
                 </div>
               );
@@ -438,7 +437,7 @@ export default function Page() {
                 return (
                   <div key={a.label} className="group flex flex-col items-center h-full justify-end cursor-default">
                     <span className="text-xs font-bold text-brand-navy mb-1 tabular-nums group-hover:scale-110 transition-transform">
-                      {fmtBar(d.count, d.pct, activityMode)}
+                      <AnimatedCounter value={fmtBar(d.count, d.pct, activityMode)} duration={900} />
                     </span>
                     <div
                       className={`w-full ${a.gradient} rounded-t-xl shadow-md transition-[height,filter] duration-700 ease-out group-hover:brightness-110 group-hover:shadow-lg`}
@@ -481,21 +480,16 @@ export default function Page() {
       </section>
 
       <section className={`mt-4 ${CHART_CARD}`}>
-        {/* Status header — title is centred but the toggle still docks
-            on the right so the user can switch modes for this chart. */}
-        <div className="flex items-center justify-center gap-3 mb-5 relative">
-          <h2 className="text-lg font-bold text-brand-navy text-center">
-            Statut des signalements
-          </h2>
-          <div className="absolute right-0">
-            <DisplayModeToggle value={statusMode} onChange={setStatusMode} />
-          </div>
-        </div>
+        {/* Status section — owner asked to drop the Nombre/% toggle here.
+            Pills now always show raw counts (the most natural read for a
+            status breakdown). Title stays centred. */}
+        <h2 className="text-lg font-bold text-brand-navy text-center mb-5">
+          Statut des signalements
+        </h2>
 
         <div className="flex flex-wrap justify-center gap-3 mb-5">
           {STATUS_LABELS.map((s, i) => {
             const d = data.status[i]!;
-            const pct = statusTotal > 0 ? Math.round((d.count / statusTotal) * 100) : 0;
             return (
               <div
                 key={s.label}
@@ -503,7 +497,7 @@ export default function Page() {
               >
                 <Siren className="h-4 w-4 group-hover:animate-sparkle-pop" aria-hidden />
                 <span className="text-base font-bold tabular-nums">
-                  <AnimatedCounter value={fmtBar(d.count, pct, statusMode)} />
+                  <AnimatedCounter value={fmtCount(d.count)} />
                 </span>
                 <span className="text-xs opacity-90">{s.label}</span>
               </div>
@@ -522,10 +516,7 @@ export default function Page() {
       </section>
 
       {/* Bottom CTAs — same recipe as the home banner CTAs so the page
-          ends on the exact action surface the banner introduced:
-          green animate-verify-pulse + ShieldCheck siren-wiggle for
-          "Vérifier maintenant", red animate-alert-pulse + Siren
-          siren-wiggle for "Partager une expérience". */}
+          ends on the exact action surface the banner introduced. */}
       <section className="mt-8 flex flex-wrap justify-center gap-3">
         <Link
           href="/#recherche"

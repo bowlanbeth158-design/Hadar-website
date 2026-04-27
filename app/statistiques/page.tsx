@@ -18,6 +18,7 @@ import {
   AlertTriangle,
   VenetianMask,
   Hash,
+  Percent,
   type LucideIcon,
 } from 'lucide-react';
 import { PageLayout } from '@/components/PageLayout';
@@ -38,7 +39,6 @@ function fmtMAD(n: number): string {
   return `${fmtCount(n)} MAD`;
 }
 
-// Format a (count, pct) pair according to the chart's display mode.
 function fmtBar(count: number, pct: number, mode: DisplayMode): string {
   return mode === 'count' ? fmtCount(count) : `${pct}%`;
 }
@@ -62,10 +62,6 @@ type Snapshot = {
   processingPct: number;
 };
 
-// "Dernier signalement" represents the most recent report platform-wide.
-// Today's most recent report falls inside the 7-day and 30-day windows
-// too, so today / week / month all show the same timestamp. Only "Hier"
-// shows yesterday's most recent report.
 const LATEST_GLOBAL = 'il y a 12 min';
 const LATEST_YESTERDAY = 'hier, 19:42';
 
@@ -236,9 +232,6 @@ const STATUS_LABELS: { label: string; color: string; glow: string }[] = [
 const CHART_CARD =
   'rounded-2xl bg-gradient-to-br from-brand-sky/30 via-white to-brand-sky/35 backdrop-blur-sm border border-white/70 p-6 shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-0.5 transition-all duration-300 ease-out';
 
-// AnimatedBar — fills from 0 → pct% on mount AND every time `trigger`
-// changes (period switch / mode toggle). Uses transition-[width] for the
-// smooth left-to-right fill.
 function AnimatedBar({
   pct,
   gradient,
@@ -252,7 +245,6 @@ function AnimatedBar({
   useEffect(() => {
     setWidth(0);
     const id = requestAnimationFrame(() => {
-      // Two RAFs so the browser sees width:0 first, then animates to pct.
       requestAnimationFrame(() => setWidth(pct));
     });
     return () => cancelAnimationFrame(id);
@@ -268,8 +260,6 @@ function AnimatedBar({
   );
 }
 
-// AnimatedColumn — same idea as AnimatedBar but vertical: grows from
-// 0 → pct% on every change of `trigger`, bottom-to-top.
 function AnimatedColumn({
   pct,
   gradient,
@@ -296,9 +286,9 @@ function AnimatedColumn({
   );
 }
 
-// Compact Nombre / % toggle — `Pourcent` text replaces the previous
-// `%` label so the button no longer renders a duplicate % glyph
-// (Lucide Percent icon already shows the % sign).
+// Compact icon-only Nombre / % toggle. The Hash and Percent Lucide icons
+// already read as "#" and "%" so labels are dropped — keeps the toggle
+// minimal and prevents any visual duplication of the % glyph.
 function DisplayModeToggle({
   value,
   onChange,
@@ -318,14 +308,14 @@ function DisplayModeToggle({
         aria-selected={value === 'count'}
         onClick={() => onChange('count')}
         title="Afficher en nombre"
+        aria-label="Afficher en nombre"
         className={
           value === 'count'
-            ? 'inline-flex items-center gap-1 rounded-pill bg-grad-stat-navy text-white px-2.5 py-1 text-[11px] font-semibold shadow-glow-navy'
-            : 'inline-flex items-center gap-1 rounded-pill text-brand-navy/70 hover:text-brand-navy px-2.5 py-1 text-[11px] font-medium transition-colors'
+            ? 'inline-flex items-center justify-center h-7 w-7 rounded-pill bg-grad-stat-navy text-white shadow-glow-navy'
+            : 'inline-flex items-center justify-center h-7 w-7 rounded-pill text-brand-navy/70 hover:text-brand-navy transition-colors'
         }
       >
-        <Hash className="h-3 w-3" aria-hidden />
-        Nombre
+        <Hash className="h-3.5 w-3.5" aria-hidden />
       </button>
       <button
         type="button"
@@ -333,13 +323,14 @@ function DisplayModeToggle({
         aria-selected={value === 'percent'}
         onClick={() => onChange('percent')}
         title="Afficher en pourcentage"
+        aria-label="Afficher en pourcentage"
         className={
           value === 'percent'
-            ? 'inline-flex items-center rounded-pill bg-grad-stat-navy text-white px-2.5 py-1 text-[11px] font-semibold shadow-glow-navy'
-            : 'inline-flex items-center rounded-pill text-brand-navy/70 hover:text-brand-navy px-2.5 py-1 text-[11px] font-medium transition-colors'
+            ? 'inline-flex items-center justify-center h-7 w-7 rounded-pill bg-grad-stat-navy text-white shadow-glow-navy'
+            : 'inline-flex items-center justify-center h-7 w-7 rounded-pill text-brand-navy/70 hover:text-brand-navy transition-colors'
         }
       >
-        Pourcent
+        <Percent className="h-3.5 w-3.5" aria-hidden />
       </button>
     </div>
   );
@@ -373,8 +364,9 @@ export default function Page() {
 
   const data = DATA[period];
 
-  // Triggers are concatenated so any state change (period or mode)
-  // re-fires the AnimatedBar / AnimatedColumn / card-flash animations.
+  // Triggers concatenate period AND mode so any state change re-fires
+  // the AnimatedBar / AnimatedColumn / card-flash animations on the
+  // affected chart only.
   const problemsTrigger = `${period}-${problemsMode}`;
   const channelsTrigger = `${period}-${channelsMode}`;
   const activityTrigger = `${period}-${activityMode}`;

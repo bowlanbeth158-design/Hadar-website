@@ -60,14 +60,14 @@ export function ReportForm() {
 
   return (
     <form
-      // Card surface matches the brand theme: soft brand-sky gradient,
-      // backdrop blur, white/70 border, glow-soft → glow-blue on hover.
-      // Same recipe as the chart cards on /statistiques and the
-      // RecentReports cards on the home page.
-      className="mx-auto max-w-2xl space-y-7 rounded-3xl bg-gradient-to-br from-brand-sky/30 via-white to-brand-sky/35 backdrop-blur-sm border border-white/70 p-6 md:p-8 shadow-glow-soft"
+      // Width is governed by the parent wrapper (max-w-3xl on /signaler).
+      // Removing the inline max-w-2xl lets the form match the trust-pills
+      // row above as the owner asked.
+      className="space-y-7 rounded-3xl bg-gradient-to-br from-brand-sky/30 via-white to-brand-sky/35 backdrop-blur-sm border border-white/70 p-6 md:p-8 shadow-glow-soft"
       onSubmit={(e) => e.preventDefault()}
     >
-      {/* Type de contact */}
+      {/* Type de contact — owner asked for a strict 4 × 2 grid so each
+          row holds exactly four pills of equal width. */}
       <fieldset>
         <legend className="inline-flex items-center gap-2 text-sm font-semibold text-brand-navy mb-3">
           <span
@@ -78,7 +78,7 @@ export function ReportForm() {
           </span>
           Type de contact <span className="text-red-500">*</span>
         </legend>
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {CONTACT_TYPES.map((t) => {
             const isActive = t.id === contactType;
             return (
@@ -89,12 +89,12 @@ export function ReportForm() {
                 onClick={() => setContactType(t.id)}
                 className={
                   isActive
-                    ? 'inline-flex items-center gap-2 rounded-pill bg-brand-navy text-white px-4 py-2 text-sm font-medium shadow-glow-navy scale-[1.02] transition-all'
-                    : 'inline-flex items-center gap-2 rounded-pill bg-white/80 backdrop-blur-sm border border-gray-200 text-brand-navy px-4 py-2 text-sm font-medium hover:border-brand-blue hover:text-brand-blue hover:-translate-y-0.5 hover:shadow-sm transition-all'
+                    ? 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-brand-navy text-white px-3 py-2 text-sm font-medium shadow-glow-navy scale-[1.02] transition-all'
+                    : 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-white/80 backdrop-blur-sm border border-gray-200 text-brand-navy px-3 py-2 text-sm font-medium hover:border-brand-blue hover:text-brand-blue hover:-translate-y-0.5 hover:shadow-sm transition-all'
                 }
               >
                 <t.Icon className="h-4 w-4 shrink-0" aria-hidden />
-                {t.label}
+                <span className="truncate">{t.label}</span>
               </button>
             );
           })}
@@ -124,7 +124,8 @@ export function ReportForm() {
         />
       </div>
 
-      {/* Type de problème */}
+      {/* Type de problème — 2 × 2 on sm+, 1 col on mobile. Active state
+          is red to match the danger nature of the field. */}
       <fieldset>
         <legend className="inline-flex items-center gap-2 text-sm font-semibold text-brand-navy mb-3">
           <span
@@ -135,7 +136,7 @@ export function ReportForm() {
           </span>
           Type de problème <span className="text-red-500">*</span>
         </legend>
-        <div className="grid gap-2 sm:grid-cols-2">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {PROBLEM_TYPES.map((t) => {
             const isActive = t.id === problemType;
             return (
@@ -146,12 +147,12 @@ export function ReportForm() {
                 onClick={() => setProblemType(t.id)}
                 className={
                   isActive
-                    ? 'inline-flex items-center gap-2 rounded-pill bg-red-500 text-white px-4 py-2 text-sm font-medium shadow-glow-red scale-[1.02] transition-all'
-                    : 'inline-flex items-center gap-2 rounded-pill bg-white/80 backdrop-blur-sm border border-gray-200 text-brand-navy px-4 py-2 text-sm font-medium hover:border-red-500/50 hover:text-red-500 hover:-translate-y-0.5 hover:shadow-sm transition-all'
+                    ? 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-red-500 text-white px-4 py-2 text-sm font-medium shadow-glow-red scale-[1.02] transition-all'
+                    : 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-white/80 backdrop-blur-sm border border-gray-200 text-brand-navy px-4 py-2 text-sm font-medium hover:border-red-500/50 hover:text-red-500 hover:-translate-y-0.5 hover:shadow-sm transition-all'
                 }
               >
                 <t.Icon className="h-4 w-4 shrink-0" aria-hidden />
-                {t.label}
+                <span className="truncate">{t.label}</span>
               </button>
             );
           })}
@@ -257,8 +258,7 @@ export function ReportForm() {
         </span>
       </label>
 
-      {/* Submit — same animate-alert-pulse + siren-wiggle recipe as the
-          home banner CTA so the action surfaces stay visually consistent. */}
+      {/* Submit */}
       <button
         type="submit"
         disabled={!canSubmit}

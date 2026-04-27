@@ -161,14 +161,9 @@ export function RecentReports() {
             boxShadow: '0 6px 24px -6px rgba(0, 50, 125, 0.18)',
           },
           {
-            transform: 'translateY(-6px) scale(1.06)',
+            transform: 'translateY(-8px) scale(1.05)',
             boxShadow: '0 18px 40px -10px rgba(0, 120, 186, 0.45)',
-            offset: 0.35,
-          },
-          {
-            transform: 'translateY(0) scale(0.985)',
-            boxShadow: '0 8px 26px -8px rgba(0, 50, 125, 0.20)',
-            offset: 0.7,
+            offset: 0.5,
           },
           {
             transform: 'translateY(0) scale(1)',
@@ -176,8 +171,13 @@ export function RecentReports() {
           },
         ],
         {
-          duration: 900,
-          easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+          // Slow, deliberate breath — 1.6 s total with a smooth
+          // ease-in-out so the lift reads as a confident "pulse"
+          // rather than a quick jitter. No elastic overshoot —
+          // straight scale up to 1.05 and back down for a polished
+          // feel that matches the rest of the brand surface.
+          duration: 1600,
+          easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
           fill: 'none',
         },
       );

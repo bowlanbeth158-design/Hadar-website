@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import {
   Megaphone,
   UploadCloud,
@@ -107,8 +107,25 @@ function ConfettiRain() {
 }
 
 function SuccessCelebration({ onAgain }: { onAgain: () => void }) {
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // On mount, smooth-scroll the celebration card into view so the user
+  // actually sees the "Merci" headline + checkmark + confetti regardless
+  // of where they were on the page when they hit Envoyer. Calculates
+  // the scroll target manually (instead of scrollIntoView) so we can
+  // leave a 60 px breathing room above for the page header / pill.
+  useEffect(() => {
+    if (typeof window === 'undefined' || !cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    const targetY = Math.max(0, rect.top + window.scrollY - 60);
+    window.scrollTo({ top: targetY, behavior: 'smooth' });
+  }, []);
+
   return (
-    <div className="relative rounded-3xl bg-gradient-to-br from-green-100/60 via-white to-brand-sky/40 backdrop-blur-sm border border-white/70 shadow-glow-green overflow-hidden animate-modal-pop">
+    <div
+      ref={cardRef}
+      className="relative rounded-3xl bg-gradient-to-br from-green-100/60 via-white to-brand-sky/40 backdrop-blur-sm border border-white/70 shadow-glow-green overflow-hidden animate-modal-pop scroll-mt-20"
+    >
       <ConfettiRain />
 
       <div className="relative px-6 md:px-10 py-12 md:py-16 text-center">
@@ -169,8 +186,7 @@ function SuccessCelebration({ onAgain }: { onAgain: () => void }) {
           ))}
         </div>
 
-        {/* CTAs — both scroll the page back to the top via the parent's
-            onAgain handler / a fresh navigation. */}
+        {/* CTAs */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <button
             type="button"
@@ -202,8 +218,6 @@ export function ReportForm() {
 
   const activeContact = CONTACT_TYPES.find((c) => c.id === contactType) ?? CONTACT_TYPES[0]!;
 
-  // All four mandatory fields must be satisfied AND we must not be in
-  // the middle of an in-flight submit.
   const canSubmit =
     accepted &&
     problemType !== null &&
@@ -239,9 +253,12 @@ export function ReportForm() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!canSubmit) return;
-    scrollToTop();
     setPhase('sending');
-    // Simulated network delay until /api/reports lands.
+    // Simulated network delay until /api/reports lands. The
+    // SuccessCelebration component scrolls itself into view via its
+    // own useEffect, so we don't pre-scroll here — that way the
+    // viewport is moved AFTER the celebration mounts, guaranteeing the
+    // user lands on the animation no matter how tall the page is.
     setTimeout(() => setPhase('success'), 1200);
   };
 
@@ -401,9 +418,7 @@ export function ReportForm() {
         </p>
       </div>
 
-      {/* Preuves (mandatory) — real <input type="file"> wired through a
-          hidden control + clickable styled label, with a removable file
-          chip per upload (max 5). */}
+      {/* Preuves (mandatory) */}
       <div>
         <label
           htmlFor="evidence"
@@ -444,7 +459,6 @@ export function ReportForm() {
           </p>
         </label>
 
-        {/* Selected files row */}
         {evidenceFiles.length > 0 && (
           <ul className="mt-3 flex flex-wrap gap-2">
             {evidenceFiles.map((f) => (

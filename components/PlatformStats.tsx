@@ -25,6 +25,12 @@ type Stat = {
     ring: string;
     halo: string;
   };
+  // Raw RGBA values for the traveling spotlight overlay, picked from
+  // the brand palette so each card's halo matches its icon chip
+  // (navy / red / violet / sky / green / orange). Inlined as
+  // box-shadow so the colour can vary per card without exploding the
+  // Tailwind class system into one variant per accent.
+  spotlight: { ring: string; glow: string };
 };
 
 const KPI_STATS: Stat[] = [
@@ -38,6 +44,8 @@ const KPI_STATS: Stat[] = [
       ring: 'ring-brand-navy/25',
       halo: 'bg-brand-navy/35',
     },
+    // brand.navy #00327D
+    spotlight: { ring: 'rgba(0, 50, 125, 0.50)', glow: 'rgba(0, 50, 125, 0.55)' },
   },
   {
     label: 'Signalements enregistrés',
@@ -49,6 +57,8 @@ const KPI_STATS: Stat[] = [
       ring: 'ring-red-500/25',
       halo: 'bg-red-500/35',
     },
+    // red.500 #EE4444
+    spotlight: { ring: 'rgba(238, 68, 68, 0.50)', glow: 'rgba(238, 68, 68, 0.55)' },
   },
   {
     label: 'Contacts signalés',
@@ -60,6 +70,8 @@ const KPI_STATS: Stat[] = [
       ring: 'ring-violet-500/25',
       halo: 'bg-violet-500/35',
     },
+    // violet.500 #8652FB
+    spotlight: { ring: 'rgba(134, 82, 251, 0.50)', glow: 'rgba(134, 82, 251, 0.55)' },
   },
   {
     label: 'Vérifications réalisées',
@@ -71,6 +83,8 @@ const KPI_STATS: Stat[] = [
       ring: 'ring-sky-500/25',
       halo: 'bg-sky-500/35',
     },
+    // sky.500 #00BFEE
+    spotlight: { ring: 'rgba(0, 191, 238, 0.50)', glow: 'rgba(0, 191, 238, 0.60)' },
   },
   {
     label: 'Montant signalé',
@@ -82,6 +96,8 @@ const KPI_STATS: Stat[] = [
       ring: 'ring-green-500/25',
       halo: 'bg-green-500/35',
     },
+    // green.500 #22C45E
+    spotlight: { ring: 'rgba(34, 196, 94, 0.50)', glow: 'rgba(34, 196, 94, 0.55)' },
   },
   {
     label: 'Dernier signalement',
@@ -93,6 +109,8 @@ const KPI_STATS: Stat[] = [
       ring: 'ring-orange-500/25',
       halo: 'bg-orange-500/35',
     },
+    // orange.500 #F29B11
+    spotlight: { ring: 'rgba(242, 155, 17, 0.50)', glow: 'rgba(242, 155, 17, 0.60)' },
   },
 ];
 
@@ -136,11 +154,19 @@ export function PlatformStats() {
                 overflow-hidden. Fully transparent at rest, then fades
                 in / out via animate-card-spotlight on a 9 s cycle.
                 Per-card animationDelay of `i * 1500ms` makes the
-                highlight ripple through the grid one card at a time. */}
+                highlight ripple through the grid one card at a time.
+                The halo colour is taken from the card's accent
+                (navy / red / violet / sky / green / orange) so each
+                spotlight matches the icon chip beneath it. Both the
+                inner ring and the outer glow are bundled into a
+                single box-shadow so we don't need a second element. */}
             <span
               aria-hidden
-              className="pointer-events-none absolute inset-0 rounded-2xl ring-2 ring-brand-blue/45 shadow-[0_0_36px_8px_rgba(0,120,186,0.55)] animate-card-spotlight"
-              style={{ animationDelay: `${i * 1500}ms` }}
+              className="pointer-events-none absolute inset-0 rounded-2xl animate-card-spotlight"
+              style={{
+                animationDelay: `${i * 1500}ms`,
+                boxShadow: `0 0 0 2px ${s.spotlight.ring}, 0 0 36px 8px ${s.spotlight.glow}`,
+              }}
             />
 
             <article

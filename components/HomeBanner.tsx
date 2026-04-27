@@ -21,8 +21,8 @@ const AMBASSADOR_IMAGE_URL = 'https://i.postimg.cc/Y0V7C7w3/Hadar-man.png';
 const RASSURES_AVATARS: { src: string; alt: string }[] = [
   { src: 'https://i.postimg.cc/yN5fHvTh/Image-fx-2026-04-26T230722-953.jpg', alt: '' },
   { src: 'https://i.postimg.cc/RVsKyqdb/Image-fx-2026-04-26T230243-224.jpg', alt: '' },
-  { src: 'https://i.postimg.cc/9Frr4bPY/Image-fx-2026-04-26T230922-356.jpg', alt: '' },
   { src: 'https://i.postimg.cc/Y9rStzqR/Image-fx-2026-04-26T230433-696.jpg', alt: '' },
+  { src: 'https://i.postimg.cc/9Frr4bPY/Image-fx-2026-04-26T230922-356.jpg', alt: '' },
 ];
 
 // Pro hover effect shared by the 3 floating cards — pauses the soft

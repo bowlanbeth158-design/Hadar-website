@@ -1040,6 +1040,47 @@ const fr: Dict = {
   'userMenu.myReports': 'Mes signalements',
   'userMenu.myProfile': 'Mon profil',
   'userMenu.logout': 'Déconnexion',
+
+  // ===== Auth pages =====
+  'auth.aria.home': 'Accueil Hadar',
+  'auth.legal.terms': 'Conditions',
+  'auth.legal.privacy': 'Confidentialité',
+  'auth.legal.cookies': 'Cookies',
+  'auth.or': 'ou',
+  'auth.email.label': 'Email',
+  'auth.email.placeholder': 'vous@exemple.com',
+  'auth.password.label': 'Mot de passe',
+
+  'auth.login.title': 'Se connecter',
+  'auth.login.trustPill': 'Plateforme sécurisée · +1200 signalements',
+  'auth.login.continueWithGoogle': 'Continuer avec Google',
+  'auth.login.passwordPlaceholder': '••••••••••••',
+  'auth.login.submit': 'Se connecter',
+  'auth.login.disabled': 'Authentification activée prochainement.',
+  'auth.login.notRegistered': 'Pas encore de compte ?',
+  'auth.login.signupLink': 'S’inscrire',
+  'auth.login.forgotPassword': 'Mot de passe oublié ?',
+
+  'auth.signup.title': 'Créer un compte',
+  'auth.signup.googleButton': 'S’inscrire avec Google',
+  'auth.signup.firstName': 'Prénom',
+  'auth.signup.lastName': 'Nom',
+  'auth.signup.passwordPlaceholder': '12 caractères minimum',
+  'auth.signup.acceptIntro': 'J’accepte les',
+  'auth.signup.acceptTerms': 'conditions générales',
+  'auth.signup.acceptAnd': 'et la',
+  'auth.signup.acceptPrivacy': 'politique de confidentialité',
+  'auth.signup.submit': 'Créer mon compte',
+  'auth.signup.disabled': 'Inscription activée prochainement.',
+  'auth.signup.alreadyAccount': 'Déjà un compte ?',
+  'auth.signup.loginLink': 'Se connecter',
+
+  'auth.forgot.title': 'Mot de passe oublié',
+  'auth.forgot.intro':
+    'Entrez votre email. Si un compte existe, vous recevrez un lien de réinitialisation.',
+  'auth.forgot.submit': 'Envoyer le lien',
+  'auth.forgot.disabled': 'Envoi activé prochainement.',
+  'auth.forgot.backToLogin': '← Retour à la connexion',
 };
 
 const en: Dict = {
@@ -2065,6 +2106,47 @@ const en: Dict = {
   'userMenu.myReports': 'My reports',
   'userMenu.myProfile': 'My profile',
   'userMenu.logout': 'Log out',
+
+  // ===== Auth pages =====
+  'auth.aria.home': 'Hadar home',
+  'auth.legal.terms': 'Terms',
+  'auth.legal.privacy': 'Privacy',
+  'auth.legal.cookies': 'Cookies',
+  'auth.or': 'or',
+  'auth.email.label': 'Email',
+  'auth.email.placeholder': 'you@example.com',
+  'auth.password.label': 'Password',
+
+  'auth.login.title': 'Sign in',
+  'auth.login.trustPill': 'Secure platform · +1,200 reports',
+  'auth.login.continueWithGoogle': 'Continue with Google',
+  'auth.login.passwordPlaceholder': '••••••••••••',
+  'auth.login.submit': 'Sign in',
+  'auth.login.disabled': 'Authentication enabled soon.',
+  'auth.login.notRegistered': 'No account yet?',
+  'auth.login.signupLink': 'Sign up',
+  'auth.login.forgotPassword': 'Forgot your password?',
+
+  'auth.signup.title': 'Create an account',
+  'auth.signup.googleButton': 'Sign up with Google',
+  'auth.signup.firstName': 'First name',
+  'auth.signup.lastName': 'Last name',
+  'auth.signup.passwordPlaceholder': '12 characters minimum',
+  'auth.signup.acceptIntro': 'I accept the',
+  'auth.signup.acceptTerms': 'terms of service',
+  'auth.signup.acceptAnd': 'and the',
+  'auth.signup.acceptPrivacy': 'privacy policy',
+  'auth.signup.submit': 'Create my account',
+  'auth.signup.disabled': 'Sign-up enabled soon.',
+  'auth.signup.alreadyAccount': 'Already have an account?',
+  'auth.signup.loginLink': 'Sign in',
+
+  'auth.forgot.title': 'Forgot password',
+  'auth.forgot.intro':
+    'Enter your email. If an account exists you’ll receive a reset link.',
+  'auth.forgot.submit': 'Send the link',
+  'auth.forgot.disabled': 'Sending enabled soon.',
+  'auth.forgot.backToLogin': '← Back to sign in',
 };
 
 const ar: Dict = {
@@ -3091,6 +3173,47 @@ const ar: Dict = {
   'userMenu.myReports': 'بلاغاتي',
   'userMenu.myProfile': 'ملفي الشخصي',
   'userMenu.logout': 'تسجيل الخروج',
+
+  // ===== Auth pages =====
+  'auth.aria.home': 'الصفحة الرئيسية لـ Hadar',
+  'auth.legal.terms': 'الشروط',
+  'auth.legal.privacy': 'الخصوصية',
+  'auth.legal.cookies': 'الكوكيز',
+  'auth.or': 'أو',
+  'auth.email.label': 'البريد الإلكتروني',
+  'auth.email.placeholder': 'vous@exemple.com',
+  'auth.password.label': 'كلمة المرور',
+
+  'auth.login.title': 'تسجيل الدخول',
+  'auth.login.trustPill': 'منصة آمنة · أكثر من 1200 بلاغ',
+  'auth.login.continueWithGoogle': 'المتابعة باستخدام Google',
+  'auth.login.passwordPlaceholder': '••••••••••••',
+  'auth.login.submit': 'تسجيل الدخول',
+  'auth.login.disabled': 'سيتم تفعيل المصادقة قريباً.',
+  'auth.login.notRegistered': 'ليس لديك حساب بعد ؟',
+  'auth.login.signupLink': 'سجّل الآن',
+  'auth.login.forgotPassword': 'نسيت كلمة المرور ؟',
+
+  'auth.signup.title': 'إنشاء حساب',
+  'auth.signup.googleButton': 'التسجيل باستخدام Google',
+  'auth.signup.firstName': 'الاسم الشخصي',
+  'auth.signup.lastName': 'الاسم العائلي',
+  'auth.signup.passwordPlaceholder': '12 حرفاً على الأقل',
+  'auth.signup.acceptIntro': 'أوافق على',
+  'auth.signup.acceptTerms': 'شروط الاستخدام',
+  'auth.signup.acceptAnd': 'وعلى',
+  'auth.signup.acceptPrivacy': 'سياسة الخصوصية',
+  'auth.signup.submit': 'إنشاء حسابي',
+  'auth.signup.disabled': 'سيتم تفعيل التسجيل قريباً.',
+  'auth.signup.alreadyAccount': 'لديك حساب بالفعل ؟',
+  'auth.signup.loginLink': 'تسجيل الدخول',
+
+  'auth.forgot.title': 'نسيت كلمة المرور',
+  'auth.forgot.intro':
+    'أدخل بريدك الإلكتروني. إذا كان لديك حساب فستصلك رسالة بإعادة التعيين.',
+  'auth.forgot.submit': 'إرسال الرابط',
+  'auth.forgot.disabled': 'سيتم تفعيل الإرسال قريباً.',
+  'auth.forgot.backToLogin': '→ العودة إلى تسجيل الدخول',
 };
 
 export const MESSAGES: Record<Locale, Dict> = { fr, en, ar };

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import {
   Users,
@@ -18,7 +18,6 @@ import {
   AlertTriangle,
   VenetianMask,
   Hash,
-  Percent,
   type LucideIcon,
 } from 'lucide-react';
 import { PageLayout } from '@/components/PageLayout';
@@ -40,24 +39,18 @@ function fmtMAD(n: number): string {
 }
 
 // Format a (count, pct) pair according to the chart's display mode.
-// - 'count'   → "1 245"
-// - 'percent' → "50%"   (single % suffix; never double)
 function fmtBar(count: number, pct: number, mode: DisplayMode): string {
   return mode === 'count' ? fmtCount(count) : `${pct}%`;
 }
 
-// One snapshot of the page numbers per analysis period. Real values will
-// come from the /api/stats endpoint when the backend lands; for now these
-// are owner-validated mock numbers chosen so the period tabs visibly
-// change every chart on the page.
 type Snapshot = {
   global: {
     utilisateurs: number;
     signalements: number;
     contacts: number;
     verifications: number;
-    montant: number; // MAD
-    dernier: string; // e.g. "il y a 12 min"
+    montant: number;
+    dernier: string;
   };
   problems: { count: number; pct: number }[];
   channels: { count: number; pct: number }[];
@@ -69,6 +62,13 @@ type Snapshot = {
   processingPct: number;
 };
 
+// "Dernier signalement" represents the most recent report platform-wide.
+// Today's most recent report falls inside the 7-day and 30-day windows
+// too, so today / week / month all show the same timestamp. Only "Hier"
+// shows yesterday's most recent report.
+const LATEST_GLOBAL = 'il y a 12 min';
+const LATEST_YESTERDAY = 'hier, 19:42';
+
 const DATA: Record<Period, Snapshot> = {
   today: {
     global: {
@@ -77,7 +77,7 @@ const DATA: Record<Period, Snapshot> = {
       contacts: 12,
       verifications: 512,
       montant: 14_200,
-      dernier: 'il y a 12 min',
+      dernier: LATEST_GLOBAL,
     },
     problems: [
       { count: 18, pct: 49 },
@@ -110,7 +110,7 @@ const DATA: Record<Period, Snapshot> = {
       contacts: 14,
       verifications: 580,
       montant: 18_400,
-      dernier: 'hier, 19:42',
+      dernier: LATEST_YESTERDAY,
     },
     problems: [
       { count: 21, pct: 50 },
@@ -143,7 +143,7 @@ const DATA: Record<Period, Snapshot> = {
       contacts: 78,
       verifications: 3_120,
       montant: 95_300,
-      dernier: 'il y a 2 h',
+      dernier: LATEST_GLOBAL,
     },
     problems: [
       { count: 107, pct: 50 },
@@ -176,7 +176,7 @@ const DATA: Record<Period, Snapshot> = {
       contacts: 346,
       verifications: 15_000,
       montant: 420_000,
-      dernier: 'il y a 2 h',
+      dernier: LATEST_GLOBAL,
     },
     problems: [
       { count: 623, pct: 50 },
@@ -236,9 +236,69 @@ const STATUS_LABELS: { label: string; color: string; glow: string }[] = [
 const CHART_CARD =
   'rounded-2xl bg-gradient-to-br from-brand-sky/30 via-white to-brand-sky/35 backdrop-blur-sm border border-white/70 p-6 shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-0.5 transition-all duration-300 ease-out';
 
-// Compact Nombre / % toggle — small enough to dock next to a chart's
-// title. Each chart owns its own DisplayMode state, so toggling one
-// chart never silently re-formats the others.
+// AnimatedBar — fills from 0 → pct% on mount AND every time `trigger`
+// changes (period switch / mode toggle). Uses transition-[width] for the
+// smooth left-to-right fill.
+function AnimatedBar({
+  pct,
+  gradient,
+  trigger,
+}: {
+  pct: number;
+  gradient: string;
+  trigger: string;
+}) {
+  const [width, setWidth] = useState(0);
+  useEffect(() => {
+    setWidth(0);
+    const id = requestAnimationFrame(() => {
+      // Two RAFs so the browser sees width:0 first, then animates to pct.
+      requestAnimationFrame(() => setWidth(pct));
+    });
+    return () => cancelAnimationFrame(id);
+  }, [pct, trigger]);
+
+  return (
+    <div className="h-2 rounded-pill bg-white/60 overflow-hidden border border-white/50">
+      <div
+        style={{ width: `${width}%` }}
+        className={`h-full rounded-pill ${gradient} transition-[width] duration-1000 ease-out`}
+      />
+    </div>
+  );
+}
+
+// AnimatedColumn — same idea as AnimatedBar but vertical: grows from
+// 0 → pct% on every change of `trigger`, bottom-to-top.
+function AnimatedColumn({
+  pct,
+  gradient,
+  trigger,
+}: {
+  pct: number;
+  gradient: string;
+  trigger: string;
+}) {
+  const [height, setHeight] = useState(0);
+  useEffect(() => {
+    setHeight(0);
+    const id = requestAnimationFrame(() => {
+      requestAnimationFrame(() => setHeight(pct));
+    });
+    return () => cancelAnimationFrame(id);
+  }, [pct, trigger]);
+
+  return (
+    <div
+      style={{ height: `${height}%` }}
+      className={`w-full ${gradient} rounded-t-xl shadow-md transition-[height,filter] duration-1000 ease-out group-hover:brightness-110 group-hover:shadow-lg`}
+    />
+  );
+}
+
+// Compact Nombre / % toggle — `Pourcent` text replaces the previous
+// `%` label so the button no longer renders a duplicate % glyph
+// (Lucide Percent icon already shows the % sign).
 function DisplayModeToggle({
   value,
   onChange,
@@ -275,18 +335,16 @@ function DisplayModeToggle({
         title="Afficher en pourcentage"
         className={
           value === 'percent'
-            ? 'inline-flex items-center gap-1 rounded-pill bg-grad-stat-navy text-white px-2.5 py-1 text-[11px] font-semibold shadow-glow-navy'
-            : 'inline-flex items-center gap-1 rounded-pill text-brand-navy/70 hover:text-brand-navy px-2.5 py-1 text-[11px] font-medium transition-colors'
+            ? 'inline-flex items-center rounded-pill bg-grad-stat-navy text-white px-2.5 py-1 text-[11px] font-semibold shadow-glow-navy'
+            : 'inline-flex items-center rounded-pill text-brand-navy/70 hover:text-brand-navy px-2.5 py-1 text-[11px] font-medium transition-colors'
         }
       >
-        <Percent className="h-3 w-3" aria-hidden />
-        %
+        Pourcent
       </button>
     </div>
   );
 }
 
-// Reusable chart-card title row with an optional docked DisplayModeToggle.
 function ChartHeader({
   title,
   mode,
@@ -309,15 +367,18 @@ function ChartHeader({
 export default function Page() {
   const [period, setPeriod] = useState<Period>('month');
 
-  // One DisplayMode per chart that supports it. Status no longer has a
-  // toggle (per owner request), so it always shows raw counts.
   const [problemsMode, setProblemsMode] = useState<DisplayMode>('count');
   const [channelsMode, setChannelsMode] = useState<DisplayMode>('count');
   const [activityMode, setActivityMode] = useState<DisplayMode>('count');
 
   const data = DATA[period];
 
-  // Build the 6 KPI cards from the period snapshot.
+  // Triggers are concatenated so any state change (period or mode)
+  // re-fires the AnimatedBar / AnimatedColumn / card-flash animations.
+  const problemsTrigger = `${period}-${problemsMode}`;
+  const channelsTrigger = `${period}-${channelsMode}`;
+  const activityTrigger = `${period}-${activityMode}`;
+
   const globalCards: {
     label: string;
     value: string;
@@ -384,12 +445,7 @@ export default function Page() {
                       <AnimatedCounter value={fmtBar(d.count, d.pct, problemsMode)} duration={900} />
                     </span>
                   </div>
-                  <div className="h-2 rounded-pill bg-white/60 overflow-hidden border border-white/50">
-                    <div
-                      className={`h-full rounded-pill ${p.gradient} transition-[width] duration-700 ease-out group-hover:brightness-110`}
-                      style={{ width: `${d.pct}%` }}
-                    />
-                  </div>
+                  <AnimatedBar pct={d.pct} gradient={p.gradient} trigger={problemsTrigger} />
                 </li>
               );
             })}
@@ -403,8 +459,9 @@ export default function Page() {
               const d = data.channels[i]!;
               return (
                 <div
-                  key={c.label}
-                  className={`group rounded-2xl bg-white/80 border-2 ${c.accent} ${c.cardGlow} p-4 backdrop-blur-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] cursor-default`}
+                  key={`${channelsTrigger}-${c.label}`}
+                  className={`group rounded-2xl bg-white/80 border-2 ${c.accent} ${c.cardGlow} p-4 backdrop-blur-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] cursor-default animate-card-flash`}
+                  style={{ animationDelay: `${i * 80}ms` }}
                 >
                   <div className="flex items-center gap-2 text-sm font-semibold text-brand-navy">
                     <c.Icon className="h-4 w-4 group-hover:scale-110 group-hover:animate-sparkle-pop transition-transform" aria-hidden />
@@ -439,10 +496,7 @@ export default function Page() {
                     <span className="text-xs font-bold text-brand-navy mb-1 tabular-nums group-hover:scale-110 transition-transform">
                       <AnimatedCounter value={fmtBar(d.count, d.pct, activityMode)} duration={900} />
                     </span>
-                    <div
-                      className={`w-full ${a.gradient} rounded-t-xl shadow-md transition-[height,filter] duration-700 ease-out group-hover:brightness-110 group-hover:shadow-lg`}
-                      style={{ height: `${d.pct}%` }}
-                    />
+                    <AnimatedColumn pct={d.pct} gradient={a.gradient} trigger={activityTrigger} />
                     <span className="mt-2 text-xs font-medium text-gray-500 group-hover:text-brand-navy transition-colors">
                       {a.label}
                     </span>
@@ -480,9 +534,6 @@ export default function Page() {
       </section>
 
       <section className={`mt-4 ${CHART_CARD}`}>
-        {/* Status section — owner asked to drop the Nombre/% toggle here.
-            Pills now always show raw counts (the most natural read for a
-            status breakdown). Title stays centred. */}
         <h2 className="text-lg font-bold text-brand-navy text-center mb-5">
           Statut des signalements
         </h2>
@@ -515,8 +566,6 @@ export default function Page() {
         </p>
       </section>
 
-      {/* Bottom CTAs — same recipe as the home banner CTAs so the page
-          ends on the exact action surface the banner introduced. */}
       <section className="mt-8 flex flex-wrap justify-center gap-3">
         <Link
           href="/#recherche"

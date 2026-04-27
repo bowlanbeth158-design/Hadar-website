@@ -15,6 +15,13 @@ type Step = {
   topAccent: string;       // soft oval that sits on top of the card
   bottomBar: string;       // gradient bar at the bottom of the card
   shadow: string;          // outer glow shadow
+  // On-hover overlay — coloured gradient that fades in the moment the
+  // pointer enters the card, so the whole tile briefly takes on the
+  // step's theme colour. Reverts smoothly on leave.
+  hoverOverlay: string;
+  // On-hover border colour, applied via Tailwind's group-hover so the
+  // gray-200 resting border re-tints to the step's theme on focus.
+  hoverBorder: string;
   // Connector-segment animation (only set on steps 1, 2, 3 — the
   // segment that carries the dot from THIS card to the next).
   travelAnim: string;
@@ -38,6 +45,8 @@ const STEPS: Step[] = [
     topAccent: 'bg-gradient-to-b from-brand-blue/30 to-transparent',
     bottomBar: 'bg-gradient-to-r from-brand-blue via-brand-blue/50 to-transparent',
     shadow: 'shadow-glow-blue',
+    hoverOverlay: 'from-brand-blue/8 via-brand-blue/14 to-brand-blue/22',
+    hoverBorder: 'group-hover:border-brand-blue/45',
     travelAnim: 'animate-travel-1-to-2',
     lineFrom: '#0078BA',
     lineTo: '#8652FB',
@@ -56,6 +65,8 @@ const STEPS: Step[] = [
     topAccent: 'bg-gradient-to-b from-violet-500/30 to-transparent',
     bottomBar: 'bg-gradient-to-r from-violet-500 via-violet-500/50 to-transparent',
     shadow: 'shadow-glow-violet',
+    hoverOverlay: 'from-violet-500/8 via-violet-500/14 to-violet-500/22',
+    hoverBorder: 'group-hover:border-violet-500/45',
     travelAnim: 'animate-travel-2-to-3',
     lineFrom: '#8652FB',
     lineTo: '#F29B11',
@@ -74,6 +85,8 @@ const STEPS: Step[] = [
     topAccent: 'bg-gradient-to-b from-orange-500/30 to-transparent',
     bottomBar: 'bg-gradient-to-r from-orange-500 via-orange-500/50 to-transparent',
     shadow: 'shadow-glow-orange',
+    hoverOverlay: 'from-orange-500/8 via-orange-500/14 to-orange-500/22',
+    hoverBorder: 'group-hover:border-orange-500/45',
     travelAnim: 'animate-travel-3-to-4',
     lineFrom: '#F29B11',
     lineTo: '#22C45E',
@@ -92,6 +105,8 @@ const STEPS: Step[] = [
     topAccent: 'bg-gradient-to-b from-green-500/30 to-transparent',
     bottomBar: 'bg-gradient-to-r from-green-500 via-green-500/50 to-transparent',
     shadow: 'shadow-glow-green',
+    hoverOverlay: 'from-green-500/8 via-green-500/14 to-green-500/22',
+    hoverBorder: 'group-hover:border-green-500/45',
     travelAnim: '',
     lineFrom: '',
     lineTo: '',
@@ -112,8 +127,18 @@ export function ProcessSteps() {
             return (
               <div
                 key={s.n}
-                className={`group relative rounded-3xl bg-white border border-gray-200 ${s.shadow} pt-7 px-6 pb-7 overflow-visible transition-all hover:-translate-y-1 hover:shadow-glow-navy duration-300 ease-out`}
+                className={`group relative rounded-3xl bg-white border border-gray-200 ${s.hoverBorder} ${s.shadow} pt-7 px-6 pb-7 overflow-visible transition-all hover:-translate-y-1 hover:shadow-glow-navy duration-300 ease-out`}
               >
+                {/* Hover theme overlay — fully transparent at rest, fades
+                    in to a soft tint of the step colour the moment the
+                    pointer enters. Sits below the card content so text
+                    and icons stay perfectly readable, and reverts on
+                    leave thanks to the opacity transition. */}
+                <span
+                  aria-hidden
+                  className={`pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br ${s.hoverOverlay} opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out`}
+                />
+
                 {/* Soft coloured oval sitting just above the card top —
                     gives the "step receives the relay" cue from the design. */}
                 <span
@@ -121,7 +146,7 @@ export function ProcessSteps() {
                   className={`pointer-events-none absolute -top-2 left-1/2 -translate-x-1/2 h-3 w-2/3 rounded-full ${s.topAccent} blur-[2px]`}
                 />
 
-                {/* Massive watermark digit in the top-right */}
+                {/* Massive watermark digit in the top-right. */}
                 <span
                   aria-hidden
                   className={`pointer-events-none absolute top-3 right-5 text-7xl md:text-8xl font-extrabold ${s.numberColor} leading-none select-none tracking-tight`}
@@ -141,14 +166,18 @@ export function ProcessSteps() {
                 </div>
 
                 <p
-                  className={`mt-5 text-xs font-semibold uppercase tracking-[0.2em] ${s.stepLabelColor}`}
+                  className={`relative mt-5 text-xs font-semibold uppercase tracking-[0.2em] ${s.stepLabelColor}`}
                 >
                   Étape
                 </p>
-                <h3 className={`mt-1 text-lg md:text-xl font-bold ${s.titleColor}`}>
+                <h3 className={`relative mt-1 text-lg md:text-xl font-bold ${s.titleColor}`}>
                   {s.title}
                 </h3>
-                <p className="mt-2 text-sm text-gray-500 leading-relaxed">{s.description}</p>
+                {/* Description darkens to brand-navy on hover for crisp
+                    contrast against the tinted overlay. */}
+                <p className="relative mt-2 text-sm text-gray-500 group-hover:text-brand-navy leading-relaxed transition-colors duration-300">
+                  {s.description}
+                </p>
 
                 {/* Coloured progress bar at the bottom of the card */}
                 <span

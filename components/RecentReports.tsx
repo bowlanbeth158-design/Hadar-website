@@ -95,10 +95,10 @@ const RISK_STYLE: Record<RiskLevel, RiskStyle> = {
     bg: 'bg-yellow-100/90',
     text: 'text-yellow-500',
     border: 'border-yellow-500/40',
-    stripeBase: 'bg-gradient-to-r from-yellow-300/40 via-yellow-300/70 to-yellow-300/40',
+    stripeBase: 'bg-gradient-to-r from-yellow-300/12 via-yellow-300/22 to-yellow-300/12',
     stripeComet:
-      'bg-[linear-gradient(90deg,transparent_0%,rgba(251,237,33,0)_30%,rgba(251,237,33,1)_50%,rgba(251,237,33,0)_70%,transparent_100%)]',
-    haloFrom: 'from-yellow-300/45',
+      'bg-[linear-gradient(90deg,transparent_0%,rgba(251,237,33,0)_35%,rgba(251,237,33,0.55)_50%,rgba(251,237,33,0)_65%,transparent_100%)]',
+    haloFrom: 'from-yellow-300/15',
     label: 'Vigilance',
   },
   modere: {
@@ -106,10 +106,10 @@ const RISK_STYLE: Record<RiskLevel, RiskStyle> = {
     bg: 'bg-orange-100/90',
     text: 'text-orange-500',
     border: 'border-orange-500/40',
-    stripeBase: 'bg-gradient-to-r from-orange-500/40 via-orange-500/75 to-orange-500/40',
+    stripeBase: 'bg-gradient-to-r from-orange-500/12 via-orange-500/22 to-orange-500/12',
     stripeComet:
-      'bg-[linear-gradient(90deg,transparent_0%,rgba(242,155,17,0)_30%,rgba(242,155,17,1)_50%,rgba(242,155,17,0)_70%,transparent_100%)]',
-    haloFrom: 'from-orange-500/45',
+      'bg-[linear-gradient(90deg,transparent_0%,rgba(242,155,17,0)_35%,rgba(242,155,17,0.55)_50%,rgba(242,155,17,0)_65%,transparent_100%)]',
+    haloFrom: 'from-orange-500/15',
     label: 'Modéré',
   },
   eleve: {
@@ -117,10 +117,10 @@ const RISK_STYLE: Record<RiskLevel, RiskStyle> = {
     bg: 'bg-red-100/90',
     text: 'text-red-700',
     border: 'border-red-500/40',
-    stripeBase: 'bg-gradient-to-r from-red-500/40 via-red-500/80 to-red-500/40',
+    stripeBase: 'bg-gradient-to-r from-red-500/14 via-red-500/24 to-red-500/14',
     stripeComet:
-      'bg-[linear-gradient(90deg,transparent_0%,rgba(238,68,68,0)_30%,rgba(238,68,68,1)_50%,rgba(238,68,68,0)_70%,transparent_100%)]',
-    haloFrom: 'from-red-500/55',
+      'bg-[linear-gradient(90deg,transparent_0%,rgba(238,68,68,0)_35%,rgba(238,68,68,0.6)_50%,rgba(238,68,68,0)_65%,transparent_100%)]',
+    haloFrom: 'from-red-500/18',
     label: 'Élevé',
   },
 };
@@ -243,16 +243,16 @@ export function RecentReports() {
                         don't fire in lockstep. */}
                     <div
                       aria-hidden
-                      className={`absolute top-0 inset-x-0 h-[3px] ${style.stripeBase}`}
+                      className={`absolute top-0 inset-x-0 h-[2px] ${style.stripeBase}`}
                     />
                     <div
                       aria-hidden
-                      className={`absolute top-0 inset-x-0 h-[3px] bg-[length:300%_100%] ${style.stripeComet} animate-stripe-travel mix-blend-screen`}
+                      className={`absolute top-0 inset-x-0 h-[2px] bg-[length:300%_100%] ${style.stripeComet} animate-stripe-travel mix-blend-screen`}
                       style={{ animationDelay: `${(i % 3) * 350}ms` }}
                     />
                     <div
                       aria-hidden
-                      className={`pointer-events-none absolute top-[3px] inset-x-0 h-6 bg-gradient-to-b ${style.haloFrom} to-transparent opacity-70`}
+                      className={`pointer-events-none absolute top-[2px] inset-x-0 h-4 bg-gradient-to-b ${style.haloFrom} to-transparent opacity-40`}
                     />
 
                     {/* Shimmer light passes diagonally across on hover */}

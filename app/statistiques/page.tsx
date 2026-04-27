@@ -28,6 +28,7 @@ import { StatsPeriodTabs, type Period } from '@/components/StatsPeriodTabs';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { AnimatedDonut } from '@/components/AnimatedDonut';
 import { useCurrency } from '@/lib/currency/provider';
+import { useI18n } from '@/lib/i18n/provider';
 
 type DisplayMode = 'count' | 'percent';
 
@@ -201,33 +202,33 @@ const DATA: Record<Period, Snapshot> = {
   },
 };
 
-const PROBLEM_LABELS: { label: string; Icon: LucideIcon; gradient: string }[] = [
-  { label: 'Non livraison',         Icon: PackageX,       gradient: 'bg-grad-stat-red'    },
-  { label: 'Blocage après paiement',Icon: Ban,            gradient: 'bg-grad-stat-orange' },
-  { label: 'Produit non conforme',  Icon: AlertTriangle,  gradient: 'bg-grad-alert-yellow'},
-  { label: "Usurpation d'identité", Icon: VenetianMask,   gradient: 'bg-grad-stat-violet' },
+const PROBLEM_LABELS: { labelKey: string; Icon: LucideIcon; gradient: string }[] = [
+  { labelKey: 'statsPage.problem.nonDelivery',         Icon: PackageX,       gradient: 'bg-grad-stat-red'    },
+  { labelKey: 'statsPage.problem.blockedAfterPayment', Icon: Ban,            gradient: 'bg-grad-stat-orange' },
+  { labelKey: 'statsPage.problem.nonCompliant',        Icon: AlertTriangle,  gradient: 'bg-grad-alert-yellow'},
+  { labelKey: 'statsPage.problem.identityTheft',       Icon: VenetianMask,   gradient: 'bg-grad-stat-violet' },
 ];
 
 const CHANNEL_LABELS: {
-  label: string; Icon: LucideIcon; accent: string; badgeBg: string; cardGlow: string;
+  labelKey: string; Icon: LucideIcon; accent: string; badgeBg: string; cardGlow: string;
 }[] = [
-  { label: 'RIB',             Icon: CreditCard,    accent: 'border-orange-500', badgeBg: 'bg-grad-stat-orange', cardGlow: 'shadow-glow-orange' },
-  { label: 'WhatsApp',        Icon: MessageCircle, accent: 'border-green-500',  badgeBg: 'bg-grad-stat-green',  cardGlow: 'shadow-glow-green'  },
-  { label: 'Réseaux sociaux', Icon: AtSign,        accent: 'border-violet-500', badgeBg: 'bg-grad-stat-violet', cardGlow: 'shadow-glow-violet' },
-  { label: 'Site web',        Icon: Globe,         accent: 'border-brand-blue', badgeBg: 'bg-grad-stat-navy',   cardGlow: 'shadow-glow-blue'   },
+  { labelKey: 'statsPage.channel.rib',         Icon: CreditCard,    accent: 'border-orange-500', badgeBg: 'bg-grad-stat-orange', cardGlow: 'shadow-glow-orange' },
+  { labelKey: 'statsPage.channel.whatsapp',    Icon: MessageCircle, accent: 'border-green-500',  badgeBg: 'bg-grad-stat-green',  cardGlow: 'shadow-glow-green'  },
+  { labelKey: 'statsPage.channel.socialMedia', Icon: AtSign,        accent: 'border-violet-500', badgeBg: 'bg-grad-stat-violet', cardGlow: 'shadow-glow-violet' },
+  { labelKey: 'statsPage.channel.website',     Icon: Globe,         accent: 'border-brand-blue', badgeBg: 'bg-grad-stat-navy',   cardGlow: 'shadow-glow-blue'   },
 ];
 
-const ACTIVITY_LABELS: { label: string; gradient: string }[] = [
-  { label: 'Faible',    gradient: 'bg-grad-stat-navy'    },
-  { label: 'Vigilance', gradient: 'bg-grad-alert-yellow' },
-  { label: 'Modéré',    gradient: 'bg-grad-stat-orange'  },
-  { label: 'Élevé',     gradient: 'bg-grad-stat-red'     },
+const ACTIVITY_LABELS: { labelKey: string; gradient: string }[] = [
+  { labelKey: 'statsPage.activity.faible',    gradient: 'bg-grad-stat-navy'    },
+  { labelKey: 'statsPage.activity.vigilance', gradient: 'bg-grad-alert-yellow' },
+  { labelKey: 'statsPage.activity.modere',    gradient: 'bg-grad-stat-orange'  },
+  { labelKey: 'statsPage.activity.eleve',     gradient: 'bg-grad-stat-red'     },
 ];
 
-const STATUS_LABELS: { label: string; color: string; glow: string }[] = [
-  { label: 'Signalements soumis',  color: 'bg-grad-stat-orange', glow: 'shadow-glow-orange' },
-  { label: 'Signalements refusés', color: 'bg-grad-stat-navy',   glow: 'shadow-glow-soft'   },
-  { label: 'Signalements publiés', color: 'bg-grad-stat-green',  glow: 'shadow-glow-green'  },
+const STATUS_LABELS: { labelKey: string; color: string; glow: string }[] = [
+  { labelKey: 'statsPage.status.submitted', color: 'bg-grad-stat-orange', glow: 'shadow-glow-orange' },
+  { labelKey: 'statsPage.status.rejected',  color: 'bg-grad-stat-navy',   glow: 'shadow-glow-soft'   },
+  { labelKey: 'statsPage.status.published', color: 'bg-grad-stat-green',  glow: 'shadow-glow-green'  },
 ];
 
 const CHART_CARD =
@@ -310,10 +311,11 @@ function DisplayModeToggle({
   value: DisplayMode;
   onChange: (m: DisplayMode) => void;
 }) {
+  const { t } = useI18n();
   return (
     <div
       role="tablist"
-      aria-label="Format des chiffres"
+      aria-label={t('statsPage.toggle.aria')}
       className="inline-flex items-center rounded-pill bg-white/70 backdrop-blur-sm border border-white/80 p-0.5 shadow-sm"
     >
       <button
@@ -321,8 +323,8 @@ function DisplayModeToggle({
         role="tab"
         aria-selected={value === 'count'}
         onClick={() => onChange('count')}
-        title="Afficher en nombre"
-        aria-label="Afficher en nombre"
+        title={t('statsPage.toggle.count')}
+        aria-label={t('statsPage.toggle.count')}
         className={
           value === 'count'
             ? 'inline-flex items-center justify-center h-7 w-7 rounded-pill bg-grad-stat-navy text-white shadow-glow-navy'
@@ -336,8 +338,8 @@ function DisplayModeToggle({
         role="tab"
         aria-selected={value === 'percent'}
         onClick={() => onChange('percent')}
-        title="Afficher en pourcentage"
-        aria-label="Afficher en pourcentage"
+        title={t('statsPage.toggle.percent')}
+        aria-label={t('statsPage.toggle.percent')}
         className={
           value === 'percent'
             ? 'inline-flex items-center justify-center h-7 w-7 rounded-pill bg-grad-stat-navy text-white shadow-glow-navy'
@@ -380,6 +382,7 @@ export default function Page() {
   // so both surfaces stay in lock-step when the user toggles
   // currencies in the header.
   const { format: formatCurrency } = useCurrency();
+  const { t } = useI18n();
 
   const data = DATA[period];
 
@@ -387,19 +390,21 @@ export default function Page() {
   const channelsTrigger = `${period}-${channelsMode}`;
   const activityTrigger = `${period}-${activityMode}`;
 
+  // KPI cards — labels reuse the same i18n keys as the homepage stats
+  // so a translation update in messages.ts cascades to both surfaces.
   const globalCards: {
-    label: string;
+    labelKey: string;
     value: string;
     gradient: string;
     glow: string;
     Icon: LucideIcon;
   }[] = [
-    { label: 'Utilisateurs actifs',       value: fmtCount(data.global.utilisateurs),  gradient: 'bg-grad-stat-navy',   glow: 'shadow-glow-navy',   Icon: Users      },
-    { label: 'Signalements enregistrés',  value: fmtCount(data.global.signalements),  gradient: 'bg-grad-stat-red',    glow: 'shadow-glow-red',    Icon: Siren      },
-    { label: 'Contacts signalés',         value: fmtCount(data.global.contacts),      gradient: 'bg-grad-stat-violet', glow: 'shadow-glow-violet', Icon: Smartphone },
-    { label: 'Vérifications réalisées',   value: `+${fmtCount(data.global.verifications)}`, gradient: 'bg-grad-stat-sky', glow: 'shadow-glow-sky', Icon: ShieldCheck },
-    { label: 'Montant signalé',           value: formatCurrency(data.global.montant), gradient: 'bg-grad-stat-green',  glow: 'shadow-glow-green',  Icon: Wallet     },
-    { label: 'Dernier signalement',       value: data.global.dernier,                 gradient: 'bg-grad-stat-orange', glow: 'shadow-glow-orange', Icon: Clock      },
+    { labelKey: 'home.platformStats.kpi.usersActive',       value: fmtCount(data.global.utilisateurs),  gradient: 'bg-grad-stat-navy',   glow: 'shadow-glow-navy',   Icon: Users      },
+    { labelKey: 'home.platformStats.kpi.reportsLogged',     value: fmtCount(data.global.signalements),  gradient: 'bg-grad-stat-red',    glow: 'shadow-glow-red',    Icon: Siren      },
+    { labelKey: 'home.platformStats.kpi.contactsReported',  value: fmtCount(data.global.contacts),      gradient: 'bg-grad-stat-violet', glow: 'shadow-glow-violet', Icon: Smartphone },
+    { labelKey: 'home.platformStats.kpi.verifications',     value: `+${fmtCount(data.global.verifications)}`, gradient: 'bg-grad-stat-sky', glow: 'shadow-glow-sky', Icon: ShieldCheck },
+    { labelKey: 'home.platformStats.kpi.amountReported',    value: formatCurrency(data.global.montant), gradient: 'bg-grad-stat-green',  glow: 'shadow-glow-green',  Icon: Wallet     },
+    { labelKey: 'home.platformStats.kpi.lastReport',        value: data.global.dernier,                 gradient: 'bg-grad-stat-orange', glow: 'shadow-glow-orange', Icon: Clock      },
   ];
 
   return (
@@ -409,27 +414,27 @@ export default function Page() {
       </div>
 
       <PageHeading
-        title="Statistiques de la plateforme"
-        subtitle="Analysez l’évolution et les tendances des signalements sur la plateforme."
+        titleKey="statsPage.title"
+        subtitleKey="statsPage.subtitle"
         accent="gradient"
       />
 
       <StatsPeriodTabs value={period} onChange={setPeriod} />
 
       <section
-        aria-label="Indicateurs globaux"
+        aria-label={t('statsPage.aria.global')}
         className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
       >
         {globalCards.map((s) => (
           <div
-            key={s.label}
+            key={s.labelKey}
             className={`group ${s.gradient} ${s.glow} text-white rounded-2xl p-5 flex items-center justify-between transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] cursor-default`}
           >
             <div>
               <p className="text-3xl font-bold">
                 <AnimatedCounter value={s.value} />
               </p>
-              <p className="text-sm font-medium opacity-90 mt-1">{s.label}</p>
+              <p className="text-sm font-medium opacity-90 mt-1">{t(s.labelKey)}</p>
             </div>
             <s.Icon className="h-9 w-9 opacity-70 group-hover:scale-110 group-hover:opacity-100 group-hover:animate-sparkle-pop transition-all" aria-hidden />
           </div>
@@ -438,16 +443,16 @@ export default function Page() {
 
       <section className="mt-8 grid gap-4 lg:grid-cols-2">
         <div className={CHART_CARD}>
-          <ChartHeader title="Types de problèmes signalés" mode={problemsMode} setMode={setProblemsMode} />
+          <ChartHeader title={t('statsPage.chart.problems')} mode={problemsMode} setMode={setProblemsMode} />
           <ul className="space-y-4">
             {PROBLEM_LABELS.map((p, i) => {
               const d = data.problems[i]!;
               return (
-                <li key={p.label} className="group">
+                <li key={p.labelKey} className="group">
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="inline-flex items-center gap-2 text-sm font-medium text-brand-navy">
                       <p.Icon className="h-4 w-4 text-brand-navy group-hover:scale-110 group-hover:animate-sparkle-pop transition-transform" aria-hidden />
-                      {p.label}
+                      {t(p.labelKey)}
                     </span>
                     <span className="text-sm font-bold text-brand-navy tabular-nums">
                       <AnimatedCounter value={fmtBar(d.count, d.pct, problemsMode)} duration={900} />
@@ -461,19 +466,19 @@ export default function Page() {
         </div>
 
         <div className={CHART_CARD}>
-          <ChartHeader title="Canaux plus signalés" mode={channelsMode} setMode={setChannelsMode} />
+          <ChartHeader title={t('statsPage.chart.channels')} mode={channelsMode} setMode={setChannelsMode} />
           <div className="grid grid-cols-2 gap-3">
             {CHANNEL_LABELS.map((c, i) => {
               const d = data.channels[i]!;
               return (
                 <div
-                  key={`${channelsTrigger}-${c.label}`}
+                  key={`${channelsTrigger}-${c.labelKey}`}
                   className={`group rounded-2xl bg-white/80 border-2 ${c.accent} ${c.cardGlow} p-4 backdrop-blur-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] cursor-default animate-card-flash`}
                   style={{ animationDelay: `${i * 80}ms` }}
                 >
                   <div className="flex items-center gap-2 text-sm font-semibold text-brand-navy">
                     <c.Icon className="h-4 w-4 group-hover:scale-110 group-hover:animate-sparkle-pop transition-transform" aria-hidden />
-                    {c.label}
+                    {t(c.labelKey)}
                   </div>
                   <div
                     className={`mt-3 inline-flex items-center justify-center rounded-pill ${c.badgeBg} text-white text-sm font-bold px-3 py-1 tabular-nums`}
@@ -489,7 +494,7 @@ export default function Page() {
 
       <section className="mt-4 grid gap-4 lg:grid-cols-2">
         <div className={CHART_CARD}>
-          <ChartHeader title="Niveau d'activité des signalements" mode={activityMode} setMode={setActivityMode} />
+          <ChartHeader title={t('statsPage.chart.activity')} mode={activityMode} setMode={setActivityMode} />
           <div className="flex items-end gap-4 h-56 px-2">
             <div className="flex flex-col justify-between h-full text-[10px] text-gray-400 pr-2">
               {[80, 70, 60, 50, 40, 30, 20, 10, 0].map((v) => (
@@ -500,13 +505,13 @@ export default function Page() {
               {ACTIVITY_LABELS.map((a, i) => {
                 const d = data.activity[i]!;
                 return (
-                  <div key={a.label} className="group flex flex-col items-center h-full justify-end cursor-default">
+                  <div key={a.labelKey} className="group flex flex-col items-center h-full justify-end cursor-default">
                     <span className="text-xs font-bold text-brand-navy mb-1 tabular-nums group-hover:scale-110 transition-transform">
                       <AnimatedCounter value={fmtBar(d.count, d.pct, activityMode)} duration={900} />
                     </span>
                     <AnimatedColumn pct={d.pct} gradient={a.gradient} trigger={activityTrigger} />
                     <span className="mt-2 text-xs font-medium text-gray-500 group-hover:text-brand-navy transition-colors">
-                      {a.label}
+                      {t(a.labelKey)}
                     </span>
                   </div>
                 );
@@ -516,17 +521,17 @@ export default function Page() {
         </div>
 
         <div className={CHART_CARD}>
-          <h2 className="text-lg font-bold text-brand-navy mb-5">Evolution des signalements</h2>
+          <h2 className="text-lg font-bold text-brand-navy mb-5">{t('statsPage.chart.evolution')}</h2>
           <div className="grid grid-cols-2 gap-4 items-center">
             <div className="space-y-4">
               <div>
-                <p className="text-sm text-gray-500">+{data.evolutionPct}% vs période précédente</p>
+                <p className="text-sm text-gray-500">{t('statsPage.evolution.vsPrevious', { pct: data.evolutionPct })}</p>
                 <span className="mt-1 inline-flex items-center rounded-pill bg-grad-stat-red text-white font-bold px-4 py-1.5 text-sm shadow-glow-red transition-transform hover:scale-105 cursor-default">
                   <AnimatedCounter value={fmtCount(data.evolutionThisCount)} />
                 </span>
               </div>
               <div>
-                <p className="text-sm text-gray-500">+45% aujourd&apos;hui</p>
+                <p className="text-sm text-gray-500">{t('statsPage.evolution.today')}</p>
                 <span className="mt-1 inline-flex items-center rounded-pill bg-grad-stat-red text-white font-bold px-4 py-1.5 text-sm shadow-glow-red transition-transform hover:scale-105 cursor-default">
                   <AnimatedCounter value={fmtCount(data.evolutionTodayCount)} />
                 </span>
@@ -543,7 +548,7 @@ export default function Page() {
 
       <section className={`mt-4 ${CHART_CARD}`}>
         <h2 className="text-lg font-bold text-brand-navy text-center mb-5">
-          Statut des signalements
+          {t('statsPage.chart.status')}
         </h2>
 
         <div className="flex flex-wrap justify-center gap-3 mb-5">
@@ -551,14 +556,14 @@ export default function Page() {
             const d = data.status[i]!;
             return (
               <div
-                key={s.label}
+                key={s.labelKey}
                 className={`group inline-flex items-center gap-2 rounded-pill ${s.color} text-white ${s.glow} px-4 py-2 text-sm font-semibold transition-transform hover:-translate-y-1 hover:scale-105 cursor-default`}
               >
                 <Siren className="h-4 w-4 group-hover:animate-sparkle-pop" aria-hidden />
                 <span className="text-base font-bold tabular-nums">
                   <AnimatedCounter value={fmtCount(d.count)} />
                 </span>
-                <span className="text-xs opacity-90">{s.label}</span>
+                <span className="text-xs opacity-90">{t(s.labelKey)}</span>
               </div>
             );
           })}
@@ -580,20 +585,19 @@ export default function Page() {
           className="inline-flex items-center gap-2 rounded-pill bg-green-500 hover:bg-green-700 text-white px-6 py-3 text-sm font-semibold shadow-glow-green animate-verify-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all"
         >
           <ShieldCheck className="h-5 w-5 animate-siren-wiggle" aria-hidden />
-          Vérifier maintenant
+          {t('statsPage.cta.verify')}
         </Link>
         <Link
           href="/signaler"
           className="inline-flex items-center gap-2 rounded-pill bg-red-500 hover:bg-red-700 text-white px-6 py-3 text-sm font-semibold shadow-glow-red animate-alert-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all"
         >
           <Siren className="h-5 w-5 animate-siren-wiggle" aria-hidden />
-          Partager une expérience
+          {t('statsPage.cta.share')}
         </Link>
       </section>
 
       <p className="mt-8 text-xs text-gray-400 text-center max-w-2xl mx-auto">
-        Les données présentées sont issues de signalements publiés et sont fournies à titre
-        indicatif. Aucune donnée personnelle n&apos;est affichée.
+        {t('statsPage.disclaimer')}
       </p>
     </PageLayout>
   );

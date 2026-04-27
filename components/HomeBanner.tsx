@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import {
-  ShieldCheck,
   Siren,
   Sparkles,
   TrendingUp,
@@ -12,6 +11,7 @@ import {
 import { VerifiedBadge } from './VerifiedBadge';
 import { CountUp } from './CountUp';
 import { OFFICIAL_LOGO_URL } from './Logo';
+import { VerifyNowCta } from './VerifyNowCta';
 
 // URL postimg de la photo ambassadeur Hadar.
 const AMBASSADOR_IMAGE_URL = 'https://i.postimg.cc/Y0V7C7w3/Hadar-man.png';
@@ -190,15 +190,14 @@ export function HomeBanner() {
             vérifications utiles sur les 30 derniers jours.
           </p>
 
-          {/* CTAs — same pulse + wiggle effect as the old header buttons */}
+          {/* CTAs — same pulse + wiggle effect as the old header buttons.
+              "Vérifier maintenant" is rendered through VerifyNowCta, a
+              client wrapper that intercepts the click and runs a
+              programmatic smooth scroll with a header offset, so the
+              transition to the search section is reliably eased rather
+              than depending on the browser honouring CSS scroll-smooth. */}
           <div className="mt-7 flex flex-wrap items-center gap-3">
-            <Link
-              href="#recherche"
-              className="inline-flex items-center gap-2 rounded-pill bg-green-500 hover:bg-green-700 text-white px-6 py-3 text-sm font-semibold shadow-glow-green animate-verify-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all"
-            >
-              <ShieldCheck className="h-5 w-5 animate-siren-wiggle" aria-hidden />
-              Vérifier maintenant
-            </Link>
+            <VerifyNowCta />
             <Link
               href="/signaler"
               className="inline-flex items-center gap-2 rounded-pill bg-red-500 hover:bg-red-700 text-white px-6 py-3 text-sm font-semibold shadow-glow-red animate-alert-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all"

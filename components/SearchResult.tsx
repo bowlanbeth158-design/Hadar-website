@@ -3,6 +3,9 @@ import {
   AlertCircle,
   AlertTriangle,
   AlertOctagon,
+  Siren,
+  Clock,
+  Gauge,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -217,53 +220,86 @@ export function SearchResult({ query }: Props) {
         </div>
       </div>
 
-      {/* Info line: X signalements • Dernier signalement : … • Risque : … */}
-      <div className="flex items-center justify-center gap-x-3 gap-y-1 text-sm text-gray-500 mb-6 flex-wrap">
-        <span>
-          <span className="font-semibold text-gray-900 tabular-nums">{demo.reports}</span>{' '}
-          {reportLabel}
-        </span>
-        <span aria-hidden className="text-gray-300">•</span>
-        <span>{lastReportText}</span>
-        <span aria-hidden className="text-gray-300">•</span>
-        <span>
-          Risque :{' '}
-          <span className={`${cfg.pillText} font-semibold capitalize`}>{cfg.label}</span>
+      {/* Info row — three pill chips so the verdict reads at a glance:
+            (1) report count with a Siren icon, count in brand-navy
+                gradient bold so the number is the visual anchor.
+            (2) last-report time with a Clock icon.
+            (3) Risk level with the 4 dot indicator + a Gauge icon,
+                tinted by the risk colour and a soft pulse on the
+                active dot.
+          Each chip sits on a backdrop-blurred white surface with a
+          brand-blue ring + glow so they pop against the page wash. */}
+      <div className="flex items-center justify-center gap-2 mb-6 flex-wrap">
+        <span className="inline-flex items-center gap-2 rounded-pill bg-white/80 backdrop-blur-sm border border-brand-blue/20 px-3.5 py-1.5 text-sm shadow-glow-soft">
+          <span
+            aria-hidden
+            className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-brand-blue/10 text-brand-blue ring-1 ring-brand-blue/20"
+          >
+            <Siren className="h-3.5 w-3.5" />
+          </span>
+          <span className="font-bold text-base tabular-nums bg-grad-stat-navy bg-clip-text text-transparent">
+            {demo.reports}
+          </span>
+          <span className="text-gray-600">{reportLabel}</span>
         </span>
 
-        <div
-          className="flex items-center gap-1.5 ml-1"
+        <span className="inline-flex items-center gap-2 rounded-pill bg-white/80 backdrop-blur-sm border border-brand-blue/20 px-3.5 py-1.5 text-sm shadow-glow-soft">
+          <span
+            aria-hidden
+            className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-brand-blue/10 text-brand-blue ring-1 ring-brand-blue/20"
+          >
+            <Clock className="h-3.5 w-3.5" />
+          </span>
+          <span className="text-gray-700">{lastReportText}</span>
+        </span>
+
+        <span
+          className={`inline-flex items-center gap-2 rounded-pill bg-white/80 backdrop-blur-sm border ${cfg.pillBorder} px-3.5 py-1.5 text-sm shadow-glow-soft`}
           aria-label={`Niveau de risque : ${cfg.label}`}
         >
-          {DOT_COLORS.map((color, i) => {
-            const isActive = i === cfg.dotIndex;
-            return (
-              <span
-                key={color}
-                className={`relative h-2.5 w-2.5 rounded-full ${color} ${
-                  isActive ? 'shadow-md' : 'opacity-25'
-                }`}
-              >
-                {isActive && (
-                  <span
-                    aria-hidden
-                    className={`absolute inset-0 rounded-full ${color} animate-ping opacity-60`}
-                  />
-                )}
-              </span>
-            );
-          })}
-        </div>
+          <span
+            aria-hidden
+            className={`inline-flex h-6 w-6 items-center justify-center rounded-full ${cfg.pillBg} ${cfg.pillText} ring-1 ${cfg.pillBorder}`}
+          >
+            <Gauge className="h-3.5 w-3.5" />
+          </span>
+          <span className="text-gray-600">Risque :</span>
+          <span className={`${cfg.pillText} font-semibold capitalize`}>{cfg.label}</span>
+          <span className="flex items-center gap-1 ml-0.5">
+            {DOT_COLORS.map((color, i) => {
+              const isActive = i === cfg.dotIndex;
+              return (
+                <span
+                  key={color}
+                  className={`relative h-2 w-2 rounded-full ${color} ${
+                    isActive ? 'shadow-md' : 'opacity-25'
+                  }`}
+                >
+                  {isActive && (
+                    <span
+                      aria-hidden
+                      className={`absolute inset-0 rounded-full ${color} animate-ping opacity-60`}
+                    />
+                  )}
+                </span>
+              );
+            })}
+          </span>
+        </span>
       </div>
 
-      {/* KPI cards */}
+      {/* KPI cards — number rendered with the brand-navy → brand-blue
+          gradient (bg-clip-text) so the figure pops with the platform
+          identity instead of generic black. */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {KPI_LABELS.map((label, i) => (
           <div
             key={label}
             className="rounded-2xl bg-white border border-gray-200 p-5 text-center shadow-glow-soft"
           >
-            <p className="text-4xl font-bold text-gray-900 tabular-nums">{demo.kpis[i] ?? 0}</p>
+            <p className="text-4xl font-bold tabular-nums bg-grad-stat-navy bg-clip-text text-transparent">
+              {demo.kpis[i] ?? 0}
+            </p>
             <p className="mt-1 text-sm text-gray-500">{label}</p>
           </div>
         ))}

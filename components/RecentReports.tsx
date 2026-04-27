@@ -134,6 +134,58 @@ export function RecentReports() {
   // user has scrolled even one pixel to the right, so the cue only shows
   // up when going back is actually meaningful.
   const [canScrollLeft, setCanScrollLeft] = useState(false);
+  // One ref per card article — a setInterval below picks a random card
+  // every 2 s and runs a one-shot zoom-and-bounce animation on it via
+  // the Web Animations API. WAAPI lets us re-fire the animation on the
+  // same element without remounting it, so React state, hover styles
+  // and the rest of the card stay untouched.
+  const cardRefs = useRef<Array<HTMLElement | null>>([]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    // Honour the user's OS preference — no surprise motion if reduced.
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduce) return;
+
+    const tick = () => {
+      const idx = Math.floor(Math.random() * DEMO_REPORTS.length);
+      const el = cardRefs.current[idx];
+      if (!el) return;
+      // Pause if the user already has the card hovered — the lift +
+      // shadow upgrade are already in play, no need to fight them.
+      if (el.matches(':hover')) return;
+      el.animate(
+        [
+          {
+            transform: 'translateY(0) scale(1)',
+            boxShadow: '0 6px 24px -6px rgba(0, 50, 125, 0.18)',
+          },
+          {
+            transform: 'translateY(-6px) scale(1.06)',
+            boxShadow: '0 18px 40px -10px rgba(0, 120, 186, 0.45)',
+            offset: 0.35,
+          },
+          {
+            transform: 'translateY(0) scale(0.985)',
+            boxShadow: '0 8px 26px -8px rgba(0, 50, 125, 0.20)',
+            offset: 0.7,
+          },
+          {
+            transform: 'translateY(0) scale(1)',
+            boxShadow: '0 6px 24px -6px rgba(0, 50, 125, 0.18)',
+          },
+        ],
+        {
+          duration: 900,
+          easing: 'cubic-bezier(0.34, 1.56, 0.64, 1)',
+          fill: 'none',
+        },
+      );
+    };
+
+    const id = window.setInterval(tick, 2000);
+    return () => window.clearInterval(id);
+  }, []);
 
   useEffect(() => {
     const el = scrollerRef.current;
@@ -223,6 +275,9 @@ export function RecentReports() {
                       bottom-right. Keeps the page palette homogeneous instead
                       of stamping a hard white box on the sky-tinted backdrop. */}
                   <article
+                    ref={(el) => {
+                      cardRefs.current[i] = el;
+                    }}
                     className="group relative h-full rounded-2xl bg-gradient-to-br from-brand-sky/35 via-white to-brand-sky/45 backdrop-blur-sm border border-white/70 p-5 pt-6 flex flex-col shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1 transition-all duration-300 ease-out overflow-hidden"
                   >
                     {/* Risk-coloured top stripe — three layers stacked at

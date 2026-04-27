@@ -137,9 +137,18 @@ export function HomeBanner() {
           </p>
 
           <ul className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl">
-            {BULLETS.map((b) => (
+            {BULLETS.map((b, i) => (
               <li key={b} className="flex items-center gap-2.5 text-sm text-brand-navy">
-                <VerifiedBadge className="h-5 w-5 shrink-0" />
+                {/* 360° "flip" animation — every 6 s. Each badge spins in
+                    the first ~2 s of its own cycle then rests; with a
+                    1.5 s per-badge delay the spin ripples from left to
+                    right across the four badges instead of firing all
+                    at once. animate-badge-spin keyframe lives in
+                    tailwind.config.ts. */}
+                <VerifiedBadge
+                  className="h-5 w-5 shrink-0 animate-badge-spin"
+                  style={{ animationDelay: `${i * 1500}ms` }}
+                />
                 <span className="font-medium">{b}</span>
               </li>
             ))}

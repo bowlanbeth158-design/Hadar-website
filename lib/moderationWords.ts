@@ -77,6 +77,22 @@ export const FORBIDDEN_WORDS: string[] = [
   '7chouma', 'hchouma',
 ];
 
+// Regex constants — written with explicit \u escape sequences so the
+// source file stays ASCII-only. A previous version had literal
+// combining-mark / Arabic-range characters in the regex which broke
+// some build pipelines.
+const COMBINING_MARKS = /[̀-ͯ]/g;
+const ARABIC_BLOCK_GLOBAL = /[؀-ۿ]/g;
+const ARABIC_BLOCK_TEST = /[؀-ۿ]/;
+const ALEF_VARIANTS = /[إأآا]/g; // إ أ آ ا
+const TAA_MARBUTA = /ة/g; // ة
+const ALEF_MAQSURA = /ى/g; // ى
+// Allowed character class for normalize(): a-z, 0-9, Arabic block,
+// whitespace. Anything else is replaced by a single space.
+const NON_ALLOWED = /[^a-z0-9؀-ۿ\s]/g;
+// Triple-or-more letter / digit collapse → keep two.
+const TRIPLE_REPEAT = /(.)\1{2,}/g;
+
 /**
  * Normalize an arbitrary user string into a canonical lowercase form
  * suitable for whole-word comparison against the forbidden list.
@@ -85,18 +101,18 @@ export function normalize(text: string): string {
   if (!text) return '';
   let n = text.toLowerCase();
   // Strip Latin diacritics (é, à, ç, …)
-  n = n.normalize('NFD').replace(/[̀-ͯ]/g, '');
+  n = n.normalize('NFD').replace(COMBINING_MARKS, '');
   // Arabic letter variants → canonical form
   n = n
-    .replace(/[إأآا]/g, 'ا')
-    .replace(/ة/g, 'ه')
-    .replace(/ى/g, 'ي');
+    .replace(ALEF_VARIANTS, 'ا') // ا
+    .replace(TAA_MARBUTA, 'ه')   // ه
+    .replace(ALEF_MAQSURA, 'ي'); // ي
   // Collapse 3+ repeated letters/digits to 2 (scammmmer → scammer,
   // n3aaaal → n3aal). Two-letter doubles like "ll" / "tt" are left
   // alone because they're legitimate in many words.
-  n = n.replace(/(.)\1{2,}/g, '$1$1');
+  n = n.replace(TRIPLE_REPEAT, '$1$1');
   // Punctuation → space (keeps Latin alphanum, Arabic block, digits)
-  n = n.replace(/[^a-z0-9؀-ۿ\s]/g, ' ');
+  n = n.replace(NON_ALLOWED, ' ');
   // Collapse whitespace
   n = n.replace(/\s+/g, ' ').trim();
   return n;
@@ -111,15 +127,15 @@ function escapeRegex(s: string): string {
 
 /**
  * Whole-word match against the normalized text.
- *   - Latin / arabizi words use \b boundaries so "scam" doesn't fire
- *     inside "scampi" but does fire inside "this is a scam!".
+ *   - Latin / arabizi words use boundary anchors so "scam" doesn't
+ *     fire inside "scampi" but does fire inside "this is a scam!".
  *   - Arabic words use a substring check because Arabic morphology
  *     prefixes the article ال and suffixes possessives without a
  *     space, so word boundaries are unreliable.
  */
 function matchesWord(normText: string, normWord: string): boolean {
   if (!normWord) return false;
-  const isArabicScript = /[؀-ۿ]/.test(normWord);
+  const isArabicScript = ARABIC_BLOCK_TEST.test(normWord);
   if (isArabicScript) {
     return normText.includes(normWord);
   }
@@ -152,6 +168,11 @@ export function detectUnsafeContent(text: string): ModerationResult {
       matched.push(original);
     }
   }
+  // Reset .lastIndex on the global regex constants so successive
+  // calls don't carry state. (Belt-and-braces — we only call them
+  // through .replace(), which does reset internally.)
+  COMBINING_MARKS.lastIndex = 0;
+  ARABIC_BLOCK_GLOBAL.lastIndex = 0;
   return {
     blocked: matched.length > 0,
     matchedWords: matched,

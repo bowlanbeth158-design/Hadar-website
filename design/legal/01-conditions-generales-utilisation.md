@@ -34,7 +34,11 @@ L'utilisateur est seul responsable des informations qu'il publie.
 
 ## Contenus interdits
 
-> ⚠️ **À clarifier avec le propriétaire** : la maquette duplique ici le texte de la section « Accès à la plateforme ». Probablement un texte de remplissage à remplacer. À récupérer le contenu réel attendu (probablement la liste des contenus interdits — à aligner avec la page « Règles de publication »).
+La plateforme HADAR est accessible à tout utilisateur disposant d'un accès à internet.
+
+La création d'un compte est requise pour certaines fonctionnalités, notamment la publication de signalements, afin de favoriser des contributions basées sur des expériences réelles.
+
+L'utilisateur est responsable de la confidentialité de ses identifiants.
 
 ## Modération
 HADAR se réserve le droit de :

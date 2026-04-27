@@ -162,6 +162,20 @@ const config: Config = {
           '92%': { opacity: '1', transform: 'scale(1)' },
           '100%': { opacity: '0', transform: 'scale(0.6)' },
         },
+        // Card spotlight — opacity-only fade applied to a brand-blue
+        // glow overlay sitting absolutely inside each PlatformStats
+        // card. With a per-card animation-delay of `i * 1500ms` and a
+        // total cycle of 9 s, the highlight travels card-by-card in a
+        // continuous wave (top-left → bottom-right) so the user's eye
+        // is gently drawn through every KPI in turn. Each spotlight
+        // stays visible for ~2.7 s with a peak around 1.26 s in.
+        'card-spotlight': {
+          '0%, 100%': { opacity: '0' },
+          '8%': { opacity: '0.6' },
+          '14%': { opacity: '1' },
+          '22%': { opacity: '0.6' },
+          '30%': { opacity: '0' },
+        },
         // Yellow drop-shadow burst on the whole row, fired AFTER the 5
         // stars have popped in (peak ~1.2 s into the 4 s cycle).
         'stars-flash': {
@@ -239,6 +253,9 @@ const config: Config = {
         'trend-down': 'trend-down 1.4s ease-in-out infinite',
         'star-pop': 'star-pop 4s ease-in-out infinite',
         'stars-flash': 'stars-flash 4s ease-in-out infinite',
+        // 9 s loop matches `cards * 1500ms` stagger so the highlight
+        // visits every card exactly once per cycle in a smooth ripple.
+        'card-spotlight': 'card-spotlight 9s ease-in-out infinite',
         // Slow, deliberate connector animations — 6s per cycle so the eye
         // has time to follow the colour-shift mid-flight rather than
         // rushing past. 0.8s and 1.6s staggered start so the three balls

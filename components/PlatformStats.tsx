@@ -128,9 +128,21 @@ export function PlatformStats() {
             // top-left to bottom-right (≈90 ms between cards). animationFillMode
             // 'both' holds the start frame until the delay fires, so cards
             // stay invisible instead of flashing in place.
-            className="animate-fade-in-down"
+            className="relative animate-fade-in-down"
             style={{ animationDelay: `${i * 90}ms`, animationFillMode: 'both' }}
           >
+            {/* Spotlight overlay — sibling of the article so its outer
+                box-shadow halo is NOT clipped by the article's
+                overflow-hidden. Fully transparent at rest, then fades
+                in / out via animate-card-spotlight on a 9 s cycle.
+                Per-card animationDelay of `i * 1500ms` makes the
+                highlight ripple through the grid one card at a time. */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 rounded-2xl ring-2 ring-brand-blue/45 shadow-[0_0_36px_8px_rgba(0,120,186,0.55)] animate-card-spotlight"
+              style={{ animationDelay: `${i * 1500}ms` }}
+            />
+
             <article
               className="group relative h-full rounded-2xl bg-gradient-to-br from-white via-brand-sky/30 to-brand-sky/45 backdrop-blur-sm border border-white/70 p-5 flex items-center gap-4 shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1.5 transition-all duration-300 ease-out overflow-hidden"
             >

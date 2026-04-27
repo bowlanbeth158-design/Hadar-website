@@ -274,8 +274,10 @@ function HomeTab({
   onAsk: (k: ArticleKey) => void;
 }) {
   const { t } = useI18n();
+  // pt-9 (36 px) clears the 28 px curved overlap (body -mt-7) so the
+  // first card never sits visually on top of the gradient header.
   return (
-    <div className="pt-4 pb-2 space-y-4">
+    <div className="pt-9 pb-2 space-y-4">
       {/* CTA card — opens Messages */}
       <button
         type="button"
@@ -375,8 +377,10 @@ function MessagesTab() {
     }, 1200);
   };
 
+  // pt-9 clears the 28 px header overlap so the "En ligne" status pill
+  // is not partially hidden by the curved bottom of the gradient header.
   return (
-    <div className="flex flex-col h-full pt-3">
+    <div className="flex flex-col h-full pt-9">
       <p className="inline-flex self-start items-center gap-1.5 rounded-pill bg-green-100 text-green-700 px-3 py-1 text-xs font-semibold mb-3">
         <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
         {t('chatbot.messages.status')}
@@ -455,7 +459,7 @@ function HelpTab({ onAsk }: { onAsk: (k: ArticleKey) => void }) {
   }, [query, t]);
 
   return (
-    <div className="pt-4 pb-2 space-y-4">
+    <div className="pt-9 pb-2 space-y-4">
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 rtl:left-auto rtl:right-3" aria-hidden />
         <input
@@ -498,7 +502,7 @@ function HelpTab({ onAsk }: { onAsk: (k: ArticleKey) => void }) {
 function TicketsTab() {
   const { t } = useI18n();
   return (
-    <div className="pt-4 pb-2 space-y-4">
+    <div className="pt-9 pb-2 space-y-4">
       <div className="grid grid-cols-2 gap-2.5">
         <div className="rounded-xl bg-gradient-to-br from-brand-sky/40 to-white border border-brand-blue/20 p-3 text-center">
           <p className="text-2xl font-bold tabular-nums bg-grad-stat-navy bg-clip-text text-transparent">
@@ -550,8 +554,10 @@ function ArticleView({ articleKey, onBack }: { articleKey: ArticleKey; onBack: (
   // Fallback when no dedicated body exists (t() returns the key).
   const text = body === bodyKey ? t('chatbot.article.fallback') : body;
 
+  // pt-9 clears the curved header overlap so the Back button isn't
+  // pinched against the bottom of the gradient header.
   return (
-    <div className="pt-4 pb-2">
+    <div className="pt-9 pb-2">
       <button
         type="button"
         onClick={onBack}

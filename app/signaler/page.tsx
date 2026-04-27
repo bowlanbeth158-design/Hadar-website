@@ -17,29 +17,29 @@ import { ReportForm } from '@/components/ReportForm';
 export const metadata: Metadata = {
   title: 'Partager une expérience',
   description:
-    "Signalez un contact, un site ou un moyen de paiement suspect. Votre signalement aide la communauté Hadar à se protéger contre les fraudes.",
+    "Partagez votre expérience concernant un contact, un site ou un moyen de paiement. Votre contribution aide la communauté Hadar à prendre de meilleures décisions.",
 };
 
 const TRUST_BADGES = [
   {
     Icon: Lock,
-    label: 'Anonyme',
-    desc: 'Votre identité n’est jamais publiée',
+    title: 'Protégé',
+    desc: '100% anonyme',
     pill: 'bg-gradient-to-r from-brand-sky via-blue-100 to-brand-sky text-brand-navy',
     ring: 'border-brand-blue/30',
   },
   {
     Icon: ShieldCheck,
-    label: 'Chiffré',
-    desc: 'Données et preuves sécurisées',
-    pill: 'bg-gradient-to-r from-green-100 to-green-100/60 text-green-700',
+    title: 'Chiffré',
+    desc: 'Données protégées',
+    pill: 'bg-gradient-to-r from-green-100 to-green-100/70 text-green-700',
     ring: 'border-green-500/30',
   },
   {
     Icon: UserCheck,
-    label: 'Modéré',
+    title: 'Vérifié',
     desc: 'Examiné avant publication',
-    pill: 'bg-gradient-to-r from-orange-100 to-orange-100/60 text-orange-500',
+    pill: 'bg-gradient-to-r from-orange-100 to-orange-100/70 text-orange-500',
     ring: 'border-orange-500/30',
   },
 ];
@@ -81,8 +81,7 @@ export default function Page() {
         <BackButton />
       </div>
 
-      {/* Brand pill — same shimmer recipe as the home banner pill so the
-          page reads as continuous with the rest of the site. */}
+      {/* Brand pill */}
       <div className="flex justify-center mb-5">
         <span className="relative inline-flex items-center gap-2 rounded-pill border border-white/70 bg-gradient-to-r from-brand-sky via-blue-100 to-brand-sky text-brand-navy px-4 py-1.5 text-xs md:text-sm font-semibold shadow-glow-blue overflow-hidden animate-float-soft">
           <Sparkles className="h-3.5 w-3.5 text-brand-blue animate-sparkle-pop" aria-hidden />
@@ -106,33 +105,40 @@ export default function Page() {
 
       <PageHeading
         title="Partager une expérience"
-        subtitle="Signalez un contact, un site ou un moyen de paiement suspect. Votre témoignage aide la communauté Hadar à se protéger contre les fraudes."
+        subtitle="Partagez votre expérience concernant un contact, un site ou un moyen de paiement. Votre contribution aide la communauté à prendre de meilleures décisions."
         accent="red"
       />
 
-      {/* Trust badges row — three on-brand reassurance pills directly
-          under the heading so the user sees the safeguards before the
-          form. Each pill has an animated icon on hover. */}
-      <div className="mb-8 flex flex-wrap justify-center gap-3">
-        {TRUST_BADGES.map(({ Icon, label, desc, pill, ring }) => (
-          <span
-            key={label}
-            className={`group inline-flex items-center gap-2 rounded-pill ${pill} border ${ring} px-3 py-1.5 text-xs md:text-sm font-semibold shadow-sm transition-transform hover:-translate-y-0.5`}
-          >
-            <Icon className="h-4 w-4 group-hover:animate-sparkle-pop" aria-hidden />
-            <span>{label}</span>
-            <span className="hidden sm:inline text-current/70 font-normal">· {desc}</span>
-          </span>
-        ))}
+      {/* Trust badges + form share the same max-w-3xl wrapper so the
+          three pills row above lines up exactly with the form card
+          below — owner asked for matching widths. */}
+      <div className="mx-auto max-w-3xl">
+        {/* Three trust pills in a 3-column grid so each cell takes the
+            same width and the row reaches the wrapper edges. Icons run
+            animate-sparkle-pop continuously (no hover gate) per owner
+            request. */}
+        <div className="mb-8 grid grid-cols-1 sm:grid-cols-3 gap-3">
+          {TRUST_BADGES.map(({ Icon, title, desc, pill, ring }) => (
+            <span
+              key={title}
+              className={`inline-flex items-center justify-center gap-2 rounded-pill ${pill} border ${ring} px-3 py-2 text-xs md:text-sm font-semibold shadow-sm`}
+            >
+              <Icon className="h-4 w-4 animate-sparkle-pop shrink-0" aria-hidden />
+              <span className="truncate">
+                {title} <span className="font-normal opacity-80">· {desc}</span>
+              </span>
+            </span>
+          ))}
+        </div>
+
+        {/* The form — full width of the wrapper so it visually matches
+            the trust-badges row above (max-w-3xl is now applied here,
+            not on the form itself). */}
+        <ReportForm />
       </div>
 
-      {/* The form itself */}
-      <ReportForm />
-
-      {/* "What happens next" section — three connected step cards that
-          mirror the home ProcessSteps but trimmed to the post-submit
-          journey (signal / examen / publication). */}
-      <section className="mt-10">
+      {/* Post-submit process */}
+      <section className="mt-10 mx-auto max-w-3xl">
         <h2 className="text-center text-lg md:text-xl font-bold text-brand-navy mb-6">
           Que se passe-t-il après votre signalement&nbsp;?
         </h2>

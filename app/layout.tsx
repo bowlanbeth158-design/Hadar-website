@@ -3,6 +3,7 @@ import { Poppins, Cairo } from 'next/font/google';
 import './globals.css';
 import { PublicMaintenanceGate } from '@/components/PublicMaintenanceGate';
 import { I18nProvider } from '@/lib/i18n/provider';
+import { CurrencyProvider } from '@/lib/currency/provider';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -63,7 +64,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
 
         <I18nProvider>
-          <PublicMaintenanceGate>{children}</PublicMaintenanceGate>
+          <CurrencyProvider>
+            <PublicMaintenanceGate>{children}</PublicMaintenanceGate>
+          </CurrencyProvider>
         </I18nProvider>
       </body>
     </html>

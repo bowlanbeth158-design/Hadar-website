@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import {
   Users,
@@ -11,6 +13,13 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { AnimatedCounter } from './AnimatedCounter';
+import { useCurrency } from '@/lib/currency/provider';
+
+// Aggregate amount reported by the community, expressed in MAD.
+// The card below renders this through the CurrencyProvider's
+// `format()` helper, so picking EUR / USD in the header swaps the
+// figure live without touching the canonical source value.
+const MONTANT_SIGNALE_MAD = 504_000;
 
 type Stat = {
   label: string;
@@ -115,6 +124,12 @@ const KPI_STATS: Stat[] = [
 ];
 
 export function PlatformStats() {
+  const { format } = useCurrency();
+  // Patch the Montant signalé card in place — the rest of KPI_STATS
+  // is currency-independent so the array stays static at module level.
+  const stats = KPI_STATS.map((s) =>
+    s.label === 'Montant signalé' ? { ...s, value: format(MONTANT_SIGNALE_MAD) } : s,
+  );
   return (
     <section className="mx-auto max-w-[1440px] px-4 md:px-6 py-12 md:py-16">
       {/* "Live update" pill — matches the same recipe used by the
@@ -139,7 +154,7 @@ export function PlatformStats() {
       </p>
 
       <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {KPI_STATS.map((s, i) => (
+        {stats.map((s, i) => (
           <li
             key={s.label}
             // Stagger the entrance so the row reveals card-by-card from

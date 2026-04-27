@@ -2,28 +2,18 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { Check, ChevronDown } from 'lucide-react';
+import { CURRENCIES, useCurrency, type Currency } from '@/lib/currency/provider';
 
-type Currency = 'MAD' | 'EUR' | 'USD';
-
-const CURRENCIES: { id: Currency; label: string; symbol: string }[] = [
-  { id: 'MAD', label: 'Dirham marocain', symbol: 'MAD' },
-  { id: 'EUR', label: 'Euro', symbol: '€' },
-  { id: 'USD', label: 'Dollar américain', symbol: '$' },
-];
-
-const KEY = 'hadar:currency';
-
+// Single source of truth for the active currency: the CurrencyProvider
+// (mounted in app/layout.tsx). Removes the previous local-only
+// `hadar:currency` localStorage flag that was orphaned from any other
+// component, so picking a currency now ACTUALLY swaps every amount
+// across the site (Montant signalé KPI, signaler form input suffix,
+// future report cards, etc.).
 export function CurrencySwitcher() {
-  const [currency, setCurrency] = useState<Currency>('MAD');
+  const { currency, setCurrency } = useCurrency();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const stored = (typeof window !== 'undefined' && localStorage.getItem(KEY)) as
-      | Currency
-      | null;
-    if (stored && CURRENCIES.some((c) => c.id === stored)) setCurrency(stored);
-  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -43,7 +33,6 @@ export function CurrencySwitcher() {
 
   const select = (id: Currency) => {
     setCurrency(id);
-    localStorage.setItem(KEY, id);
     setOpen(false);
   };
 

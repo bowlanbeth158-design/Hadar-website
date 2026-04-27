@@ -5,6 +5,7 @@ import {
   detectUnsafeContent,
   MODERATION_HINT,
 } from '@/lib/moderationWords';
+import { useCurrency } from '@/lib/currency/provider';
 import {
   Megaphone,
   UploadCloud,
@@ -199,6 +200,10 @@ function SuccessCelebration({ onAgain }: { onAgain: () => void }) {
 }
 
 export function ReportForm() {
+  // Active currency drives the Montant input's placeholder and suffix
+  // so the user always types in the unit they're seeing across the
+  // rest of the site (header switcher, Montant signalé KPI, etc.).
+  const { symbol: currencySymbol, placeholderAmount } = useCurrency();
   const [contactType, setContactType] = useState<string>(CONTACT_TYPES[0]!.id);
   const [problemType, setProblemType] = useState<string | null>(null);
   const [accepted, setAccepted] = useState(false);
@@ -363,13 +368,26 @@ export function ReportForm() {
           </span>
           Montant estimé <span className="text-gray-400 font-normal">(optionnel)</span>
         </label>
-        <input
-          id="amount"
-          name="amount"
-          type="number"
-          placeholder="Ex : 5 000 MAD"
-          className="w-full rounded-xl bg-white/85 backdrop-blur-sm border border-gray-200 px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue focus:shadow-sm transition-all"
-        />
+        {/* Currency-aware amount input — the placeholder example and
+            the right-side suffix both follow the active currency
+            (MAD / € / $) selected from the header switcher, so the
+            user types in the same unit they see displayed elsewhere
+            on the site. */}
+        <div className="relative">
+          <input
+            id="amount"
+            name="amount"
+            type="number"
+            placeholder={`Ex : ${placeholderAmount}`}
+            className="w-full rounded-xl bg-white/85 backdrop-blur-sm border border-gray-200 px-4 py-2.5 pr-16 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue focus:shadow-sm transition-all"
+          />
+          <span
+            aria-hidden
+            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 inline-flex items-center rounded-pill bg-green-500/10 text-green-700 px-2.5 py-0.5 text-xs font-semibold ring-1 ring-green-500/20"
+          >
+            {currencySymbol}
+          </span>
+        </div>
       </div>
 
       <div>

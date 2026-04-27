@@ -16,6 +16,15 @@ import { OFFICIAL_LOGO_URL } from './Logo';
 // URL postimg de la photo ambassadeur Hadar.
 const AMBASSADOR_IMAGE_URL = 'https://i.postimg.cc/Y0V7C7w3/Hadar-man.png';
 
+// 4 visages des "utilisateurs rassurés" (carte flottante top-right).
+// Ordre = ordre d'affichage gauche → droite (avec léger overlap).
+const RASSURES_AVATARS: { src: string; alt: string }[] = [
+  { src: 'https://i.postimg.cc/yN5fHvTh/Image-fx-2026-04-26T230722-953.jpg', alt: '' },
+  { src: 'https://i.postimg.cc/RVsKyqdb/Image-fx-2026-04-26T230243-224.jpg', alt: '' },
+  { src: 'https://i.postimg.cc/9Frr4bPY/Image-fx-2026-04-26T230922-356.jpg', alt: '' },
+  { src: 'https://i.postimg.cc/Y9rStzqR/Image-fx-2026-04-26T230433-696.jpg', alt: '' },
+];
+
 // Pro hover effect shared by the 3 floating cards — pauses the soft
 // float, lifts the card 2px, scales it 3%, swaps the soft halo for a
 // stronger brand-blue glow. Smooth 300 ms easeOut.
@@ -249,23 +258,36 @@ export function HomeBanner() {
               </div>
             </div>
 
-            {/* Card 2 — Utilisateurs rassurés (TOP-RIGHT, beside head) */}
+            {/* Card 2 — Utilisateurs rassurés (TOP-RIGHT, beside head).
+                4 photos de visages réels (avec overlap de 8 px) + 5 étoiles
+                qui s'allument séquentiellement (1 → 5) puis émettent un
+                halo doré collectif. Fond gradient brand-sky pour matcher
+                l'identité visuelle des autres cartes flottantes. */}
             <div
-              className={`absolute top-4 -right-8 w-60 rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-3.5 animate-float-soft ${FLOAT_CARD_HOVER}`}
+              className={`absolute top-4 -right-8 w-60 rounded-2xl border border-white/80 bg-gradient-to-br from-white via-brand-sky/40 to-brand-sky/70 shadow-glow-soft p-3.5 animate-float-soft ${FLOAT_CARD_HOVER}`}
               style={{ animationDelay: '1.5s' }}
             >
               <div className="flex items-center justify-between gap-2">
                 <div className="flex -space-x-2">
-                  <div className="h-7 w-7 rounded-full bg-grad-stat-violet ring-2 ring-white" />
-                  <div className="h-7 w-7 rounded-full bg-grad-stat-green ring-2 ring-white" />
-                  <div className="h-7 w-7 rounded-full bg-grad-stat-orange ring-2 ring-white" />
-                  <div className="h-7 w-7 rounded-full bg-grad-stat-navy ring-2 ring-white" />
+                  {RASSURES_AVATARS.map((a, i) => (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      key={i}
+                      src={a.src}
+                      alt={a.alt}
+                      aria-hidden={a.alt === ''}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-7 w-7 rounded-full object-cover ring-2 ring-white shadow-sm"
+                    />
+                  ))}
                 </div>
-                <div className="inline-flex items-center gap-0.5">
+                <div className="inline-flex items-center gap-0.5 animate-stars-flash">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star
                       key={i}
-                      className="h-3.5 w-3.5 text-yellow-400 fill-yellow-400"
+                      className="h-3.5 w-3.5 text-yellow-300 fill-yellow-300 animate-star-pop"
+                      style={{ animationDelay: `${i * 0.15}s` }}
                       aria-hidden
                     />
                   ))}

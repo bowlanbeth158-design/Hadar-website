@@ -151,6 +151,31 @@ const config: Config = {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(2.5px)' },
         },
+        // 5-star sequence (used on the "Utilisateurs rassurés" card).
+        // Each star applies this with a staggered animation-delay so they
+        // light up 1 → 2 → 3 → 4 → 5. Total cycle 4s, then fades out and
+        // restarts for an infinite loop.
+        'star-pop': {
+          '0%': { opacity: '0', transform: 'scale(0.4)' },
+          '8%': { opacity: '1', transform: 'scale(1.3)' },
+          '14%': { opacity: '1', transform: 'scale(1)' },
+          '92%': { opacity: '1', transform: 'scale(1)' },
+          '100%': { opacity: '0', transform: 'scale(0.6)' },
+        },
+        // Yellow drop-shadow burst on the whole row, fired AFTER the 5
+        // stars have popped in (peak ~1.2 s into the 4 s cycle).
+        'stars-flash': {
+          '0%, 25%, 60%, 100%': {
+            filter: 'drop-shadow(0 0 0 rgba(251, 237, 33, 0))',
+          },
+          '32%': {
+            filter:
+              'drop-shadow(0 0 8px rgba(251, 237, 33, 0.95)) drop-shadow(0 0 14px rgba(255, 200, 0, 0.7))',
+          },
+          '42%': {
+            filter: 'drop-shadow(0 0 4px rgba(251, 237, 33, 0.5))',
+          },
+        },
       },
       animation: {
         'alert-pulse': 'alert-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite',
@@ -167,6 +192,8 @@ const config: Config = {
         shimmer: 'shimmer 5s linear infinite',
         'trend-up': 'trend-up 1.4s ease-in-out infinite',
         'trend-down': 'trend-down 1.4s ease-in-out infinite',
+        'star-pop': 'star-pop 4s ease-in-out infinite',
+        'stars-flash': 'stars-flash 4s ease-in-out infinite',
       },
     },
   },

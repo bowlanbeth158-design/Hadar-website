@@ -162,6 +162,14 @@ const config: Config = {
           '92%': { opacity: '1', transform: 'scale(1)' },
           '100%': { opacity: '0', transform: 'scale(0.6)' },
         },
+        // Stripe shimmer — used by the RecentReports cards' top
+        // accent strip. Background-position drifts from right to left
+        // over 3.5 s; combined with a 300%-wide symmetric gradient
+        // it reads as a bright "comet" sliding across a coloured rail.
+        'stripe-travel': {
+          '0%':   { backgroundPosition: '150% 50%' },
+          '100%': { backgroundPosition: '-50% 50%' },
+        },
         // Card spotlight — opacity-only fade applied to a brand-blue
         // glow overlay sitting absolutely inside each PlatformStats
         // card. With a per-card animation-delay of `i * 1500ms` and a
@@ -256,6 +264,11 @@ const config: Config = {
         // 9 s loop matches `cards * 1500ms` stagger so the highlight
         // visits every card exactly once per cycle in a smooth ripple.
         'card-spotlight': 'card-spotlight 9s ease-in-out infinite',
+        // Continuous left-shifting background-position used by the
+        // RecentReports cards' top stripe. Combined with a 300% wide
+        // symmetric gradient, this gives the impression of a bright
+        // light "scanning" across the stripe.
+        'stripe-travel': 'stripe-travel 3.5s linear infinite',
         // Slow, deliberate connector animations — 6s per cycle so the eye
         // has time to follow the colour-shift mid-flight rather than
         // rushing past. 0.8s and 1.6s staggered start so the three balls

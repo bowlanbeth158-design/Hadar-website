@@ -77,7 +77,15 @@ type RiskStyle = {
   bg: string;
   text: string;
   border: string;
-  stripe: string;
+  // Tailwind classes for the static base layer of the top stripe.
+  stripeBase: string;
+  // Tailwind classes for the moving comet layer (300% wide
+  // symmetric gradient with brighter highlight in the centre).
+  // The animate-stripe-travel keyframe slides its background-position
+  // from right to left so the bright spot looks like a scanning beam.
+  stripeComet: string;
+  // Soft outer halo dropped just below the stripe for depth.
+  haloFrom: string;
   label: string;
 };
 
@@ -87,7 +95,10 @@ const RISK_STYLE: Record<RiskLevel, RiskStyle> = {
     bg: 'bg-yellow-100/90',
     text: 'text-yellow-500',
     border: 'border-yellow-500/40',
-    stripe: 'bg-gradient-to-r from-yellow-300 via-yellow-300 to-yellow-100',
+    stripeBase: 'bg-gradient-to-r from-yellow-300/40 via-yellow-300/70 to-yellow-300/40',
+    stripeComet:
+      'bg-[linear-gradient(90deg,transparent_0%,rgba(251,237,33,0)_30%,rgba(251,237,33,1)_50%,rgba(251,237,33,0)_70%,transparent_100%)]',
+    haloFrom: 'from-yellow-300/45',
     label: 'Vigilance',
   },
   modere: {
@@ -95,7 +106,10 @@ const RISK_STYLE: Record<RiskLevel, RiskStyle> = {
     bg: 'bg-orange-100/90',
     text: 'text-orange-500',
     border: 'border-orange-500/40',
-    stripe: 'bg-gradient-to-r from-orange-500 via-orange-500 to-orange-100',
+    stripeBase: 'bg-gradient-to-r from-orange-500/40 via-orange-500/75 to-orange-500/40',
+    stripeComet:
+      'bg-[linear-gradient(90deg,transparent_0%,rgba(242,155,17,0)_30%,rgba(242,155,17,1)_50%,rgba(242,155,17,0)_70%,transparent_100%)]',
+    haloFrom: 'from-orange-500/45',
     label: 'Modéré',
   },
   eleve: {
@@ -103,7 +117,10 @@ const RISK_STYLE: Record<RiskLevel, RiskStyle> = {
     bg: 'bg-red-100/90',
     text: 'text-red-700',
     border: 'border-red-500/40',
-    stripe: 'bg-gradient-to-r from-red-500 via-red-500 to-red-100',
+    stripeBase: 'bg-gradient-to-r from-red-500/40 via-red-500/80 to-red-500/40',
+    stripeComet:
+      'bg-[linear-gradient(90deg,transparent_0%,rgba(238,68,68,0)_30%,rgba(238,68,68,1)_50%,rgba(238,68,68,0)_70%,transparent_100%)]',
+    haloFrom: 'from-red-500/55',
     label: 'Élevé',
   },
 };
@@ -208,11 +225,34 @@ export function RecentReports() {
                   <article
                     className="group relative h-full rounded-2xl bg-gradient-to-br from-brand-sky/35 via-white to-brand-sky/45 backdrop-blur-sm border border-white/70 p-5 pt-6 flex flex-col shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1 transition-all duration-300 ease-out overflow-hidden"
                   >
-                    {/* Risk-coloured top stripe — gradient fades to the right
-                        so the colour reads as an accent, not a heavy border. */}
+                    {/* Risk-coloured top stripe — three layers stacked at
+                        the top edge of the card to give it a "live data"
+                        feel without resorting to garish flat colour:
+                          1. base — soft symmetric gradient in the risk
+                             colour, always present so the card is still
+                             recognisable on prefers-reduced-motion.
+                          2. comet — a 300%-wide gradient with a bright
+                             highlight in the centre, animated via
+                             stripe-travel so the highlight scans
+                             continuously across the rail (3.5 s loop).
+                          3. halo — a short coloured glow that bleeds
+                             below the stripe into the card body for
+                             extra depth.
+                        Each card gets a tiny animation-delay derived
+                        from its index so the comets across the row
+                        don't fire in lockstep. */}
                     <div
                       aria-hidden
-                      className={`absolute top-0 inset-x-0 h-1 ${style.stripe}`}
+                      className={`absolute top-0 inset-x-0 h-[3px] ${style.stripeBase}`}
+                    />
+                    <div
+                      aria-hidden
+                      className={`absolute top-0 inset-x-0 h-[3px] bg-[length:300%_100%] ${style.stripeComet} animate-stripe-travel mix-blend-screen`}
+                      style={{ animationDelay: `${(i % 3) * 350}ms` }}
+                    />
+                    <div
+                      aria-hidden
+                      className={`pointer-events-none absolute top-[3px] inset-x-0 h-6 bg-gradient-to-b ${style.haloFrom} to-transparent opacity-70`}
                     />
 
                     {/* Shimmer light passes diagonally across on hover */}

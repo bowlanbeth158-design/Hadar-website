@@ -162,17 +162,28 @@ const config: Config = {
           '92%': { opacity: '1', transform: 'scale(1)' },
           '100%': { opacity: '0', transform: 'scale(0.6)' },
         },
-        // 3D 360° "coin flip" for the banner trust badges. Uses
-        // perspective + rotateY so the badge actually pivots in space
-        // (you can see it tilt edge-on mid-rotation) instead of
-        // spinning flat in the plane like a CD. Perspective is set
-        // inline on the transform itself so we don't need a perspective
-        // wrapper around each badge. The flip happens in the first
-        // 35 % of the 6 s cycle then the badge rests facing the user
-        // at rotateY(360deg) (visually identical to 0deg) for the rest.
-        'badge-spin': {
-          '0%':         { transform: 'perspective(420px) rotateY(0deg)' },
-          '35%, 100%':  { transform: 'perspective(420px) rotateY(360deg)' },
+        // ----------- Banner trust badges — "verified pulse" -------------
+        // Two paired keyframes that fire on the same 8 s clock with the
+        // same per-badge animation-delay, so the SVG breath and the
+        // halo bloom stay perfectly in sync. The whole motion happens
+        // in the first 30 % of the cycle (~2.4 s), then the badge
+        // sits perfectly still for the remaining 5.6 s — calm,
+        // authoritative, only one badge "alive" at a time.
+        //
+        // 1) badge-breathe — gentle scale pulse on the SVG itself.
+        'badge-breathe': {
+          '0%, 30%, 100%': { transform: 'scale(1)' },
+          '8%':            { transform: 'scale(1.06)' },
+          '15%':           { transform: 'scale(1.12)' },
+          '22%':           { transform: 'scale(1.06)' },
+        },
+        // 2) badge-halo — soft brand-blue glow that swells then fades
+        //    behind the badge, synced with the breath above.
+        'badge-halo': {
+          '0%, 30%, 100%': { opacity: '0',    transform: 'scale(0.6)' },
+          '8%':            { opacity: '0.40', transform: 'scale(1.2)' },
+          '15%':           { opacity: '0.65', transform: 'scale(1.5)' },
+          '22%':           { opacity: '0.35', transform: 'scale(1.3)' },
         },
         // Stripe shimmer — used by the RecentReports cards' top
         // accent strip. Background-position drifts from right to left
@@ -276,11 +287,12 @@ const config: Config = {
         // 9 s loop matches `cards * 1500ms` stagger so the highlight
         // visits every card exactly once per cycle in a smooth ripple.
         'card-spotlight': 'card-spotlight 9s ease-in-out infinite',
-        // 360° spin used by the 4 trust badges in the banner. With a
-        // 6 s cycle and a per-badge animationDelay of `i * 1500ms`
-        // the spin ripples from badge 1 -> 4 instead of all four
-        // turning in unison.
-        'badge-spin': 'badge-spin 6s ease-in-out infinite',
+        // Banner trust badges — paired "breath + halo bloom" running
+        // on the same 8 s clock; per-badge animationDelay of
+        // `i * 2000ms` (4 badges × 2 s = 8 s) makes the pulse ripple
+        // through the row, only one badge alive at a time.
+        'badge-breathe': 'badge-breathe 8s ease-in-out infinite',
+        'badge-halo':    'badge-halo    8s ease-in-out infinite',
         // Continuous left-shifting background-position used by the
         // RecentReports cards' top stripe. Combined with a 300% wide
         // symmetric gradient, this gives the impression of a bright

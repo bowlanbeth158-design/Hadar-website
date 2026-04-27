@@ -139,16 +139,25 @@ export function HomeBanner() {
           <ul className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl">
             {BULLETS.map((b, i) => (
               <li key={b} className="flex items-center gap-2.5 text-sm text-brand-navy">
-                {/* 360° "flip" animation — every 6 s. Each badge spins in
-                    the first ~2 s of its own cycle then rests; with a
-                    1.5 s per-badge delay the spin ripples from left to
-                    right across the four badges instead of firing all
-                    at once. animate-badge-spin keyframe lives in
-                    tailwind.config.ts. */}
-                <VerifiedBadge
-                  className="h-5 w-5 shrink-0 animate-badge-spin"
-                  style={{ animationDelay: `${i * 1500}ms` }}
-                />
+                {/* "Verified pulse" — the badge wrapper hosts a soft
+                    brand-blue halo that blooms behind the SVG, while
+                    the SVG itself does a tiny scale breath. Both
+                    keyframes share the same 8 s clock and per-badge
+                    delay (`i * 2000ms`), so the two motions stay
+                    perfectly in sync and only one badge is alive at
+                    a time across the row — calm, authoritative cue
+                    instead of constant motion. */}
+                <span className="relative inline-flex h-5 w-5 shrink-0 items-center justify-center">
+                  <span
+                    aria-hidden
+                    className="absolute inset-0 rounded-full bg-brand-blue/60 blur-md animate-badge-halo"
+                    style={{ animationDelay: `${i * 2000}ms` }}
+                  />
+                  <VerifiedBadge
+                    className="relative h-5 w-5 animate-badge-breathe"
+                    style={{ animationDelay: `${i * 2000}ms` }}
+                  />
+                </span>
                 <span className="font-medium">{b}</span>
               </li>
             ))}

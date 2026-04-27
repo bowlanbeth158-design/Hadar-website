@@ -28,6 +28,10 @@ import {
   X as XIcon,
   type LucideIcon,
 } from 'lucide-react';
+import {
+  detectUnsafeContent,
+  MODERATION_EXAMPLE,
+} from '@/lib/moderationWords';
 
 type ContactType = {
   id: string;
@@ -107,25 +111,19 @@ function ConfettiRain() {
 }
 
 function SuccessCelebration({ onAgain }: { onAgain: () => void }) {
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  // On mount, smooth-scroll the celebration card into view so the user
-  // actually sees the "Merci" headline + checkmark + confetti regardless
-  // of where they were on the page when they hit Envoyer. Calculates
-  // the scroll target manually (instead of scrollIntoView) so we can
-  // leave a 60 px breathing room above for the page header / pill.
+  // Owner asked to land on the trust pills + celebration together so
+  // the WHOLE animation is in view. Easiest reliable target: page top.
+  // The page header renders the back button → brand pill → page title
+  // → subtitle → 3 trust badges → celebration card, all visible above
+  // the fold on most viewports.
   useEffect(() => {
-    if (typeof window === 'undefined' || !cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const targetY = Math.max(0, rect.top + window.scrollY - 60);
-    window.scrollTo({ top: targetY, behavior: 'smooth' });
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   }, []);
 
   return (
-    <div
-      ref={cardRef}
-      className="relative rounded-3xl bg-gradient-to-br from-green-100/60 via-white to-brand-sky/40 backdrop-blur-sm border border-white/70 shadow-glow-green overflow-hidden animate-modal-pop scroll-mt-20"
-    >
+    <div className="relative rounded-3xl bg-gradient-to-br from-green-100/60 via-white to-brand-sky/40 backdrop-blur-sm border border-white/70 shadow-glow-green overflow-hidden animate-modal-pop scroll-mt-20">
       <ConfettiRain />
 
       <div className="relative px-6 md:px-10 py-12 md:py-16 text-center">
@@ -218,10 +216,16 @@ export function ReportForm() {
 
   const activeContact = CONTACT_TYPES.find((c) => c.id === contactType) ?? CONTACT_TYPES[0]!;
 
+  // Live moderation check on the description as the user types.
+  // `blocked = true` if any forbidden term (FR/EN/Arabic/darija) is
+  // detected — submit stays disabled until the term is removed.
+  const moderation = detectUnsafeContent(description);
+
   const canSubmit =
     accepted &&
     problemType !== null &&
     description.trim() !== '' &&
+    !moderation.blocked &&
     evidenceFiles.length > 0 &&
     phase === 'idle';
 
@@ -254,11 +258,6 @@ export function ReportForm() {
     e.preventDefault();
     if (!canSubmit) return;
     setPhase('sending');
-    // Simulated network delay until /api/reports lands. The
-    // SuccessCelebration component scrolls itself into view via its
-    // own useEffect, so we don't pre-scroll here — that way the
-    // viewport is moved AFTER the celebration mounts, guaranteeing the
-    // user lands on the animation no matter how tall the page is.
     setTimeout(() => setPhase('success'), 1200);
   };
 
@@ -385,7 +384,7 @@ export function ReportForm() {
         />
       </div>
 
-      {/* Description (mandatory) */}
+      {/* Description (mandatory + live moderation) */}
       <div>
         <label
           htmlFor="description"
@@ -408,14 +407,50 @@ export function ReportForm() {
           rows={4}
           maxLength={300}
           required
+          aria-invalid={moderation.blocked}
+          aria-describedby={moderation.blocked ? 'description-moderation' : undefined}
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Décrivez brièvement la situation (informations factuelles uniquement)"
-          className="w-full rounded-xl bg-white/85 backdrop-blur-sm border border-gray-200 px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue focus:shadow-sm transition-all resize-y"
+          className={`w-full rounded-xl backdrop-blur-sm px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:shadow-sm transition-all resize-y ${
+            moderation.blocked
+              ? 'bg-red-50/80 border-2 border-red-400 focus:border-red-500'
+              : 'bg-white/85 border border-gray-200 focus:border-brand-blue'
+          }`}
         />
-        <p className="mt-2 text-xs text-red-500">
-          Merci de décrire la situation de manière factuelle. Évitez les jugements ou accusations.
-        </p>
+
+        {/* Live moderation feedback — replaces the static "factual"
+            note when a forbidden term is detected; keeps the static
+            note otherwise so the user knows tone is monitored. */}
+        {moderation.blocked ? (
+          <div
+            id="description-moderation"
+            role="alert"
+            className="mt-2 rounded-xl border border-red-300 bg-red-50/80 backdrop-blur-sm p-3 space-y-2"
+          >
+            <p className="inline-flex items-start gap-2 text-xs font-semibold text-red-700 leading-snug">
+              <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5 animate-sparkle-pop" aria-hidden />
+              {moderation.message}
+            </p>
+            <p className="inline-flex items-start gap-2 text-xs text-red-700/80 italic leading-snug">
+              <Sparkles className="h-3.5 w-3.5 shrink-0 mt-0.5" aria-hidden />
+              {MODERATION_EXAMPLE}
+            </p>
+            {moderation.matchedWords.length > 0 && (
+              <p className="text-[11px] text-red-700/70">
+                Termes signalés&nbsp;:{' '}
+                <span className="font-mono font-semibold">
+                  {moderation.matchedWords.join(', ')}
+                </span>
+              </p>
+            )}
+          </div>
+        ) : (
+          <p className="mt-2 text-xs text-red-500">
+            Merci de décrire la situation de manière factuelle. Évitez
+            les jugements ou accusations.
+          </p>
+        )}
       </div>
 
       {/* Preuves (mandatory) */}

@@ -1,23 +1,17 @@
 /**
  * Content moderation for user-submitted reports.
  *
- * Detects direct insults, accusations, and defamatory terms across:
- *   - French    (escroc, arnaqueur, voleur, ...)
- *   - English   (scammer, thief, fraud, ...)
- *   - Classical Arabic
- *   - Darija Arabic (same script)
- *   - Darija in Latin letters / arabizi (chafar, nsab, 7rami, ...)
- *
- * Normalization:
- *   - lowercase
- *   - strip Latin diacritics (accents)
- *   - normalize Arabic letter variants
- *   - collapse repeated letters (scammmer -> scammer)
- *   - strip punctuation
- *   - collapse whitespace
+ * Detects direct insults, accusations, and defamatory terms across
+ * French, English, classical Arabic, darija Arabic, and darija
+ * written in Latin letters / arabizi.
  *
  * detectUnsafeContent(text) returns:
  *   { blocked, matchedWords, message }
+ *
+ * Source file is ASCII-safe: all regex literals use \uXXXX escape
+ * sequences for Unicode codepoints. Arabic vocabulary strings
+ * inside the FORBIDDEN_WORDS array are also \u-escaped so the
+ * file does not depend on the editor's handling of RTL text.
  */
 
 export const MODERATION_MESSAGE =
@@ -28,8 +22,6 @@ export const MODERATION_EXAMPLE =
 
 // Forbidden vocabulary. Plurals and common variants are listed
 // explicitly so the matcher stays simple (whole-word lookup).
-// Arabic strings are written as \u-escapes so the source file is
-// pure ASCII for build-tool safety.
 export const FORBIDDEN_WORDS: string[] = [
   // ---------- French ----------
   'escroc', 'escrocs', 'escroquerie',
@@ -53,35 +45,35 @@ export const FORBIDDEN_WORDS: string[] = [
   'cheater', 'cheaters',
   'asshole',
 
-  // ---------- Classical / standard Arabic ----------
-  'نصاب',                                   // nassab
-  'النصاب',                       // al-nassab
-  'نصابين',                       // nassabin
-  'نصابون',                       // nassabun
-  'شفار',                                   // chaffar
-  'الشفار',                       // al-chaffar
-  'شفارين',                       // chaffarin
-  'محتال',                             // mohtal
-  'المحتال',                 // al-mohtal
-  'محتالين',                 // mohtalin
-  'سارق',                                   // sariq
-  'السارق',                       // al-sariq
-  'سارقين',                       // sariqin
-  'سراق',                                   // surraq
-  'كذاب',                                   // kaddab
-  'الكذاب',                       // al-kaddab
-  'كذابين',                       // kaddabin
-  'لص',                                               // liss
-  'اللص',                                   // al-liss
-  'لصوص',                                   // lusus
-  'حرامي',                             // harami
-  'الحرامي',                 // al-harami
-  'حرامية',                       // haramiya
-  'مجرم',                                   // mojrim
-  'المجرم',                       // al-mojrim
-  'مجرمين',                       // mojrimin
-  'كلب',                                         // kalb
-  'كلاب',                                   // kilab
+  // ---------- Classical / standard Arabic (\u-escaped) ----------
+  'نصاب',                         // nassab
+  'النصاب',             // al-nassab
+  'نصابين',             // nassabin
+  'نصابون',             // nassabun
+  'شفار',                         // chaffar
+  'الشفار',             // al-chaffar
+  'شفارين',             // chaffarin
+  'محتال',                   // mohtal
+  'المحتال',       // al-mohtal
+  'محتالين',       // mohtalin
+  'سارق',                         // sariq
+  'السارق',             // al-sariq
+  'سارقين',             // sariqin
+  'سراق',                         // surraq
+  'كذاب',                         // kaddab
+  'الكذاب',             // al-kaddab
+  'كذابين',             // kaddabin
+  'لص',                                     // liss
+  'اللص',                         // al-liss
+  'لصوص',                         // lusus
+  'حرامي',                   // harami
+  'الحرامي',       // al-harami
+  'حرامية',             // haramiya
+  'مجرم',                         // mojrim
+  'المجرم',             // al-mojrim
+  'مجرمين',             // mojrimin
+  'كلب',                               // kalb
+  'كلاب',                         // kilab
 
   // ---------- Darija Arabic in Latin letters / arabizi ----------
   'chafar', 'cheffar', 'chfar', 'chafara',
@@ -94,23 +86,19 @@ export const FORBIDDEN_WORDS: string[] = [
   '7chouma', 'hchouma',
 ];
 
-// Regex constants — written with explicit \u escape sequences so the
-// source file stays ASCII-only.
-const COMBINING_MARKS = /[̀-ͯ]/g; // Latin diacritics block
+// All regex use \uXXXX escapes — the source file is ASCII-safe.
+const COMBINING_MARKS = /[̀-ͯ]/g;          // Latin diacritics
 const ARABIC_BLOCK_TEST = /[؀-ۿ]/;
-// Alef variants: إ (إ), أ (أ), آ (آ), ا (ا)
-const ALEF_VARIANTS = /[إأآا]/g;
-const TAA_MARBUTA = /ة/g;   // ة
-const ALEF_MAQSURA = /ى/g;  // ى
-// Allowed character class for normalize(): a-z, 0-9, Arabic block,
-// whitespace. Anything else is replaced by a single space.
+const ALEF_VARIANTS = /[إأآا]/g; // إ أ آ ا
+const TAA_MARBUTA = /ة/g;                       // ة
+const ALEF_MAQSURA = /ى/g;                      // ى
 const NON_ALLOWED = /[^a-z0-9؀-ۿ\s]/g;
-// Triple-or-more letter / digit collapse → keep two.
 const TRIPLE_REPEAT = /(.)\1{2,}/g;
+const WHITESPACE = /\s+/g;
 
-const ALEF_TARGET = 'ا';      // ا
-const HEH_TARGET = 'ه';       // ه
-const YEH_TARGET = 'ي';       // ي
+const ALEF_TARGET = 'ا';   // ا
+const HEH_TARGET = 'ه';    // ه
+const YEH_TARGET = 'ي';    // ي
 
 /**
  * Normalize an arbitrary user string into a canonical lowercase form
@@ -119,36 +107,23 @@ const YEH_TARGET = 'ي';       // ي
 export function normalize(text: string): string {
   if (!text) return '';
   let n = text.toLowerCase();
-  // Strip Latin diacritics
   n = n.normalize('NFD').replace(COMBINING_MARKS, '');
-  // Arabic letter variants → canonical form
   n = n
     .replace(ALEF_VARIANTS, ALEF_TARGET)
     .replace(TAA_MARBUTA, HEH_TARGET)
     .replace(ALEF_MAQSURA, YEH_TARGET);
-  // Collapse 3+ repeated letters/digits to 2.
   n = n.replace(TRIPLE_REPEAT, '$1$1');
-  // Punctuation → space.
   n = n.replace(NON_ALLOWED, ' ');
-  // Collapse whitespace.
-  n = n.replace(/\s+/g, ' ').trim();
+  n = n.replace(WHITESPACE, ' ').trim();
   return n;
 }
 
 const NORMALIZED_FORBIDDEN = FORBIDDEN_WORDS.map(normalize);
 
-// Helper: escape a string for use inside a RegExp.
 function escapeRegex(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-/**
- * Whole-word match against the normalized text.
- *   - Latin / arabizi words: anchored regex `(^|\s)WORD($|\s)` so
- *     "scam" fires in "this is a scam!" but not inside "scampi".
- *   - Arabic words: substring match (the article ال / clitics
- *     make `\b` unreliable on the Arabic block).
- */
 function matchesWord(normText: string, normWord: string): boolean {
   if (!normWord) return false;
   const isArabicScript = ARABIC_BLOCK_TEST.test(normWord);
@@ -165,12 +140,6 @@ export type ModerationResult = {
   message: string;
 };
 
-/**
- * Public API. Returns:
- *   blocked: true if at least one forbidden word was matched
- *   matchedWords: the original (un-normalized) forbidden tokens hit
- *   message: user-facing reminder ("" when not blocked)
- */
 export function detectUnsafeContent(text: string): ModerationResult {
   if (!text || text.trim() === '') {
     return { blocked: false, matchedWords: [], message: '' };

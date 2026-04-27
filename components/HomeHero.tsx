@@ -13,9 +13,14 @@ import {
   Search,
   Mic,
   MicOff,
+  ShieldCheck,
+  Zap,
+  Sparkles,
   type LucideIcon,
 } from 'lucide-react';
 import { SearchResult } from './SearchResult';
+import { OFFICIAL_LOGO_URL } from './Logo';
+import { CountUp } from './CountUp';
 
 type ContactType = {
   id: string;
@@ -79,8 +84,23 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
   const [error, setError] = useState<string | null>(null);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
 
+  // Live active-users counter — drifts between 20 and 65, updates every 5s.
+  // Seeded at 27 so SSR and first client render match (no hydration mismatch).
+  const [activeUsers, setActiveUsers] = useState(27);
+
   useEffect(() => {
     setSupported(getSpeechRecognition() !== null);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setActiveUsers((prev) => {
+        const change = Math.floor(Math.random() * 5) - 2; // -2..+2 logical drift
+        const next = prev + change;
+        return Math.max(20, Math.min(65, next));
+      });
+    }, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const active = CONTACT_TYPES.find((c) => c.id === selected) ?? CONTACT_TYPES[0]!;
@@ -157,111 +177,258 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
 
   return (
     <>
+      {/* Section uses a fully-transparent top edge that fades into a
+          solid sky-tinted band, then resolves to white well before the
+          verification card. The transparent strip lets the banner's
+          body wash continue uninterrupted into the section so there's
+          no visible seam where one section ends and the next begins.
+          `isolate` still creates the new stacking context that keeps
+          the body's fixed corner blobs from bleeding through onto the
+          verification card. */}
       <section
         id="recherche"
-        className="mx-auto max-w-[1440px] px-4 md:px-6 pt-10 md:pt-14 pb-4 text-center scroll-mt-24"
+        className="relative scroll-mt-24 overflow-hidden isolate"
       >
-        <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-brand-navy">
-          Lancez votre vérification
-        </h2>
-        <p className="mt-3 mx-auto max-w-2xl text-sm md:text-base text-gray-500">
-          Choisissez le type de contact puis recherchez un numéro, un email, un site web ou un
-          moyen de paiement pour vérifier s&apos;il a déjà été signalé.
-        </p>
-
+        {/* Soft transition layer — anchored to the top of the section,
+            takes over from the banner's body wash with the same brand-
+            sky tint and fades to transparent before the verification
+            card. Sits above the body but below the section content. */}
         <div
-          role="tablist"
-          aria-label="Type de contact à rechercher"
-          className="mt-8 mx-auto max-w-4xl grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3"
-        >
-          {CONTACT_TYPES.map((f) => {
-            const isActive = f.id === selected;
-            return (
-              <button
-                key={f.id}
-                type="button"
-                role="tab"
-                aria-selected={isActive}
-                onClick={() => setSelected(f.id)}
-                className={
-                  isActive
-                    ? 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-brand-navy text-white px-4 py-2.5 text-sm font-medium shadow-glow-navy'
-                    : 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-white border border-gray-200 text-brand-navy px-4 py-2.5 text-sm font-medium hover:border-brand-blue transition-colors'
-                }
-              >
-                <f.Icon className="h-4 w-4 shrink-0" aria-hidden />
-                <span className="truncate">{f.label}</span>
-              </button>
-            );
-          })}
+          aria-hidden
+          className="pointer-events-none absolute top-0 inset-x-0 h-72 bg-gradient-to-b from-brand-sky/45 via-brand-sky/15 to-transparent -z-10"
+        />
+
+        {/* Static background — only a centered subtle grid, no side blobs */}
+        <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
+          <div
+            className="absolute inset-0 opacity-[0.04]"
+            style={{
+              backgroundImage:
+                'linear-gradient(to right, #29AAE1 1px, transparent 1px), linear-gradient(to bottom, #29AAE1 1px, transparent 1px)',
+              backgroundSize: '44px 44px',
+              maskImage: 'radial-gradient(ellipse at center, black 40%, transparent 75%)',
+              WebkitMaskImage: 'radial-gradient(ellipse at center, black 40%, transparent 75%)',
+            }}
+          />
         </div>
 
-        <form
-          role="search"
-          action="/"
-          method="get"
-          onSubmit={handleSubmit}
-          className="mt-8 mx-auto max-w-3xl flex items-center gap-2 rounded-pill bg-white border border-gray-200 shadow-glow-soft pl-5 pr-1 py-1"
-        >
-          <Search className="h-5 w-5 text-gray-400" aria-hidden />
-          <input type="hidden" name="type" value={selected} />
-          <input
-            type="search"
-            name="q"
-            value={inputValue}
-            onChange={handleInputChange}
-            placeholder={active.placeholder}
-            aria-label={`Rechercher un ${active.label.toLowerCase()}`}
-            className="flex-1 bg-transparent outline-none text-brand-navy placeholder:text-gray-400 py-2 text-base"
-          />
-          <button
-            type="button"
-            onClick={toggleMic}
-            disabled={!supported}
-            aria-label={listening ? 'Arrêter la recherche vocale' : 'Démarrer la recherche vocale'}
-            aria-pressed={listening}
-            title={supported ? (listening ? 'Arrêter' : 'Recherche vocale') : 'Non supporté'}
-            className={
-              listening
-                ? 'relative p-2 text-red-500 animate-pulse'
-                : 'p-2 text-gray-400 hover:text-brand-navy disabled:opacity-40 disabled:cursor-not-allowed'
-            }
-          >
-            {listening ? (
-              <>
-                <Mic className="h-5 w-5" aria-hidden />
-                <span
-                  aria-hidden
-                  className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500 animate-ping"
-                />
-              </>
-            ) : supported ? (
-              <Mic className="h-5 w-5" aria-hidden />
-            ) : (
-              <MicOff className="h-5 w-5" aria-hidden />
-            )}
-          </button>
-          <button
-            type="submit"
-            className="rounded-pill bg-green-500 hover:bg-green-700 text-white font-semibold px-5 py-2.5 text-sm shadow-glow-green transition-all"
-          >
-            Vérifier maintenant
-          </button>
-        </form>
+        <div className="mx-auto max-w-[1440px] px-4 md:px-6 pt-14 md:pt-20 pb-10 md:pb-14">
+          {/* Spotlight card */}
+          <div className="relative mx-auto w-full">
+            {/* Card body — soft uniform sky gradient over the whole card so the
+                left and right sides feel identical (matches the airy right-side
+                tint the owner asked for, applied edge-to-edge). */}
+            <div
+              className="relative rounded-[2rem] bg-gradient-to-br from-white via-brand-sky/30 to-brand-sky/50 ring-1 ring-brand-sky/70 shadow-[0_10px_40px_-10px_rgb(41_170_225_/_0.18)] px-5 md:px-12 lg:px-16 py-12 md:py-16 text-center overflow-hidden"
+            >
+              {/* Subtle inner dot pattern */}
+              <div
+                className="pointer-events-none absolute inset-0 opacity-[0.05]"
+                style={{
+                  backgroundImage: 'radial-gradient(#29AAE1 1px, transparent 1px)',
+                  backgroundSize: '22px 22px',
+                  maskImage:
+                    'radial-gradient(ellipse at center, black 35%, transparent 85%)',
+                  WebkitMaskImage:
+                    'radial-gradient(ellipse at center, black 35%, transparent 85%)',
+                }}
+                aria-hidden
+              />
 
-        {error && (
-          <p className="mt-3 text-sm text-red-500" role="status">
-            {error}
-          </p>
-        )}
-        {listening && !error && (
-          <p className="mt-3 text-sm text-brand-blue" role="status">
-            Écoute en cours — parlez maintenant…
-          </p>
-        )}
+              {/* Top-right floating live counter — dynamic active-users drift,
+                  brand-blue palette to match the rest of the section. */}
+              <div className="hidden md:flex absolute top-5 right-5 z-10 items-center gap-2 rounded-pill bg-white/85 backdrop-blur-md border border-brand-blue/40 px-3 py-1.5 text-xs font-semibold text-brand-navy shadow-sm">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-500 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-green-500" />
+                </span>
+                Live ·{' '}
+                <span className="bg-gradient-to-r from-brand-navy to-brand-blue bg-clip-text text-transparent tabular-nums">
+                  {activeUsers} utilisateurs actifs
+                </span>
+              </div>
+
+              {/* Bottom-left floating monthly counter — animated CountUp,
+                  rolling 30-day window wording with a vertical-bar separator. */}
+              <div className="hidden md:flex absolute bottom-5 left-5 z-10 items-center gap-2 rounded-pill bg-white/85 backdrop-blur-md border border-brand-blue/40 px-3 py-1.5 text-xs font-semibold text-brand-navy shadow-sm">
+                <Sparkles className="h-3.5 w-3.5 text-brand-blue animate-sparkle-pop" aria-hidden />
+                <span>
+                  <span className="bg-gradient-to-r from-brand-navy to-brand-blue bg-clip-text text-transparent tabular-nums">
+                    +<CountUp to={12408} duration={1800} />
+                  </span>
+                  <span className="mx-1.5 text-gray-300" aria-hidden>|</span>
+                  30 derniers jours
+                </span>
+              </div>
+
+              {/* Decorative corner brackets */}
+              <span className="pointer-events-none absolute top-0 left-0 h-10 w-10 border-t-2 border-l-2 border-brand-blue/40 rounded-tl-[2rem]" aria-hidden />
+              <span className="pointer-events-none absolute top-0 right-0 h-10 w-10 border-t-2 border-r-2 border-brand-blue/40 rounded-tr-[2rem]" aria-hidden />
+              <span className="pointer-events-none absolute bottom-0 left-0 h-10 w-10 border-b-2 border-l-2 border-brand-blue/40 rounded-bl-[2rem]" aria-hidden />
+              <span className="pointer-events-none absolute bottom-0 right-0 h-10 w-10 border-b-2 border-r-2 border-brand-blue/40 rounded-br-[2rem]" aria-hidden />
+
+              {/* Real content (kept above all decorations) */}
+              <div className="relative z-[1]">
+                {/* Brand pill — same shimmer + animated logo + brand-sky
+                    gradient as the banner pill, just renamed to "La plateforme N°1". */}
+                <div className="inline-flex flex-col">
+                  <span className="relative inline-flex items-center gap-2 rounded-pill border border-white/70 bg-gradient-to-r from-brand-sky via-blue-100 to-brand-sky text-brand-navy px-4 py-1.5 text-xs md:text-sm font-semibold shadow-sm overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={OFFICIAL_LOGO_URL}
+                      alt=""
+                      aria-hidden
+                      className="h-4 w-4 object-contain animate-sparkle-pop drop-shadow"
+                    />
+                    <span className="relative z-10">
+                      La plateforme N°1 de vérification au Maroc
+                    </span>
+                    {/* Shimmer light passing across the pill background */}
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/70 to-transparent skew-x-[-20deg] animate-shimmer"
+                    />
+                  </span>
+                </div>
+
+                <h2 className="mt-5 text-3xl md:text-5xl font-bold tracking-tight text-brand-navy leading-tight">
+                  Lancez votre{' '}
+                  <span className="bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 bg-clip-text text-transparent">
+                    vérification
+                  </span>
+                  <span
+                    className="block mx-auto mt-2 h-1 w-32 md:w-48 rounded-full bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 opacity-70"
+                    aria-hidden
+                  />
+                </h2>
+
+                <p className="mt-4 mx-auto max-w-2xl text-sm md:text-base text-gray-500">
+                  Choisissez le type de contact puis recherchez un numéro, un email, un site web ou un
+                  moyen de paiement pour vérifier s&apos;il a déjà été signalé.
+                </p>
+
+                <div
+                  role="tablist"
+                  aria-label="Type de contact à rechercher"
+                  className="mt-8 mx-auto max-w-4xl grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3"
+                >
+                  {CONTACT_TYPES.map((f) => {
+                    const isActive = f.id === selected;
+                    return (
+                      <button
+                        key={f.id}
+                        type="button"
+                        role="tab"
+                        aria-selected={isActive}
+                        onClick={() => setSelected(f.id)}
+                        className={
+                          isActive
+                            ? 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-brand-navy text-white px-4 py-2.5 text-sm font-medium shadow-glow-navy scale-[1.02] transition-all'
+                            : 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-white border border-gray-200 text-brand-navy px-4 py-2.5 text-sm font-medium hover:border-brand-blue hover:text-brand-blue hover:-translate-y-0.5 hover:shadow-sm transition-all'
+                        }
+                      >
+                        <f.Icon className="h-4 w-4 shrink-0" aria-hidden />
+                        <span className="truncate">{f.label}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <form
+                  role="search"
+                  action="/"
+                  method="get"
+                  onSubmit={handleSubmit}
+                  className="mt-8 mx-auto max-w-3xl flex items-center gap-2 rounded-pill bg-white border-2 border-gray-200 hover:border-brand-blue/50 focus-within:border-brand-blue focus-within:shadow-md shadow-sm pl-5 pr-1 py-1 transition-all"
+                >
+                  <Search className="h-5 w-5 text-gray-400" aria-hidden />
+                  <input type="hidden" name="type" value={selected} />
+                  <input
+                    type="search"
+                    name="q"
+                    value={inputValue}
+                    onChange={handleInputChange}
+                    placeholder={active.placeholder}
+                    aria-label={`Rechercher un ${active.label.toLowerCase()}`}
+                    className="flex-1 bg-transparent outline-none text-gray-900 placeholder:text-gray-400 py-2.5 text-base"
+                  />
+                  <button
+                    type="button"
+                    onClick={toggleMic}
+                    disabled={!supported}
+                    aria-label={listening ? 'Arrêter la recherche vocale' : 'Démarrer la recherche vocale'}
+                    aria-pressed={listening}
+                    title={supported ? (listening ? 'Arrêter' : 'Recherche vocale') : 'Non supporté'}
+                    className={
+                      listening
+                        ? 'relative p-2 text-red-500 animate-pulse'
+                        : 'p-2 text-gray-400 hover:text-brand-navy disabled:opacity-40 disabled:cursor-not-allowed'
+                    }
+                  >
+                    {listening ? (
+                      <>
+                        <Mic className="h-5 w-5" aria-hidden />
+                        <span
+                          aria-hidden
+                          className="absolute top-1 right-1 h-2 w-2 rounded-full bg-red-500 animate-ping"
+                        />
+                      </>
+                    ) : supported ? (
+                      <Mic className="h-5 w-5" aria-hidden />
+                    ) : (
+                      <MicOff className="h-5 w-5" aria-hidden />
+                    )}
+                  </button>
+                  <button
+                    type="submit"
+                    className="relative rounded-pill bg-gradient-to-r from-green-500 to-green-700 hover:from-green-700 hover:to-green-700 text-white font-semibold px-5 md:px-6 py-2.5 md:py-3 text-sm shadow-glow-green animate-verify-pulse transition-all"
+                  >
+                    Vérifier maintenant
+                  </button>
+                </form>
+
+                {error && (
+                  <p className="mt-3 text-sm text-red-500" role="status">
+                    {error}
+                  </p>
+                )}
+                {listening && !error && (
+                  <p className="mt-3 text-sm text-brand-blue" role="status">
+                    Écoute en cours — parlez maintenant…
+                  </p>
+                )}
+
+                {/* Trust strip — brand-navy palette, animated icons matching
+                    the banner's sparkle-pop rhythm. */}
+                <div className="mt-7 flex flex-wrap items-center justify-center gap-x-6 gap-y-3 text-xs md:text-sm text-gray-500">
+                  <span className="inline-flex items-center gap-2 transition-transform hover:-translate-y-0.5">
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-sky via-blue-100 to-brand-sky text-brand-navy shadow-sm border border-brand-blue/30">
+                      <ShieldCheck className="h-4 w-4 drop-shadow animate-sparkle-pop" aria-hidden />
+                    </span>
+                    Données chiffrées
+                  </span>
+                  <span className="text-gray-200" aria-hidden>·</span>
+                  <span className="inline-flex items-center gap-2 transition-transform hover:-translate-y-0.5">
+                    <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-sky via-blue-100 to-brand-sky text-brand-navy shadow-sm border border-brand-blue/30">
+                      <Zap className="h-4 w-4 drop-shadow animate-sparkle-pop" aria-hidden />
+                    </span>
+                    Résultat instantané
+                  </span>
+                  <span className="text-gray-200" aria-hidden>·</span>
+                  <span className="inline-flex items-center gap-2 transition-transform hover:-translate-y-0.5">
+                    <span className="inline-flex h-7 min-w-[1.75rem] items-center justify-center rounded-full bg-gradient-to-br from-brand-sky via-blue-100 to-brand-sky text-brand-navy text-xs font-bold shadow-sm border border-brand-blue/30 px-1.5 animate-sparkle-pop">
+                      8
+                    </span>
+                    canaux couverts
+                  </span>
+                </div>
+
+                {showResult && <SearchResult query={submitted!.query} />}
+              </div>
+            </div>
+          </div>
+        </div>
       </section>
-
-      {showResult && <SearchResult query={submitted!.query} />}
     </>
   );
 }

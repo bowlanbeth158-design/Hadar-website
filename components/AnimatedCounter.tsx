@@ -41,9 +41,10 @@ function formatNumber(n: number, sep: string): string {
 export function AnimatedCounter({ value, duration = 1400, className }: Props) {
   const parsed = parseValue(value);
   const target = parsed.number;
-  const [current, setCurrent] = useState<number>(target !== null ? 0 : 0);
+  const [current, setCurrent] = useState<number>(0);
   const ref = useRef<HTMLSpanElement>(null);
   const played = useRef(false);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (target === null) return;
@@ -60,20 +61,51 @@ export function AnimatedCounter({ value, duration = 1400, className }: Props) {
       return;
     }
 
+    // Cancel any in-flight animation so a fast burst of value changes
+    // (e.g. spamming the period tabs) doesn't stack RAF callbacks.
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+
+    // Helper that runs the 0 → target tween. Easing is the same
+    // ease-out-cubic the previous version used.
+    const animateFromZero = () => {
+      setCurrent(0);
+      const start = performance.now();
+      const tick = (now: number) => {
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        setCurrent(Math.round(eased * target));
+        if (p < 1) {
+          rafRef.current = requestAnimationFrame(tick);
+        } else {
+          setCurrent(target);
+          rafRef.current = null;
+        }
+      };
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    // After the first play (initial mount), every subsequent value
+    // change re-animates immediately from 0 to the new target — no
+    // need to wait for the IntersectionObserver again. This is what
+    // makes the KPI cards / chart labels visibly count up whenever
+    // the period or count↔% mode changes.
+    if (played.current) {
+      animateFromZero();
+      return;
+    }
+
+    // First play: wait until the element scrolls into view (≥30%)
+    // before kicking off the tween, so KPIs below the fold don't
+    // burn their animation while still hidden.
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting && !played.current) {
             played.current = true;
-            const start = performance.now();
-            const tick = (now: number) => {
-              const p = Math.min((now - start) / duration, 1);
-              const eased = 1 - Math.pow(1 - p, 3);
-              setCurrent(Math.round(eased * target));
-              if (p < 1) requestAnimationFrame(tick);
-              else setCurrent(target);
-            };
-            requestAnimationFrame(tick);
+            animateFromZero();
             observer.disconnect();
           }
         }
@@ -82,7 +114,13 @@ export function AnimatedCounter({ value, duration = 1400, className }: Props) {
     );
 
     observer.observe(node);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+    };
   }, [target, duration]);
 
   if (target === null) {

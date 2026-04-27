@@ -25,6 +25,7 @@ import {
   ShieldCheck,
   Sparkles,
   Loader2,
+  X as XIcon,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -57,8 +58,9 @@ const PROBLEM_TYPES: ProblemType[] = [
 
 type Phase = 'idle' | 'sending' | 'success';
 
-// 32 confetti pieces with deterministic positions/colours/delays so the
-// rain looks dense but the markup is stable across SSR / CSR.
+const MAX_EVIDENCE = 5;
+const ACCEPTED_TYPES = '.jpg,.jpeg,.png,.webp,.mp4,.webm,.mov';
+
 const CONFETTI_COLOURS = [
   'bg-brand-blue',
   'bg-brand-navy',
@@ -72,11 +74,11 @@ const CONFETTI_COLOURS = [
 
 function ConfettiRain() {
   const pieces = Array.from({ length: 36 }, (_, i) => {
-    const left = (i * 13.7) % 100; // pseudo-random spread
+    const left = (i * 13.7) % 100;
     const colour = CONFETTI_COLOURS[i % CONFETTI_COLOURS.length]!;
-    const delay = ((i * 137) % 1500) / 1000;     // 0–1.5 s
-    const duration = 2.4 + ((i * 71) % 1800) / 1000; // 2.4–4.2 s
-    const size = 6 + (i % 5) * 2; // 6–14 px
+    const delay = ((i * 137) % 1500) / 1000;
+    const duration = 2.4 + ((i * 71) % 1800) / 1000;
+    const size = 6 + (i % 5) * 2;
     const rounded = i % 3 === 0 ? 'rounded-full' : 'rounded-sm';
     return (
       <span
@@ -129,25 +131,32 @@ function SuccessCelebration({ onAgain }: { onAgain: () => void }) {
         </div>
 
         <h2 className="mt-7 text-3xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-green-700 via-green-500 to-green-700 bg-clip-text text-transparent animate-fade-in-down">
-          Merci&nbsp;!
+          Merci
         </h2>
 
-        <p className="mt-3 text-lg md:text-xl font-bold text-brand-navy animate-fade-in-down [animation-delay:120ms]">
-          Votre signalement a été envoyé
-        </p>
+        <div className="mt-4 mx-auto max-w-lg space-y-3 text-sm md:text-base text-gray-600 leading-relaxed">
+          <p className="font-semibold text-brand-navy text-base md:text-lg animate-fade-in-down [animation-delay:120ms]">
+            Votre contribution a bien été reçue.
+          </p>
+          <p className="animate-fade-in-down [animation-delay:240ms]">
+            Vous aidez la communauté Hadar à rester vigilante et à
+            vérifier en toute confiance.
+          </p>
+          <p className="animate-fade-in-down [animation-delay:360ms]">
+            Notre équipe examinera votre signalement sous{' '}
+            <span className="font-semibold text-brand-navy">
+              48 heures ouvrées
+            </span>
+            .
+          </p>
+        </div>
 
-        <p className="mt-4 mx-auto max-w-md text-sm md:text-base text-gray-600 leading-relaxed animate-fade-in-down [animation-delay:240ms]">
-          Grâce à votre contribution, la communauté Hadar est mieux armée
-          contre les fraudes. Notre équipe va examiner votre signalement
-          dans les <span className="font-semibold text-brand-navy">48 heures ouvrées</span>.
-        </p>
-
-        {/* Mini stats — three reassurance pills with animated icons */}
+        {/* Mini stats */}
         <div className="mt-8 grid grid-cols-3 gap-3 max-w-md mx-auto">
           {[
-            { Icon: Users,       value: '2 500+', label: 'utilisateurs aidés', tint: 'text-brand-blue' },
-            { Icon: ShieldCheck, value: '+346',   label: 'contacts vérifiés',  tint: 'text-green-700'  },
-            { Icon: Heart,       value: '∞',      label: 'merci à vous',        tint: 'text-red-500'    },
+            { Icon: Users,       value: '2 500+',  label: 'utilisateurs aidés', tint: 'text-brand-blue' },
+            { Icon: ShieldCheck, value: '+ 10 000', label: 'contacts vérifiés',  tint: 'text-green-700'  },
+            { Icon: Heart,       value: '∞',       label: 'merci à vous',        tint: 'text-red-500'    },
           ].map(({ Icon, value, label, tint }) => (
             <div
               key={label}
@@ -160,7 +169,8 @@ function SuccessCelebration({ onAgain }: { onAgain: () => void }) {
           ))}
         </div>
 
-        {/* CTAs */}
+        {/* CTAs — both scroll the page back to the top via the parent's
+            onAgain handler / a fresh navigation. */}
         <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
           <button
             type="button"
@@ -187,25 +197,51 @@ export function ReportForm() {
   const [problemType, setProblemType] = useState<string | null>(null);
   const [accepted, setAccepted] = useState(false);
   const [description, setDescription] = useState('');
+  const [evidenceFiles, setEvidenceFiles] = useState<File[]>([]);
   const [phase, setPhase] = useState<Phase>('idle');
 
   const activeContact = CONTACT_TYPES.find((c) => c.id === contactType) ?? CONTACT_TYPES[0]!;
-  const canSubmit = accepted && problemType !== null && phase === 'idle';
+
+  // All four mandatory fields must be satisfied AND we must not be in
+  // the middle of an in-flight submit.
+  const canSubmit =
+    accepted &&
+    problemType !== null &&
+    description.trim() !== '' &&
+    evidenceFiles.length > 0 &&
+    phase === 'idle';
+
+  const scrollToTop = () => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  const handleFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files) return;
+    const next = Array.from(e.target.files).slice(0, MAX_EVIDENCE);
+    setEvidenceFiles(next);
+  };
+
+  const removeFile = (name: string) => {
+    setEvidenceFiles((prev) => prev.filter((f) => f.name !== name));
+  };
 
   const reset = () => {
     setProblemType(null);
     setAccepted(false);
     setDescription('');
+    setEvidenceFiles([]);
     setPhase('idle');
+    scrollToTop();
   };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!canSubmit) return;
+    scrollToTop();
     setPhase('sending');
-    // Simulated network delay so the loader reads as "envoi en cours…".
-    // Will be replaced by the real /api/reports POST when the backend
-    // lands.
+    // Simulated network delay until /api/reports lands.
     setTimeout(() => setPhase('success'), 1200);
   };
 
@@ -332,7 +368,7 @@ export function ReportForm() {
         />
       </div>
 
-      {/* Description */}
+      {/* Description (mandatory) */}
       <div>
         <label
           htmlFor="description"
@@ -344,7 +380,7 @@ export function ReportForm() {
           >
             <Pencil className="h-3.5 w-3.5 animate-sparkle-pop" />
           </span>
-          Description{' '}
+          Description <span className="text-red-500">*</span>{' '}
           <span className="text-gray-400 font-normal tabular-nums">
             ({description.length}/300)
           </span>
@@ -354,6 +390,7 @@ export function ReportForm() {
           name="description"
           rows={4}
           maxLength={300}
+          required
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Décrivez brièvement la situation (informations factuelles uniquement)"
@@ -364,18 +401,37 @@ export function ReportForm() {
         </p>
       </div>
 
-      {/* Preuves */}
+      {/* Preuves (mandatory) — real <input type="file"> wired through a
+          hidden control + clickable styled label, with a removable file
+          chip per upload (max 5). */}
       <div>
-        <label className="inline-flex items-center gap-2 text-sm font-semibold text-brand-navy mb-2">
+        <label
+          htmlFor="evidence"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-brand-navy mb-2"
+        >
           <span
             aria-hidden
             className="inline-flex h-7 w-7 items-center justify-center rounded-pill bg-sky-400/15 text-sky-400 ring-1 ring-sky-400/30"
           >
             <Paperclip className="h-3.5 w-3.5 animate-sparkle-pop" />
           </span>
-          Preuves <span className="text-gray-400 font-normal">(fortement recommandé)</span>
+          Preuves <span className="text-red-500">*</span>
         </label>
-        <div className="group rounded-xl border-2 border-dashed border-brand-blue/30 bg-white/60 backdrop-blur-sm hover:bg-white/80 hover:border-brand-blue/60 px-4 py-8 text-center text-sm text-gray-500 transition-all cursor-pointer">
+
+        <input
+          id="evidence"
+          name="evidence"
+          type="file"
+          multiple
+          accept={ACCEPTED_TYPES}
+          onChange={handleFiles}
+          className="sr-only"
+        />
+
+        <label
+          htmlFor="evidence"
+          className="group block rounded-xl border-2 border-dashed border-brand-blue/30 bg-white/60 backdrop-blur-sm hover:bg-white/80 hover:border-brand-blue/60 px-4 py-8 text-center text-sm text-gray-500 transition-all cursor-pointer"
+        >
           <UploadCloud className="mx-auto h-9 w-9 mb-2 text-brand-blue/70 group-hover:text-brand-blue group-hover:scale-110 group-hover:animate-sparkle-pop transition-all" aria-hidden />
           <p className="text-brand-navy/80 font-medium">
             Choisir un fichier ou glisser ici
@@ -384,9 +440,34 @@ export function ReportForm() {
             (capture, reçu, conversation…)
           </p>
           <p className="mt-2 text-[10px] text-gray-400">
-            JPG · PNG · WEBP · MP4 · WEBM · MOV — 5 fichiers max
+            JPG · PNG · WEBP · MP4 · WEBM · MOV — {MAX_EVIDENCE} fichiers max
           </p>
-        </div>
+        </label>
+
+        {/* Selected files row */}
+        {evidenceFiles.length > 0 && (
+          <ul className="mt-3 flex flex-wrap gap-2">
+            {evidenceFiles.map((f) => (
+              <li
+                key={f.name}
+                className="inline-flex items-center gap-2 rounded-pill bg-white/85 backdrop-blur-sm border border-brand-blue/30 px-3 py-1.5 text-xs font-medium text-brand-navy shadow-sm"
+              >
+                <Paperclip className="h-3 w-3 text-brand-blue" aria-hidden />
+                <span className="max-w-[14ch] truncate" title={f.name}>
+                  {f.name}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => removeFile(f.name)}
+                  className="-mr-1 inline-flex items-center justify-center h-5 w-5 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+                  aria-label={`Retirer ${f.name}`}
+                >
+                  <XIcon className="h-3 w-3" aria-hidden />
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {/* Confirmation checkbox */}
@@ -408,8 +489,7 @@ export function ReportForm() {
         </span>
       </label>
 
-      {/* Submit — animate-alert-pulse + Megaphone siren-wiggle. While
-          phase === 'sending', shows a Loader2 spinner instead. */}
+      {/* Submit */}
       <button
         type="submit"
         disabled={!canSubmit}

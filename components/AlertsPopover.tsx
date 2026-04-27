@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { BellOff, ChevronsDown, Clock3, Settings } from 'lucide-react';
 import { CHANNEL_ICON, DEMO_ALERTS, type Alert, type RiskLevel } from '@/lib/mock/alerts';
+import { useI18n } from '@/lib/i18n/provider';
 
 // Same brand-themed hover stack used by the other nav links (color shift,
 // 1px lift, brand-gradient tile behind letters, gradient underline).
@@ -35,6 +36,7 @@ export function AlertsPopover({
   count: number;
   alerts?: Alert[];
 }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -65,13 +67,13 @@ export function AlertsPopover({
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="dialog"
         aria-expanded={open}
-        aria-label="Voir mes alertes"
+        aria-label={t('alerts.aria.button')}
         className={`inline-flex items-center gap-1.5 ${NAV_LINK_HOVER}`}
       >
-        Mes alertes
+        {t('alerts.label')}
         {count > 0 && (
           <span
-            aria-label={`${count} nouvelles alertes`}
+            aria-label={t('alerts.aria.count', { n: count })}
             className="min-w-[20px] h-5 px-1.5 rounded-full bg-red-500 text-white text-[10px] font-bold inline-flex items-center justify-center"
           >
             {count > 99 ? '99+' : count}
@@ -82,18 +84,18 @@ export function AlertsPopover({
       {open && (
         <div
           role="dialog"
-          aria-label="Mes alertes"
+          aria-label={t('alerts.label')}
           className="absolute right-0 top-full mt-3 w-[380px] rounded-2xl bg-white border border-gray-200 shadow-xl z-50 overflow-hidden animate-fade-in-down"
         >
           {/* Header */}
           <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-            <h3 className="text-base font-bold text-brand-navy">Mes alertes</h3>
+            <h3 className="text-base font-bold text-brand-navy">{t('alerts.label')}</h3>
             <Link
               href="/mes-alertes?settings=1"
               onClick={close}
               className="text-xs text-brand-blue font-semibold inline-flex items-center gap-1 hover:underline"
             >
-              Gérer mes alertes
+              {t('alerts.manage')}
               <Settings className="h-3.5 w-3.5" aria-hidden />
             </Link>
           </div>
@@ -126,7 +128,7 @@ export function AlertsPopover({
                             {alert.lastReportRelative}
                           </span>
                           <span className="text-brand-blue font-semibold group-hover:underline">
-                            Voir les détails
+                            {t('alerts.viewDetails')}
                           </span>
                         </div>
                       </div>
@@ -141,10 +143,10 @@ export function AlertsPopover({
                 <BellOff className="h-7 w-7 text-brand-blue/60" aria-hidden />
               </div>
               <p className="text-sm font-semibold text-brand-navy mb-1">
-                Aucune alerte pour le moment
+                {t('alerts.empty.title')}
               </p>
               <p className="text-xs text-gray-500 max-w-[260px] mx-auto">
-                Suivez un contact après une recherche pour recevoir les nouvelles mises à jour.
+                {t('alerts.empty.subtitle')}
               </p>
             </div>
           )}
@@ -159,7 +161,7 @@ export function AlertsPopover({
               className="h-4 w-4 transition-transform duration-200 group-hover:translate-y-0.5"
               aria-hidden
             />
-            Voir tous les détails
+            {t('alerts.viewAll')}
           </Link>
         </div>
       )}

@@ -21,8 +21,8 @@ export default async function Page() {
         <BackButton />
       </div>
       <PageHeading
-        title="Foire aux questions"
-        subtitle="Les réponses aux questions les plus fréquentes sur Hadar."
+        titleKey="faqPage.title"
+        subtitleKey="faqPage.subtitle"
         accent="gradient"
       />
       <FaqAccordion items={items} />

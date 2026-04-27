@@ -1081,6 +1081,33 @@ const fr: Dict = {
   'auth.forgot.submit': 'Envoyer le lien',
   'auth.forgot.disabled': 'Envoi activé prochainement.',
   'auth.forgot.backToLogin': '← Retour à la connexion',
+
+  // ===== AlertsPopover (Header dropdown) =====
+  'alerts.label': 'Mes alertes',
+  'alerts.aria.button': 'Voir mes alertes',
+  'alerts.aria.count': '{n} nouvelles alertes',
+  'alerts.manage': 'Gérer mes alertes',
+  'alerts.empty.title': 'Aucune alerte pour le moment',
+  'alerts.empty.subtitle':
+    'Suivez un contact après une recherche pour recevoir les nouvelles mises à jour.',
+  'alerts.viewDetails': 'Voir les détails',
+  'alerts.viewAll': 'Voir tous les détails',
+
+  // ===== Static info pages (page H1 + subtitle only — markdown body
+  //       remains in French for now, will be localised in pass 4) =====
+  'aboutPage.title': 'Qui sommes-nous ?',
+  'faqPage.title': 'Foire aux questions',
+  'faqPage.subtitle': 'Les réponses aux questions les plus fréquentes sur Hadar.',
+
+  // ----- "Comment ça marche ?" page -----
+  'howPage.title': 'Comment ça marche ?',
+  'howPage.subtitle': 'Deux actions simples pour prendre de meilleures décisions.',
+  'howPage.card1.title': 'Vérifier un contact',
+  'howPage.card1.description': 'Consultez les informations disponibles avant toute transaction.',
+  'howPage.card2.title': 'Partager une expérience',
+  'howPage.card2.description': 'Aidez la communauté avec un retour factuel et utile.',
+  'howPage.cta.watch': 'Voir la vidéo',
+  'howPage.cta.comingSoon': 'Vidéo à venir',
 };
 
 const en: Dict = {
@@ -2147,6 +2174,31 @@ const en: Dict = {
   'auth.forgot.submit': 'Send the link',
   'auth.forgot.disabled': 'Sending enabled soon.',
   'auth.forgot.backToLogin': '← Back to sign in',
+
+  // ===== AlertsPopover =====
+  'alerts.label': 'My alerts',
+  'alerts.aria.button': 'View my alerts',
+  'alerts.aria.count': '{n} new alerts',
+  'alerts.manage': 'Manage my alerts',
+  'alerts.empty.title': 'No alerts for now',
+  'alerts.empty.subtitle': 'Follow a contact after a search to receive updates.',
+  'alerts.viewDetails': 'View details',
+  'alerts.viewAll': 'View all details',
+
+  // ===== Static info pages =====
+  'aboutPage.title': 'About us',
+  'faqPage.title': 'Frequently asked questions',
+  'faqPage.subtitle': 'Answers to the most common questions about Hadar.',
+
+  // ----- "How it works" page -----
+  'howPage.title': 'How it works?',
+  'howPage.subtitle': 'Two simple actions to make better decisions.',
+  'howPage.card1.title': 'Verify a contact',
+  'howPage.card1.description': 'Check available information before any transaction.',
+  'howPage.card2.title': 'Share an experience',
+  'howPage.card2.description': 'Help the community with a factual and useful feedback.',
+  'howPage.cta.watch': 'Watch the video',
+  'howPage.cta.comingSoon': 'Video coming soon',
 };
 
 const ar: Dict = {
@@ -3214,6 +3266,31 @@ const ar: Dict = {
   'auth.forgot.submit': 'إرسال الرابط',
   'auth.forgot.disabled': 'سيتم تفعيل الإرسال قريباً.',
   'auth.forgot.backToLogin': '→ العودة إلى تسجيل الدخول',
+
+  // ===== AlertsPopover =====
+  'alerts.label': 'تنبيهاتي',
+  'alerts.aria.button': 'عرض تنبيهاتي',
+  'alerts.aria.count': '{n} تنبيهات جديدة',
+  'alerts.manage': 'إدارة تنبيهاتي',
+  'alerts.empty.title': 'لا توجد تنبيهات حالياً',
+  'alerts.empty.subtitle': 'تابع جهة اتصال بعد البحث لتلقي التحديثات الجديدة.',
+  'alerts.viewDetails': 'عرض التفاصيل',
+  'alerts.viewAll': 'عرض كل التفاصيل',
+
+  // ===== Static info pages =====
+  'aboutPage.title': 'من نحن ؟',
+  'faqPage.title': 'الأسئلة الشائعة',
+  'faqPage.subtitle': 'إجابات على الأسئلة الأكثر شيوعاً حول Hadar.',
+
+  // ----- "How it works" page -----
+  'howPage.title': 'كيف يعمل ؟',
+  'howPage.subtitle': 'إجراءان بسيطان لاتخاذ قرارات أفضل.',
+  'howPage.card1.title': 'تحقّق من جهة اتصال',
+  'howPage.card1.description': 'اطّلع على المعلومات المتوفرة قبل أي معاملة.',
+  'howPage.card2.title': 'شارك تجربة',
+  'howPage.card2.description': 'ساعد المجتمع بملاحظة واقعية ومفيدة.',
+  'howPage.cta.watch': 'مشاهدة الفيديو',
+  'howPage.cta.comingSoon': 'الفيديو قادم قريباً',
 };
 
 export const MESSAGES: Record<Locale, Dict> = { fr, en, ar };

@@ -4,6 +4,7 @@ import remarkGfm from 'remark-gfm';
 import { PageLayout } from '@/components/PageLayout';
 import { BackButton } from '@/components/BackButton';
 import { ProcessSteps } from '@/components/ProcessSteps';
+import { AboutPageHeading } from '@/components/AboutPageHeading';
 import { loadLegal } from '@/lib/loadLegal';
 
 export const metadata: Metadata = {
@@ -46,9 +47,7 @@ export default async function Page() {
       <div className="mb-8">
         <BackButton />
       </div>
-      <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-brand-navy mb-8">
-        Qui sommes-nous ?
-      </h1>
+      <AboutPageHeading />
 
       {/* Sections before the process steps */}
       <article className={PROSE_CLASS}>

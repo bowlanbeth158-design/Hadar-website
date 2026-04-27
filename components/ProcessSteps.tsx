@@ -45,8 +45,10 @@ const STEPS: Step[] = [
     topAccent: 'bg-gradient-to-b from-brand-blue/30 to-transparent',
     bottomBar: 'bg-gradient-to-r from-brand-blue via-brand-blue/50 to-transparent',
     shadow: 'shadow-glow-blue',
-    hoverOverlay: 'from-brand-blue/8 via-brand-blue/14 to-brand-blue/22',
-    hoverBorder: 'group-hover:border-brand-blue/45',
+    // Brand gradient (Tailwind utility from tailwind.config.ts §3.1)
+    // — same recipe as the homepage stat cards.
+    hoverOverlay: 'bg-grad-stat-navy',
+    hoverBorder: 'group-hover:border-transparent',
     travelAnim: 'animate-travel-1-to-2',
     lineFrom: '#0078BA',
     lineTo: '#8652FB',
@@ -65,8 +67,8 @@ const STEPS: Step[] = [
     topAccent: 'bg-gradient-to-b from-violet-500/30 to-transparent',
     bottomBar: 'bg-gradient-to-r from-violet-500 via-violet-500/50 to-transparent',
     shadow: 'shadow-glow-violet',
-    hoverOverlay: 'from-violet-500/8 via-violet-500/14 to-violet-500/22',
-    hoverBorder: 'group-hover:border-violet-500/45',
+    hoverOverlay: 'bg-grad-stat-violet',
+    hoverBorder: 'group-hover:border-transparent',
     travelAnim: 'animate-travel-2-to-3',
     lineFrom: '#8652FB',
     lineTo: '#F29B11',
@@ -85,8 +87,8 @@ const STEPS: Step[] = [
     topAccent: 'bg-gradient-to-b from-orange-500/30 to-transparent',
     bottomBar: 'bg-gradient-to-r from-orange-500 via-orange-500/50 to-transparent',
     shadow: 'shadow-glow-orange',
-    hoverOverlay: 'from-orange-500/8 via-orange-500/14 to-orange-500/22',
-    hoverBorder: 'group-hover:border-orange-500/45',
+    hoverOverlay: 'bg-grad-stat-orange',
+    hoverBorder: 'group-hover:border-transparent',
     travelAnim: 'animate-travel-3-to-4',
     lineFrom: '#F29B11',
     lineTo: '#22C45E',
@@ -105,8 +107,8 @@ const STEPS: Step[] = [
     topAccent: 'bg-gradient-to-b from-green-500/30 to-transparent',
     bottomBar: 'bg-gradient-to-r from-green-500 via-green-500/50 to-transparent',
     shadow: 'shadow-glow-green',
-    hoverOverlay: 'from-green-500/8 via-green-500/14 to-green-500/22',
-    hoverBorder: 'group-hover:border-green-500/45',
+    hoverOverlay: 'bg-grad-stat-green',
+    hoverBorder: 'group-hover:border-transparent',
     travelAnim: '',
     lineFrom: '',
     lineTo: '',
@@ -129,14 +131,16 @@ export function ProcessSteps() {
                 key={s.n}
                 className={`group relative rounded-3xl bg-white border border-gray-200 ${s.hoverBorder} ${s.shadow} pt-7 px-6 pb-7 overflow-visible transition-all hover:-translate-y-1 hover:shadow-glow-navy duration-300 ease-out`}
               >
-                {/* Hover theme overlay — fully transparent at rest, fades
-                    in to a soft tint of the step colour the moment the
-                    pointer enters. Sits below the card content so text
-                    and icons stay perfectly readable, and reverts on
-                    leave thanks to the opacity transition. */}
+                {/* Hover theme overlay — fully transparent at rest, then
+                    on pointer enter the entire card surface is replaced
+                    by the step's brand gradient (navy / violet / orange /
+                    green). All content classes below add a `group-hover:`
+                    white variant so the text and icon stay perfectly
+                    readable on the saturated background. Leaves smoothly
+                    via the opacity transition. */}
                 <span
                   aria-hidden
-                  className={`pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br ${s.hoverOverlay} opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out`}
+                  className={`pointer-events-none absolute inset-0 rounded-3xl ${s.hoverOverlay} opacity-0 group-hover:opacity-100 transition-opacity duration-300 ease-out`}
                 />
 
                 {/* Soft coloured oval sitting just above the card top —
@@ -146,43 +150,50 @@ export function ProcessSteps() {
                   className={`pointer-events-none absolute -top-2 left-1/2 -translate-x-1/2 h-3 w-2/3 rounded-full ${s.topAccent} blur-[2px]`}
                 />
 
-                {/* Massive watermark digit in the top-right. */}
+                {/* Massive watermark digit in the top-right — base colour
+                    at /10 opacity in resting state; on hover the digit
+                    re-tints to white at /15 opacity so it picks up the
+                    flooded brand background instead of disappearing. */}
                 <span
                   aria-hidden
-                  className={`pointer-events-none absolute top-3 right-5 text-7xl md:text-8xl font-extrabold ${s.numberColor} leading-none select-none tracking-tight`}
+                  className={`pointer-events-none absolute top-3 right-5 text-7xl md:text-8xl font-extrabold ${s.numberColor} group-hover:text-white/15 leading-none select-none tracking-tight transition-colors duration-300`}
                 >
                   {s.n}
                 </span>
 
                 {/* Icon square — light tint of the step colour, soft ring,
-                    coloured stroke. Scales gently on card hover. The
-                    Lucide icon itself runs `animate-sparkle-pop` on card
-                    hover only — same rhythm as the banner pill icon. */}
+                    coloured stroke at rest. On hover, the chip becomes a
+                    soft white well (white/15 bg + white/40 ring + white
+                    stroke) so it stays visible above the saturated card. */}
                 <div
-                  className={`relative inline-flex items-center justify-center h-12 w-12 rounded-2xl ${s.iconBg} ${s.iconBorder} ${s.iconColor} transition-transform duration-300 ease-out group-hover:scale-110`}
+                  className={`relative inline-flex items-center justify-center h-12 w-12 rounded-2xl ${s.iconBg} ${s.iconBorder} ${s.iconColor} group-hover:bg-white/15 group-hover:ring-white/40 group-hover:text-white transition-all duration-300 ease-out group-hover:scale-110`}
                   aria-hidden
                 >
                   <s.Icon className="h-6 w-6 group-hover:animate-sparkle-pop drop-shadow-sm" />
                 </div>
 
                 <p
-                  className={`relative mt-5 text-xs font-semibold uppercase tracking-[0.2em] ${s.stepLabelColor}`}
+                  className={`relative mt-5 text-xs font-semibold uppercase tracking-[0.2em] ${s.stepLabelColor} group-hover:text-white/90 transition-colors duration-300`}
                 >
                   Étape
                 </p>
-                <h3 className={`relative mt-1 text-lg md:text-xl font-bold ${s.titleColor}`}>
+                <h3
+                  className={`relative mt-1 text-lg md:text-xl font-bold ${s.titleColor} group-hover:text-white transition-colors duration-300`}
+                >
                   {s.title}
                 </h3>
-                {/* Description darkens to brand-navy on hover for crisp
-                    contrast against the tinted overlay. */}
-                <p className="relative mt-2 text-sm text-gray-500 group-hover:text-brand-navy leading-relaxed transition-colors duration-300">
+                {/* Description on hover flips to white/95 so it reads
+                    crisp against the saturated brand-gradient surface. */}
+                <p className="relative mt-2 text-sm text-gray-500 group-hover:text-white/95 leading-relaxed transition-colors duration-300">
                   {s.description}
                 </p>
 
-                {/* Coloured progress bar at the bottom of the card */}
+                {/* Coloured progress bar at the bottom of the card —
+                    flips to a soft translucent-white track on hover so
+                    it keeps its accent role on the flooded background. */}
                 <span
                   aria-hidden
-                  className={`pointer-events-none absolute bottom-3 left-6 right-6 h-1 rounded-full ${s.bottomBar}`}
+                  className={`pointer-events-none absolute bottom-3 left-6 right-6 h-1 rounded-full ${s.bottomBar} group-hover:bg-white/35 group-hover:bg-none transition-colors duration-300`}
                 />
 
                 {/* Connector to the next card — only on lg+, only between

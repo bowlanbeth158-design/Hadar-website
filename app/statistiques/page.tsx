@@ -232,6 +232,14 @@ const STATUS_LABELS: { label: string; color: string; glow: string }[] = [
 const CHART_CARD =
   'rounded-2xl bg-gradient-to-br from-brand-sky/30 via-white to-brand-sky/35 backdrop-blur-sm border border-white/70 p-6 shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-0.5 transition-all duration-300 ease-out';
 
+// AnimatedBar — reliably plays a 0 → pct% width tween every time the
+// `trigger` prop changes (period switch / count↔% toggle).
+//
+// The trick is to disable the CSS transition on the snap-to-0 phase
+// (otherwise the bar would smoothly shrink from its current pct to 0
+// over 1 s, half-cancelling the animation we want). Two-phase render:
+//   phase = 'idle'      → width = 0%, NO transition (instant snap)
+//   phase = 'animating' → width = pct%, transition enabled (smooth fill)
 function AnimatedBar({
   pct,
   gradient,
@@ -241,25 +249,30 @@ function AnimatedBar({
   gradient: string;
   trigger: string;
 }) {
-  const [width, setWidth] = useState(0);
+  const [phase, setPhase] = useState<'idle' | 'animating'>('idle');
+
   useEffect(() => {
-    setWidth(0);
-    const id = requestAnimationFrame(() => {
-      requestAnimationFrame(() => setWidth(pct));
-    });
-    return () => cancelAnimationFrame(id);
+    setPhase('idle');
+    const timer = setTimeout(() => setPhase('animating'), 40);
+    return () => clearTimeout(timer);
   }, [pct, trigger]);
 
   return (
     <div className="h-2 rounded-pill bg-white/60 overflow-hidden border border-white/50">
       <div
-        style={{ width: `${width}%` }}
-        className={`h-full rounded-pill ${gradient} transition-[width] duration-1000 ease-out`}
+        style={{
+          width: phase === 'idle' ? '0%' : `${pct}%`,
+          transition: phase === 'idle' ? 'none' : 'width 1s ease-out',
+        }}
+        className={`h-full rounded-pill ${gradient}`}
       />
     </div>
   );
 }
 
+// AnimatedColumn — same two-phase trick as AnimatedBar but for height,
+// so the activity histogram bars grow bottom → top on every trigger
+// change without the half-cancelled-shrink artefact.
 function AnimatedColumn({
   pct,
   gradient,
@@ -269,26 +282,26 @@ function AnimatedColumn({
   gradient: string;
   trigger: string;
 }) {
-  const [height, setHeight] = useState(0);
+  const [phase, setPhase] = useState<'idle' | 'animating'>('idle');
+
   useEffect(() => {
-    setHeight(0);
-    const id = requestAnimationFrame(() => {
-      requestAnimationFrame(() => setHeight(pct));
-    });
-    return () => cancelAnimationFrame(id);
+    setPhase('idle');
+    const timer = setTimeout(() => setPhase('animating'), 40);
+    return () => clearTimeout(timer);
   }, [pct, trigger]);
 
   return (
     <div
-      style={{ height: `${height}%` }}
-      className={`w-full ${gradient} rounded-t-xl shadow-md transition-[height,filter] duration-1000 ease-out group-hover:brightness-110 group-hover:shadow-lg`}
+      style={{
+        height: phase === 'idle' ? '0%' : `${pct}%`,
+        transition: phase === 'idle' ? 'none' : 'height 1s ease-out, filter 300ms',
+      }}
+      className={`w-full ${gradient} rounded-t-xl shadow-md group-hover:brightness-110 group-hover:shadow-lg`}
     />
   );
 }
 
-// Compact icon-only Nombre / % toggle. The Hash and Percent Lucide icons
-// already read as "#" and "%" so labels are dropped — keeps the toggle
-// minimal and prevents any visual duplication of the % glyph.
+// Compact icon-only Nombre / % toggle.
 function DisplayModeToggle({
   value,
   onChange,
@@ -364,9 +377,6 @@ export default function Page() {
 
   const data = DATA[period];
 
-  // Triggers concatenate period AND mode so any state change re-fires
-  // the AnimatedBar / AnimatedColumn / card-flash animations on the
-  // affected chart only.
   const problemsTrigger = `${period}-${problemsMode}`;
   const channelsTrigger = `${period}-${channelsMode}`;
   const activityTrigger = `${period}-${activityMode}`;

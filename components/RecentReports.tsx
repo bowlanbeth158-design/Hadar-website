@@ -162,7 +162,11 @@ export function RecentReports() {
           },
           {
             transform: 'translateY(-8px) scale(1.05)',
-            boxShadow: '0 18px 40px -10px rgba(0, 120, 186, 0.45)',
+            // Two-layer glow at the peak: a directional drop shadow
+            // (depth) plus a non-offset diffuse halo so the card
+            // visibly "lights up" against the page surface.
+            boxShadow:
+              '0 22px 50px -8px rgba(0, 120, 186, 0.65), 0 0 40px 4px rgba(0, 191, 238, 0.55)',
             offset: 0.5,
           },
           {

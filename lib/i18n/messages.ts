@@ -782,13 +782,28 @@ const fr: Dict = {
   'chatbot.home.popular.q3': 'Que signifient les 4 niveaux de risque ?',
   'chatbot.home.popular.q4': "Comment activer la vérification d'identité gratuite ?",
   'chatbot.home.viewAll': 'Voir toutes les questions',
-  'chatbot.messages.title': 'Messages',
-  'chatbot.messages.subtitle': 'Discutez avec notre équipe support.',
-  'chatbot.messages.status': '🟢 En ligne · Temps de réponse : 5 min',
-  'chatbot.messages.empty.title': 'Aucun message pour le moment.',
-  'chatbot.messages.empty.subtitle': 'Envoyez-nous votre première demande.',
-  'chatbot.messages.input.placeholder': 'Écrivez votre message…',
-  'chatbot.messages.send': 'Envoyer',
+  // Article bodies — shown when the user taps a question
+  'chatbot.home.popular.q1.body':
+    'Vos données sont chiffrées en transit (TLS 1.3) et au repos (AES-256). Seule notre équipe de modération y accède pour la vérification, et chaque accès est tracé. Vos informations ne sont jamais revendues.',
+  'chatbot.home.popular.q2.body':
+    'Chaque signalement passe par : Soumis → En cours d’examen → Décision (Publié, À corriger ou Refusé). Notre équipe vérifie les preuves fournies sous 48 h. Vous êtes notifié à chaque étape.',
+  'chatbot.home.popular.q3.body':
+    '🟢 Faible — aucun signalement. 🟡 Vigilance — 1 à 2 signalements. 🟠 Modéré — 3 à 4 signalements. 🔴 Élevé — 5 ou plus. Le niveau est calculé en temps réel.',
+  'chatbot.home.popular.q4.body':
+    'Allez sur Mon profil → Activer ma vérification d’identité (gratuit). 3 étapes : photo CIN recto/verso, reconnaissance faciale, validation manuelle sous 24 h.',
+  'chatbot.article.fallback':
+    'Notre équipe support est en train de rédiger la réponse détaillée à cette question. En attendant, n’hésitez pas à nous écrire via l’onglet Messages — nous répondons en moins de 5 minutes.',
+  // WhatsApp-style chat — bot replies
+  'chatbot.bot.greeting':
+    'Bonjour 👋 Comment puis-je vous aider ? Posez votre question, je suis là.',
+  'chatbot.bot.ack':
+    'Merci pour votre message. Un membre de notre équipe vous répond dans les 5 minutes. En attendant, vous pouvez consulter notre Centre d’aide.',
+  'chatbot.bot.typing': 'Hadar Support écrit…',
+  'chatbot.bot.you': 'Vous',
+  'chatbot.bot.support': 'Support',
+  'chatbot.article.back': 'Retour',
+  'chatbot.langSwitch.label': 'Changer la langue',
+  'chatbot.close.label': 'Fermer le support',
   'chatbot.help.title': "Centre d'aide",
   'chatbot.help.subtitle': 'Trouvez rapidement une réponse.',
   'chatbot.help.search.placeholder': 'Rechercher une question',
@@ -1602,6 +1617,26 @@ const en: Dict = {
   'chatbot.home.popular.q3': 'What do the 4 risk levels mean?',
   'chatbot.home.popular.q4': 'How do I activate free identity verification?',
   'chatbot.home.viewAll': 'See all questions',
+  'chatbot.home.popular.q1.body':
+    'Your data is encrypted in transit (TLS 1.3) and at rest (AES-256). Only our moderation team can access it for verification, and every access is logged. We never sell your data.',
+  'chatbot.home.popular.q2.body':
+    'Each report goes through: Submitted → Under review → Decision (Published, Needs correction, or Rejected). Our team verifies the evidence within 48 h. You are notified at every step.',
+  'chatbot.home.popular.q3.body':
+    '🟢 Low — no reports. 🟡 Watch — 1-2 reports. 🟠 Moderate — 3-4 reports. 🔴 High — 5 or more. The level is computed in real time.',
+  'chatbot.home.popular.q4.body':
+    'Go to My profile → Activate identity verification (free). 3 steps: ID front/back photo, face match, manual review within 24 h.',
+  'chatbot.article.fallback':
+    'Our support team is writing the detailed answer to this question. In the meantime, message us via the Messages tab — we reply within 5 minutes.',
+  'chatbot.bot.greeting':
+    'Hello 👋 How can I help? Ask your question, I am here.',
+  'chatbot.bot.ack':
+    'Thanks for your message. A team member will reply within 5 minutes. In the meantime, feel free to browse the Help Center.',
+  'chatbot.bot.typing': 'Hadar Support is typing…',
+  'chatbot.bot.you': 'You',
+  'chatbot.bot.support': 'Support',
+  'chatbot.article.back': 'Back',
+  'chatbot.langSwitch.label': 'Change language',
+  'chatbot.close.label': 'Close support',
   'chatbot.messages.title': 'Messages',
   'chatbot.messages.subtitle': 'Chat with our support team.',
   'chatbot.messages.status': '🟢 Online · Reply time: 5 min',
@@ -2423,6 +2458,25 @@ const ar: Dict = {
   'chatbot.home.popular.q3': 'ماذا تعني مستويات الخطر الأربعة ؟',
   'chatbot.home.popular.q4': 'كيف أفعّل التحقق من الهوية المجاني ؟',
   'chatbot.home.viewAll': 'عرض جميع الأسئلة',
+  'chatbot.home.popular.q1.body':
+    'بياناتك مشفرة أثناء النقل (TLS 1.3) وفي حالة السكون (AES-256). فقط فريق الإشراف يصل إليها للتحقق، وكل وصول مسجل. لا نبيع بياناتك أبداً.',
+  'chatbot.home.popular.q2.body':
+    'كل بلاغ يمر بـ : أُرسل → قيد المراجعة → القرار (نُشر، يحتاج تصحيحاً، أو رُفض). يتحقق فريقنا من الأدلة خلال 48 ساعة. ستصلك إشعارات في كل خطوة.',
+  'chatbot.home.popular.q3.body':
+    '🟢 منخفض — لا بلاغات. 🟡 يقظة — 1-2 بلاغ. 🟠 معتدل — 3-4 بلاغات. 🔴 مرتفع — 5 أو أكثر. يُحسب المستوى في الوقت الفعلي.',
+  'chatbot.home.popular.q4.body':
+    'اذهب إلى ملفي → فعّل التحقق من الهوية (مجاناً). 3 خطوات : صورة بطاقة التعريف الوطنية أمام/خلف، التعرف على الوجه، مراجعة يدوية خلال 24 ساعة.',
+  'chatbot.article.fallback':
+    'فريق الدعم يحرر الإجابة المفصلة على هذا السؤال. في غضون ذلك، تواصل معنا عبر تبويب الرسائل — سنرد خلال 5 دقائق.',
+  'chatbot.bot.greeting': 'مرحباً 👋 كيف أساعدك ؟ اطرح سؤالك، أنا هنا.',
+  'chatbot.bot.ack':
+    'شكراً على رسالتك. سيرد عليك أحد أعضاء الفريق خلال 5 دقائق. يمكنك الاطلاع على مركز المساعدة في الانتظار.',
+  'chatbot.bot.typing': 'دعم Hadar يكتب…',
+  'chatbot.bot.you': 'أنت',
+  'chatbot.bot.support': 'الدعم',
+  'chatbot.article.back': 'رجوع',
+  'chatbot.langSwitch.label': 'تغيير اللغة',
+  'chatbot.close.label': 'إغلاق الدعم',
   'chatbot.messages.title': 'الرسائل',
   'chatbot.messages.subtitle': 'تحدث مع فريق الدعم.',
   'chatbot.messages.status': '🟢 متصل · زمن الرد : 5 دقائق',

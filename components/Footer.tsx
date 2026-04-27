@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Mail, Users, RefreshCw } from 'lucide-react';
 import { Logo } from './Logo';
 import {
@@ -37,6 +40,29 @@ const SOCIALS = [
 ];
 
 export function Footer() {
+  // Active-page detection — the footer link that points to the current
+  // route is highlighted in solid white + a small leading dot, so the
+  // user can tell which page they are on at a glance.
+  const pathname = usePathname();
+
+  // Helper: a footer link can be marked active if either:
+  //   - the pathname matches it exactly, OR
+  //   - the pathname starts with it followed by a "/" (covers nested
+  //     routes like /mes-signalements/123 highlighting the parent).
+  const isActive = (href: string): boolean => {
+    if (!pathname) return false;
+    if (pathname === href) return true;
+    return pathname.startsWith(`${href}/`);
+  };
+
+  // Shared link classes — white/80 at rest, solid white on hover OR
+  // when active. Active link gets a subtle left border + bold weight
+  // so it doesn't rely on colour alone (a11y).
+  const linkClass = (active: boolean): string =>
+    active
+      ? 'inline-flex items-center gap-1 font-semibold text-white border-l-2 border-brand-sky pl-2 -ml-2'
+      : 'text-white/80 hover:text-white transition-colors';
+
   return (
     <footer className="mt-10 bg-brand-navy text-white">
       <div className="mx-auto max-w-[1440px] px-4 md:px-6 py-12 grid gap-10 md:grid-cols-4">
@@ -83,27 +109,33 @@ export function Footer() {
 
         <div>
           <h3 className="text-sm font-semibold mb-3">Navigation</h3>
-          <ul className="space-y-2 text-sm text-white/80">
-            {LEGAL_LINKS.map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} className="hover:text-white">
-                  ▸ {l.label}
-                </Link>
-              </li>
-            ))}
+          <ul className="space-y-2 text-sm">
+            {LEGAL_LINKS.map((l) => {
+              const active = isActive(l.href);
+              return (
+                <li key={l.href}>
+                  <Link href={l.href} className={linkClass(active)} aria-current={active ? 'page' : undefined}>
+                    ▸ {l.label}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </div>
 
         <div>
           <h3 className="text-sm font-semibold mb-3">Informations légales</h3>
-          <ul className="space-y-2 text-sm text-white/80">
-            {POLICY_LINKS.map((l) => (
-              <li key={l.href}>
-                <Link href={l.href} className="hover:text-white">
-                  ▸ {l.label}
-                </Link>
-              </li>
-            ))}
+          <ul className="space-y-2 text-sm">
+            {POLICY_LINKS.map((l) => {
+              const active = isActive(l.href);
+              return (
+                <li key={l.href}>
+                  <Link href={l.href} className={linkClass(active)} aria-current={active ? 'page' : undefined}>
+                    ▸ {l.label}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </div>
 

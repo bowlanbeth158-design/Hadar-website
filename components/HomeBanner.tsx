@@ -37,8 +37,13 @@ const FLOAT_CARD_HOVER =
 // /api/stats endpoint when the backend lands; for now these are
 // mock values. Set `trendPercent` negative to flip the badge to red
 // + a downward animated arrow.
+//
+// IMPORTANT: keep `verifications` aligned with the same counter
+// shown in the HomeHero "+12 408 | 30 derniers jours" pill —
+// they are the SAME metric and must read the same number on
+// both sections of the homepage.
 const STATS_30D = {
-  verifications: 3247,
+  verifications: 12408,
   trendPercent: 18,
 };
 
@@ -150,7 +155,7 @@ export function HomeBanner() {
                 <span className="relative inline-flex h-5 w-5 shrink-0 items-center justify-center">
                   <span
                     aria-hidden
-                    className="absolute inset-0 rounded-full bg-brand-blue/60 blur-md animate-badge-halo"
+                    className="absolute inset-0 rounded-full bg-brand-blue/85 blur-lg animate-badge-halo"
                     style={{ animationDelay: `${i * 2000}ms` }}
                   />
                   <VerifiedBadge

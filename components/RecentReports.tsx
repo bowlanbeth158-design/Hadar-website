@@ -95,10 +95,10 @@ const RISK_STYLE: Record<RiskLevel, RiskStyle> = {
     bg: 'bg-yellow-100/90',
     text: 'text-yellow-500',
     border: 'border-yellow-500/40',
-    stripeBase: 'bg-gradient-to-r from-yellow-300/12 via-yellow-300/22 to-yellow-300/12',
+    stripeBase: 'bg-gradient-to-r from-yellow-300/25 via-yellow-300/45 to-yellow-300/25',
     stripeComet:
-      'bg-[linear-gradient(90deg,transparent_0%,rgba(251,237,33,0)_35%,rgba(251,237,33,0.55)_50%,rgba(251,237,33,0)_65%,transparent_100%)]',
-    haloFrom: 'from-yellow-300/15',
+      'bg-[linear-gradient(90deg,transparent_0%,rgba(251,237,33,0)_35%,rgba(251,237,33,0.85)_50%,rgba(251,237,33,0)_65%,transparent_100%)]',
+    haloFrom: 'from-yellow-300/30',
     label: 'Vigilance',
   },
   modere: {
@@ -106,10 +106,10 @@ const RISK_STYLE: Record<RiskLevel, RiskStyle> = {
     bg: 'bg-orange-100/90',
     text: 'text-orange-500',
     border: 'border-orange-500/40',
-    stripeBase: 'bg-gradient-to-r from-orange-500/12 via-orange-500/22 to-orange-500/12',
+    stripeBase: 'bg-gradient-to-r from-orange-500/25 via-orange-500/45 to-orange-500/25',
     stripeComet:
-      'bg-[linear-gradient(90deg,transparent_0%,rgba(242,155,17,0)_35%,rgba(242,155,17,0.55)_50%,rgba(242,155,17,0)_65%,transparent_100%)]',
-    haloFrom: 'from-orange-500/15',
+      'bg-[linear-gradient(90deg,transparent_0%,rgba(242,155,17,0)_35%,rgba(242,155,17,0.85)_50%,rgba(242,155,17,0)_65%,transparent_100%)]',
+    haloFrom: 'from-orange-500/30',
     label: 'Modéré',
   },
   eleve: {
@@ -117,10 +117,10 @@ const RISK_STYLE: Record<RiskLevel, RiskStyle> = {
     bg: 'bg-red-100/90',
     text: 'text-red-700',
     border: 'border-red-500/40',
-    stripeBase: 'bg-gradient-to-r from-red-500/14 via-red-500/24 to-red-500/14',
+    stripeBase: 'bg-gradient-to-r from-red-500/28 via-red-500/50 to-red-500/28',
     stripeComet:
-      'bg-[linear-gradient(90deg,transparent_0%,rgba(238,68,68,0)_35%,rgba(238,68,68,0.6)_50%,rgba(238,68,68,0)_65%,transparent_100%)]',
-    haloFrom: 'from-red-500/18',
+      'bg-[linear-gradient(90deg,transparent_0%,rgba(238,68,68,0)_35%,rgba(238,68,68,0.9)_50%,rgba(238,68,68,0)_65%,transparent_100%)]',
+    haloFrom: 'from-red-500/35',
     label: 'Élevé',
   },
 };
@@ -140,6 +140,39 @@ export function RecentReports() {
   // same element without remounting it, so React state, hover styles
   // and the rest of the card stay untouched.
   const cardRefs = useRef<Array<HTMLElement | null>>([]);
+  // Set of card indices currently visible inside the horizontal
+  // scroller (via IntersectionObserver below). The pulse only ever
+  // targets a card the user can actually see — no point bouncing a
+  // card that has been scrolled off-screen.
+  const visibleSet = useRef<Set<number>>(new Set());
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const root = scrollerRef.current;
+    if (!root) return;
+    const observers: IntersectionObserver[] = [];
+    cardRefs.current.forEach((el, idx) => {
+      if (!el) return;
+      const observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
+              visibleSet.current.add(idx);
+            } else {
+              visibleSet.current.delete(idx);
+            }
+          }
+        },
+        // Watch from inside the carousel viewport, not the page
+        // viewport — that way we only track horizontal visibility
+        // along the carousel's scroll axis.
+        { root, threshold: [0, 0.6, 1] },
+      );
+      observer.observe(el);
+      observers.push(observer);
+    });
+    return () => observers.forEach((o) => o.disconnect());
+  }, []);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -148,7 +181,13 @@ export function RecentReports() {
     if (reduce) return;
 
     const tick = () => {
-      const idx = Math.floor(Math.random() * DEMO_REPORTS.length);
+      // Only animate cards that are currently in the carousel
+      // viewport (≥ 60 % visible). If for some reason none qualify
+      // (mid-scroll, layout shift, etc.) skip this tick rather than
+      // fall back to a hidden card.
+      const visible = Array.from(visibleSet.current);
+      if (visible.length === 0) return;
+      const idx = visible[Math.floor(Math.random() * visible.length)] as number;
       const el = cardRefs.current[idx];
       if (!el) return;
       // Pause if the user already has the card hovered — the lift +

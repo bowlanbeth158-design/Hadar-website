@@ -170,20 +170,25 @@ const config: Config = {
         // sits perfectly still for the remaining 5.6 s — calm,
         // authoritative, only one badge "alive" at a time.
         //
-        // 1) badge-breathe — gentle scale pulse on the SVG itself.
+        // 1) badge-breathe — scale pulse on the SVG itself, with a
+        //    visible peak (1.22) so the badge feels like it really
+        //    "expands" rather than just trembling.
         'badge-breathe': {
           '0%, 30%, 100%': { transform: 'scale(1)' },
-          '8%':            { transform: 'scale(1.06)' },
-          '15%':           { transform: 'scale(1.12)' },
-          '22%':           { transform: 'scale(1.06)' },
+          '8%':            { transform: 'scale(1.10)' },
+          '15%':           { transform: 'scale(1.22)' },
+          '22%':           { transform: 'scale(1.10)' },
         },
-        // 2) badge-halo — soft brand-blue glow that swells then fades
-        //    behind the badge, synced with the breath above.
+        // 2) badge-halo — bright brand-blue glow that swells then
+        //    fades behind the badge, synced with the breath above.
+        //    Bumped opacities (peak ~0.95) and a wider scale (peak
+        //    ~1.85) so the halo is unmistakable from across the
+        //    banner instead of barely-there.
         'badge-halo': {
           '0%, 30%, 100%': { opacity: '0',    transform: 'scale(0.6)' },
-          '8%':            { opacity: '0.40', transform: 'scale(1.2)' },
-          '15%':           { opacity: '0.65', transform: 'scale(1.5)' },
-          '22%':           { opacity: '0.35', transform: 'scale(1.3)' },
+          '8%':            { opacity: '0.65', transform: 'scale(1.35)' },
+          '15%':           { opacity: '0.95', transform: 'scale(1.85)' },
+          '22%':           { opacity: '0.55', transform: 'scale(1.55)' },
         },
         // Stripe shimmer — used by the RecentReports cards' top
         // accent strip. Background-position drifts from right to left

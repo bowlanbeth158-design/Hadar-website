@@ -48,7 +48,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" dir="ltr" className={`${poppins.variable} ${cairo.variable} overflow-x-clip`}>
+    <html lang="fr" dir="ltr" className={`${poppins.variable} ${cairo.variable} overflow-x-clip scroll-smooth`}>
       <body className="relative min-h-screen antialiased font-sans bg-gradient-to-b from-brand-sky/60 via-white to-white isolate overflow-x-clip">
         {/* Decorative brand blurs — symmetric soft tints anchored to the
             viewport so every page shares the same atmospheric backdrop. */}

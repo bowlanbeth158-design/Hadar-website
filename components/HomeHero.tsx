@@ -19,25 +19,28 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import { SearchResult } from './SearchResult';
+import { useI18n } from '@/lib/i18n/provider';
 import { OFFICIAL_LOGO_URL } from './Logo';
 import { CountUp } from './CountUp';
 
 type ContactType = {
   id: string;
-  label: string;
+  // i18n keys — resolved at render time so the row reflects the
+  // active locale.
+  labelKey: string;
+  placeholderKey: string;
   Icon: LucideIcon;
-  placeholder: string;
 };
 
 const CONTACT_TYPES: ContactType[] = [
-  { id: 'telephone', label: 'Téléphone', Icon: Phone, placeholder: 'Ex : 212 6 00 00 00 00' },
-  { id: 'whatsapp', label: 'WhatsApp', Icon: MessageCircle, placeholder: 'Ex : 212 6 00 00 00 00' },
-  { id: 'email', label: 'Email', Icon: Mail, placeholder: 'Ex : contact@exemple.com' },
-  { id: 'rib', label: 'RIB', Icon: CreditCard, placeholder: 'Ex : 24 chiffres sans espaces' },
-  { id: 'site_web', label: 'Site web', Icon: Globe, placeholder: 'Ex : https://exemple.com' },
-  { id: 'reseaux_sociaux', label: 'Réseaux sociaux', Icon: AtSign, placeholder: 'Ex : @pseudo' },
-  { id: 'paypal', label: 'PayPal', Icon: Wallet, placeholder: 'Ex : paypal@exemple.com' },
-  { id: 'binance', label: 'Binance', Icon: Coins, placeholder: 'Ex : identifiant ou email' },
+  { id: 'telephone',       labelKey: 'home.hero.contactType.telephone',       placeholderKey: 'home.hero.placeholder.telephone',       Icon: Phone },
+  { id: 'whatsapp',        labelKey: 'home.hero.contactType.whatsapp',        placeholderKey: 'home.hero.placeholder.whatsapp',        Icon: MessageCircle },
+  { id: 'email',           labelKey: 'home.hero.contactType.email',           placeholderKey: 'home.hero.placeholder.email',           Icon: Mail },
+  { id: 'rib',             labelKey: 'home.hero.contactType.rib',             placeholderKey: 'home.hero.placeholder.rib',             Icon: CreditCard },
+  { id: 'site_web',        labelKey: 'home.hero.contactType.site_web',        placeholderKey: 'home.hero.placeholder.site_web',        Icon: Globe },
+  { id: 'reseaux_sociaux', labelKey: 'home.hero.contactType.reseaux_sociaux', placeholderKey: 'home.hero.placeholder.reseaux_sociaux', Icon: AtSign },
+  { id: 'paypal',          labelKey: 'home.hero.contactType.paypal',          placeholderKey: 'home.hero.placeholder.paypal',          Icon: Wallet },
+  { id: 'binance',         labelKey: 'home.hero.contactType.binance',         placeholderKey: 'home.hero.placeholder.binance',         Icon: Coins },
 ];
 
 type Props = {
@@ -103,7 +106,10 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
     return () => clearInterval(interval);
   }, []);
 
+  const { t } = useI18n();
   const active = CONTACT_TYPES.find((c) => c.id === selected) ?? CONTACT_TYPES[0]!;
+  const activeLabel = t(active.labelKey);
+  const activePlaceholder = t(active.placeholderKey);
   const trimmedInput = inputValue.trim();
 
   // Result visible only if a search was submitted AND the input still matches it
@@ -151,7 +157,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
     }
     const Ctor = getSpeechRecognition();
     if (!Ctor) {
-      setError('Recherche vocale non supportée sur ce navigateur.');
+      setError(t('home.hero.voice.unsupported'));
       return;
     }
     const recognition = new Ctor();
@@ -164,7 +170,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
       recognitionRef.current = null;
     };
     recognition.onerror = () => {
-      setError('Micro indisponible ou permission refusée.');
+      setError(t('home.hero.voice.error'));
       setListening(false);
     };
     recognition.onresult = (event) => {
@@ -262,7 +268,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                     +<CountUp to={12408} duration={1800} />
                   </span>
                   <span className="mx-1.5 text-gray-300" aria-hidden>|</span>
-                  30 derniers jours
+                  {t('home.hero.statsPill.thirtyDays')}
                 </span>
               </div>
 
@@ -286,7 +292,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                       className="h-4 w-4 object-contain animate-sparkle-pop drop-shadow"
                     />
                     <span className="relative z-10">
-                      La plateforme N°1 de vérification au Maroc
+                      {t('home.hero.spotlightPill')}
                     </span>
                     {/* Shimmer light passing across the pill background */}
                     <span
@@ -297,9 +303,9 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                 </div>
 
                 <h2 className="mt-5 text-3xl md:text-5xl font-bold tracking-tight text-brand-navy leading-tight">
-                  Lancez votre{' '}
+                  {t('home.hero.spotlightH2.prefix')}{' '}
                   <span className="bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 bg-clip-text text-transparent">
-                    vérification
+                    {t('home.hero.spotlightH2.highlight')}
                   </span>
                   <span
                     className="block mx-auto mt-2 h-1 w-32 md:w-48 rounded-full bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 opacity-70"
@@ -308,13 +314,12 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                 </h2>
 
                 <p className="mt-4 mx-auto max-w-2xl text-sm md:text-base text-gray-500">
-                  Choisissez le type de contact puis recherchez un numéro, un email, un site web ou un
-                  moyen de paiement pour vérifier s&apos;il a déjà été signalé.
+                  {t('home.hero.spotlightSubtitle')}
                 </p>
 
                 <div
                   role="tablist"
-                  aria-label="Type de contact à rechercher"
+                  aria-label={t('home.hero.contactType.aria')}
                   className="mt-8 mx-auto max-w-4xl grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-3"
                 >
                   {CONTACT_TYPES.map((f) => {
@@ -333,7 +338,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                         }
                       >
                         <f.Icon className="h-4 w-4 shrink-0" aria-hidden />
-                        <span className="truncate">{f.label}</span>
+                        <span className="truncate">{t(f.labelKey)}</span>
                       </button>
                     );
                   })}
@@ -353,17 +358,17 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                     name="q"
                     value={inputValue}
                     onChange={handleInputChange}
-                    placeholder={active.placeholder}
-                    aria-label={`Rechercher un ${active.label.toLowerCase()}`}
+                    placeholder={activePlaceholder}
+                    aria-label={t('home.hero.search.aria', { label: activeLabel.toLowerCase() })}
                     className="flex-1 bg-transparent outline-none text-gray-900 placeholder:text-gray-400 py-2.5 text-base"
                   />
                   <button
                     type="button"
                     onClick={toggleMic}
                     disabled={!supported}
-                    aria-label={listening ? 'Arrêter la recherche vocale' : 'Démarrer la recherche vocale'}
+                    aria-label={listening ? t('home.hero.voice.stop') : t('home.hero.voice.start')}
                     aria-pressed={listening}
-                    title={supported ? (listening ? 'Arrêter' : 'Recherche vocale') : 'Non supporté'}
+                    title={supported ? (listening ? t('home.hero.voice.stop') : t('home.hero.voice.start')) : t('home.hero.voice.unsupported')}
                     className={
                       listening
                         ? 'relative p-2 text-red-500 animate-pulse'
@@ -388,7 +393,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                     type="submit"
                     className="relative rounded-pill bg-gradient-to-r from-green-500 to-green-700 hover:from-green-700 hover:to-green-700 text-white font-semibold px-5 md:px-6 py-2.5 md:py-3 text-sm shadow-glow-green animate-verify-pulse transition-all"
                   >
-                    Vérifier maintenant
+                    {t('home.hero.cta.verifyNow')}
                   </button>
                 </form>
 
@@ -399,7 +404,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                 )}
                 {listening && !error && (
                   <p className="mt-3 text-sm text-brand-blue" role="status">
-                    Écoute en cours — parlez maintenant…
+                    {t('home.hero.voice.listening')}
                   </p>
                 )}
 
@@ -410,21 +415,21 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                     <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-sky via-blue-100 to-brand-sky text-brand-navy shadow-sm border border-brand-blue/30">
                       <ShieldCheck className="h-4 w-4 drop-shadow animate-sparkle-pop" aria-hidden />
                     </span>
-                    Données chiffrées
+                    {t('home.hero.trust.encrypted')}
                   </span>
                   <span className="text-gray-200" aria-hidden>·</span>
                   <span className="inline-flex items-center gap-2 transition-transform hover:-translate-y-0.5">
                     <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-sky via-blue-100 to-brand-sky text-brand-navy shadow-sm border border-brand-blue/30">
                       <Zap className="h-4 w-4 drop-shadow animate-sparkle-pop" aria-hidden />
                     </span>
-                    Résultat instantané
+                    {t('home.hero.trust.instant')}
                   </span>
                   <span className="text-gray-200" aria-hidden>·</span>
                   <span className="inline-flex items-center gap-2 transition-transform hover:-translate-y-0.5">
                     <span className="inline-flex h-7 min-w-[1.75rem] items-center justify-center rounded-full bg-gradient-to-br from-brand-sky via-blue-100 to-brand-sky text-brand-navy text-xs font-bold shadow-sm border border-brand-blue/30 px-1.5 animate-sparkle-pop">
                       8
                     </span>
-                    canaux couverts
+                    {t('home.hero.trust.channels')}
                   </span>
                 </div>
 

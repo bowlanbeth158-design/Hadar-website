@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { ShieldCheck } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/provider';
 
 // Client-side wrapper around the "Vérifier maintenant" CTA in the
 // HomeBanner. The previous Server-rendered <Link href="#recherche">
@@ -12,6 +13,7 @@ import { ShieldCheck } from 'lucide-react';
 // search card lands just below the sticky topbar instead of being
 // pinned behind it.
 export function VerifyNowCta() {
+  const { t } = useI18n();
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (typeof window === 'undefined') return;
     const target = document.getElementById('recherche');
@@ -33,7 +35,7 @@ export function VerifyNowCta() {
       className="inline-flex items-center gap-2 rounded-pill bg-green-500 hover:bg-green-700 text-white px-6 py-3 text-sm font-semibold shadow-glow-green animate-verify-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all"
     >
       <ShieldCheck className="h-5 w-5 animate-siren-wiggle" aria-hidden />
-      Vérifier maintenant
+      {t('home.banner.cta.verify')}
     </Link>
   );
 }

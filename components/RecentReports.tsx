@@ -3,73 +3,29 @@
 import { useEffect, useRef, useState } from 'react';
 import { UserRound, Clock, ChevronsLeft, ChevronsRight, Sparkles } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
+import { useI18n } from '@/lib/i18n/provider';
 
 type RiskLevel = 'vigilance' | 'modere' | 'eleve';
 
 type DemoReport = {
   id: string;
-  title: string;
-  description: string;
+  // i18n key for the description; the title is shared across all
+  // demos so it lives in a single key (home.recentReports.demoTitle).
+  descriptionKey: string;
   similar: number;
-  date: string;
+  // Number of days "ago" — passed through t() with the singular /
+  // plural variant so the relative time stays localised.
+  daysAgo: number;
   risk: RiskLevel;
 };
 
 const DEMO_REPORTS: DemoReport[] = [
-  {
-    id: 'd1',
-    title: 'Signalement avec éléments fournis',
-    description:
-      'Ce contact demande un paiement via PayPal puis cesse de répondre après réception.',
-    similar: 5,
-    date: 'il y a 1 jour',
-    risk: 'eleve',
-  },
-  {
-    id: 'd2',
-    title: 'Signalement avec éléments fournis',
-    description:
-      'Site de vente qui encaisse le paiement sans jamais livrer la commande ni répondre au support.',
-    similar: 8,
-    date: 'il y a 2 jours',
-    risk: 'eleve',
-  },
-  {
-    id: 'd3',
-    title: 'Signalement avec éléments fournis',
-    description:
-      'Faux compte se faisant passer pour un marchand officiel pour vendre des produits contrefaits.',
-    similar: 3,
-    date: 'il y a 3 jours',
-    risk: 'modere',
-  },
-  {
-    id: 'd4',
-    title: 'Signalement avec éléments fournis',
-    description:
-      'Produit reçu totalement différent de la description initiale, et vendeur refusant le remboursement.',
-    similar: 2,
-    date: 'il y a 4 jours',
-    risk: 'vigilance',
-  },
-  {
-    id: 'd5',
-    title: 'Signalement avec éléments fournis',
-    description:
-      'Numéro WhatsApp utilisé pour fausses promotions, redirige vers un site de phishing.',
-    similar: 12,
-    date: 'il y a 5 jours',
-    risk: 'eleve',
-  },
-  {
-    id: 'd6',
-    title: 'Signalement avec éléments fournis',
-    description:
-      'RIB partagé dans un groupe Telegram pour recevoir des paiements puis disparition du contact.',
-    similar: 4,
-    date: 'il y a 6 jours',
-    risk: 'modere',
-  },
+  { id: 'd1', descriptionKey: 'home.recentReports.demo1.description', similar: 5,  daysAgo: 1, risk: 'eleve'     },
+  { id: 'd2', descriptionKey: 'home.recentReports.demo2.description', similar: 8,  daysAgo: 2, risk: 'eleve'     },
+  { id: 'd3', descriptionKey: 'home.recentReports.demo3.description', similar: 3,  daysAgo: 3, risk: 'modere'    },
+  { id: 'd4', descriptionKey: 'home.recentReports.demo4.description', similar: 2,  daysAgo: 4, risk: 'vigilance' },
+  { id: 'd5', descriptionKey: 'home.recentReports.demo5.description', similar: 12, daysAgo: 5, risk: 'eleve'     },
+  { id: 'd6', descriptionKey: 'home.recentReports.demo6.description', similar: 4,  daysAgo: 6, risk: 'modere'    },
 ];
 
 type RiskStyle = {
@@ -86,7 +42,8 @@ type RiskStyle = {
   stripeComet: string;
   // Soft outer halo dropped just below the stripe for depth.
   haloFrom: string;
-  label: string;
+  // i18n key for the risk pill label.
+  labelKey: string;
 };
 
 const RISK_STYLE: Record<RiskLevel, RiskStyle> = {
@@ -99,7 +56,7 @@ const RISK_STYLE: Record<RiskLevel, RiskStyle> = {
     stripeComet:
       'bg-[linear-gradient(90deg,transparent_0%,rgba(251,237,33,0)_35%,rgba(251,237,33,0.85)_50%,rgba(251,237,33,0)_65%,transparent_100%)]',
     haloFrom: 'from-yellow-300/30',
-    label: 'Vigilance',
+    labelKey: 'home.recentReports.risk.vigilance',
   },
   modere: {
     dot: 'bg-orange-500',
@@ -110,7 +67,7 @@ const RISK_STYLE: Record<RiskLevel, RiskStyle> = {
     stripeComet:
       'bg-[linear-gradient(90deg,transparent_0%,rgba(242,155,17,0)_35%,rgba(242,155,17,0.85)_50%,rgba(242,155,17,0)_65%,transparent_100%)]',
     haloFrom: 'from-orange-500/30',
-    label: 'Modéré',
+    labelKey: 'home.recentReports.risk.modere',
   },
   eleve: {
     dot: 'bg-red-500',
@@ -121,11 +78,12 @@ const RISK_STYLE: Record<RiskLevel, RiskStyle> = {
     stripeComet:
       'bg-[linear-gradient(90deg,transparent_0%,rgba(238,68,68,0)_35%,rgba(238,68,68,0.9)_50%,rgba(238,68,68,0)_65%,transparent_100%)]',
     haloFrom: 'from-red-500/35',
-    label: 'Élevé',
+    labelKey: 'home.recentReports.risk.eleve',
   },
 };
 
 export function RecentReports() {
+  const { t } = useI18n();
   // Ref to the horizontally-scrollable cards container so the swipe-hint
   // chevrons can scroll the next/previous batch of cards into view on click.
   const scrollerRef = useRef<HTMLDivElement>(null);
@@ -280,7 +238,7 @@ export function RecentReports() {
               className="relative inline-flex h-2 w-2 rounded-full bg-green-500"
             />
           </span>
-          <span className="relative z-10">Mis à jour en direct</span>
+          <span className="relative z-10">{t('home.recentReports.pill')}</span>
           <span
             aria-hidden
             className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/70 to-transparent skew-x-[-20deg] animate-shimmer"
@@ -289,11 +247,11 @@ export function RecentReports() {
       </div>
 
       <h2 className="mt-3 text-2xl md:text-3xl font-bold bg-grad-stat-navy bg-clip-text text-transparent text-center">
-        Signalements récents de la communauté
+        {t('home.recentReports.title')}
       </h2>
 
       <p className="mt-2 text-sm text-gray-500 text-center">
-        Les 6 derniers signalements publiés par la communauté
+        {t('home.recentReports.subtitle')}
       </p>
 
       {/* Wrapper sits relative so the swipe-hint chevron can dock on the
@@ -368,14 +326,14 @@ export function RecentReports() {
                           <UserRound className="h-4 w-4 text-brand-navy" aria-hidden />
                         </span>
                         <span className="text-xs font-medium text-gray-500">
-                          Utilisateur anonyme
+                          {t('home.recentReports.user.anonymous')}
                         </span>
                       </div>
 
                       {/* Risk badge — pill with pulsing dot in the matching colour */}
                       <span
                         className={`inline-flex items-center gap-1.5 rounded-pill ${style.bg} ${style.text} border ${style.border} px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide backdrop-blur-sm`}
-                        aria-label={`Niveau de risque : ${style.label}`}
+                        aria-label={`${t('home.recentReports.aria.riskLevel')}: ${t(style.labelKey)}`}
                       >
                         <span className="relative flex h-1.5 w-1.5">
                           <span
@@ -385,7 +343,7 @@ export function RecentReports() {
                             className={`relative inline-flex h-1.5 w-1.5 rounded-full ${style.dot}`}
                           />
                         </span>
-                        {style.label}
+                        {t(style.labelKey)}
                       </span>
                     </div>
 
@@ -400,11 +358,11 @@ export function RecentReports() {
                         />
                         <VerifiedBadge className="relative h-4 w-4 animate-sparkle-pop drop-shadow-sm" />
                       </span>
-                      <span>{r.title}</span>
+                      <span>{t('home.recentReports.demoTitle')}</span>
                     </h3>
 
                     <p className="mt-2 text-sm text-gray-600 leading-relaxed flex-1 relative">
-                      {r.description}
+                      {t(r.descriptionKey)}
                     </p>
 
                     <div className="mt-4 flex items-center justify-between text-xs border-t border-white/60 pt-3 relative">
@@ -412,11 +370,16 @@ export function RecentReports() {
                         <span className="font-bold text-base bg-gradient-to-r from-brand-navy to-brand-blue bg-clip-text text-transparent tabular-nums">
                           {r.similar}
                         </span>
-                        <span className="text-gray-500">similaires</span>
+                        <span className="text-gray-500">{t('home.recentReports.similar')}</span>
                       </span>
                       <span className="inline-flex items-center gap-1 text-gray-500">
                         <Clock className="h-3 w-3" aria-hidden />
-                        {r.date}
+                        {t(
+                          r.daysAgo === 1
+                            ? 'home.recentReports.timeAgo.day'
+                            : 'home.recentReports.timeAgo.days',
+                          { n: r.daysAgo },
+                        )}
                       </span>
                     </div>
                   </article>
@@ -434,7 +397,7 @@ export function RecentReports() {
         <button
           type="button"
           onClick={scrollPrev}
-          aria-label="Voir les signalements précédents"
+          aria-label={t('home.recentReports.aria.prev')}
           aria-hidden={!canScrollLeft}
           tabIndex={canScrollLeft ? 0 : -1}
           className={`hidden lg:flex absolute left-0 top-1/2 -translate-y-1/2 z-10 flex-col items-center gap-1 group cursor-pointer transition-all duration-300 ${
@@ -447,7 +410,7 @@ export function RecentReports() {
             <ChevronsLeft className="h-6 w-6 animate-trend-up" aria-hidden />
           </span>
           <span className="text-[10px] font-semibold uppercase tracking-wider text-brand-navy/70 group-hover:text-brand-navy transition-colors">
-            Retour
+            {t('home.recentReports.prev.label')}
           </span>
         </button>
 
@@ -458,21 +421,20 @@ export function RecentReports() {
         <button
           type="button"
           onClick={scrollNext}
-          aria-label="Voir les signalements suivants"
+          aria-label={t('home.recentReports.aria.next')}
           className="hidden lg:flex absolute right-0 top-1/2 -translate-y-1/2 z-10 flex-col items-center gap-1 group cursor-pointer"
         >
           <span className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-br from-brand-sky via-blue-100 to-brand-sky text-brand-navy border border-brand-blue/30 shadow-glow-blue animate-float-soft group-hover:scale-110 group-hover:shadow-glow-navy transition-all duration-300">
             <ChevronsRight className="h-6 w-6 animate-trend-up" aria-hidden />
           </span>
           <span className="text-[10px] font-semibold uppercase tracking-wider text-brand-navy/70 group-hover:text-brand-navy transition-colors">
-            Glisser
+            {t('home.recentReports.next.label')}
           </span>
         </button>
       </div>
 
       <p className="mt-4 text-xs text-gray-400 text-center max-w-3xl mx-auto">
-        Les contenus sont examinés avant publication et peuvent être modifiés ou supprimés
-        s&apos;ils ne respectent pas nos règles.
+        {t('home.recentReports.disclaimer')}
       </p>
     </section>
   );

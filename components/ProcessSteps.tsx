@@ -1,9 +1,14 @@
+'use client';
+
 import { Siren, ScanLine, PencilLine, Layers, Clock, type LucideIcon } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/provider';
 
 type Step = {
   n: number;
-  title: string;
-  description: string;
+  // i18n keys — resolved at render time so the cards relabel
+  // themselves when the active locale changes.
+  titleKey: string;
+  descriptionKey: string;
   Icon: LucideIcon;
   // Tailwind colour fragments — kept as strings so JIT picks them up.
   iconBg: string;          // rounded square behind the icon
@@ -33,8 +38,8 @@ type Step = {
 const STEPS: Step[] = [
   {
     n: 1,
-    title: 'Signalement',
-    description: 'Une expérience est signalée par un utilisateur.',
+    titleKey: 'home.processSteps.step1.title',
+    descriptionKey: 'home.processSteps.step1.description',
     Icon: Siren,
     iconBg: 'bg-brand-blue/10',
     iconBorder: 'ring-1 ring-brand-blue/20',
@@ -55,8 +60,8 @@ const STEPS: Step[] = [
   },
   {
     n: 2,
-    title: 'Examen',
-    description: 'Le contenu est vérifié selon les règles de la plateforme.',
+    titleKey: 'home.processSteps.step2.title',
+    descriptionKey: 'home.processSteps.step2.description',
     Icon: ScanLine,
     iconBg: 'bg-violet-500/10',
     iconBorder: 'ring-1 ring-violet-500/25',
@@ -75,8 +80,8 @@ const STEPS: Step[] = [
   },
   {
     n: 3,
-    title: 'Modération',
-    description: 'Le contenu peut être ajusté ou refusé si nécessaire.',
+    titleKey: 'home.processSteps.step3.title',
+    descriptionKey: 'home.processSteps.step3.description',
     Icon: PencilLine,
     iconBg: 'bg-orange-500/10',
     iconBorder: 'ring-1 ring-orange-500/25',
@@ -95,8 +100,8 @@ const STEPS: Step[] = [
   },
   {
     n: 4,
-    title: 'Publication',
-    description: 'Les contenus conformes sont publiés sur la plateforme.',
+    titleKey: 'home.processSteps.step4.title',
+    descriptionKey: 'home.processSteps.step4.description',
     Icon: Layers,
     iconBg: 'bg-green-500/10',
     iconBorder: 'ring-1 ring-green-500/25',
@@ -116,10 +121,11 @@ const STEPS: Step[] = [
 ];
 
 export function ProcessSteps() {
+  const { t } = useI18n();
   return (
     <section className="mx-auto max-w-[1440px] px-4 md:px-6 py-10 md:py-14">
       <h2 className="text-2xl md:text-3xl font-bold bg-grad-stat-navy bg-clip-text text-transparent text-center">
-        Processus de vérification des signalements
+        {t('home.processSteps.title')}
       </h2>
 
       <div className="relative mt-10">
@@ -175,17 +181,17 @@ export function ProcessSteps() {
                 <p
                   className={`relative mt-5 text-xs font-semibold uppercase tracking-[0.2em] ${s.stepLabelColor} group-hover:text-white/90 transition-colors duration-300`}
                 >
-                  Étape
+                  {t('home.processSteps.step.label')}
                 </p>
                 <h3
                   className={`relative mt-1 text-lg md:text-xl font-bold ${s.titleColor} group-hover:text-white transition-colors duration-300`}
                 >
-                  {s.title}
+                  {t(s.titleKey)}
                 </h3>
                 {/* Description on hover flips to white/95 so it reads
                     crisp against the saturated brand-gradient surface. */}
                 <p className="relative mt-2 text-sm text-gray-500 group-hover:text-white/95 leading-relaxed transition-colors duration-300">
-                  {s.description}
+                  {t(s.descriptionKey)}
                 </p>
 
                 {/* Coloured progress bar at the bottom of the card —
@@ -246,8 +252,8 @@ export function ProcessSteps() {
             <Clock className="h-3.5 w-3.5" />
           </span>
           <span>
-            <span className="font-semibold text-brand-navy">Délai d&apos;examen moyen :</span>{' '}
-            48 heures ouvrées
+            <span className="font-semibold text-brand-navy">{t('home.processSteps.sla.label')}</span>{' '}
+            {t('home.processSteps.sla.value')}
           </span>
         </p>
       </div>

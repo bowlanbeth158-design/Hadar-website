@@ -12,19 +12,20 @@ import {
   XIcon,
   TikTokIcon,
 } from './SocialIcons';
+import { useI18n } from '@/lib/i18n/provider';
 
 const LEGAL_LINKS = [
-  { href: '/qui-sommes-nous', label: 'Qui sommes-nous ?' },
-  { href: '/comment-ca-marche', label: 'Comment ça marche' },
-  { href: '/statistiques', label: 'Statistiques' },
-  { href: '/faq', label: 'FAQ' },
+  { href: '/qui-sommes-nous',     labelKey: 'footer.link.about' },
+  { href: '/comment-ca-marche',   labelKey: 'footer.link.howItWorks' },
+  { href: '/statistiques',        labelKey: 'footer.link.statistics' },
+  { href: '/faq',                 labelKey: 'footer.link.faq' },
 ];
 
 const POLICY_LINKS = [
-  { href: '/conditions-generales', label: "Conditions générales d'utilisation" },
-  { href: '/politique-confidentialite', label: 'Politique de confidentialité' },
-  { href: '/donnees-personnelles-cookies', label: 'Données personnelles & cookies' },
-  { href: '/regles-publication', label: 'Règles de publication' },
+  { href: '/conditions-generales',         labelKey: 'footer.link.cgu' },
+  { href: '/politique-confidentialite',    labelKey: 'footer.link.privacy' },
+  { href: '/donnees-personnelles-cookies', labelKey: 'footer.link.cookies' },
+  { href: '/regles-publication',           labelKey: 'footer.link.publishingRules' },
 ];
 
 // Placeholder URLs — to be updated with the official Hadar accounts when
@@ -40,6 +41,7 @@ const SOCIALS = [
 ];
 
 export function Footer() {
+  const { t } = useI18n();
   // Active-page detection — the footer link that points to the current
   // route is highlighted in solid white + a small leading dot, so the
   // user can tell which page they are on at a glance.
@@ -68,10 +70,7 @@ export function Footer() {
       <div className="mx-auto max-w-[1440px] px-4 md:px-6 py-12 grid gap-10 md:grid-cols-4">
         <div className="md:col-span-1">
           <Logo variant="white" size="md" />
-          <p className="mt-4 text-sm text-white/80 leading-relaxed">
-            Plateforme de vérification des contacts. Prenez des décisions éclairées avant toute
-            transaction.
-          </p>
+          <p className="mt-4 text-sm text-white/80 leading-relaxed">{t('footer.tagline')}</p>
           {/* Trust pills — replaces the bullet list with two animated
               status badges. Pulsing green dot on the first; rotating
               refresh icon on the second. Each pill has a shimmer light
@@ -89,7 +88,7 @@ export function Footer() {
                 />
               </span>
               <Users className="h-3.5 w-3.5 text-green-300" aria-hidden />
-              <span className="relative z-10">Données issues des contributions utilisateurs</span>
+              <span className="relative z-10">{t('footer.trustPill.contributions')}</span>
               <span
                 aria-hidden
                 className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-[-20deg] animate-shimmer"
@@ -98,7 +97,7 @@ export function Footer() {
 
             <span className="relative inline-flex items-center gap-2 rounded-pill bg-white/10 hover:bg-white/15 border border-white/20 px-3 py-1.5 text-xs font-medium text-white/90 overflow-hidden transition-colors">
               <RefreshCw className="h-3.5 w-3.5 text-sky-300 animate-spin [animation-duration:6s]" aria-hidden />
-              <span className="relative z-10">Mise à jour en temps réel</span>
+              <span className="relative z-10">{t('footer.trustPill.realtime')}</span>
               <span
                 aria-hidden
                 className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/30 to-transparent skew-x-[-20deg] animate-shimmer"
@@ -108,14 +107,14 @@ export function Footer() {
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold mb-3">Navigation</h3>
+          <h3 className="text-sm font-semibold mb-3">{t('footer.section.navigation')}</h3>
           <ul className="space-y-2 text-sm">
             {LEGAL_LINKS.map((l) => {
               const active = isActive(l.href);
               return (
                 <li key={l.href}>
                   <Link href={l.href} className={linkClass(active)} aria-current={active ? 'page' : undefined}>
-                    ▸ {l.label}
+                    ▸ {t(l.labelKey)}
                   </Link>
                 </li>
               );
@@ -124,14 +123,14 @@ export function Footer() {
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold mb-3">Informations légales</h3>
+          <h3 className="text-sm font-semibold mb-3">{t('footer.section.legal')}</h3>
           <ul className="space-y-2 text-sm">
             {POLICY_LINKS.map((l) => {
               const active = isActive(l.href);
               return (
                 <li key={l.href}>
                   <Link href={l.href} className={linkClass(active)} aria-current={active ? 'page' : undefined}>
-                    ▸ {l.label}
+                    ▸ {t(l.labelKey)}
                   </Link>
                 </li>
               );
@@ -140,7 +139,7 @@ export function Footer() {
         </div>
 
         <div>
-          <h3 className="text-sm font-semibold mb-3">Contactez-nous</h3>
+          <h3 className="text-sm font-semibold mb-3">{t('footer.section.contact')}</h3>
           <a
             href="mailto:support@hadar.ma"
             className="group inline-flex items-center gap-2 rounded-pill bg-white/10 hover:bg-white/20 border border-white/20 hover:border-white/40 px-3 py-2 text-sm font-medium text-white/90 hover:text-white transition-all"
@@ -149,7 +148,7 @@ export function Footer() {
             support@hadar.ma
           </a>
           <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-white/60">
-            Suivez-nous
+            {t('footer.followUs')}
           </p>
           <div className="mt-2 flex gap-2 flex-wrap">
             {SOCIALS.map(({ Icon, label, href }) => (
@@ -170,7 +169,7 @@ export function Footer() {
       </div>
 
       <div className="border-t border-white/10 py-4 text-center text-xs text-white/60">
-        © {new Date().getFullYear()} HADAR — Tous droits réservés.
+        {t('footer.copyright', { year: new Date().getFullYear() })}
       </div>
     </footer>
   );

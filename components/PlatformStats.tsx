@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { AnimatedCounter } from './AnimatedCounter';
 import { useCurrency } from '@/lib/currency/provider';
+import { useI18n } from '@/lib/i18n/provider';
 
 // Aggregate amount reported by the community, expressed in MAD.
 // The card below renders this through the CurrencyProvider's
@@ -22,8 +23,16 @@ import { useCurrency } from '@/lib/currency/provider';
 const MONTANT_SIGNALE_MAD = 504_000;
 
 type Stat = {
-  label: string;
+  // i18n key for the metric label (resolved at render time so the
+  // card relabels itself when the user toggles locale).
+  labelKey: string;
+  // Static demo value. Currency-driven cards override this via
+  // format() at render time; the "Dernier signalement" card uses
+  // valueKey instead so its time-relative wording stays translated.
   value: string;
+  // If set, render t(valueKey) instead of `value` so the value can
+  // also be localised (e.g. "il y a 2h" / "2h ago" / "منذ ساعتين").
+  valueKey?: string;
   Icon: LucideIcon;
   // Per-metric accent applied ONLY to the icon chip — not the whole
   // card — so the page palette stays calm and brand-aligned while
@@ -44,7 +53,7 @@ type Stat = {
 
 const KPI_STATS: Stat[] = [
   {
-    label: 'Utilisateurs actifs',
+    labelKey: 'home.platformStats.kpi.usersActive',
     value: '12 593',
     Icon: Users,
     chip: {
@@ -57,7 +66,7 @@ const KPI_STATS: Stat[] = [
     spotlight: { ring: 'rgba(0, 50, 125, 0.50)', glow: 'rgba(0, 50, 125, 0.55)' },
   },
   {
-    label: 'Signalements enregistrés',
+    labelKey: 'home.platformStats.kpi.reportsLogged',
     value: '19 840',
     Icon: Siren,
     chip: {
@@ -70,7 +79,7 @@ const KPI_STATS: Stat[] = [
     spotlight: { ring: 'rgba(238, 68, 68, 0.50)', glow: 'rgba(238, 68, 68, 0.55)' },
   },
   {
-    label: 'Contacts signalés',
+    labelKey: 'home.platformStats.kpi.contactsReported',
     value: '9 594',
     Icon: Smartphone,
     chip: {
@@ -83,7 +92,7 @@ const KPI_STATS: Stat[] = [
     spotlight: { ring: 'rgba(134, 82, 251, 0.50)', glow: 'rgba(134, 82, 251, 0.55)' },
   },
   {
-    label: 'Vérifications réalisées',
+    labelKey: 'home.platformStats.kpi.verifications',
     value: '18 978',
     Icon: ShieldCheck,
     chip: {
@@ -96,7 +105,7 @@ const KPI_STATS: Stat[] = [
     spotlight: { ring: 'rgba(0, 191, 238, 0.50)', glow: 'rgba(0, 191, 238, 0.60)' },
   },
   {
-    label: 'Montant signalé',
+    labelKey: 'home.platformStats.kpi.amountReported',
     value: '504 000 MAD',
     Icon: Wallet,
     chip: {
@@ -109,8 +118,9 @@ const KPI_STATS: Stat[] = [
     spotlight: { ring: 'rgba(34, 196, 94, 0.50)', glow: 'rgba(34, 196, 94, 0.55)' },
   },
   {
-    label: 'Dernier signalement',
+    labelKey: 'home.platformStats.kpi.lastReport',
     value: 'il y a 2h',
+    valueKey: 'home.platformStats.lastReport.value',
     Icon: Clock,
     chip: {
       bg: 'bg-orange-500/10',
@@ -125,10 +135,13 @@ const KPI_STATS: Stat[] = [
 
 export function PlatformStats() {
   const { format } = useCurrency();
+  const { t } = useI18n();
   // Patch the Montant signalé card in place — the rest of KPI_STATS
   // is currency-independent so the array stays static at module level.
   const stats = KPI_STATS.map((s) =>
-    s.label === 'Montant signalé' ? { ...s, value: format(MONTANT_SIGNALE_MAD) } : s,
+    s.labelKey === 'home.platformStats.kpi.amountReported'
+      ? { ...s, value: format(MONTANT_SIGNALE_MAD) }
+      : s,
   );
   return (
     <section className="mx-auto max-w-[1440px] px-4 md:px-6 py-12 md:py-16">
@@ -138,7 +151,7 @@ export function PlatformStats() {
       <div className="flex justify-center">
         <span className="relative inline-flex items-center gap-2 rounded-pill border border-white/80 bg-gradient-to-r from-brand-sky via-blue-100 to-brand-sky text-brand-navy px-4 py-1.5 text-xs md:text-sm font-semibold shadow-glow-blue overflow-hidden animate-float-soft">
           <Sparkles className="h-3.5 w-3.5 text-brand-blue animate-sparkle-pop" aria-hidden />
-          <span className="relative z-10">La plateforme en chiffres</span>
+          <span className="relative z-10">{t('home.platformStats.pill')}</span>
           <span
             aria-hidden
             className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/70 to-transparent skew-x-[-20deg] animate-shimmer"
@@ -147,16 +160,16 @@ export function PlatformStats() {
       </div>
 
       <h2 className="mt-3 text-2xl md:text-3xl font-bold bg-grad-stat-navy bg-clip-text text-transparent text-center">
-        Statistiques de la plateforme
+        {t('home.platformStats.title')}
       </h2>
       <p className="mt-2 text-sm text-gray-500 text-center max-w-2xl mx-auto">
-        Mises à jour en temps réel à partir des contributions de la communauté Hadar.
+        {t('home.platformStats.subtitle')}
       </p>
 
       <ul className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {stats.map((s, i) => (
           <li
-            key={s.label}
+            key={s.labelKey}
             // Stagger the entrance so the row reveals card-by-card from
             // top-left to bottom-right (≈90 ms between cards). animationFillMode
             // 'both' holds the start frame until the delay fires, so cards
@@ -210,9 +223,9 @@ export function PlatformStats() {
 
               <div className="relative min-w-0">
                 <p className="text-2xl md:text-3xl font-bold text-brand-navy tabular-nums leading-none">
-                  <AnimatedCounter value={s.value} />
+                  <AnimatedCounter value={s.valueKey ? t(s.valueKey) : s.value} />
                 </p>
-                <p className="mt-1.5 text-xs md:text-sm text-gray-500 truncate">{s.label}</p>
+                <p className="mt-1.5 text-xs md:text-sm text-gray-500 truncate">{t(s.labelKey)}</p>
               </div>
             </article>
           </li>
@@ -224,7 +237,7 @@ export function PlatformStats() {
           href="/statistiques"
           className="group inline-flex items-center gap-1.5 rounded-pill border border-brand-navy text-brand-navy px-5 py-2 text-sm font-semibold hover:bg-brand-navy hover:text-white shadow-glow-soft hover:shadow-glow-navy transition-all"
         >
-          Voir plus
+          {t('home.platformStats.viewMore')}
           <ArrowUpRight
             className="h-4 w-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
             aria-hidden
@@ -233,9 +246,7 @@ export function PlatformStats() {
       </div>
 
       <p className="mt-3 text-xs text-gray-400 text-center max-w-3xl mx-auto">
-        Les informations affichées sont basées sur les signalements et les expériences des
-        utilisateurs, vérifiées lorsque cela est possible, et fournies à titre indicatif
-        uniquement.
+        {t('home.platformStats.disclaimer')}
       </p>
     </section>
   );

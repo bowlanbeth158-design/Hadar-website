@@ -1,3 +1,5 @@
+'use client';
+
 import Link from 'next/link';
 import {
   Siren,
@@ -12,6 +14,7 @@ import { VerifiedBadge } from './VerifiedBadge';
 import { CountUp } from './CountUp';
 import { OFFICIAL_LOGO_URL } from './Logo';
 import { VerifyNowCta } from './VerifyNowCta';
+import { useI18n } from '@/lib/i18n/provider';
 
 // URL postimg de la photo ambassadeur Hadar.
 const AMBASSADOR_IMAGE_URL = 'https://i.postimg.cc/Y0V7C7w3/Hadar-man.png';
@@ -71,14 +74,23 @@ function topRisk(counts: Record<AlertRisk, number>): AlertRisk {
   return top;
 }
 
-const BULLETS = [
-  '+10 000 vérifications',
-  'Résultat immédiat',
-  'Communauté marocaine',
-  '100% confidentiel',
+// i18n keys for the 4 trust bullets (resolved at render time so the
+// row reflects the active locale).
+const BULLET_KEYS = [
+  'home.banner.bullet1',
+  'home.banner.bullet2',
+  'home.banner.bullet3',
+  'home.banner.bullet4',
 ];
 
+const ALERT_LABEL_KEYS: Record<AlertRisk, string> = {
+  vigilance: 'home.banner.alert.vigilance',
+  moderee: 'home.banner.alert.moderee',
+  elevee: 'home.banner.alert.elevee',
+};
+
 export function HomeBanner() {
+  const { t } = useI18n();
   const dominantRisk = topRisk(ALERTS_TODAY);
   const haloClass = HALO_BY_TOP_RISK[dominantRisk];
 
@@ -110,9 +122,7 @@ export function HomeBanner() {
                 aria-hidden
                 className="h-4 w-4 object-contain animate-sparkle-pop drop-shadow"
               />
-              <span className="relative z-10">
-                La plateforme marocaine de vérification des contacts
-              </span>
+              <span className="relative z-10">{t('home.banner.pill')}</span>
               {/* Shimmer light passing across the pill background */}
               <span
                 aria-hidden
@@ -130,20 +140,20 @@ export function HomeBanner() {
           </div>
 
           <h1 className="mt-8 md:mt-10 text-4xl md:text-6xl font-bold tracking-tight text-brand-navy leading-[1.05]">
-            Avant d&apos;acheter,<br />
+            {t('home.banner.h1.line1')}
+            <br />
             <span className="bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 bg-clip-text text-transparent">
-              vérifiez.
+              {t('home.banner.h1.line2')}
             </span>
           </h1>
 
           <p className="mt-5 max-w-xl text-base md:text-lg text-gray-500">
-            Plateforme de vérification des contacts. Prenez des décisions éclairées avant toute
-            transaction.
+            {t('home.banner.subtitle')}
           </p>
 
           <ul className="mt-7 grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-xl">
-            {BULLETS.map((b, i) => (
-              <li key={b} className="flex items-center gap-2.5 text-sm text-brand-navy">
+            {BULLET_KEYS.map((bk, i) => (
+              <li key={bk} className="flex items-center gap-2.5 text-sm text-brand-navy">
                 {/* "Verified pulse" — the badge wrapper hosts a soft
                     brand-blue halo that blooms behind the SVG, while
                     the SVG itself does a tiny scale breath. Both
@@ -163,7 +173,7 @@ export function HomeBanner() {
                     style={{ animationDelay: `${i * 2000}ms` }}
                   />
                 </span>
-                <span className="font-medium">{b}</span>
+                <span className="font-medium">{t(bk)}</span>
               </li>
             ))}
           </ul>
@@ -186,9 +196,7 @@ export function HomeBanner() {
               />
             </span>
           </div>
-          <p className="mt-1.5 text-sm text-gray-500">
-            vérifications utiles sur les 30 derniers jours.
-          </p>
+          <p className="mt-1.5 text-sm text-gray-500">{t('home.banner.statsCaption')}</p>
 
           {/* CTAs — same pulse + wiggle effect as the old header buttons.
               "Vérifier maintenant" is rendered through VerifyNowCta, a
@@ -203,14 +211,16 @@ export function HomeBanner() {
               className="inline-flex items-center gap-2 rounded-pill bg-red-500 hover:bg-red-700 text-white px-6 py-3 text-sm font-semibold shadow-glow-red animate-alert-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all"
             >
               <Siren className="h-5 w-5 animate-siren-wiggle" aria-hidden />
-              Partager une expérience
+              {t('home.banner.cta.share')}
             </Link>
           </div>
 
           <p className="mt-8 md:mt-10 text-sm md:text-base text-gray-500">
-            Sans inscription <span className="text-gray-300">•</span> Anonyme{' '}
-            <span className="text-gray-300">•</span>{' '}
-            <span className="font-semibold text-brand-navy">Plateforme marocaine 🇲🇦</span>
+            {t('home.banner.tagline.noSignup')} <span className="text-gray-300">•</span>{' '}
+            {t('home.banner.tagline.anonymous')} <span className="text-gray-300">•</span>{' '}
+            <span className="font-semibold text-brand-navy">
+              {t('home.banner.tagline.morocco')}
+            </span>
           </p>
         </div>
 
@@ -263,17 +273,19 @@ export function HomeBanner() {
                   aria-hidden
                 />
                 <span className="text-base font-bold text-brand-navy">
-                  Recherche instantanée
+                  {t('home.banner.card1.title')}
                 </span>
               </div>
-              <p className="mt-1 text-xs text-gray-500">Vérifier un contact</p>
+              <p className="mt-1 text-xs text-gray-500">{t('home.banner.card1.subtitle')}</p>
 
               {/* Decorative pill search bar — purely visual, not clickable */}
               <div
                 aria-hidden
                 className="mt-3 flex items-center gap-2 rounded-pill bg-white/90 backdrop-blur-sm border border-white shadow-sm px-3 py-2"
               >
-                <span className="flex-1 text-xs text-gray-400">Numéro, email ou RIB…</span>
+                <span className="flex-1 text-xs text-gray-400">
+                  {t('home.banner.card1.placeholder')}
+                </span>
                 <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-navy to-brand-blue text-white shadow">
                   <ArrowUp className="h-3.5 w-3.5" aria-hidden />
                 </span>
@@ -316,10 +328,10 @@ export function HomeBanner() {
                 </div>
               </div>
               <p className="mt-2.5 text-sm font-bold text-brand-navy leading-tight">
-                Utilisateurs rassurés
+                {t('home.banner.card2.title')}
               </p>
               <p className="mt-0.5 text-[11px] text-gray-500 tabular-nums">
-                <CountUp to={300} duration={1800} prefix="+" /> recommandations partagées
+                <CountUp to={300} duration={1800} prefix="+" /> {t('home.banner.card2.subtitle')}
               </p>
             </div>
 
@@ -344,14 +356,14 @@ export function HomeBanner() {
                     aria-hidden
                   />
                   <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
-                    Alertes aujourd&apos;hui
+                    {t('home.banner.card3.title')}
                   </span>
                 </div>
                 <ul className="mt-2.5 space-y-2.5 text-xs">
                   <li className="flex items-center justify-between">
                     <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
                       <span className="h-2.5 w-2.5 rounded-full bg-yellow-300 ring-2 ring-yellow-100" />
-                      Vigilance
+                      {t(ALERT_LABEL_KEYS.vigilance)}
                     </span>
                     <span className="text-gray-500 tabular-nums">
                       — <CountUp to={ALERTS_TODAY.vigilance} />
@@ -360,7 +372,7 @@ export function HomeBanner() {
                   <li className="flex items-center justify-between">
                     <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
                       <span className="h-2.5 w-2.5 rounded-full bg-orange-500 ring-2 ring-orange-100" />
-                      Modérée
+                      {t(ALERT_LABEL_KEYS.moderee)}
                     </span>
                     <span className="text-gray-500 tabular-nums">
                       — <CountUp to={ALERTS_TODAY.moderee} />
@@ -369,7 +381,7 @@ export function HomeBanner() {
                   <li className="flex items-center justify-between">
                     <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
                       <span className="h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-red-100" />
-                      Élevée
+                      {t(ALERT_LABEL_KEYS.elevee)}
                     </span>
                     <span className="text-gray-500 tabular-nums">
                       — <CountUp to={ALERTS_TODAY.elevee} />

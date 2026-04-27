@@ -3,13 +3,15 @@
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { ChevronDown, LogOut, Siren, UserCircle2, UserRound } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/provider';
 
 const ITEMS = [
-  { href: '/mes-signalements', label: 'Mes signalements', Icon: Siren },
-  { href: '/mon-profil', label: 'Mon profil', Icon: UserRound },
+  { href: '/mes-signalements', labelKey: 'userMenu.myReports', Icon: Siren },
+  { href: '/mon-profil',       labelKey: 'userMenu.myProfile', Icon: UserRound },
 ];
 
 export function UserMenu() {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -39,7 +41,7 @@ export function UserMenu() {
         className="inline-flex items-center gap-2 rounded-pill border border-gray-200 bg-white text-brand-navy px-5 py-2 text-sm font-semibold hover:border-brand-blue hover:shadow-glow-soft hover:-translate-y-px transition-all duration-200 ease-out"
       >
         <UserCircle2 className="h-5 w-5 text-gray-400" aria-hidden />
-        <span className="hidden md:inline">Mon compte</span>
+        <span className="hidden md:inline">{t('userMenu.account')}</span>
         <ChevronDown
           className={`h-3.5 w-3.5 text-gray-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
           aria-hidden
@@ -51,7 +53,7 @@ export function UserMenu() {
           role="menu"
           className="absolute right-0 top-full mt-2 w-60 rounded-xl bg-white border border-gray-200 shadow-lg overflow-hidden z-50 py-1 animate-fade-in-down"
         >
-          {ITEMS.map(({ href, label, Icon }) => (
+          {ITEMS.map(({ href, labelKey, Icon }) => (
             <Link
               key={href}
               href={href}
@@ -70,7 +72,7 @@ export function UserMenu() {
                 aria-hidden
               />
               <span className="transition-transform duration-200 group-hover:translate-x-0.5">
-                {label}
+                {t(labelKey)}
               </span>
             </Link>
           ))}
@@ -90,7 +92,7 @@ export function UserMenu() {
               aria-hidden
             />
             <span className="transition-transform duration-200 group-hover:translate-x-0.5">
-              Déconnexion
+              {t('userMenu.logout')}
             </span>
           </Link>
         </div>

@@ -1,3 +1,5 @@
+'use client';
+
 import {
   CheckCircle2,
   AlertCircle,
@@ -8,6 +10,7 @@ import {
   Gauge,
   type LucideIcon,
 } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/provider';
 
 type Props = {
   query: string;
@@ -16,12 +19,15 @@ type Props = {
 type RiskLevel = 'faible' | 'vigilance' | 'modere' | 'eleve';
 
 type RiskConfig = {
-  label: string;
+  // Three i18n keys per risk level — pulled from messages.ts so the
+  // verdict, the headline pill, and the bottom message all switch
+  // languages together.
+  labelKey: string;
+  pillKey: string;
+  messageKey: string;
   pillBg: string;
   pillText: string;
   pillBorder: string;
-  pillLabel: string;
-  message: string;
   dotIndex: number;
   Icon: LucideIcon;
   iconAnim: string;
@@ -43,12 +49,12 @@ type RiskConfig = {
 //   Élevé     → "Des signalements ont été enregistrés. Vérifiez avant de poursuivre."
 const RISK_CONFIG: Record<RiskLevel, RiskConfig> = {
   faible: {
-    label: 'faible',
+    labelKey: 'home.searchResult.risk.faible.label',
+    pillKey: 'home.searchResult.risk.faible.pill',
+    messageKey: 'home.searchResult.risk.faible.message',
     pillBg: 'bg-green-100',
     pillText: 'text-green-700',
     pillBorder: 'border-green-500/40',
-    pillLabel: 'Aucun signalement détecté',
-    message: 'Aucun signalement détecté. Vérifiez avant de poursuivre.',
     dotIndex: 0,
     Icon: CheckCircle2,
     iconAnim: 'animate-sparkle-pop',
@@ -57,12 +63,12 @@ const RISK_CONFIG: Record<RiskLevel, RiskConfig> = {
     cardAuraBg: 'bg-green-500/15',
   },
   vigilance: {
-    label: 'vigilance',
+    labelKey: 'home.searchResult.risk.vigilance.label',
+    pillKey: 'home.searchResult.risk.vigilance.pill',
+    messageKey: 'home.searchResult.risk.vigilance.message',
     pillBg: 'bg-yellow-100',
     pillText: 'text-yellow-500',
     pillBorder: 'border-yellow-500/50',
-    pillLabel: 'Des signalements ont été détectés',
-    message: 'Un signalement a été enregistré. Vérifiez avant de poursuivre.',
     dotIndex: 1,
     Icon: AlertCircle,
     iconAnim: 'animate-sparkle-pop',
@@ -71,12 +77,12 @@ const RISK_CONFIG: Record<RiskLevel, RiskConfig> = {
     cardAuraBg: 'bg-yellow-300/20',
   },
   modere: {
-    label: 'modéré',
+    labelKey: 'home.searchResult.risk.modere.label',
+    pillKey: 'home.searchResult.risk.modere.pill',
+    messageKey: 'home.searchResult.risk.modere.message',
     pillBg: 'bg-orange-100',
     pillText: 'text-orange-500',
     pillBorder: 'border-orange-500/50',
-    pillLabel: 'Plusieurs signalements ont été détectés',
-    message: 'Des signalements ont été enregistrés. Vérifiez avant de poursuivre.',
     dotIndex: 2,
     Icon: AlertTriangle,
     iconAnim: 'animate-siren-wiggle',
@@ -85,12 +91,12 @@ const RISK_CONFIG: Record<RiskLevel, RiskConfig> = {
     cardAuraBg: 'bg-orange-500/20',
   },
   eleve: {
-    label: 'élevé',
+    labelKey: 'home.searchResult.risk.eleve.label',
+    pillKey: 'home.searchResult.risk.eleve.pill',
+    messageKey: 'home.searchResult.risk.eleve.message',
     pillBg: 'bg-red-100',
     pillText: 'text-red-700',
     pillBorder: 'border-red-500/50',
-    pillLabel: 'Plusieurs signalements ont été détectés',
-    message: 'Des signalements ont été enregistrés. Vérifiez avant de poursuivre.',
     dotIndex: 3,
     Icon: AlertOctagon,
     iconAnim: 'animate-siren-wiggle',
@@ -102,11 +108,13 @@ const RISK_CONFIG: Record<RiskLevel, RiskConfig> = {
 
 const DOT_COLORS = ['bg-green-500', 'bg-yellow-300', 'bg-orange-500', 'bg-red-500'];
 
-const KPI_LABELS = [
-  'Non livraison',
-  'Bloqué après paiement',
-  'Produit non conforme',
-  "Usurpation d'identité",
+// i18n keys for the 4 fraud-category KPI cards. Resolved at render
+// time so the labels follow the active locale.
+const KPI_LABEL_KEYS = [
+  'home.searchResult.kpi.nonDelivery',
+  'home.searchResult.kpi.blockedAfterPayment',
+  'home.searchResult.kpi.nonCompliant',
+  'home.searchResult.kpi.identityTheft',
 ];
 
 type DemoData = {
@@ -162,45 +170,65 @@ function getDemo(query: string): DemoData {
 //   7-29 jours    → "il y a 1 semaine" / "il y a X semaines"
 //   30-364 jours  → "il y a 1 mois" / "il y a X mois"
 //   365+ jours    → "il y a 1 an" / "il y a X ans"
-function formatRelativeTime(hoursAgo: number): string {
-  if (hoursAgo < 1) return "à l'instant";
-  if (hoursAgo < 24) {
-    const h = Math.round(hoursAgo);
-    return h === 1 ? 'il y a 1 heure' : `il y a ${h} heures`;
-  }
-  const days = Math.floor(hoursAgo / 24);
-  if (days < 2) return 'hier';
-  if (days < 7) return `il y a ${days} jours`;
-  if (days < 30) {
-    const w = Math.floor(days / 7);
-    return w === 1 ? 'il y a 1 semaine' : `il y a ${w} semaines`;
-  }
-  if (days < 365) {
-    const m = Math.floor(days / 30);
-    return m === 1 ? 'il y a 1 mois' : `il y a ${m} mois`;
-  }
-  const y = Math.floor(days / 365);
-  return y === 1 ? 'il y a 1 an' : `il y a ${y} ans`;
+// Localised relative-time formatter — same buckets as before but
+// each branch goes through t() with a {n} interpolation so the
+// wording follows the active locale.
+function useFormatRelativeTime() {
+  const { t } = useI18n();
+  return (hoursAgo: number): string => {
+    if (hoursAgo < 1) return t('home.searchResult.time.now');
+    if (hoursAgo < 24) {
+      const h = Math.round(hoursAgo);
+      return h === 1
+        ? t('home.searchResult.time.hour')
+        : t('home.searchResult.time.hours', { n: h });
+    }
+    const days = Math.floor(hoursAgo / 24);
+    if (days < 2) return t('home.searchResult.time.yesterday');
+    if (days < 7) return t('home.searchResult.time.days', { n: days });
+    if (days < 30) {
+      const w = Math.floor(days / 7);
+      return w === 1
+        ? t('home.searchResult.time.week')
+        : t('home.searchResult.time.weeks', { n: w });
+    }
+    if (days < 365) {
+      const m = Math.floor(days / 30);
+      return m === 1
+        ? t('home.searchResult.time.month')
+        : t('home.searchResult.time.months', { n: m });
+    }
+    const y = Math.floor(days / 365);
+    return y === 1
+      ? t('home.searchResult.time.year')
+      : t('home.searchResult.time.years', { n: y });
+  };
 }
 
 export function SearchResult({ query }: Props) {
+  const { t } = useI18n();
+  const formatRelativeTime = useFormatRelativeTime();
   const demo = getDemo(query);
   const cfg = RISK_CONFIG[demo.risk];
   const Icon = cfg.Icon;
-  const reportLabel = demo.reports === 1 ? 'signalement' : 'signalements';
+  const reportLabel = t(
+    demo.reports === 1
+      ? 'home.searchResult.report.singular'
+      : 'home.searchResult.report.plural',
+  );
 
   const lastReportText =
     demo.lastReportedHoursAgo !== null
-      ? `Dernier signalement : ${formatRelativeTime(demo.lastReportedHoursAgo)}`
-      : 'Aucun signalement récent';
+      ? `${t('home.searchResult.lastReportPrefix')} ${formatRelativeTime(demo.lastReportedHoursAgo)}`
+      : t('home.searchResult.noRecentReport');
 
   return (
     <div
       key={demo.risk}
       className="mt-8 pt-8 border-t border-gray-200/70 animate-fade-in-down relative isolate"
-      aria-label="Résultat de recherche"
+      aria-label={t('home.searchResult.aria')}
     >
-      <p className="sr-only">Résultat pour {query}</p>
+      <p className="sr-only">{t('home.searchResult.aria.queryFor', { query })}</p>
 
       {/* Risk-coloured aura behind the whole result block — soft blur,
           tint the section in the matching risk colour so the eye picks
@@ -216,7 +244,7 @@ export function SearchResult({ query }: Props) {
           className={`inline-flex items-center gap-2 rounded-pill ${cfg.pillBg} ${cfg.pillText} border ${cfg.pillBorder} px-4 py-2 text-sm font-semibold ${cfg.pillGlow} ${cfg.pillAnim}`}
         >
           <Icon className={`h-4 w-4 ${cfg.iconAnim}`} aria-hidden />
-          {cfg.pillLabel}
+          {t(cfg.pillKey)}
         </div>
       </div>
 
@@ -255,7 +283,7 @@ export function SearchResult({ query }: Props) {
 
         <span
           className={`inline-flex items-center gap-2 rounded-pill bg-white/80 backdrop-blur-sm border ${cfg.pillBorder} px-3.5 py-1.5 text-sm shadow-glow-soft`}
-          aria-label={`Niveau de risque : ${cfg.label}`}
+          aria-label={t('home.searchResult.aria.riskLevel', { label: t(cfg.labelKey) })}
         >
           <span
             aria-hidden
@@ -263,8 +291,8 @@ export function SearchResult({ query }: Props) {
           >
             <Gauge className="h-3.5 w-3.5" />
           </span>
-          <span className="text-gray-600">Risque :</span>
-          <span className={`${cfg.pillText} font-semibold capitalize`}>{cfg.label}</span>
+          <span className="text-gray-600">{t('home.searchResult.risk.prefix')}</span>
+          <span className={`${cfg.pillText} font-semibold capitalize`}>{t(cfg.labelKey)}</span>
           <span className="flex items-center gap-1 ml-0.5">
             {DOT_COLORS.map((color, i) => {
               const isActive = i === cfg.dotIndex;
@@ -292,15 +320,15 @@ export function SearchResult({ query }: Props) {
           gradient (bg-clip-text) so the figure pops with the platform
           identity instead of generic black. */}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        {KPI_LABELS.map((label, i) => (
+        {KPI_LABEL_KEYS.map((labelKey, i) => (
           <div
-            key={label}
+            key={labelKey}
             className="rounded-2xl bg-white border border-gray-200 p-5 text-center shadow-glow-soft"
           >
             <p className="text-4xl font-bold tabular-nums bg-grad-stat-navy bg-clip-text text-transparent">
               {demo.kpis[i] ?? 0}
             </p>
-            <p className="mt-1 text-sm text-gray-500">{label}</p>
+            <p className="mt-1 text-sm text-gray-500">{t(labelKey)}</p>
           </div>
         ))}
       </div>
@@ -314,7 +342,7 @@ export function SearchResult({ query }: Props) {
           key={`msg-${demo.risk}`}
           className={`relative inline-flex items-center rounded-pill ${cfg.pillBg} ${cfg.pillText} border ${cfg.pillBorder} px-5 py-2.5 text-sm font-semibold ${cfg.pillGlow} overflow-hidden animate-fade-in-down`}
         >
-          <span className="relative z-10">{cfg.message}</span>
+          <span className="relative z-10">{t(cfg.messageKey)}</span>
           <span
             aria-hidden
             className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/70 to-transparent skew-x-[-20deg] animate-shimmer"

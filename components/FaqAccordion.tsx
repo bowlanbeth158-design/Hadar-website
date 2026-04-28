@@ -1,16 +1,30 @@
+'use client';
+
+import { useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ChevronDown } from 'lucide-react';
-import type { FaqItem } from '@/lib/parseFaq';
+import { parseFaq, type FaqItem } from '@/lib/parseFaq';
+import { useI18n } from '@/lib/i18n/provider';
+import type { LocalisedMarkdown } from '@/lib/loadLegal';
 
 type Props = {
-  items: FaqItem[];
+  // Either: parsed FAQ items (legacy, FR-only), OR per-locale
+  // markdown that we parse here based on the active locale.
+  items?: FaqItem[];
+  markdownByLocale?: LocalisedMarkdown;
 };
 
-export function FaqAccordion({ items }: Props) {
+export function FaqAccordion({ items, markdownByLocale }: Props) {
+  const { locale, dir } = useI18n();
+  const resolvedItems = useMemo<FaqItem[]>(() => {
+    if (markdownByLocale) return parseFaq(markdownByLocale[locale]);
+    return items ?? [];
+  }, [items, markdownByLocale, locale]);
+
   return (
-    <div className="space-y-3">
-      {items.map((item) => (
+    <div className="space-y-3" dir={dir}>
+      {resolvedItems.map((item) => (
         <details
           key={item.question}
           className="group rounded-2xl border border-gray-200 bg-white shadow-glow-soft open:border-brand-blue open:shadow-glow-blue transition-all"

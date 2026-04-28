@@ -88,6 +88,253 @@ const config: Config = {
         'glow-sky':    '0 10px 30px -8px rgb(0 191 238 / 0.45), 0 0 0 1px rgb(0 191 238 / 0.05)',
         'glow-yellow': '0 10px 30px -8px rgb(216 193 0 / 0.45), 0 0 0 1px rgb(216 193 0 / 0.05)',
       },
+      keyframes: {
+        'alert-pulse': {
+          '0%': { boxShadow: '0 0 0 0 rgba(238, 68, 68, 0.55)' },
+          '70%': { boxShadow: '0 0 0 14px rgba(238, 68, 68, 0)' },
+          '100%': { boxShadow: '0 0 0 0 rgba(238, 68, 68, 0)' },
+        },
+        'verify-pulse': {
+          '0%': { boxShadow: '0 0 0 0 rgba(34, 196, 94, 0.55)' },
+          '70%': { boxShadow: '0 0 0 14px rgba(34, 196, 94, 0)' },
+          '100%': { boxShadow: '0 0 0 0 rgba(34, 196, 94, 0)' },
+        },
+        'siren-wiggle': {
+          '0%, 92%, 100%': { transform: 'rotate(0deg)' },
+          '94%': { transform: 'rotate(-14deg)' },
+          '96%': { transform: 'rotate(14deg)' },
+          '98%': { transform: 'rotate(-8deg)' },
+        },
+        'float-soft': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-8px)' },
+        },
+        'fade-in-down': {
+          '0%': { opacity: '0', transform: 'translateY(-6px) scale(0.98)' },
+          '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+        },
+        'fade-in': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        'modal-pop': {
+          '0%': { opacity: '0', transform: 'translateY(12px) scale(0.96)' },
+          '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+        },
+        'pulse-orange': {
+          '0%': { boxShadow: '0 0 0 0 rgba(242, 155, 17, 0.55)' },
+          '70%': { boxShadow: '0 0 0 14px rgba(242, 155, 17, 0)' },
+          '100%': { boxShadow: '0 0 0 0 rgba(242, 155, 17, 0)' },
+        },
+        'pulse-yellow': {
+          '0%': { boxShadow: '0 0 0 0 rgba(216, 193, 0, 0.55)' },
+          '70%': { boxShadow: '0 0 0 14px rgba(216, 193, 0, 0)' },
+          '100%': { boxShadow: '0 0 0 0 rgba(216, 193, 0, 0)' },
+        },
+        'pulse-blue': {
+          '0%': { boxShadow: '0 0 0 0 rgba(0, 120, 186, 0.55)' },
+          '70%': { boxShadow: '0 0 0 14px rgba(0, 120, 186, 0)' },
+          '100%': { boxShadow: '0 0 0 0 rgba(0, 120, 186, 0)' },
+        },
+        'confetti-fall': {
+          '0%': { transform: 'translate3d(0, -10vh, 0) rotate(0deg)', opacity: '1' },
+          '100%': { transform: 'translate3d(0, 110vh, 0) rotate(720deg)', opacity: '0.4' },
+        },
+        'sparkle-pop': {
+          '0%, 100%': { transform: 'scale(0.8) rotate(0deg)', opacity: '0.7' },
+          '50%': { transform: 'scale(1.15) rotate(20deg)', opacity: '1' },
+        },
+        shimmer: {
+          '0%': { transform: 'translateX(-120%)' },
+          '100%': { transform: 'translateX(220%)' },
+        },
+        'trend-up': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(-2.5px)' },
+        },
+        'trend-down': {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(2.5px)' },
+        },
+        // 5-star sequence (used on the "Utilisateurs rassurés" card).
+        // Each star applies this with a staggered animation-delay so they
+        // light up 1 → 2 → 3 → 4 → 5. Total cycle 4s, then fades out and
+        // restarts for an infinite loop.
+        'star-pop': {
+          '0%': { opacity: '0', transform: 'scale(0.4)' },
+          '8%': { opacity: '1', transform: 'scale(1.3)' },
+          '14%': { opacity: '1', transform: 'scale(1)' },
+          '92%': { opacity: '1', transform: 'scale(1)' },
+          '100%': { opacity: '0', transform: 'scale(0.6)' },
+        },
+        // ----------- Banner trust badges — "verified pulse" -------------
+        // Two paired keyframes that fire on the same 8 s clock with the
+        // same per-badge animation-delay, so the SVG breath and the
+        // halo bloom stay perfectly in sync. The whole motion happens
+        // in the first 30 % of the cycle (~2.4 s), then the badge
+        // sits perfectly still for the remaining 5.6 s — calm,
+        // authoritative, only one badge "alive" at a time.
+        //
+        // 1) badge-breathe — scale pulse on the SVG itself, with a
+        //    visible peak (1.22) so the badge feels like it really
+        //    "expands" rather than just trembling.
+        'badge-breathe': {
+          '0%, 30%, 100%': { transform: 'scale(1)' },
+          '8%':            { transform: 'scale(1.10)' },
+          '15%':           { transform: 'scale(1.22)' },
+          '22%':           { transform: 'scale(1.10)' },
+        },
+        // 2) badge-halo — bright brand-blue glow that swells then
+        //    fades behind the badge, synced with the breath above.
+        //    Bumped opacities (peak ~0.95) and a wider scale (peak
+        //    ~1.85) so the halo is unmistakable from across the
+        //    banner instead of barely-there.
+        'badge-halo': {
+          '0%, 30%, 100%': { opacity: '0',    transform: 'scale(0.6)' },
+          '8%':            { opacity: '0.65', transform: 'scale(1.35)' },
+          '15%':           { opacity: '0.95', transform: 'scale(1.85)' },
+          '22%':           { opacity: '0.55', transform: 'scale(1.55)' },
+        },
+        // Stripe shimmer — used by the RecentReports cards' top
+        // accent strip. Background-position drifts from right to left
+        // over 3.5 s; combined with a 300%-wide symmetric gradient
+        // it reads as a bright "comet" sliding across a coloured rail.
+        'stripe-travel': {
+          '0%':   { backgroundPosition: '150% 50%' },
+          '100%': { backgroundPosition: '-50% 50%' },
+        },
+        // Card spotlight — opacity-only fade applied to a brand-blue
+        // glow overlay sitting absolutely inside each PlatformStats
+        // card. With a per-card animation-delay of `i * 1500ms` and a
+        // total cycle of 9 s, the highlight travels card-by-card in a
+        // continuous wave (top-left → bottom-right) so the user's eye
+        // is gently drawn through every KPI in turn. Each spotlight
+        // stays visible for ~2.7 s with a peak around 1.26 s in.
+        'card-spotlight': {
+          '0%, 100%': { opacity: '0' },
+          '8%': { opacity: '0.6' },
+          '14%': { opacity: '1' },
+          '22%': { opacity: '0.6' },
+          '30%': { opacity: '0' },
+        },
+        // Yellow drop-shadow burst on the whole row, fired AFTER the 5
+        // stars have popped in (peak ~1.2 s into the 4 s cycle).
+        'stars-flash': {
+          '0%, 25%, 60%, 100%': {
+            filter: 'drop-shadow(0 0 0 rgba(251, 237, 33, 0))',
+          },
+          '32%': {
+            filter:
+              'drop-shadow(0 0 8px rgba(251, 237, 33, 0.95)) drop-shadow(0 0 14px rgba(255, 200, 0, 0.7))',
+          },
+          '42%': {
+            filter: 'drop-shadow(0 0 4px rgba(251, 237, 33, 0.5))',
+          },
+        },
+        // Process-step connector ball animations — the dot starts at the
+        // source card's right edge in the source colour, travels along the
+        // dashed line, and arrives at the destination card's left edge in
+        // the destination colour. background-color and box-shadow halo
+        // both interpolate so the dot visibly shifts hue mid-flight.
+        // Slow 6s cycle with fade-in/fade-out at the line endpoints.
+        'travel-1-to-2': {
+          '0%':   { left: '-4%',  backgroundColor: '#0078BA', boxShadow: '0 0 14px 3px rgba(0, 120, 186, 0.65)', opacity: '0' },
+          '15%':  { left: '8%',   backgroundColor: '#0078BA', boxShadow: '0 0 14px 3px rgba(0, 120, 186, 0.65)', opacity: '1' },
+          '85%':  { left: '92%',  backgroundColor: '#8652FB', boxShadow: '0 0 14px 3px rgba(134, 82, 251, 0.65)', opacity: '1' },
+          '100%': { left: '104%', backgroundColor: '#8652FB', boxShadow: '0 0 14px 3px rgba(134, 82, 251, 0.65)', opacity: '0' },
+        },
+        'travel-2-to-3': {
+          '0%':   { left: '-4%',  backgroundColor: '#8652FB', boxShadow: '0 0 14px 3px rgba(134, 82, 251, 0.65)', opacity: '0' },
+          '15%':  { left: '8%',   backgroundColor: '#8652FB', boxShadow: '0 0 14px 3px rgba(134, 82, 251, 0.65)', opacity: '1' },
+          '85%':  { left: '92%',  backgroundColor: '#F29B11', boxShadow: '0 0 14px 3px rgba(242, 155, 17, 0.65)', opacity: '1' },
+          '100%': { left: '104%', backgroundColor: '#F29B11', boxShadow: '0 0 14px 3px rgba(242, 155, 17, 0.65)', opacity: '0' },
+        },
+        'travel-3-to-4': {
+          '0%':   { left: '-4%',  backgroundColor: '#F29B11', boxShadow: '0 0 14px 3px rgba(242, 155, 17, 0.65)', opacity: '0' },
+          '15%':  { left: '8%',   backgroundColor: '#F29B11', boxShadow: '0 0 14px 3px rgba(242, 155, 17, 0.65)', opacity: '1' },
+          '85%':  { left: '92%',  backgroundColor: '#22C45E', boxShadow: '0 0 14px 3px rgba(34, 196, 94, 0.65)', opacity: '1' },
+          '100%': { left: '104%', backgroundColor: '#22C45E', boxShadow: '0 0 14px 3px rgba(34, 196, 94, 0.65)', opacity: '0' },
+        },
+        // Single-segment legacy dot travel (used only if needed); kept
+        // for backwards compatibility.
+        'connector-travel': {
+          '0%':   { left: '-10%', opacity: '0', transform: 'translateY(-50%) scale(0.5)' },
+          '5%':   { opacity: '1', transform: 'translateY(-50%) scale(1)' },
+          '28%':  { opacity: '1', transform: 'translateY(-50%) scale(1)' },
+          '33%':  { left: '110%', opacity: '0', transform: 'translateY(-50%) scale(0.5)' },
+          '100%': { left: '110%', opacity: '0', transform: 'translateY(-50%) scale(0.5)' },
+        },
+        // One-shot card highlight — Canaux plus signalés cards on the
+        // statistiques page on every period / mode change. Toned-down
+        // version per owner feedback: smaller ring spread, lower alpha,
+        // lighter brightness boost so the cue feels like a "soft ping"
+        // rather than a flashbang. forwards keeps the final transparent
+        // resting state.
+        'card-flash': {
+          '0%':   { boxShadow: '0 0 0 0 rgba(0, 120, 186, 0)',     filter: 'brightness(1)' },
+          '25%':  { boxShadow: '0 0 0 3px rgba(0, 120, 186, 0.30)', filter: 'brightness(1.04)' },
+          '70%':  { boxShadow: '0 0 0 6px rgba(0, 120, 186, 0)',    filter: 'brightness(1.02)' },
+          '100%': { boxShadow: '0 0 0 0 rgba(0, 120, 186, 0)',     filter: 'brightness(1)' },
+        },
+        // SearchResult aura — opacity + scale couple, 6 s loop.
+        // Two stacked instances with different animation-delays
+        // make the wash behind the result feel alive without being
+        // distracting.
+        'result-breath': {
+          '0%, 100%': { opacity: '0.55', transform: 'scale(0.95)' },
+          '50%':      { opacity: '0.95', transform: 'scale(1.05)' },
+        },
+      },
+      animation: {
+        'alert-pulse': 'alert-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+        'verify-pulse': 'verify-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+        'pulse-orange': 'pulse-orange 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+        'pulse-yellow': 'pulse-yellow 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+        'pulse-blue': 'pulse-blue 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+        'siren-wiggle': 'siren-wiggle 4s ease-in-out infinite',
+        'float-soft': 'float-soft 5s ease-in-out infinite',
+        'fade-in-down': 'fade-in-down 180ms cubic-bezier(0.16, 1, 0.3, 1)',
+        'fade-in': 'fade-in 200ms ease-out',
+        'modal-pop': 'modal-pop 280ms cubic-bezier(0.16, 1, 0.3, 1)',
+        'confetti-fall': 'confetti-fall linear forwards',
+        'sparkle-pop': 'sparkle-pop 1.6s ease-in-out infinite',
+        shimmer: 'shimmer 5s linear infinite',
+        'trend-up': 'trend-up 1.4s ease-in-out infinite',
+        'trend-down': 'trend-down 1.4s ease-in-out infinite',
+        'star-pop': 'star-pop 4s ease-in-out infinite',
+        'stars-flash': 'stars-flash 4s ease-in-out infinite',
+        // 9 s loop matches `cards * 1500ms` stagger so the highlight
+        // visits every card exactly once per cycle in a smooth ripple.
+        'card-spotlight': 'card-spotlight 9s ease-in-out infinite',
+        // Slow breathing halo for the SearchResult aura — opacity +
+        // scale couple on a 6 s ease-in-out loop so the colour wash
+        // behind the result pulses gently instead of being a static
+        // blur. Pairs well with whatever tint the active risk level
+        // applies on top.
+        'result-breath': 'result-breath 6s ease-in-out infinite',
+        // Banner trust badges — paired "breath + halo bloom" running
+        // on the same 8 s clock; per-badge animationDelay of
+        // `i * 2000ms` (4 badges × 2 s = 8 s) makes the pulse ripple
+        // through the row, only one badge alive at a time.
+        'badge-breathe': 'badge-breathe 8s ease-in-out infinite',
+        'badge-halo':    'badge-halo    8s ease-in-out infinite',
+        // Continuous left-shifting background-position used by the
+        // RecentReports cards' top stripe. Combined with a 300% wide
+        // symmetric gradient, this gives the impression of a bright
+        // light "scanning" across the stripe.
+        'stripe-travel': 'stripe-travel 3.5s linear infinite',
+        // Slow, deliberate connector animations — 6s per cycle so the eye
+        // has time to follow the colour-shift mid-flight rather than
+        // rushing past. 0.8s and 1.6s staggered start so the three balls
+        // ripple from card 1 → 4 in a continuous left-to-right flow.
+        'travel-1-to-2': 'travel-1-to-2 6s ease-in-out infinite',
+        'travel-2-to-3': 'travel-2-to-3 6s ease-in-out infinite 0.8s',
+        'travel-3-to-4': 'travel-3-to-4 6s ease-in-out infinite 1.6s',
+        'connector-travel': 'connector-travel 3s cubic-bezier(0.4, 0, 0.2, 1) infinite',
+        // One-shot card flash — duration nudged down 1.2s → 0.9s alongside
+        // the toned-down ring so the cue stays brief and discreet.
+        'card-flash': 'card-flash 0.9s ease-out forwards',
+      },
     },
   },
   plugins: [typography],

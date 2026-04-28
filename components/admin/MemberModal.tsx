@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { X, Trash2, CheckCircle2, UserRound, Mail, Phone, ShieldCheck, Clock } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/provider';
+import { translateRole, translateMemberStatus } from '@/lib/i18n/helpers';
 
 type Role = 'admin' | 'moderateur' | 'support';
 type Status = 'actif' | 'inactif' | 'suspendu';
@@ -25,19 +27,20 @@ type Props = {
   onDelete?: (id: string) => void;
 };
 
-const ROLES: { id: Role; label: string; desc: string }[] = [
-  { id: 'admin', label: 'Admin', desc: 'Tous droits opérationnels sauf les 5 super-admin' },
-  { id: 'moderateur', label: 'Modérateur', desc: 'Modération signalements + gestion users partielle' },
-  { id: 'support', label: 'Support', desc: 'Chat + reset mot de passe user' },
+const ROLES: { id: Role; descKey: string }[] = [
+  { id: 'admin', descKey: 'memberModal.role.admin.desc' },
+  { id: 'moderateur', descKey: 'memberModal.role.moderateur.desc' },
+  { id: 'support', descKey: 'memberModal.role.support.desc' },
 ];
 
-const STATUSES: { id: Status; label: string; cls: string }[] = [
-  { id: 'actif', label: 'Actif', cls: 'text-green-700 bg-green-100 border-green-500' },
-  { id: 'inactif', label: 'Inactif', cls: 'text-gray-600 bg-gray-100 border-gray-400' },
-  { id: 'suspendu', label: 'Suspendu', cls: 'text-red-700 bg-red-100 border-red-500' },
+const STATUSES: { id: Status; cls: string }[] = [
+  { id: 'actif', cls: 'text-green-700 bg-green-100 border-green-500' },
+  { id: 'inactif', cls: 'text-gray-600 bg-gray-100 border-gray-400' },
+  { id: 'suspendu', cls: 'text-red-700 bg-red-100 border-red-500' },
 ];
 
 export function MemberModal({ open, mode, initial, onClose, onSave, onDelete }: Props) {
+  const { t } = useI18n();
   const [name, setName] = useState(initial?.name ?? '');
   const [email, setEmail] = useState(initial?.email ?? '');
   const [phone, setPhone] = useState(initial?.phone ?? '');
@@ -72,7 +75,7 @@ export function MemberModal({ open, mode, initial, onClose, onSave, onDelete }: 
   if (!open) return null;
 
   const canSubmit = name.trim() && email.trim() && phone.trim();
-  const title = mode === 'create' ? 'Ajouter un membre' : 'Profil du membre';
+  const title = mode === 'create' ? t('memberModal.titleCreate') : t('memberModal.titleEdit');
 
   const submit = () => {
     if (!canSubmit) return;
@@ -94,7 +97,7 @@ export function MemberModal({ open, mode, initial, onClose, onSave, onDelete }: 
 
   const remove = () => {
     if (!initial?.id) return;
-    if (!window.confirm(`Supprimer le membre ${initial.name ?? ''} ?`)) return;
+    if (!window.confirm(t('memberModal.confirmDelete', { name: initial.name ?? '' }))) return;
     onDelete?.(initial.id);
     onClose();
   };
@@ -108,7 +111,7 @@ export function MemberModal({ open, mode, initial, onClose, onSave, onDelete }: 
     >
       <button
         type="button"
-        aria-label="Fermer"
+        aria-label={t('common.close')}
         onClick={onClose}
         className="absolute inset-0 bg-brand-navy/40 backdrop-blur-sm cursor-default"
       />
@@ -122,7 +125,7 @@ export function MemberModal({ open, mode, initial, onClose, onSave, onDelete }: 
           </div>
           <button
             type="button"
-            aria-label="Fermer"
+            aria-label={t('common.close')}
             onClick={onClose}
             className="h-8 w-8 rounded-full hover:bg-white/10 flex items-center justify-center"
           >
@@ -133,45 +136,45 @@ export function MemberModal({ open, mode, initial, onClose, onSave, onDelete }: 
         <div className="p-6 bg-brand-sky/30 max-h-[70vh] overflow-y-auto">
           <fieldset>
             <legend className="block text-xs font-semibold uppercase tracking-wide text-brand-navy/60 mb-3">
-              Informations
+              {t('memberModal.info')}
             </legend>
             <div className="grid gap-3">
               <label className="block">
                 <span className="flex items-center gap-1.5 text-xs font-semibold text-brand-navy mb-1">
                   <UserRound className="h-3.5 w-3.5" aria-hidden />
-                  Nom complet
+                  {t('memberModal.fullName')}
                 </span>
                 <input
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   type="text"
-                  placeholder="Prénom NOM"
+                  placeholder={t('memberModal.fullNamePlaceholder')}
                   className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-brand-navy focus:outline-none focus:border-brand-blue bg-white"
                 />
               </label>
               <label className="block">
                 <span className="flex items-center gap-1.5 text-xs font-semibold text-brand-navy mb-1">
                   <Phone className="h-3.5 w-3.5" aria-hidden />
-                  Numéro de téléphone
+                  {t('memberModal.phone')}
                 </span>
                 <input
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   type="tel"
-                  placeholder="212 6 XX XX XX XX"
+                  placeholder={t('memberModal.phonePlaceholder')}
                   className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-brand-navy focus:outline-none focus:border-brand-blue bg-white"
                 />
               </label>
               <label className="block">
                 <span className="flex items-center gap-1.5 text-xs font-semibold text-brand-navy mb-1">
                   <Mail className="h-3.5 w-3.5" aria-hidden />
-                  Email
+                  {t('memberModal.email')}
                 </span>
                 <input
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   type="email"
-                  placeholder="prenom@hadar.ma"
+                  placeholder={t('memberModal.emailPlaceholder')}
                   className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-brand-navy focus:outline-none focus:border-brand-blue bg-white"
                 />
               </label>
@@ -180,7 +183,7 @@ export function MemberModal({ open, mode, initial, onClose, onSave, onDelete }: 
 
           <fieldset className="mt-6">
             <legend className="block text-xs font-semibold uppercase tracking-wide text-brand-navy/60 mb-3">
-              Rôle
+              {t('memberModal.role')}
             </legend>
             <div className="space-y-2">
               {ROLES.map((r) => {
@@ -201,8 +204,8 @@ export function MemberModal({ open, mode, initial, onClose, onSave, onDelete }: 
                       className="mt-1"
                     />
                     <div>
-                      <p className="text-sm font-semibold text-brand-navy">{r.label}</p>
-                      <p className="text-xs text-gray-500">{r.desc}</p>
+                      <p className="text-sm font-semibold text-brand-navy">{translateRole(t, r.id)}</p>
+                      <p className="text-xs text-gray-500">{t(r.descKey)}</p>
                     </div>
                   </label>
                 );
@@ -212,7 +215,7 @@ export function MemberModal({ open, mode, initial, onClose, onSave, onDelete }: 
 
           <fieldset className="mt-6">
             <legend className="block text-xs font-semibold uppercase tracking-wide text-brand-navy/60 mb-3">
-              Statut
+              {t('memberModal.status')}
             </legend>
             <div className="flex flex-wrap gap-2">
               {STATUSES.map((s) => {
@@ -229,7 +232,7 @@ export function MemberModal({ open, mode, initial, onClose, onSave, onDelete }: 
                         : 'inline-flex items-center gap-2 rounded-pill border-2 border-gray-200 bg-white text-gray-500 px-4 py-1.5 text-sm font-medium hover:border-gray-300'
                     }
                   >
-                    {s.label}
+                    {translateMemberStatus(t, s.id)}
                   </button>
                 );
               })}
@@ -239,7 +242,7 @@ export function MemberModal({ open, mode, initial, onClose, onSave, onDelete }: 
           {mode === 'edit' && initial?.lastSeen && (
             <div className="mt-6 rounded-xl bg-white border border-gray-200 p-3 flex items-center gap-2 text-xs text-gray-500">
               <Clock className="h-3.5 w-3.5" aria-hidden />
-              Dernière activité :{' '}
+              {t('memberModal.lastSeen')} :{' '}
               <span className="font-semibold text-brand-navy">{initial.lastSeen}</span>
               {initial.id && (
                 <span className="ml-auto text-gray-400 font-mono">ID #{initial.id}</span>
@@ -256,7 +259,7 @@ export function MemberModal({ open, mode, initial, onClose, onSave, onDelete }: 
               className="inline-flex items-center gap-1.5 rounded-pill bg-red-500 hover:bg-red-700 text-white px-4 py-2 text-sm font-semibold shadow-glow-red transition-all"
             >
               <Trash2 className="h-4 w-4" aria-hidden />
-              Supprimer
+              {t('memberModal.delete')}
             </button>
           ) : (
             <span />
@@ -269,7 +272,7 @@ export function MemberModal({ open, mode, initial, onClose, onSave, onDelete }: 
               className="inline-flex items-center gap-1.5 rounded-pill border border-gray-200 bg-white text-brand-navy px-4 py-2 text-sm font-medium hover:border-brand-blue transition-colors"
             >
               <X className="h-4 w-4" aria-hidden />
-              Annuler
+              {t('memberModal.cancel')}
             </button>
             <button
               type="button"
@@ -278,7 +281,11 @@ export function MemberModal({ open, mode, initial, onClose, onSave, onDelete }: 
               className="inline-flex items-center gap-1.5 rounded-pill bg-green-500 hover:bg-green-700 text-white px-5 py-2 text-sm font-semibold shadow-glow-green disabled:opacity-50 disabled:cursor-not-allowed transition-all"
             >
               <CheckCircle2 className="h-4 w-4" aria-hidden />
-              {saved ? 'Enregistré' : mode === 'create' ? 'Créer le membre' : 'Valider'}
+              {saved
+                ? t('memberModal.saved')
+                : mode === 'create'
+                  ? t('memberModal.create')
+                  : t('memberModal.validate')}
             </button>
           </div>
         </div>

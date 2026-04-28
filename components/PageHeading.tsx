@@ -1,25 +1,53 @@
+'use client';
+
+import { useI18n } from '@/lib/i18n/provider';
+
 type Props = {
-  title: string;
+  // Either a literal title (legacy) OR an i18n key. titleKey wins
+  // when both are passed so callers can migrate one page at a time.
+  title?: string;
+  titleKey?: string;
   subtitle?: string;
+  subtitleKey?: string;
   accent?: 'navy' | 'red' | 'gradient';
+  align?: 'center' | 'left';
 };
 
-export function PageHeading({ title, subtitle, accent = 'navy' }: Props) {
+export function PageHeading({
+  title,
+  titleKey,
+  subtitle,
+  subtitleKey,
+  accent = 'navy',
+  align = 'center',
+}: Props) {
+  const { t } = useI18n();
+  const resolvedTitle = titleKey ? t(titleKey) : (title ?? '');
+  const resolvedSubtitle = subtitleKey ? t(subtitleKey) : subtitle;
+
   const titleClass =
     accent === 'red'
       ? 'text-red-500'
       : accent === 'gradient'
         ? 'bg-grad-stat-navy bg-clip-text text-transparent'
         : 'text-brand-navy';
+  const isLeft = align === 'left';
+  // text-start is "left" in LTR and "right" in RTL — so the
+  // /mes-alertes and /mes-signalements headings naturally land on
+  // the right edge of the column when the user picks Arabic.
   return (
-    <div className="text-center mb-10 md:mb-14">
+    <div className={`mb-10 md:mb-14 ${isLeft ? 'text-start' : 'text-center'}`}>
       <h1
         className={`text-3xl md:text-5xl font-bold tracking-tight ${titleClass}`}
       >
-        {title}
+        {resolvedTitle}
       </h1>
-      {subtitle && (
-        <p className="mt-3 mx-auto max-w-2xl text-base md:text-lg text-gray-500">{subtitle}</p>
+      {resolvedSubtitle && (
+        <p
+          className={`mt-3 text-base md:text-lg text-gray-500 ${isLeft ? '' : 'max-w-2xl mx-auto'}`}
+        >
+          {resolvedSubtitle}
+        </p>
       )}
     </div>
   );

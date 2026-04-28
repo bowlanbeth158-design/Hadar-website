@@ -6,6 +6,7 @@ import { VerifiedBadge } from './VerifiedBadge';
 import { BadgesCriteriaModal } from './BadgesCriteriaModal';
 import { IdentityVerificationModal } from './IdentityVerificationModal';
 import { CountUp } from './CountUp';
+import { useI18n } from '@/lib/i18n/provider';
 
 const KEY = 'hadar:identity-verified';
 
@@ -26,6 +27,7 @@ export function ProfileIdentity({
   badgeStars,
   validationRate,
 }: Props) {
+  const { t } = useI18n();
   const [verified, setVerified] = useState(false);
   const [hydrated, setHydrated] = useState(false);
   const [confirmRevoke, setConfirmRevoke] = useState(false);
@@ -68,10 +70,10 @@ export function ProfileIdentity({
             <button
               type="button"
               onClick={() => setConfirmRevoke((v) => !v)}
-              aria-label="Annuler ma vérification d'identité"
+              aria-label={t('profile.identity.cancel.aria')}
               className="text-[10px] font-semibold uppercase tracking-wide text-gray-400 hover:text-red-500 transition-colors"
             >
-              Annuler
+              {t('profile.identity.cancel')}
             </button>
           </span>
         )}
@@ -81,17 +83,16 @@ export function ProfileIdentity({
       {verified && confirmRevoke && (
         <div
           role="alertdialog"
-          aria-label="Confirmer l'annulation de la vérification"
+          aria-label={t('profile.identity.confirmRevoke.aria')}
           className="rounded-xl border border-red-200 bg-red-50 p-3 flex items-start gap-3 animate-fade-in-down"
         >
           <X className="h-4 w-4 text-red-500 mt-0.5 shrink-0" aria-hidden />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-semibold text-red-700">
-              Retirer mon badge vérifié ?
+              {t('profile.identity.confirmRevoke.title')}
             </p>
             <p className="mt-0.5 text-xs text-gray-600">
-              Vous perdrez la coche bleue. Vous pourrez relancer la vérification gratuite à
-              tout moment.
+              {t('profile.identity.confirmRevoke.body')}
             </p>
             <div className="mt-2 flex items-center gap-2">
               <button
@@ -99,14 +100,14 @@ export function ProfileIdentity({
                 onClick={revokeVerification}
                 className="inline-flex items-center gap-1 rounded-pill bg-red-500 hover:bg-red-700 text-white px-3 py-1 text-xs font-semibold transition-colors"
               >
-                Oui, retirer
+                {t('profile.identity.confirmRevoke.yes')}
               </button>
               <button
                 type="button"
                 onClick={() => setConfirmRevoke(false)}
                 className="text-xs font-medium text-gray-500 hover:text-brand-navy"
               >
-                Annuler
+                {t('profile.identity.cancel')}
               </button>
             </div>
           </div>
@@ -133,7 +134,7 @@ export function ProfileIdentity({
                 ))}
               </span>
               <span className="ml-1 text-[10px] uppercase tracking-wide text-brand-blue group-hover:underline">
-                Voir les niveaux
+                {t('profile.identity.viewLevels')}
               </span>
             </span>
           }
@@ -142,7 +143,7 @@ export function ProfileIdentity({
 
       {/* Line 3 — Taux de validation */}
       <p className="text-xs text-gray-500">
-        Taux de validation :{' '}
+        {t('profile.identity.validationRate')}{' '}
         <span className="font-semibold text-brand-navy">
           <CountUp to={validationRate} />%
         </span>
@@ -156,8 +157,8 @@ export function ProfileIdentity({
           trigger={
             <span className="mt-1 inline-flex items-center gap-2 rounded-pill bg-white border border-gray-200 px-3 py-1.5 text-xs font-semibold text-brand-navy hover:border-brand-blue hover:shadow-glow-soft hover:-translate-y-px transition-all duration-200 cursor-pointer">
               <VerifiedBadge className="h-4 w-4" />
-              Activer ma vérification d&apos;identité —{' '}
-              <span className="text-green-600">gratuit</span>
+              {t('profile.identity.activateCta')}{' '}
+              <span className="text-green-600">{t('profile.identity.activateCta.free')}</span>
             </span>
           }
         />

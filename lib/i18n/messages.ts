@@ -1196,6 +1196,39 @@ const fr: Dict = {
   'profile.btn.password.saved': 'Mot de passe mis à jour',
   'profile.disclaimer': 'Vos informations sont protégées et traitées de manière confidentielle.',
   'profile.badge.regular': 'Contributeur régulier',
+
+  // ProfileIdentity (badge / verification controls)
+  'profile.identity.cancel': 'Annuler',
+  'profile.identity.cancel.aria': "Annuler ma vérification d'identité",
+  'profile.identity.confirmRevoke.aria': "Confirmer l'annulation de la vérification",
+  'profile.identity.confirmRevoke.title': 'Retirer mon badge vérifié ?',
+  'profile.identity.confirmRevoke.body':
+    'Vous perdrez la coche bleue. Vous pourrez relancer la vérification gratuite à tout moment.',
+  'profile.identity.confirmRevoke.yes': 'Oui, retirer',
+  'profile.identity.viewLevels': 'Voir les niveaux',
+  'profile.identity.validationRate': 'Taux de validation :',
+  'profile.identity.activateCta': "Activer ma vérification d'identité —",
+  'profile.identity.activateCta.free': 'gratuit',
+
+  // DeleteAccountSection
+  'profile.dangerZone.title': 'Zone dangereuse',
+  'profile.dangerZone.body':
+    'La suppression de votre compte est irréversible après 30 jours. Les signalements publiés seront conservés en mode anonyme.',
+  'profile.dangerZone.cta': 'Supprimer mon compte',
+  'profile.dangerZone.close': 'Fermer',
+  'profile.dangerZone.ask.title': 'Nous sommes tristes de vous voir partir 💔',
+  'profile.dangerZone.ask.body':
+    'Êtes-vous sûr de vouloir supprimer votre compte ? Vos signalements publiés resteront anonymes pour protéger la communauté, mais votre profil disparaîtra sous 30 jours.',
+  'profile.dangerZone.ask.confirmDelete': 'Oui, supprimer',
+  'profile.dangerZone.ask.stay': 'Non, je reste !',
+  'profile.dangerZone.deleting.title': 'Suppression en cours…',
+  'profile.dangerZone.deleting.body': 'Nous traitons votre demande.',
+  'profile.dangerZone.deleted.title': 'Au revoir 😢',
+  'profile.dangerZone.deleted.body':
+    'Votre compte sera définitivement supprimé sous 30 jours. Vous pouvez encore changer d’avis en vous reconnectant pendant cette période.',
+  'profile.dangerZone.deleted.backHome': "Retour à l'accueil",
+  'profile.dangerZone.happy.title': 'Merci de rester avec nous ! 💚',
+  'profile.dangerZone.happy.body': 'Votre vigilance protège la communauté. À tout de suite.',
 };
 
 const en: Dict = {
@@ -2371,6 +2404,39 @@ const en: Dict = {
   'profile.btn.password.saved': 'Password updated',
   'profile.disclaimer': 'Your information is protected and processed confidentially.',
   'profile.badge.regular': 'Regular contributor',
+
+  // ProfileIdentity
+  'profile.identity.cancel': 'Cancel',
+  'profile.identity.cancel.aria': 'Cancel my identity verification',
+  'profile.identity.confirmRevoke.aria': 'Confirm verification cancellation',
+  'profile.identity.confirmRevoke.title': 'Remove my verified badge?',
+  'profile.identity.confirmRevoke.body':
+    'You will lose the blue check. You can re-run the free verification any time.',
+  'profile.identity.confirmRevoke.yes': 'Yes, remove',
+  'profile.identity.viewLevels': 'View levels',
+  'profile.identity.validationRate': 'Validation rate:',
+  'profile.identity.activateCta': 'Activate my identity verification —',
+  'profile.identity.activateCta.free': 'free',
+
+  // DeleteAccountSection
+  'profile.dangerZone.title': 'Danger zone',
+  'profile.dangerZone.body':
+    'Deleting your account is irreversible after 30 days. Published reports are kept anonymously.',
+  'profile.dangerZone.cta': 'Delete my account',
+  'profile.dangerZone.close': 'Close',
+  'profile.dangerZone.ask.title': 'We’re sad to see you leave 💔',
+  'profile.dangerZone.ask.body':
+    'Are you sure you want to delete your account? Your published reports will stay anonymous to protect the community, but your profile will disappear within 30 days.',
+  'profile.dangerZone.ask.confirmDelete': 'Yes, delete',
+  'profile.dangerZone.ask.stay': 'No, I’ll stay!',
+  'profile.dangerZone.deleting.title': 'Deleting…',
+  'profile.dangerZone.deleting.body': 'We are processing your request.',
+  'profile.dangerZone.deleted.title': 'Goodbye 😢',
+  'profile.dangerZone.deleted.body':
+    'Your account will be permanently deleted within 30 days. You can still change your mind by signing in again during that period.',
+  'profile.dangerZone.deleted.backHome': 'Back to home',
+  'profile.dangerZone.happy.title': 'Thanks for staying with us! 💚',
+  'profile.dangerZone.happy.body': 'Your vigilance protects the community. See you soon.',
 };
 
 const ar: Dict = {
@@ -3547,6 +3613,39 @@ const ar: Dict = {
   'profile.btn.password.saved': 'تم تحديث كلمة المرور',
   'profile.disclaimer': 'معلوماتك محمية وتُعالَج بسرية.',
   'profile.badge.regular': 'مساهم منتظم',
+
+  // ProfileIdentity
+  'profile.identity.cancel': 'إلغاء',
+  'profile.identity.cancel.aria': 'إلغاء التحقق من هويتي',
+  'profile.identity.confirmRevoke.aria': 'تأكيد إلغاء التحقق',
+  'profile.identity.confirmRevoke.title': 'إزالة شارة التحقق ؟',
+  'profile.identity.confirmRevoke.body':
+    'ستفقد العلامة الزرقاء. يمكنك إعادة إطلاق التحقق المجاني في أي وقت.',
+  'profile.identity.confirmRevoke.yes': 'نعم، أزل',
+  'profile.identity.viewLevels': 'عرض المستويات',
+  'profile.identity.validationRate': 'نسبة التحقق :',
+  'profile.identity.activateCta': 'فعّل التحقق من هويتي —',
+  'profile.identity.activateCta.free': 'مجاناً',
+
+  // DeleteAccountSection
+  'profile.dangerZone.title': 'منطقة الخطر',
+  'profile.dangerZone.body':
+    'حذف حسابك لا رجعة فيه بعد 30 يوماً. يتم الاحتفاظ بالبلاغات المنشورة بشكل مجهول الهوية.',
+  'profile.dangerZone.cta': 'حذف حسابي',
+  'profile.dangerZone.close': 'إغلاق',
+  'profile.dangerZone.ask.title': 'يحزننا رحيلك 💔',
+  'profile.dangerZone.ask.body':
+    'هل أنت متأكد من حذف حسابك ؟ ستبقى بلاغاتك المنشورة مجهولة الهوية لحماية المجتمع، لكن ملفك سيختفي خلال 30 يوماً.',
+  'profile.dangerZone.ask.confirmDelete': 'نعم، احذف',
+  'profile.dangerZone.ask.stay': 'لا، سأبقى !',
+  'profile.dangerZone.deleting.title': 'جارٍ الحذف…',
+  'profile.dangerZone.deleting.body': 'نعالج طلبك.',
+  'profile.dangerZone.deleted.title': 'إلى اللقاء 😢',
+  'profile.dangerZone.deleted.body':
+    'سيتم حذف حسابك نهائياً خلال 30 يوماً. لا يزال بإمكانك تغيير رأيك بإعادة الدخول خلال هذه المدة.',
+  'profile.dangerZone.deleted.backHome': 'العودة إلى الصفحة الرئيسية',
+  'profile.dangerZone.happy.title': 'شكراً لبقائك معنا ! 💚',
+  'profile.dangerZone.happy.body': 'يقظتك تحمي المجتمع. إلى اللقاء قريباً.',
 };
 
 export const MESSAGES: Record<Locale, Dict> = { fr, en, ar };

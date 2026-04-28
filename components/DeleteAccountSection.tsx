@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import { Trash2, X, HeartCrack, Heart, Sparkles, Loader2, ArrowLeft } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/provider';
 
 type Status = 'idle' | 'ask' | 'deleting' | 'deleted' | 'happy';
 
 export function DeleteAccountSection() {
+  const { t } = useI18n();
   const [status, setStatus] = useState<Status>('idle');
   const open = status !== 'idle';
 
@@ -38,19 +40,16 @@ export function DeleteAccountSection() {
       <section className="mt-6 rounded-2xl bg-red-50 border border-red-100 p-6 shadow-glow-red">
         <h2 className="text-lg font-bold text-red-700 mb-2 flex items-center gap-2">
           <Trash2 className="h-5 w-5" aria-hidden />
-          Zone dangereuse
+          {t('profile.dangerZone.title')}
         </h2>
-        <p className="text-sm text-gray-600 mb-4">
-          La suppression de votre compte est irréversible après 30 jours. Les signalements
-          publiés seront conservés en mode anonyme.
-        </p>
+        <p className="text-sm text-gray-600 mb-4">{t('profile.dangerZone.body')}</p>
         <button
           type="button"
           onClick={() => setStatus('ask')}
           className="inline-flex items-center gap-1.5 rounded-pill bg-red-500 text-white px-5 py-2 text-sm font-semibold shadow-glow-red hover:shadow-lg hover:-translate-y-px transition-all duration-200 ease-out"
         >
           <Trash2 className="h-4 w-4" aria-hidden />
-          Supprimer mon compte
+          {t('profile.dangerZone.cta')}
         </button>
       </section>
 
@@ -63,7 +62,7 @@ export function DeleteAccountSection() {
         >
           <button
             type="button"
-            aria-label="Fermer"
+            aria-label={t('profile.dangerZone.close')}
             onClick={() => status === 'ask' && setStatus('idle')}
             className="absolute inset-0 bg-brand-navy/40 backdrop-blur-sm cursor-default animate-fade-in"
           />
@@ -83,7 +82,7 @@ export function DeleteAccountSection() {
             {status === 'ask' && (
               <button
                 type="button"
-                aria-label="Fermer"
+                aria-label={t('profile.dangerZone.close')}
                 onClick={() => setStatus('idle')}
                 className="absolute top-3 right-3 h-8 w-8 rounded-full text-gray-400 hover:bg-gray-100 hover:text-brand-navy hover:rotate-90 transition-all duration-200 flex items-center justify-center"
               >
@@ -92,10 +91,10 @@ export function DeleteAccountSection() {
             )}
 
             <div className="p-6 md:p-7 text-center">
-              {status === 'ask' && <AskState onStay={stay} onDelete={startDelete} />}
-              {status === 'deleting' && <DeletingState />}
-              {status === 'deleted' && <DeletedState />}
-              {status === 'happy' && <HappyState />}
+              {status === 'ask' && <AskState onStay={stay} onDelete={startDelete} t={t} />}
+              {status === 'deleting' && <DeletingState t={t} />}
+              {status === 'deleted' && <DeletedState t={t} />}
+              {status === 'happy' && <HappyState t={t} />}
             </div>
           </div>
         </div>
@@ -104,19 +103,18 @@ export function DeleteAccountSection() {
   );
 }
 
-function AskState({ onStay, onDelete }: { onStay: () => void; onDelete: () => void }) {
+type T = (key: string) => string;
+
+function AskState({ onStay, onDelete, t }: { onStay: () => void; onDelete: () => void; t: T }) {
   return (
     <>
       <div className="mx-auto mb-3 inline-flex h-16 w-16 items-center justify-center rounded-full bg-red-50 border border-red-100">
         <HeartCrack className="h-8 w-8 text-red-500 animate-siren-wiggle" aria-hidden />
       </div>
       <h3 id="delete-modal-title" className="text-xl font-bold text-brand-navy">
-        Nous sommes tristes de vous voir partir 💔
+        {t('profile.dangerZone.ask.title')}
       </h3>
-      <p className="mt-2 text-sm text-gray-600">
-        Êtes-vous sûr de vouloir supprimer votre compte ? Vos signalements publiés resteront
-        anonymes pour protéger la communauté, mais votre profil disparaîtra sous 30 jours.
-      </p>
+      <p className="mt-2 text-sm text-gray-600">{t('profile.dangerZone.ask.body')}</p>
       <div className="mt-6 flex flex-col-reverse sm:flex-row items-center justify-center gap-2">
         <button
           type="button"
@@ -124,7 +122,7 @@ function AskState({ onStay, onDelete }: { onStay: () => void; onDelete: () => vo
           className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-pill bg-white border border-red-200 text-red-500 px-5 py-2.5 text-sm font-semibold hover:bg-red-50 hover:-translate-y-px transition-all duration-200"
         >
           <Trash2 className="h-4 w-4" aria-hidden />
-          Oui, supprimer
+          {t('profile.dangerZone.ask.confirmDelete')}
         </button>
         <button
           type="button"
@@ -132,14 +130,14 @@ function AskState({ onStay, onDelete }: { onStay: () => void; onDelete: () => vo
           className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-pill bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-2.5 text-sm font-bold shadow-glow-green hover:shadow-lg hover:-translate-y-px transition-all duration-200"
         >
           <Heart className="h-4 w-4 fill-white" aria-hidden />
-          Non, je reste !
+          {t('profile.dangerZone.ask.stay')}
         </button>
       </div>
     </>
   );
 }
 
-function DeletingState() {
+function DeletingState({ t }: { t: T }) {
   return (
     <>
       <div className="mx-auto mb-3 inline-flex h-16 w-16 items-center justify-center rounded-full bg-red-50 border border-red-100">
@@ -147,36 +145,33 @@ function DeletingState() {
       </div>
       <h3 className="text-lg font-bold text-brand-navy inline-flex items-center gap-2">
         <Loader2 className="h-4 w-4 animate-spin text-red-500" aria-hidden />
-        Suppression en cours…
+        {t('profile.dangerZone.deleting.title')}
       </h3>
-      <p className="mt-2 text-sm text-gray-500">Nous traitons votre demande.</p>
+      <p className="mt-2 text-sm text-gray-500">{t('profile.dangerZone.deleting.body')}</p>
     </>
   );
 }
 
-function DeletedState() {
+function DeletedState({ t }: { t: T }) {
   return (
     <>
       <div className="mx-auto mb-3 inline-flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-red-100 to-red-200 border border-red-200 animate-fade-in">
         <HeartCrack className="h-9 w-9 text-red-600" aria-hidden />
       </div>
-      <h3 className="text-xl font-bold text-brand-navy">Au revoir 😢</h3>
-      <p className="mt-2 text-sm text-gray-600">
-        Votre compte sera définitivement supprimé sous 30 jours. Vous pouvez encore changer
-        d&apos;avis en vous reconnectant pendant cette période.
-      </p>
+      <h3 className="text-xl font-bold text-brand-navy">{t('profile.dangerZone.deleted.title')}</h3>
+      <p className="mt-2 text-sm text-gray-600">{t('profile.dangerZone.deleted.body')}</p>
       <a
         href="/"
         className="mt-6 inline-flex items-center justify-center gap-1.5 rounded-pill bg-brand-navy text-white px-5 py-2 text-sm font-semibold hover:bg-brand-blue transition-colors"
       >
         <ArrowLeft className="h-4 w-4" aria-hidden />
-        Retour à l&apos;accueil
+        {t('profile.dangerZone.deleted.backHome')}
       </a>
     </>
   );
 }
 
-function HappyState() {
+function HappyState({ t }: { t: T }) {
   return (
     <div className="relative">
       {/* Floating sparkles */}
@@ -199,11 +194,9 @@ function HappyState() {
         <Heart className="h-9 w-9 text-white fill-white animate-siren-wiggle" aria-hidden />
       </div>
       <h3 className="text-xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
-        Merci de rester avec nous ! 💚
+        {t('profile.dangerZone.happy.title')}
       </h3>
-      <p className="mt-2 text-sm text-gray-600">
-        Votre vigilance protège la communauté. À tout de suite.
-      </p>
+      <p className="mt-2 text-sm text-gray-600">{t('profile.dangerZone.happy.body')}</p>
     </div>
   );
 }

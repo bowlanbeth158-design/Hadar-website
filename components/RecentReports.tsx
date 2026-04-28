@@ -279,7 +279,7 @@ export function RecentReports() {
                     ref={(el) => {
                       cardRefs.current[i] = el;
                     }}
-                    className="group relative h-full rounded-2xl bg-gradient-to-br from-brand-sky/35 via-white to-brand-sky/45 backdrop-blur-sm border border-white/70 p-4 pt-5 md:p-5 md:pt-6 flex flex-col shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1 transition-all duration-300 ease-out overflow-hidden"
+                    className="group relative h-full rounded-2xl bg-gradient-to-br from-brand-sky/35 via-white to-brand-sky/45 backdrop-blur-sm border border-white/70 p-3 pt-4 md:p-5 md:pt-6 flex flex-col shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1 transition-all duration-300 ease-out overflow-hidden"
                   >
                     {/* Risk-coloured top stripe — three layers stacked at
                         the top edge of the card to give it a "live data"
@@ -322,13 +322,13 @@ export function RecentReports() {
                       className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/60 to-transparent skew-x-[-20deg] opacity-0 group-hover:opacity-100 group-hover:animate-shimmer"
                     />
 
-                    <div className="flex items-start justify-between mb-3 relative">
+                    <div className="flex items-start justify-between mb-2 md:mb-3 relative">
                       <div className="flex items-center gap-2">
                         <span
                           aria-hidden
-                          className="h-8 w-8 rounded-full bg-gradient-to-br from-white via-brand-sky to-white flex items-center justify-center border border-brand-blue/30 shadow-sm group-hover:scale-110 transition-transform"
+                          className="h-7 w-7 md:h-8 md:w-8 rounded-full bg-gradient-to-br from-white via-brand-sky to-white flex items-center justify-center border border-brand-blue/30 shadow-sm group-hover:scale-110 transition-transform"
                         >
-                          <UserRound className="h-4 w-4 text-brand-navy" aria-hidden />
+                          <UserRound className="h-3.5 w-3.5 md:h-4 md:w-4 text-brand-navy" aria-hidden />
                         </span>
                         <span className="text-xs font-medium text-gray-500">
                           {t('home.recentReports.user.anonymous')}
@@ -366,11 +366,11 @@ export function RecentReports() {
                       <span>{t('home.recentReports.demoTitle')}</span>
                     </h3>
 
-                    <p className="mt-2 text-sm text-gray-600 leading-relaxed flex-1 relative">
+                    <p className="mt-1.5 md:mt-2 text-xs md:text-sm text-gray-600 leading-snug md:leading-relaxed flex-1 relative line-clamp-3 md:line-clamp-none">
                       {t(r.descriptionKey)}
                     </p>
 
-                    <div className="mt-4 flex items-center justify-between text-xs border-t border-white/60 pt-3 relative">
+                    <div className="mt-2.5 md:mt-4 flex items-center justify-between text-xs border-t border-white/60 pt-2 md:pt-3 relative">
                       <span className="inline-flex items-center gap-1 text-gray-600">
                         <span className="font-bold text-base bg-gradient-to-r from-brand-navy to-brand-blue bg-clip-text text-transparent tabular-nums">
                           {r.similar}

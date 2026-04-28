@@ -64,6 +64,8 @@ function MobileNavMenu() {
     { href: '/mes-signalements',  labelKey: 'userMenu.myReports', Icon: Siren },
   ];
 
+  const hasAlerts = ALERT_COUNT > 0;
+
   return (
     <div ref={rootRef} className="relative md:hidden">
       <button
@@ -72,9 +74,32 @@ function MobileNavMenu() {
         aria-haspopup="true"
         aria-expanded={open}
         aria-label={open ? t('header.menuClose') : t('header.menuOpen')}
-        className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-brand-navy hover:border-brand-blue hover:text-brand-blue hover:shadow-glow-soft transition-all duration-200"
+        className={`relative inline-flex h-10 w-10 items-center justify-center rounded-lg border bg-white text-brand-navy hover:border-brand-blue hover:text-brand-blue hover:shadow-glow-soft transition-all duration-200 ${
+          // Constant brand-blue pulse halo when there are unread
+          // alerts so the hamburger draws the eye on phone, idle
+          // soft hover otherwise. animate-sparkle-pop on the icon
+          // adds a subtle continuous breath in both states.
+          hasAlerts
+            ? 'border-brand-blue/40 shadow-glow-soft animate-pulse-blue'
+            : 'border-gray-200'
+        }`}
       >
-        {open ? <X className="h-5 w-5" aria-hidden /> : <Menu className="h-5 w-5" aria-hidden />}
+        {open ? (
+          <X className="h-5 w-5" aria-hidden />
+        ) : (
+          <Menu className="h-5 w-5 animate-sparkle-pop" aria-hidden />
+        )}
+        {/* Unread-alerts dot — red ping, only when ALERT_COUNT > 0 and
+            the drawer is closed (would overlap the X otherwise). */}
+        {hasAlerts && !open && (
+          <span
+            aria-hidden
+            className="absolute -top-1 -right-1 flex h-3 w-3"
+          >
+            <span className="absolute inset-0 inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping" />
+            <span className="relative inline-flex h-3 w-3 rounded-full bg-red-500 ring-2 ring-white" />
+          </span>
+        )}
       </button>
 
       {open && (
@@ -83,19 +108,32 @@ function MobileNavMenu() {
           className="absolute start-0 top-full mt-2 w-60 rounded-2xl border border-gray-200 bg-white shadow-glow-soft p-2 animate-fade-in-down z-50"
         >
           <ul className="flex flex-col">
-            {items.map(({ href, labelKey, Icon }) => (
-              <li key={href}>
-                <Link
-                  href={href}
-                  role="menuitem"
-                  onClick={() => setOpen(false)}
-                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-brand-navy hover:bg-brand-sky/40 hover:text-brand-blue transition-colors"
-                >
-                  <Icon className="h-4 w-4 text-brand-blue" aria-hidden />
-                  <span>{t(labelKey)}</span>
-                </Link>
-              </li>
-            ))}
+            {items.map(({ href, labelKey, Icon }) => {
+              const isAlerts = href === '/mes-alertes';
+              return (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    role="menuitem"
+                    onClick={() => setOpen(false)}
+                    className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-brand-navy hover:bg-brand-sky/40 hover:text-brand-blue transition-colors"
+                  >
+                    <Icon className="h-4 w-4 text-brand-blue" aria-hidden />
+                    <span className="flex-1">{t(labelKey)}</span>
+                    {/* Show a numeric red badge next to "Mes alertes" if
+                        the user has unread alerts. The hamburger button
+                        already pulses blue + has a red dot, this badge
+                        tells the user where the alerts live once the
+                        drawer is open. */}
+                    {isAlerts && hasAlerts && (
+                      <span className="inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold tabular-nums px-1.5 shadow-sm animate-pulse">
+                        {ALERT_COUNT}
+                      </span>
+                    )}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </div>
       )}

@@ -2,12 +2,14 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ChevronDown, LogOut, Siren, UserCircle2, UserRound } from 'lucide-react';
+import { ChevronDown, LogOut, UserCircle2, UserRound } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/provider';
 
+// Profile dropdown — kept lean now: only the personal profile link.
+// "Mes signalements" lives in the mobile hamburger drawer + the
+// desktop centre nav so it's not duplicated here.
 const ITEMS = [
-  { href: '/mes-signalements', labelKey: 'userMenu.myReports', Icon: Siren },
-  { href: '/mon-profil',       labelKey: 'userMenu.myProfile', Icon: UserRound },
+  { href: '/mon-profil', labelKey: 'userMenu.myProfile', Icon: UserRound },
 ];
 
 export function UserMenu() {

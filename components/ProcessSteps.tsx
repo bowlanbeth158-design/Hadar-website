@@ -202,15 +202,29 @@ export function ProcessSteps() {
                   className={`pointer-events-none absolute bottom-3 left-6 right-6 h-1 rounded-full ${s.bottomBar} group-hover:bg-white/35 group-hover:bg-none transition-colors duration-300`}
                 />
 
-                {/* Connector to the next card — only on lg+, only between
-                    cards 1-2-3. The travelling dot uses a per-segment
-                    keyframe (travel-1-to-2 / 2-to-3 / 3-to-4) that
-                    interpolates background-color and box-shadow so the
-                    dot visibly shifts hue mid-flight. */}
+                {/* Connector to the next card — the travelling dot uses
+                    a per-segment keyframe (travel-1-to-2 / 2-to-3 /
+                    3-to-4) that interpolates background-color and box-
+                    shadow so the dot visibly shifts hue mid-flight.
+                    Visibility:
+                      - Desktop (lg+): all 3 connectors visible
+                        between the 4 cards laid out in a single row.
+                      - Mobile / tablet (2x2 grid): only the
+                        in-row connectors (1↔2 and 3↔4) are shown.
+                        The 2→3 connector would have to jump between
+                        rows, so it's hidden until lg.
+                    Connector width / right-offset adapts to the grid
+                    gap (gap-4 / gap-6 / gap-8) so the line + dot land
+                    cleanly between cards at every breakpoint. */}
                 {!isLast && (
                   <div
                     aria-hidden
-                    className="hidden lg:block absolute top-12 -right-8 h-0.5 w-8 pointer-events-none"
+                    className={`${
+                      // i=0 is "1→2" (top row), i=2 is "3→4" (bottom
+                      // row), both visible on phone too. i=1 stays
+                      // desktop-only because it crosses rows.
+                      i === 1 ? 'hidden lg:block' : 'block'
+                    } absolute top-10 md:top-12 -right-2 sm:-right-3 md:-right-4 lg:-right-8 rtl:right-auto rtl:-left-2 rtl:sm:-left-3 rtl:md:-left-4 rtl:lg:-left-8 h-0.5 w-2 sm:w-3 md:w-4 lg:w-8 pointer-events-none`}
                   >
                     {/* Dashed line with a left → right colour gradient
                         from this step's colour to the next step's. */}
@@ -229,9 +243,11 @@ export function ProcessSteps() {
                     {/* Travelling dot — colour-shifts mid-flight. The
                         keyframe sets `left`, `background-color`, `box-
                         shadow`, and `opacity` so the dot fades in,
-                        slides across, hue-shifts, and fades out. */}
+                        slides across, hue-shifts, and fades out.
+                        Slightly smaller on phone (2.5×2.5) so it fits
+                        the shorter connector segment. */}
                     <span
-                      className={`absolute top-1/2 -translate-y-1/2 h-3 w-3 rounded-full ${s.travelAnim}`}
+                      className={`absolute top-1/2 -translate-y-1/2 h-2.5 w-2.5 lg:h-3 lg:w-3 rounded-full ${s.travelAnim}`}
                     />
                   </div>
                 )}

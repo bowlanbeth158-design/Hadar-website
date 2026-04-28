@@ -278,84 +278,82 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
         </div>
       </div>
 
-      {/* Info row — single GLASS frame holding the 3 verdict KPIs.
-          Same transparent-glass recipe as the spotlight banner card
-          (white → brand-sky gradient + ring + soft glow), tighter
-          padding, three columns separated by hairline gradient
-          dividers. Reads as one unified piece instead of 3 floating
-          tiles, while still giving each KPI its own breathable cell. */}
-      <div
-        className="mb-6 rounded-2xl bg-gradient-to-br from-white/85 via-brand-sky/25 to-brand-sky/45 backdrop-blur-sm ring-1 ring-brand-sky/60 shadow-[0_6px_24px_-8px_rgb(41_170_225_/_0.20)] grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr_auto_1fr] items-stretch overflow-hidden animate-fade-in-down"
-        style={{ animationDelay: '120ms', animationFillMode: 'both' }}
-      >
-        {/* Cell 1 — total reports */}
-        <div className="group flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-white/40">
+      {/* Info row — three FROSTED-GLASS tiles. Each card is highly
+          transparent so the parent banner gradient (white →
+          brand-sky) shows through, with a subtle brand-blue glass
+          tint: thin brand-blue ring, soft inner highlight, light
+          backdrop blur. The row is intentionally NARROWER than the
+          4 KPI cards underneath (max-w-3xl mx-auto + tighter
+          padding) so the verdict strip reads as a lightweight summary
+          and not as a heavy duplicate of the KPI grid. */}
+      <div className="mx-auto max-w-3xl grid gap-2.5 sm:grid-cols-3 mb-6">
+        <article
+          className="group relative h-full rounded-xl bg-white/30 backdrop-blur-md ring-1 ring-brand-blue/25 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.55),0_3px_12px_-6px_rgb(0_120_186_/_0.18)] px-3 py-2.5 flex items-center gap-2.5 hover:bg-white/45 hover:ring-brand-blue/40 hover:-translate-y-0.5 transition-all duration-300 ease-out animate-fade-in-down overflow-hidden"
+          style={{ animationDelay: '120ms', animationFillMode: 'both' }}
+        >
+          {/* Diagonal glass sheen — subtle white wash from top-left
+              that gives each tile a real glass feel without darkening
+              the surface. */}
           <span
             aria-hidden
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-blue/10 text-brand-blue ring-1 ring-brand-blue/25 group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent rounded-xl"
+          />
+          <span
+            aria-hidden
+            className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-blue/10 text-brand-blue ring-1 ring-brand-blue/25 group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300"
           >
             <Siren className="h-4 w-4 animate-sparkle-pop" />
           </span>
-          <div className="min-w-0">
-            <p className="text-2xl font-bold tabular-nums leading-none bg-grad-stat-navy bg-clip-text text-transparent">
+          <div className="relative min-w-0">
+            <p className="text-xl font-bold tabular-nums leading-none bg-grad-stat-navy bg-clip-text text-transparent">
               {demo.reports}
             </p>
-            <p className="mt-1 text-xs text-gray-600 truncate">{reportLabel}</p>
+            <p className="mt-0.5 text-[11px] text-gray-600 truncate">{reportLabel}</p>
           </div>
-        </div>
+        </article>
 
-        {/* Vertical divider — only on wide screens; horizontal divider replaces it on mobile via the row below. */}
-        <span
-          aria-hidden
-          className="hidden sm:block w-px self-stretch bg-gradient-to-b from-transparent via-brand-blue/25 to-transparent"
-        />
-        <span
-          aria-hidden
-          className="sm:hidden h-px self-stretch bg-gradient-to-r from-transparent via-brand-blue/20 to-transparent"
-        />
-
-        {/* Cell 2 — last reported / no recent */}
-        <div className="group flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-white/40">
+        <article
+          className="group relative h-full rounded-xl bg-white/30 backdrop-blur-md ring-1 ring-brand-blue/25 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.55),0_3px_12px_-6px_rgb(0_120_186_/_0.18)] px-3 py-2.5 flex items-center gap-2.5 hover:bg-white/45 hover:ring-brand-blue/40 hover:-translate-y-0.5 transition-all duration-300 ease-out animate-fade-in-down overflow-hidden"
+          style={{ animationDelay: '180ms', animationFillMode: 'both' }}
+        >
           <span
             aria-hidden
-            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500 ring-1 ring-orange-500/25 group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300"
+            className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent rounded-xl"
+          />
+          <span
+            aria-hidden
+            className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-500/10 text-orange-500 ring-1 ring-orange-500/25 group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300"
           >
             <Clock className="h-4 w-4 animate-sparkle-pop" />
           </span>
-          <div className="min-w-0">
-            <p className="text-sm font-semibold text-brand-navy leading-tight">
+          <div className="relative min-w-0">
+            <p className="text-xs font-semibold text-brand-navy leading-tight">
               {lastReportText}
             </p>
           </div>
-        </div>
+        </article>
 
-        {/* Vertical divider 2 */}
-        <span
-          aria-hidden
-          className="hidden sm:block w-px self-stretch bg-gradient-to-b from-transparent via-brand-blue/25 to-transparent"
-        />
-        <span
-          aria-hidden
-          className="sm:hidden h-px self-stretch bg-gradient-to-r from-transparent via-brand-blue/20 to-transparent"
-        />
-
-        {/* Cell 3 — risk level */}
-        <div
-          className="group flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-white/40"
+        <article
+          className="group relative h-full rounded-xl bg-white/30 backdrop-blur-md ring-1 ring-brand-blue/25 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.55),0_3px_12px_-6px_rgb(0_120_186_/_0.18)] px-3 py-2.5 flex items-center gap-2.5 hover:bg-white/45 hover:ring-brand-blue/40 hover:-translate-y-0.5 transition-all duration-300 ease-out animate-fade-in-down overflow-hidden"
+          style={{ animationDelay: '240ms', animationFillMode: 'both' }}
           aria-label={t('home.searchResult.aria.riskLevel', { label: t(cfg.labelKey) })}
         >
           <span
             aria-hidden
-            className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${cfg.pillBg} ${cfg.pillText} ring-1 ${cfg.pillBorder} group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300`}
+            className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent rounded-xl"
+          />
+          <span
+            aria-hidden
+            className={`relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${cfg.pillBg} ${cfg.pillText} ring-1 ${cfg.pillBorder} group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300`}
           >
             <Gauge className="h-4 w-4 animate-sparkle-pop" />
           </span>
-          <div className="min-w-0 flex-1">
-            <p className="text-[11px] text-gray-500 leading-none">{t('home.searchResult.risk.prefix')}</p>
+          <div className="relative min-w-0 flex-1">
+            <p className="text-[10px] text-gray-500 leading-none">{t('home.searchResult.risk.prefix')}</p>
             <p className={`mt-0.5 text-sm font-bold capitalize leading-tight ${cfg.pillText}`}>
               {t(cfg.labelKey)}
             </p>
-            <span className="mt-1 flex items-center gap-1">
+            <span className="mt-1 flex items-center gap-0.5">
               {DOT_COLORS.map((color, i) => {
                 const isActive = i === cfg.dotIndex;
                 return (
@@ -376,7 +374,7 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
               })}
             </span>
           </div>
-        </div>
+        </article>
       </div>
 
       {/* Follow button moved to the bottom row — see the action bar

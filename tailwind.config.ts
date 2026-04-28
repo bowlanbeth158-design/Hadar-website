@@ -131,6 +131,11 @@ const config: Config = {
           '70%': { boxShadow: '0 0 0 14px rgba(216, 193, 0, 0)' },
           '100%': { boxShadow: '0 0 0 0 rgba(216, 193, 0, 0)' },
         },
+        'pulse-blue': {
+          '0%': { boxShadow: '0 0 0 0 rgba(0, 120, 186, 0.55)' },
+          '70%': { boxShadow: '0 0 0 14px rgba(0, 120, 186, 0)' },
+          '100%': { boxShadow: '0 0 0 0 rgba(0, 120, 186, 0)' },
+        },
         'confetti-fall': {
           '0%': { transform: 'translate3d(0, -10vh, 0) rotate(0deg)', opacity: '1' },
           '100%': { transform: 'translate3d(0, 110vh, 0) rotate(720deg)', opacity: '0.4' },
@@ -285,6 +290,7 @@ const config: Config = {
         'verify-pulse': 'verify-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite',
         'pulse-orange': 'pulse-orange 2s cubic-bezier(0, 0, 0.2, 1) infinite',
         'pulse-yellow': 'pulse-yellow 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+        'pulse-blue': 'pulse-blue 2s cubic-bezier(0, 0, 0.2, 1) infinite',
         'siren-wiggle': 'siren-wiggle 4s ease-in-out infinite',
         'float-soft': 'float-soft 5s ease-in-out infinite',
         'fade-in-down': 'fade-in-down 180ms cubic-bezier(0.16, 1, 0.3, 1)',

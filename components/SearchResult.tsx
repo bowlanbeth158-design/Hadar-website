@@ -48,11 +48,6 @@ type RiskConfig = {
   pillAnim: string;
   pillGlow: string;
   cardAuraBg: string;
-  // Bottom-row CTAs are tinted with the risk colour so the
-  // "Vérifier un autre contact" + "Suivre ce contact" buttons
-  // visually echo the verdict.
-  ctaGradient: string; // bg-gradient-to-r ... ... ...
-  ctaGlow: string; // shadow-glow-{green|yellow|orange|red}
 };
 
 // Owner-confirmed labels (April 26 2026):
@@ -80,8 +75,6 @@ const RISK_CONFIG: Record<RiskLevel, RiskConfig> = {
     pillAnim: 'animate-verify-pulse',
     pillGlow: 'shadow-glow-green',
     cardAuraBg: 'bg-green-500/15',
-    ctaGradient: 'bg-gradient-to-r from-green-500 via-green-600 to-green-700',
-    ctaGlow: 'shadow-glow-green',
   },
   vigilance: {
     labelKey: 'home.searchResult.risk.vigilance.label',
@@ -96,8 +89,6 @@ const RISK_CONFIG: Record<RiskLevel, RiskConfig> = {
     pillAnim: 'animate-pulse-yellow',
     pillGlow: 'shadow-glow-yellow',
     cardAuraBg: 'bg-yellow-300/20',
-    ctaGradient: 'bg-gradient-to-r from-yellow-400 via-yellow-500 to-orange-400',
-    ctaGlow: 'shadow-glow-yellow',
   },
   modere: {
     labelKey: 'home.searchResult.risk.modere.label',
@@ -112,8 +103,6 @@ const RISK_CONFIG: Record<RiskLevel, RiskConfig> = {
     pillAnim: 'animate-pulse-orange',
     pillGlow: 'shadow-glow-orange',
     cardAuraBg: 'bg-orange-500/20',
-    ctaGradient: 'bg-gradient-to-r from-orange-500 via-orange-600 to-red-500',
-    ctaGlow: 'shadow-glow-orange',
   },
   eleve: {
     labelKey: 'home.searchResult.risk.eleve.label',
@@ -128,8 +117,6 @@ const RISK_CONFIG: Record<RiskLevel, RiskConfig> = {
     pillAnim: 'animate-alert-pulse',
     pillGlow: 'shadow-glow-red',
     cardAuraBg: 'bg-red-500/20',
-    ctaGradient: 'bg-gradient-to-r from-red-500 via-red-600 to-red-700',
-    ctaGlow: 'shadow-glow-red',
   },
 };
 
@@ -291,21 +278,23 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
         </div>
       </div>
 
-      {/* Info row — three prominent CARDS (was small pills) so the
-          verdict KPIs read with proper visual weight. Same recipe as
-          the homepage stats grid: white → brand-sky/45 surface,
-          rounded-2xl, accent chip on the left, larger value on the
-          right. Stagger 60 ms between cards so they cascade in. */}
-      <div className="grid gap-3 sm:grid-cols-3 mb-6">
-        <article
-          className="group relative h-full rounded-2xl bg-gradient-to-br from-white via-brand-sky/30 to-brand-sky/45 backdrop-blur-sm border border-white/70 p-4 flex items-center gap-3 shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1 transition-all duration-300 ease-out animate-fade-in-down"
-          style={{ animationDelay: '120ms', animationFillMode: 'both' }}
-        >
+      {/* Info row — single GLASS frame holding the 3 verdict KPIs.
+          Same transparent-glass recipe as the spotlight banner card
+          (white → brand-sky gradient + ring + soft glow), tighter
+          padding, three columns separated by hairline gradient
+          dividers. Reads as one unified piece instead of 3 floating
+          tiles, while still giving each KPI its own breathable cell. */}
+      <div
+        className="mb-6 rounded-2xl bg-gradient-to-br from-white/85 via-brand-sky/25 to-brand-sky/45 backdrop-blur-sm ring-1 ring-brand-sky/60 shadow-[0_6px_24px_-8px_rgb(41_170_225_/_0.20)] grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr_auto_1fr] items-stretch overflow-hidden animate-fade-in-down"
+        style={{ animationDelay: '120ms', animationFillMode: 'both' }}
+      >
+        {/* Cell 1 — total reports */}
+        <div className="group flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-white/40">
           <span
             aria-hidden
-            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-blue/10 text-brand-blue ring-1 ring-brand-blue/25 group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-blue/10 text-brand-blue ring-1 ring-brand-blue/25 group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300"
           >
-            <Siren className="h-5 w-5 animate-sparkle-pop" />
+            <Siren className="h-4 w-4 animate-sparkle-pop" />
           </span>
           <div className="min-w-0">
             <p className="text-2xl font-bold tabular-nums leading-none bg-grad-stat-navy bg-clip-text text-transparent">
@@ -313,48 +302,66 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
             </p>
             <p className="mt-1 text-xs text-gray-600 truncate">{reportLabel}</p>
           </div>
-        </article>
+        </div>
 
-        <article
-          className="group relative h-full rounded-2xl bg-gradient-to-br from-white via-brand-sky/30 to-brand-sky/45 backdrop-blur-sm border border-white/70 p-4 flex items-center gap-3 shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1 transition-all duration-300 ease-out animate-fade-in-down"
-          style={{ animationDelay: '180ms', animationFillMode: 'both' }}
-        >
+        {/* Vertical divider — only on wide screens; horizontal divider replaces it on mobile via the row below. */}
+        <span
+          aria-hidden
+          className="hidden sm:block w-px self-stretch bg-gradient-to-b from-transparent via-brand-blue/25 to-transparent"
+        />
+        <span
+          aria-hidden
+          className="sm:hidden h-px self-stretch bg-gradient-to-r from-transparent via-brand-blue/20 to-transparent"
+        />
+
+        {/* Cell 2 — last reported / no recent */}
+        <div className="group flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-white/40">
           <span
             aria-hidden
-            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500 ring-1 ring-orange-500/25 group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300"
+            className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500 ring-1 ring-orange-500/25 group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300"
           >
-            <Clock className="h-5 w-5 animate-sparkle-pop" />
+            <Clock className="h-4 w-4 animate-sparkle-pop" />
           </span>
           <div className="min-w-0">
             <p className="text-sm font-semibold text-brand-navy leading-tight">
               {lastReportText}
             </p>
           </div>
-        </article>
+        </div>
 
-        <article
-          className="group relative h-full rounded-2xl bg-gradient-to-br from-white via-brand-sky/30 to-brand-sky/45 backdrop-blur-sm border border-white/70 p-4 flex items-center gap-3 shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1 transition-all duration-300 ease-out animate-fade-in-down"
-          style={{ animationDelay: '240ms', animationFillMode: 'both' }}
+        {/* Vertical divider 2 */}
+        <span
+          aria-hidden
+          className="hidden sm:block w-px self-stretch bg-gradient-to-b from-transparent via-brand-blue/25 to-transparent"
+        />
+        <span
+          aria-hidden
+          className="sm:hidden h-px self-stretch bg-gradient-to-r from-transparent via-brand-blue/20 to-transparent"
+        />
+
+        {/* Cell 3 — risk level */}
+        <div
+          className="group flex items-center gap-3 px-4 py-3.5 transition-colors hover:bg-white/40"
           aria-label={t('home.searchResult.aria.riskLevel', { label: t(cfg.labelKey) })}
         >
           <span
             aria-hidden
-            className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${cfg.pillBg} ${cfg.pillText} ring-1 ${cfg.pillBorder} group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300`}
+            className={`inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${cfg.pillBg} ${cfg.pillText} ring-1 ${cfg.pillBorder} group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300`}
           >
-            <Gauge className="h-5 w-5 animate-sparkle-pop" />
+            <Gauge className="h-4 w-4 animate-sparkle-pop" />
           </span>
           <div className="min-w-0 flex-1">
-            <p className="text-xs text-gray-500">{t('home.searchResult.risk.prefix')}</p>
-            <p className={`text-base font-bold capitalize leading-tight ${cfg.pillText}`}>
+            <p className="text-[11px] text-gray-500 leading-none">{t('home.searchResult.risk.prefix')}</p>
+            <p className={`mt-0.5 text-sm font-bold capitalize leading-tight ${cfg.pillText}`}>
               {t(cfg.labelKey)}
             </p>
-            <span className="mt-1.5 flex items-center gap-1">
+            <span className="mt-1 flex items-center gap-1">
               {DOT_COLORS.map((color, i) => {
                 const isActive = i === cfg.dotIndex;
                 return (
                   <span
                     key={color}
-                    className={`relative h-2 w-2 rounded-full ${color} ${
+                    className={`relative h-1.5 w-1.5 rounded-full ${color} ${
                       isActive ? 'shadow-md' : 'opacity-25'
                     }`}
                   >
@@ -369,7 +376,7 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
               })}
             </span>
           </div>
-        </article>
+        </div>
       </div>
 
       {/* Follow button moved to the bottom row — see the action bar
@@ -424,13 +431,14 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
       </div>
 
       {/* Action row — "Suivre ce contact" + "Vérifier un autre
-          contact" side by side, both tinted with the active risk
-          colour so the bar visually echoes the verdict.
+          contact" side by side, both painted in the brand-navy →
+          brand-blue gradient (charter) so the CTAs read as the
+          single official next step regardless of the verdict.
           - Wrap on mobile (flex-wrap), separator hidden when stacked.
-          - Both buttons use the same gradient + glow + risk-coloured
-            pulse from RISK_CONFIG so they stay visually paired.
-          - Lands last in the cascade so it reads as the natural next
-            step once the verdict is in. */}
+          - Both buttons share the same gradient, shadow-glow-blue
+            and animate-pulse-blue halo so they pulse in unison.
+          - Lands last in the cascade so it reads as the natural
+            next step once the verdict is in. */}
       <div
         className="mt-6 flex flex-wrap items-center justify-center gap-3 animate-fade-in-down"
         style={{ animationDelay: '860ms', animationFillMode: 'both' }}
@@ -440,11 +448,7 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
             type="button"
             onClick={toggleFollow}
             aria-pressed={followed}
-            className={
-              followed
-                ? `group relative overflow-hidden inline-flex items-center gap-2 rounded-pill ${cfg.ctaGradient} text-white ${cfg.ctaGlow} ${cfg.pillAnim} px-6 py-2.5 text-sm font-semibold hover:scale-[1.04] hover:[animation-play-state:paused] transition-all duration-300 ease-out`
-                : `group relative overflow-hidden inline-flex items-center gap-2 rounded-pill bg-white text-brand-navy border-2 ${cfg.pillBorder} hover:bg-brand-sky/30 hover:-translate-y-0.5 hover:shadow-glow-soft px-6 py-2.5 text-sm font-semibold transition-all duration-300 ease-out`
-            }
+            className="group relative overflow-hidden inline-flex items-center gap-2 rounded-pill bg-gradient-to-r from-brand-navy via-brand-blue to-brand-blue text-white shadow-glow-blue animate-pulse-blue px-6 py-2.5 text-sm font-semibold hover:scale-[1.04] hover:[animation-play-state:paused] transition-all duration-300 ease-out"
           >
             {followed ? (
               <BellRing className="h-4 w-4 animate-siren-wiggle" aria-hidden />
@@ -456,13 +460,11 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
                 ? t('home.searchResult.follow.followed')
                 : t('home.searchResult.follow.follow')}
             </span>
-            {/* Shimmer wipe across the followed state on hover. */}
-            {followed && (
-              <span
-                aria-hidden
-                className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/35 to-transparent skew-x-[-20deg] opacity-0 group-hover:opacity-100 group-hover:animate-shimmer rounded-pill"
-              />
-            )}
+            {/* Shimmer wipe across the button on hover. */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/35 to-transparent skew-x-[-20deg] opacity-0 group-hover:opacity-100 group-hover:animate-shimmer rounded-pill"
+            />
           </button>
         )}
 
@@ -486,7 +488,7 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
               }
             }
           }}
-          className={`group relative overflow-hidden inline-flex items-center gap-2 rounded-pill ${cfg.ctaGradient} text-white ${cfg.ctaGlow} ${cfg.pillAnim} px-6 py-2.5 text-sm font-semibold hover:scale-[1.04] hover:[animation-play-state:paused] transition-all duration-300 ease-out`}
+          className="group relative overflow-hidden inline-flex items-center gap-2 rounded-pill bg-gradient-to-r from-brand-navy via-brand-blue to-brand-blue text-white shadow-glow-blue animate-pulse-blue px-6 py-2.5 text-sm font-semibold hover:scale-[1.04] hover:[animation-play-state:paused] transition-all duration-300 ease-out"
         >
           <RotateCw
             className="h-4 w-4 transition-transform duration-500 group-hover:rotate-180"

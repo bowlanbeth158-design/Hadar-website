@@ -162,7 +162,7 @@ export function ProcessSteps() {
                     flooded brand background instead of disappearing. */}
                 <span
                   aria-hidden
-                  className={`pointer-events-none absolute top-3 right-5 text-7xl md:text-8xl font-extrabold ${s.numberColor} group-hover:text-white/15 leading-none select-none tracking-tight transition-colors duration-300`}
+                  className={`pointer-events-none absolute top-3 right-5 rtl:right-auto rtl:left-5 text-7xl md:text-8xl font-extrabold ${s.numberColor} group-hover:text-white/15 leading-none select-none tracking-tight transition-colors duration-300`}
                 >
                   {s.n}
                 </span>

@@ -264,7 +264,7 @@ export function HomeBanner() {
                 Brand-gradient panel with a decorative (non-functional)
                 search bar — Ultahost-style intro card. */}
             <div
-              className={`absolute top-[38%] -left-24 w-72 rounded-2xl border border-white/80 bg-gradient-to-br from-brand-sky/80 via-white to-brand-sky/30 shadow-glow-soft p-4 animate-float-soft ${FLOAT_CARD_HOVER}`}
+              className={`absolute top-[38%] -left-24 rtl:left-auto rtl:-right-24 w-72 rounded-2xl border border-white/80 bg-gradient-to-br from-brand-sky/80 via-white to-brand-sky/30 shadow-glow-soft p-4 animate-float-soft ${FLOAT_CARD_HOVER}`}
               style={{ animationDelay: '0s' }}
             >
               <div className="flex items-center gap-2">
@@ -298,7 +298,7 @@ export function HomeBanner() {
                 halo doré collectif. Fond gradient brand-sky pour matcher
                 l'identité visuelle des autres cartes flottantes. */}
             <div
-              className={`absolute top-4 -right-8 w-60 rounded-2xl border border-white/80 bg-gradient-to-br from-white via-brand-sky/40 to-brand-sky/70 shadow-glow-soft p-3.5 animate-float-soft ${FLOAT_CARD_HOVER}`}
+              className={`absolute top-4 -right-8 rtl:right-auto rtl:-left-8 w-60 rounded-2xl border border-white/80 bg-gradient-to-br from-white via-brand-sky/40 to-brand-sky/70 shadow-glow-soft p-3.5 animate-float-soft ${FLOAT_CARD_HOVER}`}
               style={{ animationDelay: '1.5s' }}
             >
               <div className="flex items-center justify-between gap-2">
@@ -337,7 +337,7 @@ export function HomeBanner() {
 
             {/* Card 3 — Alertes aujourd'hui (BOTTOM-RIGHT, extends right) */}
             <div
-              className={`absolute bottom-6 -right-10 w-72 overflow-hidden rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 animate-float-soft ${FLOAT_CARD_HOVER}`}
+              className={`absolute bottom-6 -right-10 rtl:right-auto rtl:-left-10 w-72 overflow-hidden rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4 animate-float-soft ${FLOAT_CARD_HOVER}`}
               style={{ animationDelay: '3s' }}
             >
               {/* Bottom-right gradient halo — tinted with the colour of the
@@ -346,7 +346,7 @@ export function HomeBanner() {
                   slowly to match the "live alerts" feel. */}
               <div
                 aria-hidden
-                className={`pointer-events-none absolute -bottom-12 -right-12 h-40 w-40 rounded-full blur-3xl animate-pulse ${haloClass}`}
+                className={`pointer-events-none absolute -bottom-12 -right-12 rtl:right-auto rtl:-left-12 h-40 w-40 rounded-full blur-3xl animate-pulse ${haloClass}`}
               />
 
               <div className="relative">

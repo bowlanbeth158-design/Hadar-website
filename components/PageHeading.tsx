@@ -32,8 +32,11 @@ export function PageHeading({
         ? 'bg-grad-stat-navy bg-clip-text text-transparent'
         : 'text-brand-navy';
   const isLeft = align === 'left';
+  // text-start is "left" in LTR and "right" in RTL — so the
+  // /mes-alertes and /mes-signalements headings naturally land on
+  // the right edge of the column when the user picks Arabic.
   return (
-    <div className={`mb-10 md:mb-14 ${isLeft ? 'text-left' : 'text-center'}`}>
+    <div className={`mb-10 md:mb-14 ${isLeft ? 'text-start' : 'text-center'}`}>
       <h1
         className={`text-3xl md:text-5xl font-bold tracking-tight ${titleClass}`}
       >

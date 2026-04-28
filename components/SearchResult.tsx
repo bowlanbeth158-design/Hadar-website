@@ -8,12 +8,19 @@ import {
   Siren,
   Clock,
   Gauge,
+  Bell,
+  BellRing,
   type LucideIcon,
 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/provider';
+import { useFollowContact } from '@/lib/useFollowContact';
 
 type Props = {
   query: string;
+  /** Contact type id (telephone / whatsapp / email / …). Stored
+   * alongside the query in the follow list so the Mes alertes page
+   * later knows how to render the followed contact. */
+  contactType: string;
 };
 
 type RiskLevel = 'faible' | 'vigilance' | 'modere' | 'eleve';
@@ -205,12 +212,16 @@ function useFormatRelativeTime() {
   };
 }
 
-export function SearchResult({ query }: Props) {
+export function SearchResult({ query, contactType }: Props) {
   const { t } = useI18n();
   const formatRelativeTime = useFormatRelativeTime();
   const demo = getDemo(query);
   const cfg = RISK_CONFIG[demo.risk];
   const Icon = cfg.Icon;
+  // Per-contact follow state — persisted in localStorage via the
+  // useFollowContact hook so the same contact stays followed across
+  // page reloads / surfaces.
+  const { followed, toggle: toggleFollow, hydrated } = useFollowContact(query, contactType);
   const reportLabel = t(
     demo.reports === 1
       ? 'home.searchResult.report.singular'
@@ -315,6 +326,37 @@ export function SearchResult({ query }: Props) {
           </span>
         </span>
       </div>
+
+      {/* Follow button — persists the (contactValue, contactType) tuple
+          in localStorage so the Mes alertes view can show new reports
+          on this contact later. Hidden until the hook hydrates so we
+          don't flash the wrong "Suivre / Suivi" state on first paint. */}
+      {hydrated && (
+        <div className="flex justify-center mb-6">
+          <button
+            type="button"
+            onClick={toggleFollow}
+            aria-pressed={followed}
+            className={
+              followed
+                ? 'group inline-flex items-center gap-2 rounded-pill bg-gradient-to-r from-brand-navy to-brand-blue text-white px-5 py-2 text-sm font-semibold shadow-glow-blue hover:scale-[1.03] transition-all'
+                : 'group inline-flex items-center gap-2 rounded-pill bg-white text-brand-navy border-2 border-brand-blue/30 hover:border-brand-blue hover:bg-brand-sky/30 hover:-translate-y-0.5 hover:shadow-glow-soft px-5 py-2 text-sm font-semibold transition-all'
+            }
+          >
+            {followed ? (
+              <>
+                <BellRing className="h-4 w-4 animate-siren-wiggle" aria-hidden />
+                {t('home.searchResult.follow.followed')}
+              </>
+            ) : (
+              <>
+                <Bell className="h-4 w-4 group-hover:animate-sparkle-pop" aria-hidden />
+                {t('home.searchResult.follow.follow')}
+              </>
+            )}
+          </button>
+        </div>
+      )}
 
       {/* KPI cards — number rendered with the brand-navy → brand-blue
           gradient (bg-clip-text) so the figure pops with the platform

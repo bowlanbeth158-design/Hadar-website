@@ -16,6 +16,7 @@ import {
   ShieldCheck,
   Zap,
   Sparkles,
+  AlertCircle,
   type LucideIcon,
 } from 'lucide-react';
 import { SearchResult } from './SearchResult';
@@ -42,6 +43,28 @@ const CONTACT_TYPES: ContactType[] = [
   { id: 'paypal',          labelKey: 'home.hero.contactType.paypal',          placeholderKey: 'home.hero.placeholder.paypal',          Icon: Wallet },
   { id: 'binance',         labelKey: 'home.hero.contactType.binance',         placeholderKey: 'home.hero.placeholder.binance',         Icon: Coins },
 ];
+
+// Per-contact-type validators — if the user picks "Email" then types
+// a phone number (or vice versa), the form refuses to submit and an
+// inline error is shown. Patterns are intentionally permissive so we
+// don't block valid Moroccan / international variants.
+const VALIDATORS: Record<string, RegExp> = {
+  telephone:       /^[0-9+\s().-]{6,}$/,
+  whatsapp:        /^[0-9+\s().-]{6,}$/,
+  email:           /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+  rib:             /^[0-9\s-]{20,28}$/,
+  site_web:        /^(https?:\/\/)?[\w-]+(\.[\w-]+)+([\w./?#@&%=+-]*)?$/i,
+  reseaux_sociaux: /^@?[\w._-]{2,}$/,
+  paypal:          /^([^\s@]+@[^\s@]+\.[^\s@]+|[\w.-]{3,})$/,
+  binance:         /^[\w@.-]{3,}$/,
+};
+
+function isValidContactValue(type: string, value: string): boolean {
+  const v = value.trim();
+  if (!v) return false;
+  const regex = VALIDATORS[type];
+  return regex ? regex.test(v) : true;
+}
 
 type Props = {
   initialType?: string;
@@ -85,6 +108,10 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
   const [listening, setListening] = useState(false);
   const [supported, setSupported] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  // Format error: shown inline when the typed value doesn't match
+  // the active contact type's regex (e.g. typing a phone number
+  // while "Email" is selected). Cleared on type or input change.
+  const [formatError, setFormatError] = useState<string | null>(null);
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null);
 
   // Live active-users counter — drifts between 20 and 65, updates every 5s.
@@ -133,9 +160,23 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
     e.preventDefault();
     if (!trimmedInput) {
       setSubmitted(null);
+      setFormatError(null);
       syncUrl('', selected);
       return;
     }
+    if (!isValidContactValue(selected, trimmedInput)) {
+      // Surface a localised error mentioning the active contact type
+      // + an example placeholder so the user knows what's expected.
+      setFormatError(
+        t('home.hero.error.format', {
+          type: activeLabel,
+          example: activePlaceholder,
+        }),
+      );
+      setSubmitted(null);
+      return;
+    }
+    setFormatError(null);
     setSubmitted({ query: trimmedInput, type: selected });
     syncUrl(trimmedInput, selected);
   };
@@ -143,11 +184,18 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const v = e.target.value;
     setInputValue(v);
+    if (formatError) setFormatError(null);
     if (!v.trim() && submitted) {
       setSubmitted(null);
       syncUrl('', selected);
     }
   };
+
+  // Selecting a different contact type clears any previous format
+  // error so the user isn't shown a stale message about the wrong type.
+  useEffect(() => {
+    setFormatError(null);
+  }, [selected]);
 
   const toggleMic = () => {
     setError(null);
@@ -333,11 +381,16 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                         onClick={() => setSelected(f.id)}
                         className={
                           isActive
-                            ? 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-brand-navy text-white px-4 py-2.5 text-sm font-medium shadow-glow-navy scale-[1.02] transition-all'
-                            : 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-white border border-gray-200 text-brand-navy px-4 py-2.5 text-sm font-medium hover:border-brand-blue hover:text-brand-blue hover:-translate-y-0.5 hover:shadow-sm transition-all'
+                            ? 'group/pill w-full inline-flex items-center justify-center gap-2 rounded-pill bg-gradient-to-br from-brand-navy via-brand-blue to-brand-navy text-white px-4 py-2.5 text-sm font-medium shadow-glow-navy scale-[1.04] transition-all duration-300 ease-out ring-2 ring-brand-blue/30'
+                            : 'group/pill w-full inline-flex items-center justify-center gap-2 rounded-pill bg-white border border-gray-200 text-brand-navy px-4 py-2.5 text-sm font-medium hover:border-brand-blue hover:text-brand-blue hover:-translate-y-0.5 hover:shadow-glow-soft hover:scale-[1.02] transition-all duration-300 ease-out'
                         }
                       >
-                        <f.Icon className="h-4 w-4 shrink-0" aria-hidden />
+                        <f.Icon
+                          className={`h-4 w-4 shrink-0 transition-transform duration-300 ${
+                            isActive ? 'animate-sparkle-pop' : 'group-hover/pill:scale-110'
+                          }`}
+                          aria-hidden
+                        />
                         <span className="truncate">{t(f.labelKey)}</span>
                       </button>
                     );
@@ -349,7 +402,11 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                   action="/"
                   method="get"
                   onSubmit={handleSubmit}
-                  className="mt-8 mx-auto max-w-3xl flex items-center gap-2 rounded-pill bg-white border-2 border-gray-200 hover:border-brand-blue/50 focus-within:border-brand-blue focus-within:shadow-md shadow-sm pl-5 pr-1 py-1 transition-all"
+                  className={`mt-8 mx-auto max-w-3xl flex items-center gap-2 rounded-pill bg-white border-2 ${
+                    formatError
+                      ? 'border-red-500 ring-4 ring-red-500/15'
+                      : 'border-gray-200 hover:border-brand-blue/50 focus-within:border-brand-blue focus-within:ring-4 focus-within:ring-brand-blue/15 focus-within:shadow-glow-blue'
+                  } shadow-sm pl-5 pr-1 py-1 transition-all duration-300`}
                 >
                   <Search className="h-5 w-5 text-gray-400" aria-hidden />
                   <input type="hidden" name="type" value={selected} />
@@ -391,18 +448,32 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                   </button>
                   <button
                     type="submit"
-                    className="relative rounded-pill bg-gradient-to-r from-green-500 to-green-700 hover:from-green-700 hover:to-green-700 text-white font-semibold px-5 md:px-6 py-2.5 md:py-3 text-sm shadow-glow-green animate-verify-pulse transition-all"
+                    className="relative rounded-pill bg-gradient-to-r from-green-500 to-green-700 hover:from-green-700 hover:to-green-700 text-white font-semibold px-5 md:px-6 py-2.5 md:py-3 text-sm shadow-glow-green animate-verify-pulse hover:scale-[1.04] hover:[animation-play-state:paused] transition-all duration-300 ease-out"
                   >
-                    {t('home.hero.cta.verifyNow')}
+                    <span className="relative z-10">{t('home.hero.cta.verifyNow')}</span>
+                    {/* Diagonal shimmer light passes across the button on hover */}
+                    <span
+                      aria-hidden
+                      className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/35 to-transparent skew-x-[-20deg] opacity-0 hover:opacity-100 hover:animate-shimmer rounded-pill"
+                    />
                   </button>
                 </form>
 
-                {error && (
+                {formatError && (
+                  <p
+                    className="mt-3 inline-flex items-center gap-1.5 rounded-pill bg-red-50 border border-red-200 px-3 py-1.5 text-xs md:text-sm font-medium text-red-700 animate-fade-in-down"
+                    role="alert"
+                  >
+                    <AlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                    {formatError}
+                  </p>
+                )}
+                {error && !formatError && (
                   <p className="mt-3 text-sm text-red-500" role="status">
                     {error}
                   </p>
                 )}
-                {listening && !error && (
+                {listening && !error && !formatError && (
                   <p className="mt-3 text-sm text-brand-blue" role="status">
                     {t('home.hero.voice.listening')}
                   </p>
@@ -433,7 +504,9 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                   </span>
                 </div>
 
-                {showResult && <SearchResult query={submitted!.query} />}
+                {showResult && (
+                  <SearchResult query={submitted!.query} contactType={submitted!.type} />
+                )}
               </div>
             </div>
           </div>

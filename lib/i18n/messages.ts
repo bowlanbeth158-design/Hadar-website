@@ -1015,6 +1015,10 @@ const fr: Dict = {
   'home.searchResult.time.months': 'il y a {n} mois',
   'home.searchResult.time.year': 'il y a 1 an',
   'home.searchResult.time.years': 'il y a {n} ans',
+  'home.searchResult.follow.follow': 'Suivre ce contact',
+  'home.searchResult.follow.followed': 'Suivi · vous recevrez les alertes',
+  'home.hero.error.format':
+    'Le format ne correspond pas au type sélectionné « {type} » — {example}',
 
   // Footer
   'footer.tagline':
@@ -2449,6 +2453,10 @@ const en: Dict = {
   'home.searchResult.time.months': '{n} months ago',
   'home.searchResult.time.year': '1 year ago',
   'home.searchResult.time.years': '{n} years ago',
+  'home.searchResult.follow.follow': 'Follow this contact',
+  'home.searchResult.follow.followed': 'Following · you will get alerts',
+  'home.hero.error.format':
+    'The format does not match the selected type "{type}" — {example}',
 
   'footer.tagline':
     'Contact verification platform. Make informed decisions before any transaction.',
@@ -3865,6 +3873,10 @@ const ar: Dict = {
   'home.searchResult.time.months': 'منذ {n} أشهر',
   'home.searchResult.time.year': 'منذ سنة',
   'home.searchResult.time.years': 'منذ {n} سنوات',
+  'home.searchResult.follow.follow': 'متابعة هذه الجهة',
+  'home.searchResult.follow.followed': 'تتم المتابعة · ستصلك التنبيهات',
+  'home.hero.error.format':
+    'الصيغة لا تطابق النوع المحدد «{type}» — {example}',
 
   'footer.tagline':
     'منصة التحقق من جهات الاتصال. اتخذ قرارات مدروسة قبل أي معاملة.',

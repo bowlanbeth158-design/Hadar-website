@@ -12,7 +12,7 @@ import { useI18n } from '@/lib/i18n/provider';
 // `behavior: 'smooth'` ourselves, with a -88 px header offset so the
 // search card lands just below the sticky topbar instead of being
 // pinned behind it.
-export function VerifyNowCta() {
+export function VerifyNowCta({ className }: { className?: string } = {}) {
   const { t } = useI18n();
   const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (typeof window === 'undefined') return;
@@ -32,7 +32,7 @@ export function VerifyNowCta() {
     <Link
       href="#recherche"
       onClick={handleClick}
-      className="inline-flex items-center gap-2 rounded-pill bg-green-500 hover:bg-green-700 text-white px-6 py-3 text-sm font-semibold shadow-glow-green animate-verify-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all"
+      className={`inline-flex items-center gap-2 rounded-pill bg-green-500 hover:bg-green-700 text-white px-6 py-3 text-sm font-semibold shadow-glow-green animate-verify-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all ${className ?? ''}`}
     >
       <ShieldCheck className="h-5 w-5 animate-siren-wiggle" aria-hidden />
       {t('home.banner.cta.verify')}

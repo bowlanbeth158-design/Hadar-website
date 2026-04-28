@@ -20,6 +20,7 @@ import {
   type AlertStatus,
   type RiskLevel,
 } from '@/lib/mock/alerts';
+import { useI18n } from '@/lib/i18n/provider';
 
 type FilterKey = 'all' | AlertStatus;
 
@@ -54,22 +55,19 @@ const RISK_GLOW: Record<RiskLevel, string> = {
   high: 'hover:shadow-glow-red',
 };
 
-const FILTERS: { key: FilterKey; label: string; Icon: typeof Layers }[] = [
-  { key: 'all', label: 'Tous', Icon: Layers },
-  { key: 'active', label: 'Actives', Icon: Inbox },
-  { key: 'archived', label: 'Archivées', Icon: Archive },
-  { key: 'deleted', label: 'Supprimées', Icon: Trash2 },
+const FILTERS: { key: FilterKey; labelKey: string; Icon: typeof Layers }[] = [
+  { key: 'all',      labelKey: 'mesAlertes.filter.all',      Icon: Layers },
+  { key: 'active',   labelKey: 'mesAlertes.filter.active',   Icon: Inbox  },
+  { key: 'archived', labelKey: 'mesAlertes.filter.archived', Icon: Archive },
+  { key: 'deleted',  labelKey: 'mesAlertes.filter.deleted',  Icon: Trash2 },
 ];
 
 // Initial cap before the user clicks "Voir plus d'alertes". Tuned so the page
 // stays scannable even if the user follows many contacts.
 const INITIAL_VISIBLE = 4;
 
-const DISCLAIMER =
-  'Les informations affichées sont basées sur les signalements et les expériences ' +
-  'des utilisateurs, vérifiées lorsque cela est possible, et fournies à titre indicatif uniquement.';
-
 export function MesAlertesList({ initialExpandId }: { initialExpandId?: string | null }) {
+  const { t } = useI18n();
   const [alerts, setAlerts] = useState<Alert[]>(DEMO_ALERTS);
   const [filter, setFilter] = useState<FilterKey>('active');
   const [expanded, setExpanded] = useState<Set<string>>(
@@ -147,7 +145,7 @@ export function MesAlertesList({ initialExpandId }: { initialExpandId?: string |
               }`}
             >
               <f.Icon className="h-3.5 w-3.5" aria-hidden />
-              {f.label}
+              {t(f.labelKey)}
               <span
                 className={`inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-bold ${
                   active ? 'bg-white/20 text-white' : 'bg-brand-sky text-brand-navy'
@@ -167,15 +165,15 @@ export function MesAlertesList({ initialExpandId }: { initialExpandId?: string |
             <Inbox className="h-7 w-7 text-brand-blue/60" aria-hidden />
           </div>
           <p className="text-sm font-semibold text-brand-navy mb-1">
-            {filter === 'archived' && 'Aucune alerte archivée'}
-            {filter === 'deleted' && 'Aucune alerte supprimée'}
-            {filter === 'active' && 'Aucune alerte active pour le moment'}
-            {filter === 'all' && 'Aucune alerte'}
+            {filter === 'archived' && t('mesAlertes.empty.archived')}
+            {filter === 'deleted' && t('mesAlertes.empty.deleted')}
+            {filter === 'active' && t('mesAlertes.empty.active')}
+            {filter === 'all' && t('mesAlertes.empty.all')}
           </p>
           <p className="text-xs text-gray-500 max-w-[300px] mx-auto">
             {filter === 'active'
-              ? 'Suivez un contact après une recherche pour recevoir les nouvelles mises à jour.'
-              : 'Aucun élément à afficher dans cette catégorie.'}
+              ? t('mesAlertes.empty.activeHint')
+              : t('mesAlertes.empty.otherHint')}
           </p>
         </div>
       ) : (
@@ -197,7 +195,7 @@ export function MesAlertesList({ initialExpandId }: { initialExpandId?: string |
                     <p className="font-semibold text-brand-navy truncate">{a.contact}</p>
                     <p className="mt-1 text-sm text-gray-500">{a.summary}</p>
                     <p className="mt-2 text-xs text-gray-400">
-                      {a.count} signalements similaires · {a.date}
+                      {t('mesAlertes.similar.label', { n: a.count, date: a.date })}
                     </p>
                   </div>
                   <div className="flex flex-col gap-1.5">
@@ -208,7 +206,7 @@ export function MesAlertesList({ initialExpandId }: { initialExpandId?: string |
                       aria-controls={`alert-detail-${a.id}`}
                       className="inline-flex items-center gap-1 rounded-pill border border-gray-200 text-brand-navy px-3 py-1 text-xs font-medium hover:border-brand-blue hover:bg-gray-50 transition-colors"
                     >
-                      {isOpen ? 'Masquer les détails' : 'Voir les détails'}
+                      {isOpen ? t('mesAlertes.action.toggleClose') : t('mesAlertes.action.toggleOpen')}
                       <ChevronDown
                         className={`h-3 w-3 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
                         aria-hidden
@@ -221,7 +219,7 @@ export function MesAlertesList({ initialExpandId }: { initialExpandId?: string |
                         className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-brand-navy transition-colors"
                       >
                         <Archive className="h-3 w-3" aria-hidden />
-                        Archiver
+                        {t('mesAlertes.action.archive')}
                       </button>
                     )}
                     {a.status === 'archived' && (
@@ -231,7 +229,7 @@ export function MesAlertesList({ initialExpandId }: { initialExpandId?: string |
                         className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-brand-navy transition-colors"
                       >
                         <Inbox className="h-3 w-3" aria-hidden />
-                        Restaurer
+                        {t('mesAlertes.action.restore')}
                       </button>
                     )}
                     {a.status !== 'deleted' && (
@@ -241,7 +239,7 @@ export function MesAlertesList({ initialExpandId }: { initialExpandId?: string |
                         className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-red-500 transition-colors"
                       >
                         <Trash2 className="h-3 w-3" aria-hidden />
-                        Supprimer
+                        {t('mesAlertes.action.delete')}
                       </button>
                     )}
                     {a.status === 'deleted' && (
@@ -251,7 +249,7 @@ export function MesAlertesList({ initialExpandId }: { initialExpandId?: string |
                         className="inline-flex items-center gap-1 text-xs text-gray-400 hover:text-brand-navy transition-colors"
                       >
                         <Inbox className="h-3 w-3" aria-hidden />
-                        Restaurer
+                        {t('mesAlertes.action.restore')}
                       </button>
                     )}
                   </div>
@@ -272,39 +270,43 @@ export function MesAlertesList({ initialExpandId }: { initialExpandId?: string |
                         <p
                           className={`text-lg font-extrabold tracking-tight bg-clip-text text-transparent ${RISK_GRADIENT[a.risk]}`}
                         >
-                          {a.count}{' '}
-                          {a.count > 1 ? 'signalements enregistrés' : 'signalement enregistré'}
+                          {t(
+                            a.count > 1
+                              ? 'mesAlertes.detail.reports.plural'
+                              : 'mesAlertes.detail.reports.singular',
+                            { n: a.count },
+                          )}
                         </p>
                         <p className="text-xs text-gray-500">
-                          Dernier signalement : {a.lastReportRelative}
+                          {t('mesAlertes.detail.lastReport', { time: a.lastReportRelative })}
                         </p>
                       </div>
 
                       <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-2.5">
                         <KpiCard
                           icon={PackageX}
-                          label="Non livraison"
+                          label={t('mesAlertes.kpi.nonDelivery')}
                           value={a.byCategory.nonLivraison}
                           gradient={RISK_GRADIENT[a.risk]}
                           glow={RISK_GLOW[a.risk]}
                         />
                         <KpiCard
                           icon={Lock}
-                          label="Bloqué après paiement"
+                          label={t('mesAlertes.kpi.blockedAfterPayment')}
                           value={a.byCategory.bloqueApresPaiement}
                           gradient={RISK_GRADIENT[a.risk]}
                           glow={RISK_GLOW[a.risk]}
                         />
                         <KpiCard
                           icon={PackageCheck}
-                          label="Produit non conforme"
+                          label={t('mesAlertes.kpi.nonCompliant')}
                           value={a.byCategory.produitNonConforme}
                           gradient={RISK_GRADIENT[a.risk]}
                           glow={RISK_GLOW[a.risk]}
                         />
                         <KpiCard
                           icon={UserX}
-                          label="Usurpation d'identité"
+                          label={t('mesAlertes.kpi.identityTheft')}
                           value={a.byCategory.usurpation}
                           gradient={RISK_GRADIENT[a.risk]}
                           glow={RISK_GLOW[a.risk]}
@@ -325,7 +327,10 @@ export function MesAlertesList({ initialExpandId }: { initialExpandId?: string |
         <button
           type="button"
           onClick={() => setShowAll(true)}
-          aria-label={`Voir ${hiddenCount} alerte${hiddenCount > 1 ? 's' : ''} de plus`}
+          aria-label={t(
+            hiddenCount > 1 ? 'mesAlertes.viewMore.plural' : 'mesAlertes.viewMore.singular',
+            { n: hiddenCount },
+          )}
           className="group mt-6 mx-auto flex flex-col items-center gap-1 text-gray-400 hover:text-brand-blue transition-colors"
         >
           <ChevronsDown
@@ -333,14 +338,17 @@ export function MesAlertesList({ initialExpandId }: { initialExpandId?: string |
             aria-hidden
           />
           <span className="text-xs font-medium">
-            Voir {hiddenCount} alerte{hiddenCount > 1 ? 's' : ''} de plus
+            {t(
+              hiddenCount > 1 ? 'mesAlertes.viewMore.plural' : 'mesAlertes.viewMore.singular',
+              { n: hiddenCount },
+            )}
           </span>
         </button>
       )}
 
       {/* Legal disclaimer — required for the Moroccan jurisdiction. */}
       <p className="mt-10 text-center text-xs text-gray-400 max-w-2xl mx-auto leading-relaxed">
-        {DISCLAIMER}
+        {t('mesAlertes.disclaimer')}
       </p>
     </>
   );

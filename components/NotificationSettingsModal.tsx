@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { BellRing, X, Check } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/provider';
 
 type Prefs = {
   email: boolean;
@@ -18,30 +19,17 @@ const DEFAULT_PREFS: Prefs = {
   instant: true,
 };
 
-const OPTIONS: { key: keyof Prefs; title: string; description: string }[] = [
-  {
-    key: 'instant',
-    title: 'Notifications immédiates',
-    description: 'Recevoir une alerte dès qu’un nouveau signalement concerne un contact surveillé.',
-  },
-  {
-    key: 'email',
-    title: 'Alertes par email',
-    description: 'Recevoir les notifications importantes à votre adresse email.',
-  },
-  {
-    key: 'push',
-    title: 'Notifications push',
-    description: 'Autoriser les notifications navigateur ou application mobile.',
-  },
-  {
-    key: 'weekly',
-    title: 'Résumé hebdomadaire',
-    description: 'Un digest chaque lundi avec l’activité de la semaine sur vos contacts.',
-  },
+// Each option carries i18n keys so the title + description follow
+// the active locale instead of being baked in at module evaluation.
+const OPTIONS: { key: keyof Prefs; titleKey: string; descKey: string }[] = [
+  { key: 'instant', titleKey: 'notifModal.opt.instant.title', descKey: 'notifModal.opt.instant.desc' },
+  { key: 'email',   titleKey: 'notifModal.opt.email.title',   descKey: 'notifModal.opt.email.desc'   },
+  { key: 'push',    titleKey: 'notifModal.opt.push.title',    descKey: 'notifModal.opt.push.desc'    },
+  { key: 'weekly',  titleKey: 'notifModal.opt.weekly.title',  descKey: 'notifModal.opt.weekly.desc'  },
 ];
 
 export function NotificationSettingsModal({ defaultOpen = false }: { defaultOpen?: boolean }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(defaultOpen);
   const [prefs, setPrefs] = useState<Prefs>(DEFAULT_PREFS);
   const [saved, setSaved] = useState(false);
@@ -102,7 +90,7 @@ export function NotificationSettingsModal({ defaultOpen = false }: { defaultOpen
           className="h-4 w-4 text-brand-blue group-hover:animate-siren-wiggle"
           aria-hidden
         />
-        Gérer les notifications
+        {t('notifModal.trigger')}
       </button>
 
       {open && (
@@ -114,7 +102,7 @@ export function NotificationSettingsModal({ defaultOpen = false }: { defaultOpen
         >
           <button
             type="button"
-            aria-label="Fermer"
+            aria-label={t('notifModal.close')}
             onClick={() => setOpen(false)}
             className="absolute inset-0 bg-brand-navy/40 backdrop-blur-sm cursor-default animate-fade-in"
           />
@@ -128,7 +116,7 @@ export function NotificationSettingsModal({ defaultOpen = false }: { defaultOpen
             <div className="p-6 md:p-8">
               <button
                 type="button"
-                aria-label="Fermer"
+                aria-label={t('notifModal.close')}
                 onClick={() => setOpen(false)}
                 className="absolute top-3 right-3 h-8 w-8 rounded-full text-gray-400 hover:bg-gray-100 hover:text-brand-navy hover:rotate-90 transition-all duration-200 flex items-center justify-center"
               >
@@ -142,11 +130,9 @@ export function NotificationSettingsModal({ defaultOpen = false }: { defaultOpen
                 <span className="inline-flex items-center justify-center h-8 w-8 rounded-lg bg-gradient-to-br from-brand-navy via-brand-blue to-brand-sky shadow-glow-soft">
                   <BellRing className="h-4 w-4 text-white" aria-hidden />
                 </span>
-                Gérer mes notifications
+                {t('notifModal.title')}
               </h2>
-              <p className="mt-1 text-sm text-gray-500">
-                Choisissez comment et quand Hadar vous alerte sur vos contacts surveillés.
-              </p>
+              <p className="mt-1 text-sm text-gray-500">{t('notifModal.subtitle')}</p>
 
               <div className="mt-5 space-y-2 divide-y divide-gray-100 border border-gray-200 rounded-xl overflow-hidden">
                 {OPTIONS.map((opt) => {
@@ -175,8 +161,8 @@ export function NotificationSettingsModal({ defaultOpen = false }: { defaultOpen
                         />
                       </button>
                       <div className="flex-1 transition-transform duration-200 group-hover:translate-x-0.5">
-                        <p className="text-sm font-semibold text-brand-navy">{opt.title}</p>
-                        <p className="mt-0.5 text-xs text-gray-500">{opt.description}</p>
+                        <p className="text-sm font-semibold text-brand-navy">{t(opt.titleKey)}</p>
+                        <p className="mt-0.5 text-xs text-gray-500">{t(opt.descKey)}</p>
                       </div>
                     </label>
                   );
@@ -189,7 +175,7 @@ export function NotificationSettingsModal({ defaultOpen = false }: { defaultOpen
                   onClick={() => setOpen(false)}
                   className="rounded-pill border border-gray-200 bg-white text-brand-navy px-5 py-2 text-sm font-medium hover:border-brand-blue hover:bg-gray-50 transition-colors"
                 >
-                  Annuler
+                  {t('notifModal.cancel')}
                 </button>
                 <button
                   type="button"
@@ -199,16 +185,16 @@ export function NotificationSettingsModal({ defaultOpen = false }: { defaultOpen
                   {saved ? (
                     <>
                       <Check className="h-4 w-4" aria-hidden />
-                      Enregistré
+                      {t('notifModal.saved')}
                     </>
                   ) : (
-                    <>Enregistrer</>
+                    <>{t('notifModal.save')}</>
                   )}
                 </button>
               </div>
 
               <p className="mt-3 text-xs text-gray-400 text-center">
-                Les préférences sont sauvegardées localement. Synchronisation serveur à venir.
+                {t('notifModal.disclaimer')}
               </p>
             </div>
           </div>

@@ -74,7 +74,7 @@ function MobileNavMenu() {
         aria-haspopup="true"
         aria-expanded={open}
         aria-label={open ? t('header.menuClose') : t('header.menuOpen')}
-        className={`relative inline-flex h-10 w-10 items-center justify-center rounded-lg border bg-white text-brand-navy hover:border-brand-blue hover:text-brand-blue hover:shadow-glow-soft transition-all duration-200 ${
+        className={`relative inline-flex h-9 w-9 items-center justify-center rounded-lg border bg-white text-brand-navy hover:border-brand-blue hover:text-brand-blue hover:shadow-glow-soft transition-all duration-200 ${
           // Constant brand-blue pulse halo when there are unread
           // alerts so the hamburger draws the eye on phone, idle
           // soft hover otherwise. animate-sparkle-pop on the icon
@@ -85,19 +85,24 @@ function MobileNavMenu() {
         }`}
       >
         {open ? (
-          <X className="h-5 w-5" aria-hidden />
+          <X className="h-4 w-4" aria-hidden />
         ) : (
-          <Menu className="h-5 w-5 animate-sparkle-pop" aria-hidden />
+          <Menu className="h-4 w-4 animate-sparkle-pop" aria-hidden />
         )}
-        {/* Unread-alerts dot — red ping, only when ALERT_COUNT > 0 and
-            the drawer is closed (would overlap the X otherwise). */}
+        {/* Unread-alerts COUNT badge — replaces the previous red dot
+            so the user reads the actual number directly from the
+            hamburger. Red pill with the number (clamped to 99+ so
+            it stays compact) + animated ping halo behind it. Hidden
+            when the drawer is open (would overlap the X). */}
         {hasAlerts && !open && (
           <span
             aria-hidden
-            className="absolute -top-1 -right-1 flex h-3 w-3"
+            className="absolute -top-1.5 -right-1.5 flex"
           >
-            <span className="absolute inset-0 inline-flex h-full w-full rounded-full bg-red-500 opacity-75 animate-ping" />
-            <span className="relative inline-flex h-3 w-3 rounded-full bg-red-500 ring-2 ring-white" />
+            <span className="absolute inset-0 inline-flex h-full w-full rounded-full bg-red-500 opacity-60 animate-ping" />
+            <span className="relative inline-flex h-4 min-w-[1rem] items-center justify-center rounded-full bg-red-500 ring-2 ring-white text-white text-[9px] font-bold tabular-nums px-1 leading-none">
+              {ALERT_COUNT > 99 ? '99+' : ALERT_COUNT}
+            </span>
           </span>
         )}
       </button>

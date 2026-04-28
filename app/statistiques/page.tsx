@@ -392,19 +392,62 @@ export default function Page() {
 
   // KPI cards — labels reuse the same i18n keys as the homepage stats
   // so a translation update in messages.ts cascades to both surfaces.
-  const globalCards: {
+  // Visual recipe matches PlatformStats on the home: a unified
+  // sky-gradient surface with a small accent chip per metric (icon
+  // tinted in the metric colour) plus a per-card travelling
+  // spotlight halo that ripples through the row, instead of the
+  // older approach where each card was flooded with its own
+  // colour.
+  type GlobalCard = {
     labelKey: string;
     value: string;
-    gradient: string;
-    glow: string;
     Icon: LucideIcon;
-  }[] = [
-    { labelKey: 'home.platformStats.kpi.usersActive',       value: fmtCount(data.global.utilisateurs),  gradient: 'bg-grad-stat-navy',   glow: 'shadow-glow-navy',   Icon: Users      },
-    { labelKey: 'home.platformStats.kpi.reportsLogged',     value: fmtCount(data.global.signalements),  gradient: 'bg-grad-stat-red',    glow: 'shadow-glow-red',    Icon: Siren      },
-    { labelKey: 'home.platformStats.kpi.contactsReported',  value: fmtCount(data.global.contacts),      gradient: 'bg-grad-stat-violet', glow: 'shadow-glow-violet', Icon: Smartphone },
-    { labelKey: 'home.platformStats.kpi.verifications',     value: `+${fmtCount(data.global.verifications)}`, gradient: 'bg-grad-stat-sky', glow: 'shadow-glow-sky', Icon: ShieldCheck },
-    { labelKey: 'home.platformStats.kpi.amountReported',    value: formatCurrency(data.global.montant), gradient: 'bg-grad-stat-green',  glow: 'shadow-glow-green',  Icon: Wallet     },
-    { labelKey: 'home.platformStats.kpi.lastReport',        value: data.global.dernier,                 gradient: 'bg-grad-stat-orange', glow: 'shadow-glow-orange', Icon: Clock      },
+    chip: { bg: string; text: string; ring: string; halo: string };
+    spotlight: { ring: string; glow: string };
+  };
+  const globalCards: GlobalCard[] = [
+    {
+      labelKey: 'home.platformStats.kpi.usersActive',
+      value: fmtCount(data.global.utilisateurs),
+      Icon: Users,
+      chip: { bg: 'bg-brand-navy/10', text: 'text-brand-navy', ring: 'ring-brand-navy/25', halo: 'bg-brand-navy/35' },
+      spotlight: { ring: 'rgba(0, 50, 125, 0.50)', glow: 'rgba(0, 50, 125, 0.55)' },
+    },
+    {
+      labelKey: 'home.platformStats.kpi.reportsLogged',
+      value: fmtCount(data.global.signalements),
+      Icon: Siren,
+      chip: { bg: 'bg-red-500/10', text: 'text-red-500', ring: 'ring-red-500/25', halo: 'bg-red-500/35' },
+      spotlight: { ring: 'rgba(238, 68, 68, 0.50)', glow: 'rgba(238, 68, 68, 0.55)' },
+    },
+    {
+      labelKey: 'home.platformStats.kpi.contactsReported',
+      value: fmtCount(data.global.contacts),
+      Icon: Smartphone,
+      chip: { bg: 'bg-violet-500/10', text: 'text-violet-500', ring: 'ring-violet-500/25', halo: 'bg-violet-500/35' },
+      spotlight: { ring: 'rgba(134, 82, 251, 0.50)', glow: 'rgba(134, 82, 251, 0.55)' },
+    },
+    {
+      labelKey: 'home.platformStats.kpi.verifications',
+      value: `+${fmtCount(data.global.verifications)}`,
+      Icon: ShieldCheck,
+      chip: { bg: 'bg-sky-500/10', text: 'text-sky-500', ring: 'ring-sky-500/25', halo: 'bg-sky-500/35' },
+      spotlight: { ring: 'rgba(0, 191, 238, 0.50)', glow: 'rgba(0, 191, 238, 0.60)' },
+    },
+    {
+      labelKey: 'home.platformStats.kpi.amountReported',
+      value: formatCurrency(data.global.montant),
+      Icon: Wallet,
+      chip: { bg: 'bg-green-500/10', text: 'text-green-500', ring: 'ring-green-500/25', halo: 'bg-green-500/35' },
+      spotlight: { ring: 'rgba(34, 196, 94, 0.50)', glow: 'rgba(34, 196, 94, 0.55)' },
+    },
+    {
+      labelKey: 'home.platformStats.kpi.lastReport',
+      value: data.global.dernier,
+      Icon: Clock,
+      chip: { bg: 'bg-orange-500/10', text: 'text-orange-500', ring: 'ring-orange-500/25', halo: 'bg-orange-500/35' },
+      spotlight: { ring: 'rgba(242, 155, 17, 0.50)', glow: 'rgba(242, 155, 17, 0.60)' },
+    },
   ];
 
   return (
@@ -421,25 +464,71 @@ export default function Page() {
 
       <StatsPeriodTabs value={period} onChange={setPeriod} />
 
-      <section
+      <ul
         aria-label={t('statsPage.aria.global')}
         className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
       >
-        {globalCards.map((s) => (
-          <div
+        {globalCards.map((s, i) => (
+          <li
             key={s.labelKey}
-            className={`group ${s.gradient} ${s.glow} text-white rounded-2xl p-5 flex items-center justify-between transition-all duration-300 ease-out hover:-translate-y-1 hover:scale-[1.02] cursor-default`}
+            // Stagger the entrance card-by-card (same recipe as the
+            // homepage PlatformStats so the two surfaces feel like
+            // one product).
+            className="relative animate-fade-in-down"
+            style={{ animationDelay: `${i * 90}ms`, animationFillMode: 'both' }}
           >
-            <div>
-              <p className="text-3xl font-bold">
-                <AnimatedCounter value={s.value} />
-              </p>
-              <p className="text-sm font-medium opacity-90 mt-1">{t(s.labelKey)}</p>
-            </div>
-            <s.Icon className="h-9 w-9 opacity-70 group-hover:scale-110 group-hover:opacity-100 group-hover:animate-sparkle-pop transition-all" aria-hidden />
-          </div>
+            {/* Spotlight overlay — sibling of the article so its outer
+                box-shadow halo is NOT clipped by overflow-hidden. The
+                halo colour is the card's accent (navy / red / violet
+                / sky / green / orange) so each spotlight matches its
+                icon chip. animate-card-spotlight stagger via
+                `i * 1500ms` makes the highlight ripple through the
+                six cards in a 9 s loop. */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 rounded-2xl animate-card-spotlight"
+              style={{
+                animationDelay: `${i * 1500}ms`,
+                boxShadow: `0 0 0 2px ${s.spotlight.ring}, 0 0 36px 8px ${s.spotlight.glow}`,
+              }}
+            />
+
+            <article
+              className="group relative h-full rounded-2xl bg-gradient-to-br from-white via-brand-sky/30 to-brand-sky/45 backdrop-blur-sm border border-white/70 p-5 flex items-center gap-4 shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1.5 transition-all duration-300 ease-out overflow-hidden"
+            >
+              {/* Diagonal shimmer light — fires on hover for a subtle
+                  "wipe" of light across the card surface. */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/60 to-transparent skew-x-[-20deg] opacity-0 group-hover:opacity-100 group-hover:animate-shimmer"
+              />
+
+              {/* Accent chip — small coloured square with a pulsing
+                  halo behind it. Scales + rotates on card hover. */}
+              <span className="relative inline-flex h-14 w-14 shrink-0 items-center justify-center">
+                <span
+                  aria-hidden
+                  className={`absolute inset-0 rounded-2xl ${s.chip.halo} blur-xl opacity-40 group-hover:opacity-80 transition-opacity duration-300 animate-pulse`}
+                />
+                <span
+                  className={`relative inline-flex h-14 w-14 items-center justify-center rounded-2xl ${s.chip.bg} ${s.chip.text} ring-1 ${s.chip.ring} group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300`}
+                >
+                  <s.Icon className="h-6 w-6 animate-sparkle-pop" aria-hidden />
+                </span>
+              </span>
+
+              <div className="relative min-w-0">
+                <p className="text-2xl md:text-3xl font-bold text-brand-navy tabular-nums leading-none">
+                  <AnimatedCounter value={s.value} />
+                </p>
+                <p className="mt-1.5 text-xs md:text-sm text-gray-500 truncate">
+                  {t(s.labelKey)}
+                </p>
+              </div>
+            </article>
+          </li>
         ))}
-      </section>
+      </ul>
 
       <section className="mt-8 grid gap-4 lg:grid-cols-2">
         <div className={CHART_CARD}>

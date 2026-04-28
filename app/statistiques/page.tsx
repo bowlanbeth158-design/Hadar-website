@@ -466,7 +466,7 @@ export default function Page() {
 
       <ul
         aria-label={t('statsPage.aria.global')}
-        className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3"
+        className="grid grid-cols-2 gap-4 lg:grid-cols-3"
       >
         {globalCards.map((s, i) => (
           <li

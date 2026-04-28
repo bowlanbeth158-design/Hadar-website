@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { X, IdCard, ScanFace, ShieldCheck, Sparkles, Loader2, Check } from 'lucide-react';
 import { VerifiedBadge } from './VerifiedBadge';
+import { useI18n } from '@/lib/i18n/provider';
 
 type Status = 'idle' | 'pending' | 'done';
 
@@ -13,6 +14,7 @@ export function IdentityVerificationModal({
   trigger: React.ReactNode;
   onVerified?: () => void;
 }) {
+  const { t } = useI18n();
   const [open, setOpen] = useState(false);
   const [status, setStatus] = useState<Status>('idle');
 
@@ -30,6 +32,12 @@ export function IdentityVerificationModal({
     };
   }, [open]);
 
+  // Build the intro paragraph from the translation by splitting on
+  // the {free} placeholder, so the green-highlighted "gratuit"
+  // word stays styled across all 3 locales.
+  const introTemplate = t('profile.identity.modal.intro');
+  const [introBefore, introAfter] = introTemplate.split('{free}');
+
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} className="contents">
@@ -45,7 +53,7 @@ export function IdentityVerificationModal({
         >
           <button
             type="button"
-            aria-label="Fermer"
+            aria-label={t('profile.identity.modal.close')}
             onClick={() => setOpen(false)}
             className="absolute inset-0 bg-brand-navy/40 backdrop-blur-sm cursor-default animate-fade-in"
           />
@@ -57,7 +65,7 @@ export function IdentityVerificationModal({
             <div className="p-6 md:p-7">
               <button
                 type="button"
-                aria-label="Fermer"
+                aria-label={t('profile.identity.modal.close')}
                 onClick={() => setOpen(false)}
                 className="absolute top-3 right-3 h-8 w-8 rounded-full text-gray-400 hover:bg-gray-100 hover:text-brand-navy hover:rotate-90 transition-all duration-200 flex items-center justify-center"
               >
@@ -67,42 +75,42 @@ export function IdentityVerificationModal({
               <div className="flex items-center gap-2">
                 <VerifiedBadge className="h-7 w-7" />
                 <h2 id="ident-modal-title" className="text-xl font-bold text-brand-navy">
-                  Vérifier mon identité
+                  {t('profile.identity.modal.title')}
                 </h2>
               </div>
               <p className="mt-1 text-sm text-gray-500">
-                Activez le badge bleu vérifié à côté de votre nom — c&apos;est{' '}
-                <span className="font-semibold text-green-600">gratuit</span> et ça renforce la
-                confiance dans vos signalements.
+                {introBefore}
+                <span className="font-semibold text-green-600">
+                  {t('profile.identity.modal.intro.free')}
+                </span>
+                {introAfter}
               </p>
 
               <ol className="mt-5 space-y-3">
                 <Step
                   n={1}
                   Icon={IdCard}
-                  title="Photo de votre CIN"
-                  desc="Prenez en photo le recto et le verso de votre carte d’identité nationale."
+                  title={t('profile.identity.modal.step1.title')}
+                  desc={t('profile.identity.modal.step1.desc')}
                 />
                 <Step
                   n={2}
                   Icon={ScanFace}
-                  title="Reconnaissance faciale (Face ID)"
-                  desc="Une courte vidéo selfie pour confirmer que c’est bien vous. Aucune donnée biométrique n’est conservée."
+                  title={t('profile.identity.modal.step2.title')}
+                  desc={t('profile.identity.modal.step2.desc')}
                 />
                 <Step
                   n={3}
                   Icon={ShieldCheck}
-                  title="Vérification sous 24 h"
-                  desc="Notre équipe valide manuellement votre dossier puis active votre badge."
+                  title={t('profile.identity.modal.step3.title')}
+                  desc={t('profile.identity.modal.step3.desc')}
                 />
               </ol>
 
               <div className="mt-5 rounded-xl bg-brand-sky/40 border border-brand-sky p-3 flex items-start gap-2">
                 <Sparkles className="h-4 w-4 text-brand-blue mt-0.5 shrink-0" aria-hidden />
                 <p className="text-xs text-brand-navy">
-                  Votre CIN n&apos;est jamais publiée. Elle sert uniquement à confirmer votre
-                  identité, puis est chiffrée et accessible uniquement à notre équipe de
-                  vérification.
+                  {t('profile.identity.modal.privacy')}
                 </p>
               </div>
 
@@ -113,7 +121,7 @@ export function IdentityVerificationModal({
                   disabled={status === 'pending'}
                   className="rounded-pill border border-gray-200 bg-white text-brand-navy px-4 py-2 text-sm font-medium hover:border-brand-blue hover:bg-gray-50 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  Plus tard
+                  {t('profile.identity.modal.later')}
                 </button>
                 <button
                   type="button"
@@ -135,19 +143,19 @@ export function IdentityVerificationModal({
                   {status === 'pending' && (
                     <>
                       <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-                      Vérification…
+                      {t('profile.identity.modal.pending')}
                     </>
                   )}
                   {status === 'done' && (
                     <>
                       <Check className="h-4 w-4" aria-hidden />
-                      Vérifié !
+                      {t('profile.identity.modal.done')}
                     </>
                   )}
                   {status === 'idle' && (
                     <>
                       <ShieldCheck className="h-4 w-4" aria-hidden />
-                      Démarrer — gratuit
+                      {t('profile.identity.modal.start')}
                     </>
                   )}
                 </button>

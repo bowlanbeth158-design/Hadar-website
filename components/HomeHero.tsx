@@ -133,7 +133,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
     return () => clearInterval(interval);
   }, []);
 
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const active = CONTACT_TYPES.find((c) => c.id === selected) ?? CONTACT_TYPES[0]!;
   const activeLabel = t(active.labelKey);
   const activePlaceholder = t(active.placeholderKey);
@@ -209,7 +209,17 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
       return;
     }
     const recognition = new Ctor();
-    recognition.lang = 'fr-FR';
+    // BCP-47 lang code based on the active locale so the speech
+    // recognition engine uses the right model. ar-MA targets
+    // Moroccan dialect specifically (Darija) — the W3C SpeechRecognition
+    // engines fall back to Modern Standard Arabic when ar-MA is
+    // unavailable so we still get usable transcription.
+    const speechLangMap: Record<string, string> = {
+      fr: 'fr-FR',
+      en: 'en-US',
+      ar: 'ar-MA',
+    };
+    recognition.lang = speechLangMap[locale] ?? 'fr-FR';
     recognition.interimResults = false;
     recognition.continuous = false;
     recognition.onstart = () => setListening(true);

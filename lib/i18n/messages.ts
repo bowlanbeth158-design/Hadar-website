@@ -1218,6 +1218,28 @@ const fr: Dict = {
   'profile.identity.activateCta': "Activer ma vérification d'identité —",
   'profile.identity.activateCta.free': 'gratuit',
 
+  // IdentityVerificationModal
+  'profile.identity.modal.title': 'Vérifier mon identité',
+  'profile.identity.modal.intro':
+    'Activez le badge bleu vérifié à côté de votre nom — c\'est {free} et ça renforce la confiance dans vos signalements.',
+  'profile.identity.modal.intro.free': 'gratuit',
+  'profile.identity.modal.step1.title': 'Photo de votre CIN',
+  'profile.identity.modal.step1.desc':
+    'Prenez en photo le recto et le verso de votre carte d’identité nationale.',
+  'profile.identity.modal.step2.title': 'Reconnaissance faciale (Face ID)',
+  'profile.identity.modal.step2.desc':
+    'Une courte vidéo selfie pour confirmer que c’est bien vous. Aucune donnée biométrique n’est conservée.',
+  'profile.identity.modal.step3.title': 'Vérification sous 24 h',
+  'profile.identity.modal.step3.desc':
+    'Notre équipe valide manuellement votre dossier puis active votre badge.',
+  'profile.identity.modal.privacy':
+    'Votre CIN n\'est jamais publiée. Elle sert uniquement à confirmer votre identité, puis est chiffrée et accessible uniquement à notre équipe de vérification.',
+  'profile.identity.modal.later': 'Plus tard',
+  'profile.identity.modal.start': 'Démarrer — gratuit',
+  'profile.identity.modal.pending': 'Vérification…',
+  'profile.identity.modal.done': 'Vérifié !',
+  'profile.identity.modal.close': 'Fermer',
+
   // DeleteAccountSection
   'profile.dangerZone.title': 'Zone dangereuse',
   'profile.dangerZone.body':
@@ -2652,6 +2674,28 @@ const en: Dict = {
   'profile.identity.activateCta': 'Activate my identity verification —',
   'profile.identity.activateCta.free': 'free',
 
+  // IdentityVerificationModal
+  'profile.identity.modal.title': 'Verify my identity',
+  'profile.identity.modal.intro':
+    'Activate the blue verified badge next to your name — it\'s {free} and strengthens trust in your reports.',
+  'profile.identity.modal.intro.free': 'free',
+  'profile.identity.modal.step1.title': 'Photo of your ID card',
+  'profile.identity.modal.step1.desc':
+    'Take a photo of the front and back of your national identity card.',
+  'profile.identity.modal.step2.title': 'Facial recognition (Face ID)',
+  'profile.identity.modal.step2.desc':
+    'A short selfie video to confirm it\'s really you. No biometric data is kept.',
+  'profile.identity.modal.step3.title': 'Verification within 24 h',
+  'profile.identity.modal.step3.desc':
+    'Our team manually reviews your file and then activates your badge.',
+  'profile.identity.modal.privacy':
+    'Your ID card is never published. It is used only to confirm your identity, then encrypted and accessible only to our verification team.',
+  'profile.identity.modal.later': 'Later',
+  'profile.identity.modal.start': 'Start — free',
+  'profile.identity.modal.pending': 'Verifying…',
+  'profile.identity.modal.done': 'Verified!',
+  'profile.identity.modal.close': 'Close',
+
   // DeleteAccountSection
   'profile.dangerZone.title': 'Danger zone',
   'profile.dangerZone.body':
@@ -4075,6 +4119,28 @@ const ar: Dict = {
   'profile.identity.validationRate': 'نسبة التحقق :',
   'profile.identity.activateCta': 'فعّل التحقق من هويتي —',
   'profile.identity.activateCta.free': 'مجاناً',
+
+  // IdentityVerificationModal
+  'profile.identity.modal.title': 'التحقق من هويتي',
+  'profile.identity.modal.intro':
+    'فعّل الشارة الزرقاء الموثقة بجانب اسمك — إنها {free} وتعزز الثقة في بلاغاتك.',
+  'profile.identity.modal.intro.free': 'مجانية',
+  'profile.identity.modal.step1.title': 'صورة بطاقتك الوطنية',
+  'profile.identity.modal.step1.desc':
+    'التقط صورة للوجه الأمامي والخلفي لبطاقة تعريفك الوطنية.',
+  'profile.identity.modal.step2.title': 'التعرف على الوجه (Face ID)',
+  'profile.identity.modal.step2.desc':
+    'فيديو سيلفي قصير للتأكد أنك أنت فعلاً. لا يتم الاحتفاظ بأي بيانات حيوية.',
+  'profile.identity.modal.step3.title': 'تحقق خلال 24 ساعة',
+  'profile.identity.modal.step3.desc':
+    'يقوم فريقنا بالتحقق يدوياً من ملفك ثم يفعّل شارتك.',
+  'profile.identity.modal.privacy':
+    'بطاقتك الوطنية لا تُنشر أبداً. تُستخدم فقط لتأكيد هويتك، ثم تُشفّر ويمكن الوصول إليها فقط من قبل فريق التحقق لدينا.',
+  'profile.identity.modal.later': 'لاحقاً',
+  'profile.identity.modal.start': 'ابدأ — مجاناً',
+  'profile.identity.modal.pending': 'جاري التحقق…',
+  'profile.identity.modal.done': 'تم التحقق!',
+  'profile.identity.modal.close': 'إغلاق',
 
   // DeleteAccountSection
   'profile.dangerZone.title': 'منطقة الخطر',

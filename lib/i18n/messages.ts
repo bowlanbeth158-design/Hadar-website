@@ -1163,6 +1163,39 @@ const fr: Dict = {
   'legalPage.privacy.title': 'Politique de confidentialité',
   'legalPage.cookies.title': 'Données personnelles & cookies',
   'legalPage.publishingRules.title': 'Règles de publication',
+
+  // ===== /mon-profil page =====
+  'profile.kpi.sent': 'Signalements envoyés',
+  'profile.kpi.published': 'Signalements publiés',
+  'profile.kpi.verifications': 'Vérifications réalisées',
+  'profile.kpi.lastReport': 'Dernier signalement',
+  'profile.lastReport.value': 'Il y a 2h',
+  'profile.section.identity.title': 'Informations personnelles',
+  'profile.section.identity.subtitle':
+    'Gérez vos informations personnelles en toute sécurité.',
+  'profile.section.password.title': 'Mot de passe',
+  'profile.section.password.subtitle':
+    'Pour votre sécurité, utilisez un mot de passe unique et sécurisé.',
+  'profile.field.firstName': 'Prénom',
+  'profile.field.lastName': 'Nom de famille',
+  'profile.field.email': 'Adresse e-mail',
+  'profile.field.email.hint':
+    'Email utilisé à l’inscription — c’est l’adresse à laquelle nous envoyons les notifications. Non modifiable ici.',
+  'profile.field.phone.hint':
+    'Inclure l’indicatif pays (ex : 212…), sans 0 ni +. Vous recevrez le code par WhatsApp.',
+  'profile.field.currentPassword': 'Mot de passe actuel',
+  'profile.field.newPassword': 'Nouveau mot de passe',
+  'profile.field.newPassword.placeholder': '12 caractères minimum',
+  'profile.field.confirmPassword': 'Confirmer le nouveau mot de passe',
+  'profile.field.confirmPassword.placeholder': 'Retapez le nouveau mot de passe',
+  'profile.btn.save': 'Enregistrer les modifications',
+  'profile.btn.save.saving': 'Enregistrement…',
+  'profile.btn.save.saved': 'Modifications enregistrées',
+  'profile.btn.password': 'Mettre à jour le mot de passe',
+  'profile.btn.password.saving': 'Mise à jour…',
+  'profile.btn.password.saved': 'Mot de passe mis à jour',
+  'profile.disclaimer': 'Vos informations sont protégées et traitées de manière confidentielle.',
+  'profile.badge.regular': 'Contributeur régulier',
 };
 
 const en: Dict = {
@@ -2307,6 +2340,37 @@ const en: Dict = {
   'legalPage.privacy.title': 'Privacy policy',
   'legalPage.cookies.title': 'Personal data & cookies',
   'legalPage.publishingRules.title': 'Publishing rules',
+
+  // ===== /mon-profil page =====
+  'profile.kpi.sent': 'Reports submitted',
+  'profile.kpi.published': 'Reports published',
+  'profile.kpi.verifications': 'Verifications run',
+  'profile.kpi.lastReport': 'Last report',
+  'profile.lastReport.value': '2h ago',
+  'profile.section.identity.title': 'Personal information',
+  'profile.section.identity.subtitle': 'Manage your personal information securely.',
+  'profile.section.password.title': 'Password',
+  'profile.section.password.subtitle': 'For your security, use a unique and strong password.',
+  'profile.field.firstName': 'First name',
+  'profile.field.lastName': 'Last name',
+  'profile.field.email': 'Email address',
+  'profile.field.email.hint':
+    'Email used at sign-up — that’s where we send notifications. Not editable here.',
+  'profile.field.phone.hint':
+    'Include the country code (e.g. 212…), without leading 0 or +. You’ll receive the code via WhatsApp.',
+  'profile.field.currentPassword': 'Current password',
+  'profile.field.newPassword': 'New password',
+  'profile.field.newPassword.placeholder': '12 characters minimum',
+  'profile.field.confirmPassword': 'Confirm the new password',
+  'profile.field.confirmPassword.placeholder': 'Retype the new password',
+  'profile.btn.save': 'Save changes',
+  'profile.btn.save.saving': 'Saving…',
+  'profile.btn.save.saved': 'Changes saved',
+  'profile.btn.password': 'Update the password',
+  'profile.btn.password.saving': 'Updating…',
+  'profile.btn.password.saved': 'Password updated',
+  'profile.disclaimer': 'Your information is protected and processed confidentially.',
+  'profile.badge.regular': 'Regular contributor',
 };
 
 const ar: Dict = {
@@ -3452,6 +3516,37 @@ const ar: Dict = {
   'legalPage.privacy.title': 'سياسة الخصوصية',
   'legalPage.cookies.title': 'البيانات الشخصية والكوكيز',
   'legalPage.publishingRules.title': 'قواعد النشر',
+
+  // ===== /mon-profil page =====
+  'profile.kpi.sent': 'البلاغات المُرسلة',
+  'profile.kpi.published': 'البلاغات المنشورة',
+  'profile.kpi.verifications': 'عمليات التحقق المُنجزة',
+  'profile.kpi.lastReport': 'آخر بلاغ',
+  'profile.lastReport.value': 'منذ ساعتين',
+  'profile.section.identity.title': 'المعلومات الشخصية',
+  'profile.section.identity.subtitle': 'أدر معلوماتك الشخصية بأمان.',
+  'profile.section.password.title': 'كلمة المرور',
+  'profile.section.password.subtitle': 'لأمانك، استعمل كلمة مرور فريدة وقوية.',
+  'profile.field.firstName': 'الاسم الشخصي',
+  'profile.field.lastName': 'الاسم العائلي',
+  'profile.field.email': 'البريد الإلكتروني',
+  'profile.field.email.hint':
+    'البريد الإلكتروني المستعمل عند التسجيل — هو العنوان الذي ترسل عليه الإشعارات. غير قابل للتعديل هنا.',
+  'profile.field.phone.hint':
+    'أدرج رمز الدولة (مثلاً : 212…)، بدون 0 أو +. ستصلك الرمز عبر واتساب.',
+  'profile.field.currentPassword': 'كلمة المرور الحالية',
+  'profile.field.newPassword': 'كلمة المرور الجديدة',
+  'profile.field.newPassword.placeholder': '12 حرفاً على الأقل',
+  'profile.field.confirmPassword': 'تأكيد كلمة المرور الجديدة',
+  'profile.field.confirmPassword.placeholder': 'أعد كتابة كلمة المرور الجديدة',
+  'profile.btn.save': 'حفظ التعديلات',
+  'profile.btn.save.saving': 'جارٍ الحفظ…',
+  'profile.btn.save.saved': 'تم حفظ التعديلات',
+  'profile.btn.password': 'تحديث كلمة المرور',
+  'profile.btn.password.saving': 'جارٍ التحديث…',
+  'profile.btn.password.saved': 'تم تحديث كلمة المرور',
+  'profile.disclaimer': 'معلوماتك محمية وتُعالَج بسرية.',
+  'profile.badge.regular': 'مساهم منتظم',
 };
 
 export const MESSAGES: Record<Locale, Dict> = { fr, en, ar };

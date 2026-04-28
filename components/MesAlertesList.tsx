@@ -193,9 +193,9 @@ export function MesAlertesList({ initialExpandId }: { initialExpandId?: string |
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-brand-navy truncate">{a.contact}</p>
-                    <p className="mt-1 text-sm text-gray-500">{a.summary}</p>
+                    <p className="mt-1 text-sm text-gray-500">{t(a.summaryKey)}</p>
                     <p className="mt-2 text-xs text-gray-400">
-                      {t('mesAlertes.similar.label', { n: a.count, date: a.date })}
+                      {t('mesAlertes.similar.label', { n: a.count, date: t(a.dateKey) })}
                     </p>
                   </div>
                   <div className="flex flex-col gap-1.5">
@@ -278,7 +278,7 @@ export function MesAlertesList({ initialExpandId }: { initialExpandId?: string |
                           )}
                         </p>
                         <p className="text-xs text-gray-500">
-                          {t('mesAlertes.detail.lastReport', { time: a.lastReportRelative })}
+                          {t('mesAlertes.detail.lastReport', { time: t(a.lastReportRelativeKey) })}
                         </p>
                       </div>
 

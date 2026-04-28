@@ -13,11 +13,13 @@ import {
 } from 'lucide-react';
 import {
   REPORT_CHANNEL_ICON,
+  REPORT_CHANNEL_LABEL_KEY,
   STATUS_BADGE,
   STATUS_BORDER,
+  STATUS_LABEL_KEY,
+  PROBLEM_KIND_LABEL_KEY,
   USER_REPORTS,
   type Report,
-  type ReportChannel,
   type ReportStatus,
 } from '@/lib/mock/user-reports';
 import { useI18n } from '@/lib/i18n/provider';
@@ -31,21 +33,6 @@ const FILTERS: { key: FilterKey; labelKey: string; Icon: typeof Layers }[] = [
   { key: 'a_corriger', labelKey: 'mesSignalements.filter.toFix',     Icon: AlertCircle  },
   { key: 'refuse',     labelKey: 'mesSignalements.filter.rejected',  Icon: XCircle      },
 ];
-
-// i18n key maps for the per-row status badge + channel label so the
-// content of the cards follows the active locale.
-const STATUS_LABEL_KEY: Record<ReportStatus, string> = {
-  en_attente: 'mesSignalements.status.pending',
-  publie:     'mesSignalements.status.published',
-  a_corriger: 'mesSignalements.status.toFix',
-  refuse:     'mesSignalements.status.rejected',
-};
-const CHANNEL_LABEL_KEY: Record<ReportChannel, string> = {
-  phone: 'mesSignalements.channel.phone',
-  email: 'mesSignalements.channel.email',
-  web:   'mesSignalements.channel.web',
-  rib:   'mesSignalements.channel.rib',
-};
 
 // Initial cap before the user clicks "Voir plus de signalements".
 const INITIAL_VISIBLE = 4;
@@ -144,17 +131,17 @@ export function MesSignalementsList({ reports = USER_REPORTS }: { reports?: Repo
                         {t(STATUS_LABEL_KEY[r.status])}
                       </span>
                       <span className="text-xs font-medium text-brand-navy rounded-pill bg-brand-sky/60 px-2.5 py-0.5">
-                        {r.problem}
+                        {t(PROBLEM_KIND_LABEL_KEY[r.problemKind])}
                       </span>
                       <span className="text-xs text-gray-400 inline-flex items-center gap-1">
                         <Icon className="h-3 w-3" aria-hidden />
-                        {t(CHANNEL_LABEL_KEY[r.channel])}
+                        {t(REPORT_CHANNEL_LABEL_KEY[r.channel])}
                       </span>
                     </div>
                     <p className="mt-2 font-semibold text-brand-navy">{r.contact}</p>
-                    <p className="mt-1 text-sm text-gray-500 line-clamp-2">{r.description}</p>
+                    <p className="mt-1 text-sm text-gray-500 line-clamp-2">{t(r.descriptionKey)}</p>
                     <p className="mt-2 text-xs text-gray-400">
-                      {t('mesSignalements.submitted', { date: r.date })}
+                      {t('mesSignalements.submitted', { date: t(r.dateKey) })}
                     </p>
                   </div>
                   <Link

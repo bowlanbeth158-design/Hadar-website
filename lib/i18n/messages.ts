@@ -1380,6 +1380,73 @@ const fr: Dict = {
   'notifModal.close': 'Fermer',
   'notifModal.disclaimer':
     'Les préférences sont sauvegardées localement. Synchronisation serveur à venir.',
+
+  // ===== Mock data — alerts (DEMO_ALERTS) =====
+  'mock.alert.a1.summary': '2 nouveaux signalements sur ce numéro cette semaine.',
+  'mock.alert.a1.message': 'Un nouveau signalement a été publié.',
+  'mock.alert.a1.date': 'il y a 2h',
+  'mock.alert.a1.lastReport': 'il y a 2 heures',
+  'mock.alert.a2.summary': 'Vigilance : 1 nouveau signalement « Produit non conforme ».',
+  'mock.alert.a2.message': 'Un nouveau signalement a été publié.',
+  'mock.alert.a2.date': 'il y a 5h',
+  'mock.alert.a2.lastReport': 'il y a 5 heures',
+  'mock.alert.a3.summary': 'Signalement « Bloqué après paiement » ajouté hier.',
+  'mock.alert.a3.message': 'Un nouveau signalement a été publié.',
+  'mock.alert.a3.date': 'hier',
+  'mock.alert.a3.lastReport': 'hier',
+
+  // ===== Mock data — user reports =====
+  'mock.report.r1.description':
+    'Commande effectuée le 1er avril, vendeur n’a jamais livré le produit et ne répond plus à mes messages depuis 3 semaines malgré plusieurs relances.',
+  'mock.report.r1.date': 'il y a 3 jours',
+  'mock.report.r1.submitted': '20 avril 2026',
+  'mock.report.r1.reviewed': '21 avril 2026',
+  'mock.report.r1.final': '22 avril 2026',
+  'mock.report.r2.description':
+    'Contact bloqué dès que le paiement a été reçu. Aucune réponse depuis ce jour-là, plusieurs tentatives de relance restées sans suite.',
+  'mock.report.r2.date': 'hier',
+  'mock.report.r2.submitted': '23 avril 2026',
+  'mock.report.r3.description':
+    'Produit reçu ne correspond pas du tout à la description sur le site. Différence majeure de couleur, taille et matériau.',
+  'mock.report.r3.date': 'il y a 5 jours',
+  'mock.report.r3.submitted': '18 avril 2026',
+  'mock.report.r3.reviewed': '19 avril 2026',
+  'mock.report.r3.moderationNote':
+    'Merci d’ajouter une preuve d’achat (facture ou reçu) pour finaliser la publication.',
+  'mock.report.r4.description':
+    'Se fait passer pour un marchand officiel pour soutirer des informations bancaires.',
+  'mock.report.r4.date': 'il y a 2 semaines',
+  'mock.report.r4.submitted': '11 avril 2026',
+  'mock.report.r4.reviewed': '12 avril 2026',
+  'mock.report.r4.final': '13 avril 2026',
+  'mock.report.r4.moderationNote':
+    'Preuves insuffisantes pour confirmer l’usurpation. Merci d’apporter des éléments supplémentaires.',
+
+  // ===== Timeline (mes-signalements/[id]) =====
+  'timeline.sent': 'Signalement envoyé',
+  'timeline.reviewing': 'En cours d’examen',
+  'timeline.decision': 'Décision',
+  'timeline.published': 'Publié',
+  'timeline.toFix': 'À corriger',
+  'timeline.rejected': 'Refusé',
+  'timeline.pending': 'En attente',
+
+  // ===== /mes-signalements/[id] page =====
+  'reportDetail.title': 'Détail du signalement',
+  'reportDetail.id': 'Signalement #{id}',
+  'reportDetail.subtitle': '{channel} — soumis le {date}',
+  'reportDetail.timeline': 'Timeline',
+  'reportDetail.moderatorMessage': 'Message du modérateur',
+  'reportDetail.description': 'Description',
+  'reportDetail.proofs': 'Preuves fournies',
+  'reportDetail.info': 'Informations',
+  'reportDetail.info.type': 'Type',
+  'reportDetail.info.problem': 'Problème',
+  'reportDetail.info.amount': 'Montant',
+  'reportDetail.info.status': 'Statut',
+  'reportDetail.btn.edit': 'Modifier',
+  'reportDetail.btn.delete': 'Supprimer',
+  'reportDetail.backLabel': 'Mes signalements',
 };
 
 const en: Dict = {
@@ -2728,6 +2795,73 @@ const en: Dict = {
   'notifModal.close': 'Close',
   'notifModal.disclaimer':
     'Preferences are saved locally. Server sync coming soon.',
+
+  // ===== Mock data — alerts =====
+  'mock.alert.a1.summary': '2 new reports on this number this week.',
+  'mock.alert.a1.message': 'A new report has been published.',
+  'mock.alert.a1.date': '2h ago',
+  'mock.alert.a1.lastReport': '2 hours ago',
+  'mock.alert.a2.summary': 'Watch: 1 new "non-compliant product" report.',
+  'mock.alert.a2.message': 'A new report has been published.',
+  'mock.alert.a2.date': '5h ago',
+  'mock.alert.a2.lastReport': '5 hours ago',
+  'mock.alert.a3.summary': '"Blocked after payment" report added yesterday.',
+  'mock.alert.a3.message': 'A new report has been published.',
+  'mock.alert.a3.date': 'yesterday',
+  'mock.alert.a3.lastReport': 'yesterday',
+
+  // ===== Mock data — user reports =====
+  'mock.report.r1.description':
+    'Order placed on April 1st; seller never delivered and has stopped replying to my messages for 3 weeks despite several follow-ups.',
+  'mock.report.r1.date': '3 days ago',
+  'mock.report.r1.submitted': '20 April 2026',
+  'mock.report.r1.reviewed': '21 April 2026',
+  'mock.report.r1.final': '22 April 2026',
+  'mock.report.r2.description':
+    'Contact blocked me as soon as payment went through. No reply since, multiple follow-up attempts went unanswered.',
+  'mock.report.r2.date': 'yesterday',
+  'mock.report.r2.submitted': '23 April 2026',
+  'mock.report.r3.description':
+    'Item received doesn’t match the description on the site at all. Major difference in colour, size and material.',
+  'mock.report.r3.date': '5 days ago',
+  'mock.report.r3.submitted': '18 April 2026',
+  'mock.report.r3.reviewed': '19 April 2026',
+  'mock.report.r3.moderationNote':
+    'Please add a proof of purchase (invoice or receipt) to finalise publication.',
+  'mock.report.r4.description':
+    'Impersonates an official merchant to extract banking information.',
+  'mock.report.r4.date': '2 weeks ago',
+  'mock.report.r4.submitted': '11 April 2026',
+  'mock.report.r4.reviewed': '12 April 2026',
+  'mock.report.r4.final': '13 April 2026',
+  'mock.report.r4.moderationNote':
+    'Insufficient evidence to confirm impersonation. Please provide additional elements.',
+
+  // ===== Timeline =====
+  'timeline.sent': 'Report submitted',
+  'timeline.reviewing': 'Under review',
+  'timeline.decision': 'Decision',
+  'timeline.published': 'Published',
+  'timeline.toFix': 'Needs fix',
+  'timeline.rejected': 'Rejected',
+  'timeline.pending': 'Pending',
+
+  // ===== /mes-signalements/[id] page =====
+  'reportDetail.title': 'Report details',
+  'reportDetail.id': 'Report #{id}',
+  'reportDetail.subtitle': '{channel} — submitted on {date}',
+  'reportDetail.timeline': 'Timeline',
+  'reportDetail.moderatorMessage': 'Moderator note',
+  'reportDetail.description': 'Description',
+  'reportDetail.proofs': 'Submitted evidence',
+  'reportDetail.info': 'Information',
+  'reportDetail.info.type': 'Type',
+  'reportDetail.info.problem': 'Problem',
+  'reportDetail.info.amount': 'Amount',
+  'reportDetail.info.status': 'Status',
+  'reportDetail.btn.edit': 'Edit',
+  'reportDetail.btn.delete': 'Delete',
+  'reportDetail.backLabel': 'My reports',
 };
 
 const ar: Dict = {
@@ -4072,6 +4206,73 @@ const ar: Dict = {
   'notifModal.close': 'إغلاق',
   'notifModal.disclaimer':
     'يتم حفظ التفضيلات محلياً. مزامنة الخادم قريباً.',
+
+  // ===== Mock data — alerts =====
+  'mock.alert.a1.summary': 'بلاغان جديدان على هذا الرقم خلال هذا الأسبوع.',
+  'mock.alert.a1.message': 'تم نشر بلاغ جديد.',
+  'mock.alert.a1.date': 'منذ ساعتين',
+  'mock.alert.a1.lastReport': 'منذ ساعتين',
+  'mock.alert.a2.summary': 'يقظة : بلاغ جديد «منتج غير مطابق».',
+  'mock.alert.a2.message': 'تم نشر بلاغ جديد.',
+  'mock.alert.a2.date': 'منذ 5 ساعات',
+  'mock.alert.a2.lastReport': 'منذ 5 ساعات',
+  'mock.alert.a3.summary': 'بلاغ «الحجب بعد الدفع» أُضيف أمس.',
+  'mock.alert.a3.message': 'تم نشر بلاغ جديد.',
+  'mock.alert.a3.date': 'أمس',
+  'mock.alert.a3.lastReport': 'أمس',
+
+  // ===== Mock data — user reports =====
+  'mock.report.r1.description':
+    'طلب تم بتاريخ 1 أبريل، البائع لم يسلّم المنتج ولم يعد يرد على رسائلي منذ 3 أسابيع رغم عدة محاولات.',
+  'mock.report.r1.date': 'منذ 3 أيام',
+  'mock.report.r1.submitted': '20 أبريل 2026',
+  'mock.report.r1.reviewed': '21 أبريل 2026',
+  'mock.report.r1.final': '22 أبريل 2026',
+  'mock.report.r2.description':
+    'تم حجبي بمجرد استلام الدفع. لا رد منذ ذلك اليوم رغم عدة محاولات تواصل.',
+  'mock.report.r2.date': 'أمس',
+  'mock.report.r2.submitted': '23 أبريل 2026',
+  'mock.report.r3.description':
+    'المنتج المستلم لا يطابق الوصف الموجود على الموقع إطلاقاً. اختلاف كبير في اللون والمقاس والمادة.',
+  'mock.report.r3.date': 'منذ 5 أيام',
+  'mock.report.r3.submitted': '18 أبريل 2026',
+  'mock.report.r3.reviewed': '19 أبريل 2026',
+  'mock.report.r3.moderationNote':
+    'يرجى إرفاق إثبات شراء (فاتورة أو إيصال) لإتمام النشر.',
+  'mock.report.r4.description':
+    'ينتحل صفة تاجر رسمي لانتزاع معلومات بنكية.',
+  'mock.report.r4.date': 'منذ أسبوعين',
+  'mock.report.r4.submitted': '11 أبريل 2026',
+  'mock.report.r4.reviewed': '12 أبريل 2026',
+  'mock.report.r4.final': '13 أبريل 2026',
+  'mock.report.r4.moderationNote':
+    'الأدلة غير كافية لتأكيد الانتحال. يرجى تقديم عناصر إضافية.',
+
+  // ===== Timeline =====
+  'timeline.sent': 'تم إرسال البلاغ',
+  'timeline.reviewing': 'قيد المراجعة',
+  'timeline.decision': 'القرار',
+  'timeline.published': 'منشور',
+  'timeline.toFix': 'بحاجة إلى تصحيح',
+  'timeline.rejected': 'مرفوض',
+  'timeline.pending': 'قيد الانتظار',
+
+  // ===== /mes-signalements/[id] page =====
+  'reportDetail.title': 'تفاصيل البلاغ',
+  'reportDetail.id': 'بلاغ #{id}',
+  'reportDetail.subtitle': '{channel} — أُرسل بتاريخ {date}',
+  'reportDetail.timeline': 'الجدول الزمني',
+  'reportDetail.moderatorMessage': 'ملاحظة المُراجِع',
+  'reportDetail.description': 'الوصف',
+  'reportDetail.proofs': 'الأدلة المُرفقة',
+  'reportDetail.info': 'معلومات',
+  'reportDetail.info.type': 'النوع',
+  'reportDetail.info.problem': 'المشكلة',
+  'reportDetail.info.amount': 'المبلغ',
+  'reportDetail.info.status': 'الحالة',
+  'reportDetail.btn.edit': 'تعديل',
+  'reportDetail.btn.delete': 'حذف',
+  'reportDetail.backLabel': 'بلاغاتي',
 };
 
 export const MESSAGES: Record<Locale, Dict> = { fr, en, ar };

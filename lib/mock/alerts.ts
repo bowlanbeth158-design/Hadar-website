@@ -9,14 +9,14 @@ export type Alert = {
   id: string;
   channel: Channel;
   contact: string;
-  /** Long copy used on the list page card. */
-  summary: string;
-  /** Short copy used inside the header popover. */
-  message: string;
-  /** Compact relative date used on the list page card (e.g. "il y a 2h"). */
-  date: string;
-  /** Long relative time used in the popover and the expanded panel. */
-  lastReportRelative: string;
+  /** i18n key — long copy used on the list page card. */
+  summaryKey: string;
+  /** i18n key — short copy used inside the header popover. */
+  messageKey: string;
+  /** i18n key — compact relative date used on the list page card. */
+  dateKey: string;
+  /** i18n key — long relative time used in the popover and the expanded panel. */
+  lastReportRelativeKey: string;
   count: number;
   risk: RiskLevel;
   status: AlertStatus;
@@ -36,16 +36,19 @@ export const CHANNEL_ICON: Record<Channel, LucideIcon> = {
 };
 
 // Shared mock data — used by AlertsPopover (header) and MesAlertesList (page)
-// so both views stay in sync. Replace with /api/alerts when the backend lands.
+// so both views stay in sync. All free-text fields point to i18n keys so the
+// content follows the active locale. Replace with /api/alerts when the
+// backend lands; in production these strings will come from the API and
+// be served already-localised per the user's preferred locale.
 export const DEMO_ALERTS: Alert[] = [
   {
     id: '1',
     channel: 'phone',
     contact: '212 600 00 00 00',
-    summary: '2 nouveaux signalements sur ce numéro cette semaine.',
-    message: 'Un nouveau signalement a été publié.',
-    date: 'il y a 2h',
-    lastReportRelative: 'il y a 2 heures',
+    summaryKey: 'mock.alert.a1.summary',
+    messageKey: 'mock.alert.a1.message',
+    dateKey: 'mock.alert.a1.date',
+    lastReportRelativeKey: 'mock.alert.a1.lastReport',
     count: 5,
     risk: 'high',
     status: 'active',
@@ -60,10 +63,10 @@ export const DEMO_ALERTS: Alert[] = [
     id: '2',
     channel: 'web',
     contact: 'www.mushtarik.com',
-    summary: 'Vigilance : 1 nouveau signalement « Produit non conforme ».',
-    message: 'Un nouveau signalement a été publié.',
-    date: 'il y a 5h',
-    lastReportRelative: 'il y a 5 heures',
+    summaryKey: 'mock.alert.a2.summary',
+    messageKey: 'mock.alert.a2.message',
+    dateKey: 'mock.alert.a2.date',
+    lastReportRelativeKey: 'mock.alert.a2.lastReport',
     count: 1,
     risk: 'vigilance',
     status: 'active',
@@ -78,10 +81,10 @@ export const DEMO_ALERTS: Alert[] = [
     id: '3',
     channel: 'rib',
     contact: '50XX XXXX XXXX XX86',
-    summary: 'Signalement « Bloqué après paiement » ajouté hier.',
-    message: 'Un nouveau signalement a été publié.',
-    date: 'hier',
-    lastReportRelative: 'hier',
+    summaryKey: 'mock.alert.a3.summary',
+    messageKey: 'mock.alert.a3.message',
+    dateKey: 'mock.alert.a3.date',
+    lastReportRelativeKey: 'mock.alert.a3.lastReport',
     count: 3,
     risk: 'moderate',
     status: 'active',

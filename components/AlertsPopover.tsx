@@ -121,11 +121,11 @@ export function AlertsPopover({
                           <Icon className="h-4 w-4 text-gray-400 shrink-0" aria-hidden />
                           <span className="truncate">{alert.contact}</span>
                         </div>
-                        <p className="text-xs text-gray-500 mt-0.5">{alert.message}</p>
+                        <p className="text-xs text-gray-500 mt-0.5">{t(alert.messageKey)}</p>
                         <div className="flex items-center justify-between mt-2 text-xs">
                           <span className="text-gray-400 inline-flex items-center gap-1">
                             <Clock3 className="h-3 w-3" aria-hidden />
-                            {alert.lastReportRelative}
+                            {t(alert.lastReportRelativeKey)}
                           </span>
                           <span className="text-brand-blue font-semibold group-hover:underline">
                             {t('alerts.viewDetails')}

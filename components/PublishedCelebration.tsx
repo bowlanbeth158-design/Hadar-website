@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { PartyPopper, Sparkles, ArrowRight } from 'lucide-react';
+import { useI18n } from '@/lib/i18n/provider';
 
 const CONFETTI_COLORS = [
   '#22C45E', // green-500 (brand alert green)
@@ -66,11 +67,15 @@ function ConfettiRain({ count = 80, lifetimeMs = 5000 }: { count?: number; lifet
 }
 
 export function PublishedCelebration() {
+  const { t, dir } = useI18n();
   return (
     <>
       <ConfettiRain />
 
-      <div className="relative mb-6 overflow-hidden rounded-2xl bg-gradient-to-r from-green-500 via-emerald-500 to-green-600 text-white shadow-glow-green animate-fade-in-down">
+      <div
+        dir={dir}
+        className="relative mb-6 overflow-hidden rounded-2xl bg-gradient-to-r from-green-500 via-emerald-500 to-green-600 text-white shadow-glow-green animate-fade-in-down"
+      >
         {/* Decorative sparkles */}
         <Sparkles
           className="pointer-events-none absolute top-3 right-6 h-5 w-5 text-white/80 animate-sparkle-pop"
@@ -94,11 +99,10 @@ export function PublishedCelebration() {
             </span>
             <div className="min-w-0">
               <p className="text-lg md:text-xl font-bold leading-tight">
-                Félicitations ! Votre signalement est publié.
+                {t('publishedCelebration.title')}
               </p>
               <p className="mt-1 text-sm text-white/90">
-                Merci d&apos;aider la communauté Hadar à rester vigilante. Continuez à signaler
-                — chaque signalement compte.
+                {t('publishedCelebration.body')}
               </p>
             </div>
           </div>
@@ -107,9 +111,9 @@ export function PublishedCelebration() {
             href="/signaler"
             className="group inline-flex items-center justify-center gap-1.5 rounded-pill bg-white text-green-700 px-5 py-2.5 text-sm font-bold shadow-md hover:shadow-lg hover:-translate-y-px transition-all duration-200 ease-out shrink-0"
           >
-            Signaler un autre cas
+            {t('publishedCelebration.cta')}
             <ArrowRight
-              className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
+              className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5 rtl:rotate-180"
               aria-hidden
             />
           </Link>

@@ -89,7 +89,7 @@ export function ReportDetailBody({ report }: { report: Report }) {
               {i > 0 && (
                 <span
                   aria-hidden
-                  className={`absolute left-0 right-1/2 top-3 h-[2px] ${
+                  className={`absolute start-0 end-1/2 top-3 h-[2px] ${
                     s.done ? 'bg-brand-blue' : 'bg-gray-200'
                   }`}
                 />
@@ -97,7 +97,7 @@ export function ReportDetailBody({ report }: { report: Report }) {
               {i < steps.length - 1 && (
                 <span
                   aria-hidden
-                  className={`absolute right-0 left-1/2 top-3 h-[2px] ${
+                  className={`absolute end-0 start-1/2 top-3 h-[2px] ${
                     steps[i + 1]?.done ? 'bg-brand-blue' : 'bg-gray-200'
                   }`}
                 />

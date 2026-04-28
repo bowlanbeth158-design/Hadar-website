@@ -1461,6 +1461,12 @@ const fr: Dict = {
   'timeline.rejected': 'Refusé',
   'timeline.pending': 'En attente',
 
+  // PublishedCelebration banner (top of /mes-signalements/[id] when published)
+  'publishedCelebration.title': 'Félicitations ! Votre signalement est publié.',
+  'publishedCelebration.body':
+    'Merci d\'aider la communauté Hadar à rester vigilante. Continuez à signaler — chaque signalement compte.',
+  'publishedCelebration.cta': 'Signaler un autre cas',
+
   // ===== /mes-signalements/[id] page =====
   'reportDetail.title': 'Détail du signalement',
   'reportDetail.id': 'Signalement #{id}',
@@ -2906,6 +2912,12 @@ const en: Dict = {
   'timeline.rejected': 'Rejected',
   'timeline.pending': 'Pending',
 
+  // PublishedCelebration banner
+  'publishedCelebration.title': 'Congratulations! Your report is published.',
+  'publishedCelebration.body':
+    'Thanks for helping the Hadar community stay alert. Keep reporting — every report matters.',
+  'publishedCelebration.cta': 'Report another case',
+
   // ===== /mes-signalements/[id] page =====
   'reportDetail.title': 'Report details',
   'reportDetail.id': 'Report #{id}',
@@ -4346,6 +4358,12 @@ const ar: Dict = {
   'timeline.toFix': 'بحاجة إلى تصحيح',
   'timeline.rejected': 'مرفوض',
   'timeline.pending': 'قيد الانتظار',
+
+  // PublishedCelebration banner
+  'publishedCelebration.title': 'تهانينا! تم نشر بلاغك.',
+  'publishedCelebration.body':
+    'شكراً لمساعدة مجتمع حذار على البقاء يقظاً. استمر في الإبلاغ — كل بلاغ يهم.',
+  'publishedCelebration.cta': 'الإبلاغ عن حالة أخرى',
 
   // ===== /mes-signalements/[id] page =====
   'reportDetail.title': 'تفاصيل البلاغ',

@@ -41,11 +41,14 @@ export function CountUp({ to, duration = 1200, prefix = '', suffix = '', decimal
       ? value.toFixed(decimals)
       : Math.round(value).toLocaleString('fr-FR');
 
+  // Force LTR direction on the number so RTL contexts (Arabic) don't
+  // reorder the prefix / suffix or the digit-spacing — "+10 000"
+  // must read "+10 000", not "000 10+".
   return (
-    <>
+    <span dir="ltr" className="inline-block">
       {prefix}
       {formatted}
       {suffix}
-    </>
+    </span>
   );
 }

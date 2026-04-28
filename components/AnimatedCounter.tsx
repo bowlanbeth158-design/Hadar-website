@@ -124,11 +124,18 @@ export function AnimatedCounter({ value, duration = 1400, className }: Props) {
   }, [target, duration]);
 
   if (target === null) {
-    return <span className={className}>{value}</span>;
+    return (
+      <span dir="ltr" className={`inline-block ${className ?? ''}`}>
+        {value}
+      </span>
+    );
   }
 
+  // dir="ltr" + inline-block keeps the digit cluster LTR even when
+  // the parent flow is RTL (Arabic). Otherwise "+12 408" would be
+  // reordered to "408 12+" by the bidi algorithm.
   return (
-    <span ref={ref} className={className}>
+    <span ref={ref} dir="ltr" className={`inline-block ${className ?? ''}`}>
       {parsed.prefix}
       {formatNumber(current, parsed.sep)}
       {parsed.suffix}

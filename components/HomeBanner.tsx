@@ -215,6 +215,160 @@ export function HomeBanner() {
             </Link>
           </div>
 
+          {/* MOBILE-ONLY visual block — desktop keeps the original
+              right-column layout untouched (hidden lg:block). On
+              phone we instead show a compact stacked version: a
+              smaller ambassador photo + the same 3 KPI cards in a
+              vertical column underneath. Inserted between the CTA
+              row and the "Sans inscription · Anonyme · Plateforme
+              marocaine" tagline so phone users still see the
+              person + the 3 supporting cards. */}
+          <div className="lg:hidden mt-10">
+            {/* Ambassador photo — compact centred copy of the
+                desktop dissolve recipe (two stacked images, the
+                lower one blurred, with a soft mask fading the
+                bottom into the page bg). */}
+            <div className="relative mx-auto w-[200px] aspect-[4/5]">
+              <div
+                aria-hidden
+                className="absolute inset-6 rounded-full bg-gradient-to-br from-brand-sky via-white to-brand-sky blur-2xl"
+              />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-2 w-3/5 h-8 rounded-[50%] bg-brand-navy/35 blur-xl"
+              />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={AMBASSADOR_IMAGE_URL}
+                alt=""
+                aria-hidden
+                className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top blur-md opacity-80 [mask-image:linear-gradient(to_bottom,transparent_50%,black_70%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_50%,black_70%,transparent_100%)]"
+              />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={AMBASSADOR_IMAGE_URL}
+                alt=""
+                aria-hidden
+                className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top [mask-image:linear-gradient(to_bottom,black_60%,transparent_85%)] [-webkit-mask-image:linear-gradient(to_bottom,black_60%,transparent_85%)]"
+              />
+            </div>
+
+            {/* 3 cards stacked — full-width, slightly tighter
+                padding than desktop. animate-float-soft is removed
+                here because the cards aren't floating around a
+                figure anymore. */}
+            <div className="mt-4 grid grid-cols-1 gap-3">
+              {/* Card 1 — Recherche instantanée */}
+              <div className="rounded-2xl border border-white/80 bg-gradient-to-br from-brand-sky/80 via-white to-brand-sky/30 shadow-glow-soft p-4">
+                <div className="flex items-center gap-2">
+                  <Sparkles
+                    className="h-5 w-5 text-brand-blue drop-shadow-sm animate-sparkle-pop"
+                    aria-hidden
+                  />
+                  <span className="text-base font-bold text-brand-navy">
+                    {t('home.banner.card1.title')}
+                  </span>
+                </div>
+                <p className="mt-1 text-xs text-gray-500">{t('home.banner.card1.subtitle')}</p>
+                <div
+                  aria-hidden
+                  className="mt-3 flex items-center gap-2 rounded-pill bg-white/90 backdrop-blur-sm border border-white shadow-sm px-3 py-2"
+                >
+                  <span className="flex-1 text-xs text-gray-400">
+                    {t('home.banner.card1.placeholder')}
+                  </span>
+                  <span className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-brand-navy to-brand-blue text-white shadow">
+                    <ArrowUp className="h-3.5 w-3.5" aria-hidden />
+                  </span>
+                </div>
+              </div>
+
+              {/* Card 2 — Utilisateurs rassurés */}
+              <div className="rounded-2xl border border-white/80 bg-gradient-to-br from-white via-brand-sky/40 to-brand-sky/70 shadow-glow-soft p-3.5">
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex -space-x-2">
+                    {RASSURES_AVATARS.map((a, i) => (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        key={i}
+                        src={a.src}
+                        alt={a.alt}
+                        aria-hidden={a.alt === ''}
+                        loading="lazy"
+                        decoding="async"
+                        className="h-7 w-7 rounded-full object-cover ring-2 ring-white shadow-sm"
+                      />
+                    ))}
+                  </div>
+                  <div className="inline-flex items-center gap-0.5 animate-stars-flash">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className="h-3.5 w-3.5 text-yellow-300 fill-yellow-300 animate-star-pop"
+                        style={{ animationDelay: `${i * 0.15}s` }}
+                        aria-hidden
+                      />
+                    ))}
+                  </div>
+                </div>
+                <p className="mt-2.5 text-sm font-bold text-brand-navy leading-tight">
+                  {t('home.banner.card2.title')}
+                </p>
+                <p className="mt-0.5 text-[11px] text-gray-500 tabular-nums">
+                  <CountUp to={300} duration={1800} prefix="+" /> {t('home.banner.card2.subtitle')}
+                </p>
+              </div>
+
+              {/* Card 3 — Alertes aujourd'hui */}
+              <div className="relative overflow-hidden rounded-2xl bg-white border border-gray-200 shadow-glow-soft p-4">
+                <div
+                  aria-hidden
+                  className={`pointer-events-none absolute -bottom-12 -right-12 rtl:right-auto rtl:-left-12 h-40 w-40 rounded-full blur-3xl animate-pulse ${haloClass}`}
+                />
+                <div className="relative">
+                  <div className="pb-2 border-b border-gray-100 flex items-center gap-1.5">
+                    <BellRing
+                      className="h-4 w-4 text-brand-blue animate-sparkle-pop"
+                      aria-hidden
+                    />
+                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                      {t('home.banner.card3.title')}
+                    </span>
+                  </div>
+                  <ul className="mt-2.5 space-y-2.5 text-xs">
+                    <li className="flex items-center justify-between">
+                      <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
+                        <span className="h-2.5 w-2.5 rounded-full bg-yellow-300 ring-2 ring-yellow-100" />
+                        {t(ALERT_LABEL_KEYS.vigilance)}
+                      </span>
+                      <span className="text-gray-500 tabular-nums">
+                        — <CountUp to={ALERTS_TODAY.vigilance} />
+                      </span>
+                    </li>
+                    <li className="flex items-center justify-between">
+                      <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
+                        <span className="h-2.5 w-2.5 rounded-full bg-orange-500 ring-2 ring-orange-100" />
+                        {t(ALERT_LABEL_KEYS.moderee)}
+                      </span>
+                      <span className="text-gray-500 tabular-nums">
+                        — <CountUp to={ALERTS_TODAY.moderee} />
+                      </span>
+                    </li>
+                    <li className="flex items-center justify-between">
+                      <span className="inline-flex items-center gap-2 font-semibold text-brand-navy">
+                        <span className="h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-red-100" />
+                        {t(ALERT_LABEL_KEYS.elevee)}
+                      </span>
+                      <span className="text-gray-500 tabular-nums">
+                        — <CountUp to={ALERTS_TODAY.elevee} />
+                      </span>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <p className="mt-8 md:mt-10 text-sm md:text-base text-gray-500">
             {t('home.banner.tagline.noSignup')} <span className="text-gray-300">•</span>{' '}
             {t('home.banner.tagline.anonymous')} <span className="text-gray-300">•</span>{' '}

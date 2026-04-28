@@ -173,7 +173,12 @@ export function timelineFor(report: Report): TimelineStep[] {
     return [
       sent,
       reviewing,
-      { labelKey: 'timeline.decision', dateKey: 'timeline.pending', color: 'bg-gray-200', done: false },
+      // Last step is the decision still being waited on. Painted
+      // yellow (not gray) so the animate-pulse-yellow halo behind
+      // it is actually visible — a gray dot with a pale yellow halo
+      // read as "no animation". done stays false so the incoming
+      // connector line stays gray (decision not yet rendered).
+      { labelKey: 'timeline.decision', dateKey: 'timeline.pending', color: 'bg-yellow-400', done: false },
     ];
   }
   if (report.status === 'publie') {

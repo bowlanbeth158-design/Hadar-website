@@ -397,7 +397,7 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
       {/* KPI cards — number rendered with the brand-navy → brand-blue
           gradient (bg-clip-text) so the figure pops with the platform
           identity instead of generic black. */}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {KPI_LABEL_KEYS.map((labelKey, i) => (
           <div
             key={labelKey}

@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Mail, Users, RefreshCw } from 'lucide-react';
+import { Mail, Users, RefreshCw, Apple, Play } from 'lucide-react';
 import { Logo } from './Logo';
 import {
   LinkedInIcon,
@@ -164,6 +164,47 @@ export function Footer() {
                 <Icon className="h-4 w-4" aria-hidden />
               </a>
             ))}
+          </div>
+
+          {/* App download — official store badges. Both buttons share
+              the standard "Download on the App Store" / "Get it on
+              Google Play" two-line layout: small caption on top,
+              store name in bold underneath, with the platform logo
+              on the start side. URLs are placeholders until the
+              apps are published. */}
+          <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-white/60">
+            {t('footer.app.title')}
+          </p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <a
+              href="#"
+              aria-label={`${t('footer.app.ios.line1')} ${t('footer.app.ios.line2')}`}
+              className="group inline-flex items-center gap-2 rounded-xl bg-black hover:bg-white/10 border border-white/15 hover:border-white/40 px-3 py-2 text-white transition-all hover:-translate-y-0.5"
+            >
+              <Apple className="h-6 w-6 fill-white shrink-0" aria-hidden />
+              <span className="flex flex-col leading-tight text-start">
+                <span className="text-[9px] uppercase tracking-wide text-white/70">
+                  {t('footer.app.ios.line1')}
+                </span>
+                <span className="text-sm font-semibold">{t('footer.app.ios.line2')}</span>
+              </span>
+            </a>
+            <a
+              href="#"
+              aria-label={`${t('footer.app.android.line1')} ${t('footer.app.android.line2')}`}
+              className="group inline-flex items-center gap-2 rounded-xl bg-black hover:bg-white/10 border border-white/15 hover:border-white/40 px-3 py-2 text-white transition-all hover:-translate-y-0.5"
+            >
+              <Play
+                className="h-6 w-6 fill-white shrink-0 rtl:-scale-x-100"
+                aria-hidden
+              />
+              <span className="flex flex-col leading-tight text-start">
+                <span className="text-[9px] uppercase tracking-wide text-white/70">
+                  {t('footer.app.android.line1')}
+                </span>
+                <span className="text-sm font-semibold">{t('footer.app.android.line2')}</span>
+              </span>
+            </a>
           </div>
         </div>
       </div>

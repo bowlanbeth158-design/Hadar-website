@@ -382,7 +382,7 @@ export function HomeBanner() {
             </div>
           </div>
 
-          <p className="mt-8 md:mt-10 text-sm md:text-base text-gray-500">
+          <p className="mt-8 md:mt-10 text-[11px] sm:text-sm md:text-base text-gray-500 whitespace-nowrap max-md:text-center">
             {t('home.banner.tagline.noSignup')} <span className="text-gray-300">•</span>{' '}
             {t('home.banner.tagline.anonymous')} <span className="text-gray-300">•</span>{' '}
             <span className="font-semibold text-brand-navy">

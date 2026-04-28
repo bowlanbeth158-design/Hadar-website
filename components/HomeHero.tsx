@@ -505,8 +505,12 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                     </span>
                     {t('home.hero.trust.instant')}
                   </span>
-                  <span className="text-gray-200" aria-hidden>·</span>
-                  <span className="inline-flex items-center gap-2 transition-transform hover:-translate-y-0.5">
+                  {/* "8 canaux couverts" — hidden on phone per owner
+                      request: the trust strip stays a 2-item line on
+                      mobile (chiffré + instantané) instead of wrapping
+                      onto a second line. Visible from md: upward. */}
+                  <span className="hidden md:inline text-gray-200" aria-hidden>·</span>
+                  <span className="hidden md:inline-flex items-center gap-2 transition-transform hover:-translate-y-0.5">
                     <span className="inline-flex h-7 min-w-[1.75rem] items-center justify-center rounded-full bg-gradient-to-br from-brand-sky via-blue-100 to-brand-sky text-brand-navy text-xs font-bold shadow-sm border border-brand-blue/30 px-1.5 animate-sparkle-pop">
                       8
                     </span>

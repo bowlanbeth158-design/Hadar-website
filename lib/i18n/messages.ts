@@ -1156,6 +1156,13 @@ const fr: Dict = {
   'userPages.demoBanner.body':
     '— cette page montre la structure de l’espace utilisateur. L’authentification sera activée prochainement. En attendant,',
   'userPages.demoBanner.cta': 'créez votre compte',
+
+  // ===== Legal / info page titles (markdown bodies are localised
+  //       per file via loadLegalLocalised) =====
+  'legalPage.cgu.title': 'Conditions générales d’utilisation',
+  'legalPage.privacy.title': 'Politique de confidentialité',
+  'legalPage.cookies.title': 'Données personnelles & cookies',
+  'legalPage.publishingRules.title': 'Règles de publication',
 };
 
 const en: Dict = {
@@ -2294,6 +2301,12 @@ const en: Dict = {
   'userPages.demoBanner.body':
     '— this page shows the structure of the user area. Authentication will be enabled soon. In the meantime,',
   'userPages.demoBanner.cta': 'create your account',
+
+  // ===== Legal / info page titles =====
+  'legalPage.cgu.title': 'Terms of service',
+  'legalPage.privacy.title': 'Privacy policy',
+  'legalPage.cookies.title': 'Personal data & cookies',
+  'legalPage.publishingRules.title': 'Publishing rules',
 };
 
 const ar: Dict = {
@@ -3433,6 +3446,12 @@ const ar: Dict = {
   'userPages.demoBanner.body':
     '— تعرض هذه الصفحة بنية فضاء المستخدم. سيتم تفعيل المصادقة قريباً. في غضون ذلك،',
   'userPages.demoBanner.cta': 'أنشئ حسابك',
+
+  // ===== Legal / info page titles =====
+  'legalPage.cgu.title': 'شروط الاستخدام',
+  'legalPage.privacy.title': 'سياسة الخصوصية',
+  'legalPage.cookies.title': 'البيانات الشخصية والكوكيز',
+  'legalPage.publishingRules.title': 'قواعد النشر',
 };
 
 export const MESSAGES: Record<Locale, Dict> = { fr, en, ar };

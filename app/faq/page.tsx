@@ -3,8 +3,7 @@ import { PageLayout } from '@/components/PageLayout';
 import { BackButton } from '@/components/BackButton';
 import { PageHeading } from '@/components/PageHeading';
 import { FaqAccordion } from '@/components/FaqAccordion';
-import { loadLegal } from '@/lib/loadLegal';
-import { parseFaq } from '@/lib/parseFaq';
+import { loadLegalLocalised } from '@/lib/loadLegal';
 
 export const metadata: Metadata = {
   title: 'FAQ',
@@ -12,8 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default async function Page() {
-  const md = await loadLegal('03-faq.md');
-  const items = parseFaq(md);
+  const md = await loadLegalLocalised('03-faq.md');
 
   return (
     <PageLayout>
@@ -25,7 +23,7 @@ export default async function Page() {
         subtitleKey="faqPage.subtitle"
         accent="gradient"
       />
-      <FaqAccordion items={items} />
+      <FaqAccordion markdownByLocale={md} />
     </PageLayout>
   );
 }

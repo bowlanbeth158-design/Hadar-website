@@ -505,7 +505,35 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                 </div>
 
                 {showResult && (
-                  <SearchResult query={submitted!.query} contactType={submitted!.type} />
+                  <SearchResult
+                    query={submitted!.query}
+                    contactType={submitted!.type}
+                    onAgain={() => {
+                      // Clear the typed query + collapse the result, then
+                      // scroll the search section back into view and focus
+                      // the input so the user can launch the next search
+                      // without scrolling.
+                      setInputValue('');
+                      setSubmitted(null);
+                      setFormatError(null);
+                      syncUrl('', selected);
+                      if (typeof window !== 'undefined') {
+                        const target = document.getElementById('recherche');
+                        if (target) {
+                          const y =
+                            target.getBoundingClientRect().top + window.scrollY - 88;
+                          window.scrollTo({ top: y, behavior: 'smooth' });
+                        }
+                        // Focus the search input after the scroll completes.
+                        setTimeout(() => {
+                          const input = document.querySelector<HTMLInputElement>(
+                            'input[name="q"]',
+                          );
+                          input?.focus();
+                        }, 600);
+                      }
+                    }}
+                  />
                 )}
               </div>
             </div>

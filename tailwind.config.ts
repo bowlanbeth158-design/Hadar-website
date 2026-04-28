@@ -271,6 +271,14 @@ const config: Config = {
           '70%':  { boxShadow: '0 0 0 6px rgba(0, 120, 186, 0)',    filter: 'brightness(1.02)' },
           '100%': { boxShadow: '0 0 0 0 rgba(0, 120, 186, 0)',     filter: 'brightness(1)' },
         },
+        // SearchResult aura — opacity + scale couple, 6 s loop.
+        // Two stacked instances with different animation-delays
+        // make the wash behind the result feel alive without being
+        // distracting.
+        'result-breath': {
+          '0%, 100%': { opacity: '0.55', transform: 'scale(0.95)' },
+          '50%':      { opacity: '0.95', transform: 'scale(1.05)' },
+        },
       },
       animation: {
         'alert-pulse': 'alert-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite',
@@ -292,6 +300,12 @@ const config: Config = {
         // 9 s loop matches `cards * 1500ms` stagger so the highlight
         // visits every card exactly once per cycle in a smooth ripple.
         'card-spotlight': 'card-spotlight 9s ease-in-out infinite',
+        // Slow breathing halo for the SearchResult aura — opacity +
+        // scale couple on a 6 s ease-in-out loop so the colour wash
+        // behind the result pulses gently instead of being a static
+        // blur. Pairs well with whatever tint the active risk level
+        // applies on top.
+        'result-breath': 'result-breath 6s ease-in-out infinite',
         // Banner trust badges — paired "breath + halo bloom" running
         // on the same 8 s clock; per-badge animationDelay of
         // `i * 2000ms` (4 badges × 2 s = 8 s) makes the pulse ripple

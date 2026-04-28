@@ -1017,6 +1017,10 @@ const fr: Dict = {
   'home.searchResult.time.years': 'il y a {n} ans',
   'home.searchResult.follow.follow': 'Suivre ce contact',
   'home.searchResult.follow.followed': 'Suivi · vous recevrez les alertes',
+  'home.searchResult.again': 'Vérifier un autre contact',
+  'home.searchResult.trust.encrypted': 'Chiffré',
+  'home.searchResult.trust.live': 'Mis à jour en direct',
+  'home.searchResult.trust.alerts': 'Alertes en temps réel',
   'home.hero.error.format':
     'Le format ne correspond pas au type sélectionné « {type} » — {example}',
 
@@ -2455,6 +2459,10 @@ const en: Dict = {
   'home.searchResult.time.years': '{n} years ago',
   'home.searchResult.follow.follow': 'Follow this contact',
   'home.searchResult.follow.followed': 'Following · you will get alerts',
+  'home.searchResult.again': 'Check another contact',
+  'home.searchResult.trust.encrypted': 'Encrypted',
+  'home.searchResult.trust.live': 'Live updates',
+  'home.searchResult.trust.alerts': 'Real-time alerts',
   'home.hero.error.format':
     'The format does not match the selected type "{type}" — {example}',
 
@@ -3875,6 +3883,10 @@ const ar: Dict = {
   'home.searchResult.time.years': 'منذ {n} سنوات',
   'home.searchResult.follow.follow': 'متابعة هذه الجهة',
   'home.searchResult.follow.followed': 'تتم المتابعة · ستصلك التنبيهات',
+  'home.searchResult.again': 'تحقق من جهة اتصال أخرى',
+  'home.searchResult.trust.encrypted': 'مشفّر',
+  'home.searchResult.trust.live': 'تحديث مباشر',
+  'home.searchResult.trust.alerts': 'تنبيهات فورية',
   'home.hero.error.format':
     'الصيغة لا تطابق النوع المحدد «{type}» — {example}',
 

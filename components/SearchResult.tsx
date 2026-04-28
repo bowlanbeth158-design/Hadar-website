@@ -10,6 +10,9 @@ import {
   Gauge,
   Bell,
   BellRing,
+  Sparkles,
+  RotateCw,
+  ShieldCheck,
   type LucideIcon,
 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/provider';
@@ -21,6 +24,10 @@ type Props = {
    * alongside the query in the follow list so the Mes alertes page
    * later knows how to render the followed contact. */
   contactType: string;
+  /** Optional callback when the user clicks "Vérifier un autre contact".
+   * The host (HomeHero) clears its input + scrolls the search section
+   * back into view so the user can immediately start the next query. */
+  onAgain?: () => void;
 };
 
 type RiskLevel = 'faible' | 'vigilance' | 'modere' | 'eleve';
@@ -212,7 +219,7 @@ function useFormatRelativeTime() {
   };
 }
 
-export function SearchResult({ query, contactType }: Props) {
+export function SearchResult({ query, contactType, onAgain }: Props) {
   const { t } = useI18n();
   const formatRelativeTime = useFormatRelativeTime();
   const demo = getDemo(query);
@@ -241,16 +248,28 @@ export function SearchResult({ query, contactType }: Props) {
     >
       <p className="sr-only">{t('home.searchResult.aria.queryFor', { query })}</p>
 
-      {/* Risk-coloured aura behind the whole result block — soft blur,
-          tint the section in the matching risk colour so the eye picks
-          up the verdict before reading any text. */}
+      {/* Risk-coloured aura behind the whole result block — two
+          stacked layers that breathe at slightly different paces so
+          the wash never feels static, plus a third low-opacity layer
+          drifting behind for extra depth. The eye picks up the
+          verdict colour before reading any text. */}
       <div
         aria-hidden
-        className={`pointer-events-none absolute -inset-4 rounded-[2rem] ${cfg.cardAuraBg} blur-3xl opacity-80 -z-10`}
+        className={`pointer-events-none absolute -inset-6 rounded-[2.5rem] ${cfg.cardAuraBg} blur-3xl animate-result-breath -z-10`}
+      />
+      <div
+        aria-hidden
+        className={`pointer-events-none absolute -inset-2 rounded-[2rem] ${cfg.cardAuraBg} blur-2xl opacity-50 animate-result-breath -z-10`}
+        style={{ animationDelay: '1.5s' }}
       />
 
-      {/* Headline pill */}
-      <div className="flex justify-center mb-4">
+      {/* Headline pill — first in the cascade entrance: pops in with a
+          short delay so the user perceives the verdict landing before
+          the rest of the card unfolds. */}
+      <div
+        className="flex justify-center mb-4 animate-fade-in-down"
+        style={{ animationDelay: '0ms', animationFillMode: 'both' }}
+      >
         <div
           className={`inline-flex items-center gap-2 rounded-pill ${cfg.pillBg} ${cfg.pillText} border ${cfg.pillBorder} px-4 py-2 text-sm font-semibold ${cfg.pillGlow} ${cfg.pillAnim}`}
         >
@@ -268,7 +287,10 @@ export function SearchResult({ query, contactType }: Props) {
                 active dot.
           Each chip sits on a backdrop-blurred white surface with a
           brand-blue ring + glow so they pop against the page wash. */}
-      <div className="flex items-center justify-center gap-2 mb-6 flex-wrap">
+      <div
+        className="flex items-center justify-center gap-2 mb-6 flex-wrap animate-fade-in-down"
+        style={{ animationDelay: '120ms', animationFillMode: 'both' }}
+      >
         <span className="inline-flex items-center gap-2 rounded-pill bg-white/80 backdrop-blur-sm border border-brand-blue/20 px-3.5 py-1.5 text-sm shadow-glow-soft">
           <span
             aria-hidden
@@ -332,7 +354,10 @@ export function SearchResult({ query, contactType }: Props) {
           on this contact later. Hidden until the hook hydrates so we
           don't flash the wrong "Suivre / Suivi" state on first paint. */}
       {hydrated && (
-        <div className="flex justify-center mb-6">
+        <div
+          className="flex justify-center mb-6 animate-fade-in-down"
+          style={{ animationDelay: '240ms', animationFillMode: 'both' }}
+        >
           <button
             type="button"
             onClick={toggleFollow}
@@ -365,12 +390,22 @@ export function SearchResult({ query, contactType }: Props) {
         {KPI_LABEL_KEYS.map((labelKey, i) => (
           <div
             key={labelKey}
-            className="rounded-2xl bg-white border border-gray-200 p-5 text-center shadow-glow-soft"
+            className="group rounded-2xl bg-white border border-gray-200 p-5 text-center shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1 hover:border-brand-blue/40 transition-all duration-300 ease-out animate-fade-in-down"
+            // Cascade the 4 KPI cards in 80 ms steps starting at 360 ms,
+            // i.e. AFTER the headline pill, info chips and follow CTA
+            // have already landed — feels like the verdict computes
+            // section by section.
+            style={{
+              animationDelay: `${360 + i * 80}ms`,
+              animationFillMode: 'both',
+            }}
           >
-            <p className="text-4xl font-bold tabular-nums bg-grad-stat-navy bg-clip-text text-transparent">
+            <p className="text-4xl font-bold tabular-nums bg-grad-stat-navy bg-clip-text text-transparent group-hover:scale-110 transition-transform duration-300">
               {demo.kpis[i] ?? 0}
             </p>
-            <p className="mt-1 text-sm text-gray-500">{t(labelKey)}</p>
+            <p className="mt-1 text-sm text-gray-500 group-hover:text-brand-navy transition-colors">
+              {t(labelKey)}
+            </p>
           </div>
         ))}
       </div>
@@ -378,11 +413,14 @@ export function SearchResult({ query, contactType }: Props) {
       {/* Bottom message — risk-coloured pill with a shimmer light passing
           across so it reads as freshly computed. Pill style mirrors the
           headline pill so the section feels framed by the same colour
-          on top and bottom. */}
-      <div className="mt-6 flex justify-center">
+          on top and bottom. Lands AFTER the KPI cascade (≈740 ms).*/}
+      <div
+        className="mt-6 flex justify-center animate-fade-in-down"
+        style={{ animationDelay: '740ms', animationFillMode: 'both' }}
+      >
         <span
           key={`msg-${demo.risk}`}
-          className={`relative inline-flex items-center rounded-pill ${cfg.pillBg} ${cfg.pillText} border ${cfg.pillBorder} px-5 py-2.5 text-sm font-semibold ${cfg.pillGlow} overflow-hidden animate-fade-in-down`}
+          className={`relative inline-flex items-center rounded-pill ${cfg.pillBg} ${cfg.pillText} border ${cfg.pillBorder} px-5 py-2.5 text-sm font-semibold ${cfg.pillGlow} overflow-hidden`}
         >
           <span className="relative z-10">{t(cfg.messageKey)}</span>
           <span
@@ -390,6 +428,64 @@ export function SearchResult({ query, contactType }: Props) {
             className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/70 to-transparent skew-x-[-20deg] animate-shimmer"
           />
         </span>
+      </div>
+
+      {/* "Vérifier un autre contact" CTA — pushes the user towards
+          the next search. Lands last in the cascade (≈860 ms) so it
+          reads as the natural next step once the verdict is in.
+          Calls onAgain() if provided so the host (HomeHero) can
+          clear its input and scroll the search section back into
+          view; falls back to a smooth scroll when no callback. */}
+      <div
+        className="mt-6 flex flex-col items-center gap-2 animate-fade-in-down"
+        style={{ animationDelay: '860ms', animationFillMode: 'both' }}
+      >
+        <button
+          type="button"
+          onClick={() => {
+            if (onAgain) {
+              onAgain();
+            } else if (typeof window !== 'undefined') {
+              const target = document.getElementById('recherche');
+              if (target) {
+                const y = target.getBoundingClientRect().top + window.scrollY - 88;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+              }
+            }
+          }}
+          className="group inline-flex items-center gap-2 rounded-pill bg-gradient-to-r from-brand-navy via-brand-blue to-brand-navy text-white px-6 py-2.5 text-sm font-semibold shadow-glow-blue hover:shadow-glow-navy hover:scale-[1.04] transition-all duration-300 ease-out overflow-hidden relative"
+        >
+          <RotateCw
+            className="h-4 w-4 transition-transform duration-500 group-hover:rotate-180"
+            aria-hidden
+          />
+          <span className="relative z-10">{t('home.searchResult.again')}</span>
+          {/* Shimmer wipe across the button on hover. */}
+          <span
+            aria-hidden
+            className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/35 to-transparent skew-x-[-20deg] opacity-0 group-hover:opacity-100 group-hover:animate-shimmer rounded-pill"
+          />
+        </button>
+
+        {/* Trust strip — tiny static social-proof line so the user
+            sees that "vérifier" is a worthwhile, frequent action.
+            Three icons, three counters, all tinted navy. */}
+        <p className="mt-3 inline-flex items-center gap-3 text-[11px] text-gray-500">
+          <span className="inline-flex items-center gap-1">
+            <ShieldCheck className="h-3 w-3 text-green-600 animate-sparkle-pop" aria-hidden />
+            {t('home.searchResult.trust.encrypted')}
+          </span>
+          <span aria-hidden className="text-gray-300">·</span>
+          <span className="inline-flex items-center gap-1">
+            <Sparkles className="h-3 w-3 text-brand-blue animate-sparkle-pop" aria-hidden />
+            {t('home.searchResult.trust.live')}
+          </span>
+          <span aria-hidden className="text-gray-300">·</span>
+          <span className="inline-flex items-center gap-1">
+            <Bell className="h-3 w-3 text-orange-500 animate-sparkle-pop" aria-hidden />
+            {t('home.searchResult.trust.alerts')}
+          </span>
+        </p>
       </div>
     </div>
   );

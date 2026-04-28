@@ -10,8 +10,6 @@ import { DeleteAccountSection } from './DeleteAccountSection';
 import { useI18n } from '@/lib/i18n/provider';
 
 const PROFILE = {
-  firstName: 'Mohamed Ossama',
-  lastName: 'MOUSSAOUI',
   /** Email used at sign-up — read-only. All transactional mails go here. */
   email: 'mohamedossama.moussaoui@gmail.com',
   /** Phone number — verified via WhatsApp 5-digit code. */
@@ -23,7 +21,6 @@ const PROFILE = {
     sent: 5,
     published: 5,
     verifications: 26,
-    lastReport: 'Il y a 2h',
   },
 };
 
@@ -32,7 +29,16 @@ const PROFILE = {
 // the parent page having to drop its metadata export.
 export function MonProfilBody() {
   const { t } = useI18n();
-  const initials = `${PROFILE.firstName[0] ?? ''}${PROFILE.lastName[0] ?? ''}`.toUpperCase();
+  // Display name follows the active locale (Latin spelling for FR/EN,
+  // Arabic script for AR). In production this comes from the user
+  // record; for the demo it lives in messages.ts as profile.demo.*.
+  const firstName = t('profile.demo.firstName');
+  const lastName = t('profile.demo.lastName');
+  // Initials: take first character of each (handles non-Latin
+  // codepoints correctly via Array.from + Intl-friendly logic).
+  const firstChar = Array.from(firstName)[0] ?? '';
+  const lastChar = Array.from(lastName)[0] ?? '';
+  const initials = `${firstChar}${lastChar}`.toUpperCase();
   const badgeLabel = t('profile.badge.regular');
 
   return (
@@ -43,8 +49,8 @@ export function MonProfilBody() {
           <AvatarUpload initials={initials} />
 
           <ProfileIdentity
-            firstName={PROFILE.firstName}
-            lastName={PROFILE.lastName}
+            firstName={firstName}
+            lastName={lastName}
             badge={badgeLabel}
             badgeKey={PROFILE.badgeKey}
             badgeStars={PROFILE.badgeStars}
@@ -96,8 +102,8 @@ export function MonProfilBody() {
           </p>
 
           <div className="grid sm:grid-cols-2 gap-4">
-            <Field label={t('profile.field.firstName')} name="firstName" defaultValue={PROFILE.firstName} />
-            <Field label={t('profile.field.lastName')} name="lastName" defaultValue={PROFILE.lastName} />
+            <Field label={t('profile.field.firstName')} name="firstName" defaultValue={firstName} />
+            <Field label={t('profile.field.lastName')} name="lastName" defaultValue={lastName} />
             <div className="sm:col-span-2">
               <PhoneVerifyField
                 defaultValue={PROFILE.phone}

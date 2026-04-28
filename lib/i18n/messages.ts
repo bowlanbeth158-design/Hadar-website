@@ -1229,6 +1229,78 @@ const fr: Dict = {
   'profile.dangerZone.deleted.backHome': "Retour à l'accueil",
   'profile.dangerZone.happy.title': 'Merci de rester avec nous ! 💚',
   'profile.dangerZone.happy.body': 'Votre vigilance protège la communauté. À tout de suite.',
+
+  // Demo profile name — translated per locale so the user's display
+  // name in /mon-profil follows the active language. In production
+  // this comes from the user record (firstName/lastName) and would
+  // already be stored in the user's preferred script.
+  'profile.demo.firstName': 'Mohamed Ossama',
+  'profile.demo.lastName': 'MOUSSAOUI',
+
+  // ===== /signaler page (Partager une expérience) =====
+  'signalerPage.brandPill': 'Signalement protégé · 100% anonyme',
+  'signalerPage.title': 'Partager une expérience',
+  'signalerPage.subtitle':
+    'Partagez votre expérience concernant un contact, un site ou un moyen de paiement. Votre contribution aide la communauté à prendre de meilleures décisions.',
+  'signalerPage.trust.protected.title': 'Protégé',
+  'signalerPage.trust.protected.desc': '100% anonyme',
+  'signalerPage.trust.encrypted.title': 'Chiffré',
+  'signalerPage.trust.encrypted.desc': 'Données protégées',
+  'signalerPage.trust.verified.title': 'Vérifié',
+  'signalerPage.trust.verified.desc': 'Examiné avant publication',
+  'signalerPage.process.heading': 'Que se passe-t-il après votre signalement ?',
+  'signalerPage.process.step1.title': 'Vous signalez',
+  'signalerPage.process.step1.desc': 'Vous décrivez la situation et joignez vos preuves.',
+  'signalerPage.process.step2.title': 'Nous examinons',
+  'signalerPage.process.step2.desc': 'Notre équipe vérifie le contenu sous 48 h ouvrées.',
+  'signalerPage.process.step3.title': 'C’est publié',
+  'signalerPage.process.step3.desc':
+    'Si conforme, le signalement protège la communauté.',
+  'signalerPage.sla.label': 'Délai d’examen moyen :',
+  'signalerPage.sla.value': '48 heures ouvrées',
+
+  // ===== ReportForm =====
+  'form.contactType.label': 'Type de contact',
+  'form.contactValue.label': 'Information à signaler',
+  'form.problemType.label': 'Type de problème',
+  'form.problem.nonDelivery': 'Non livraison',
+  'form.problem.blockedAfterPayment': 'Bloqué après paiement',
+  'form.problem.nonCompliant': 'Produit non conforme',
+  'form.problem.identityTheft': 'Usurpation d’identité',
+  'form.amount.label': 'Montant estimé',
+  'form.amount.optional': '(optionnel)',
+  'form.description.label': 'Description',
+  'form.description.placeholder':
+    'Décrivez brièvement la situation (informations factuelles uniquement)',
+  'form.description.hint':
+    'Merci de décrire la situation de manière factuelle. Évitez les jugements ou accusations.',
+  'form.description.detected.singular': 'Mot détecté :',
+  'form.description.detected.plural': 'Mots détectés :',
+  'form.evidence.label': 'Preuves',
+  'form.evidence.cta': 'Choisir un fichier ou glisser ici',
+  'form.evidence.hint': '(capture, reçu, conversation…)',
+  'form.evidence.types': 'JPG · PNG · WEBP · MP4 · WEBM · MOV — {n} fichiers max',
+  'form.evidence.removeLabel': 'Retirer {name}',
+  'form.consent.intro': 'Je confirme que les informations fournies respectent les',
+  'form.consent.rules': 'règles de la plateforme',
+  'form.consent.suffix': 'et que mon témoignage est factuel.',
+  'form.submit': 'Envoyer le signalement',
+  'form.submit.sending': 'Envoi en cours…',
+  'form.disabledNote':
+    'Authentification, upload sécurisé des preuves et soumission seront activés prochainement.',
+  // Success celebration
+  'form.success.thanks': 'Merci',
+  'form.success.received': 'Votre contribution a bien été reçue.',
+  'form.success.community':
+    'Vous aidez la communauté Hadar à rester vigilante et à vérifier en toute confiance.',
+  'form.success.eta':
+    'Notre équipe examinera votre signalement sous {duration}.',
+  'form.success.eta.duration': '48 heures ouvrées',
+  'form.success.stat.users': 'utilisateurs aidés',
+  'form.success.stat.contacts': 'contacts vérifiés',
+  'form.success.stat.thanks': 'merci à vous',
+  'form.success.again': 'Faire un autre signalement',
+  'form.success.home': "Retour à l'accueil",
 };
 
 const en: Dict = {
@@ -2437,6 +2509,73 @@ const en: Dict = {
   'profile.dangerZone.deleted.backHome': 'Back to home',
   'profile.dangerZone.happy.title': 'Thanks for staying with us! 💚',
   'profile.dangerZone.happy.body': 'Your vigilance protects the community. See you soon.',
+
+  'profile.demo.firstName': 'Mohamed Ossama',
+  'profile.demo.lastName': 'MOUSSAOUI',
+
+  // ===== /signaler page =====
+  'signalerPage.brandPill': 'Protected report · 100% anonymous',
+  'signalerPage.title': 'Share an experience',
+  'signalerPage.subtitle':
+    'Share your experience about a contact, a website or a payment method. Your contribution helps the community make better decisions.',
+  'signalerPage.trust.protected.title': 'Protected',
+  'signalerPage.trust.protected.desc': '100% anonymous',
+  'signalerPage.trust.encrypted.title': 'Encrypted',
+  'signalerPage.trust.encrypted.desc': 'Data protected',
+  'signalerPage.trust.verified.title': 'Verified',
+  'signalerPage.trust.verified.desc': 'Reviewed before publication',
+  'signalerPage.process.heading': 'What happens after your report?',
+  'signalerPage.process.step1.title': 'You report',
+  'signalerPage.process.step1.desc': 'You describe the situation and attach your evidence.',
+  'signalerPage.process.step2.title': 'We review',
+  'signalerPage.process.step2.desc':
+    'Our team checks the content within 48 working hours.',
+  'signalerPage.process.step3.title': 'It’s published',
+  'signalerPage.process.step3.desc':
+    'If compliant, the report protects the community.',
+  'signalerPage.sla.label': 'Average review time:',
+  'signalerPage.sla.value': '48 working hours',
+
+  // ===== ReportForm =====
+  'form.contactType.label': 'Contact type',
+  'form.contactValue.label': 'Information to report',
+  'form.problemType.label': 'Problem type',
+  'form.problem.nonDelivery': 'Non-delivery',
+  'form.problem.blockedAfterPayment': 'Blocked after payment',
+  'form.problem.nonCompliant': 'Non-compliant product',
+  'form.problem.identityTheft': 'Identity theft',
+  'form.amount.label': 'Estimated amount',
+  'form.amount.optional': '(optional)',
+  'form.description.label': 'Description',
+  'form.description.placeholder':
+    'Briefly describe the situation (factual information only)',
+  'form.description.hint':
+    'Please describe the situation factually. Avoid judgments or accusations.',
+  'form.description.detected.singular': 'Detected word:',
+  'form.description.detected.plural': 'Detected words:',
+  'form.evidence.label': 'Evidence',
+  'form.evidence.cta': 'Choose a file or drag here',
+  'form.evidence.hint': '(screenshot, receipt, conversation…)',
+  'form.evidence.types': 'JPG · PNG · WEBP · MP4 · WEBM · MOV — {n} files max',
+  'form.evidence.removeLabel': 'Remove {name}',
+  'form.consent.intro': 'I confirm that the information provided complies with the',
+  'form.consent.rules': 'platform rules',
+  'form.consent.suffix': 'and that my testimony is factual.',
+  'form.submit': 'Send the report',
+  'form.submit.sending': 'Sending…',
+  'form.disabledNote':
+    'Authentication, secure evidence upload and submission will be enabled soon.',
+  'form.success.thanks': 'Thank you',
+  'form.success.received': 'Your contribution has been received.',
+  'form.success.community':
+    'You are helping the Hadar community stay vigilant and verify with confidence.',
+  'form.success.eta': 'Our team will review your report within {duration}.',
+  'form.success.eta.duration': '48 working hours',
+  'form.success.stat.users': 'users helped',
+  'form.success.stat.contacts': 'contacts verified',
+  'form.success.stat.thanks': 'thanks to you',
+  'form.success.again': 'Submit another report',
+  'form.success.home': 'Back to home',
 };
 
 const ar: Dict = {
@@ -3646,6 +3785,70 @@ const ar: Dict = {
   'profile.dangerZone.deleted.backHome': 'العودة إلى الصفحة الرئيسية',
   'profile.dangerZone.happy.title': 'شكراً لبقائك معنا ! 💚',
   'profile.dangerZone.happy.body': 'يقظتك تحمي المجتمع. إلى اللقاء قريباً.',
+
+  'profile.demo.firstName': 'محمد أسامة',
+  'profile.demo.lastName': 'المساوي',
+
+  // ===== /signaler page =====
+  'signalerPage.brandPill': 'بلاغ محمي · 100% مجهول الهوية',
+  'signalerPage.title': 'شارك تجربة',
+  'signalerPage.subtitle':
+    'شارك تجربتك بخصوص جهة اتصال أو موقع أو وسيلة دفع. مساهمتك تساعد المجتمع على اتخاذ قرارات أفضل.',
+  'signalerPage.trust.protected.title': 'محمي',
+  'signalerPage.trust.protected.desc': '100% مجهول الهوية',
+  'signalerPage.trust.encrypted.title': 'مشفّر',
+  'signalerPage.trust.encrypted.desc': 'بيانات محمية',
+  'signalerPage.trust.verified.title': 'تمّت المراجعة',
+  'signalerPage.trust.verified.desc': 'يُراجع قبل النشر',
+  'signalerPage.process.heading': 'ماذا يحدث بعد بلاغك ؟',
+  'signalerPage.process.step1.title': 'تُبلِّغ',
+  'signalerPage.process.step1.desc': 'تصف الوضع وترفق الأدلة.',
+  'signalerPage.process.step2.title': 'نُراجع',
+  'signalerPage.process.step2.desc': 'يتحقق فريقنا من المحتوى خلال 48 ساعة عمل.',
+  'signalerPage.process.step3.title': 'يُنشَر',
+  'signalerPage.process.step3.desc': 'إذا كان مطابقاً، فإن البلاغ يحمي المجتمع.',
+  'signalerPage.sla.label': 'متوسط مدة الفحص :',
+  'signalerPage.sla.value': '48 ساعة عمل',
+
+  // ===== ReportForm =====
+  'form.contactType.label': 'نوع جهة الاتصال',
+  'form.contactValue.label': 'المعلومة المُبلَّغ عنها',
+  'form.problemType.label': 'نوع المشكلة',
+  'form.problem.nonDelivery': 'عدم التسليم',
+  'form.problem.blockedAfterPayment': 'الحجب بعد الدفع',
+  'form.problem.nonCompliant': 'منتج غير مطابق',
+  'form.problem.identityTheft': 'انتحال الهوية',
+  'form.amount.label': 'المبلغ المُقدَّر',
+  'form.amount.optional': '(اختياري)',
+  'form.description.label': 'الوصف',
+  'form.description.placeholder': 'صف الوضع باختصار (معلومات واقعية فقط)',
+  'form.description.hint':
+    'الرجاء وصف الوضع بشكل واقعي. تجنّب الأحكام أو الاتهامات.',
+  'form.description.detected.singular': 'الكلمة المرصودة :',
+  'form.description.detected.plural': 'الكلمات المرصودة :',
+  'form.evidence.label': 'الأدلة',
+  'form.evidence.cta': 'اختر ملفاً أو اسحبه إلى هنا',
+  'form.evidence.hint': '(لقطة شاشة، إيصال، محادثة…)',
+  'form.evidence.types': 'JPG · PNG · WEBP · MP4 · WEBM · MOV — {n} ملفات كحد أقصى',
+  'form.evidence.removeLabel': 'إزالة {name}',
+  'form.consent.intro': 'أؤكد أن المعلومات المقدَّمة تحترم',
+  'form.consent.rules': 'قواعد المنصة',
+  'form.consent.suffix': 'وأن شهادتي واقعية.',
+  'form.submit': 'إرسال البلاغ',
+  'form.submit.sending': 'جارٍ الإرسال…',
+  'form.disabledNote':
+    'سيتم تفعيل المصادقة والرفع الآمن للأدلة وإرسال البلاغ قريباً.',
+  'form.success.thanks': 'شكراً',
+  'form.success.received': 'تم استلام مساهمتك.',
+  'form.success.community':
+    'أنت تساعد مجتمع Hadar على البقاء يقظاً والتحقق بثقة.',
+  'form.success.eta': 'سيراجع فريقنا بلاغك خلال {duration}.',
+  'form.success.eta.duration': '48 ساعة عمل',
+  'form.success.stat.users': 'مستخدمون استُفيد لهم',
+  'form.success.stat.contacts': 'جهات اتصال تم التحقق منها',
+  'form.success.stat.thanks': 'شكراً لك',
+  'form.success.again': 'إرسال بلاغ آخر',
+  'form.success.home': 'العودة إلى الصفحة الرئيسية',
 };
 
 export const MESSAGES: Record<Locale, Dict> = { fr, en, ar };

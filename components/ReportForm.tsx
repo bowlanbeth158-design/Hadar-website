@@ -6,6 +6,7 @@ import {
   MODERATION_HINT,
 } from '@/lib/moderationWords';
 import { useCurrency } from '@/lib/currency/provider';
+import { useI18n } from '@/lib/i18n/provider';
 import {
   Megaphone,
   UploadCloud,
@@ -36,29 +37,31 @@ import {
 
 type ContactType = {
   id: string;
-  label: string;
-  placeholder: string;
+  // i18n keys reused from the homepage hero — same labels +
+  // placeholders, so a single source of truth across the site.
+  labelKey: string;
+  placeholderKey: string;
   Icon: LucideIcon;
 };
 
 const CONTACT_TYPES: ContactType[] = [
-  { id: 'telephone', label: 'Téléphone', placeholder: 'Ex : 212 6 00 00 00 00', Icon: Phone },
-  { id: 'whatsapp', label: 'WhatsApp', placeholder: 'Ex : 212 6 00 00 00 00', Icon: MessageCircle },
-  { id: 'email', label: 'Email', placeholder: 'Ex : contact@exemple.com', Icon: Mail },
-  { id: 'rib', label: 'RIB', placeholder: 'Ex : 24 chiffres sans espaces', Icon: CreditCard },
-  { id: 'site_web', label: 'Site web', placeholder: 'Ex : https://exemple.com', Icon: Globe },
-  { id: 'reseaux_sociaux', label: 'Réseaux sociaux', placeholder: 'Ex : @pseudo', Icon: AtSign },
-  { id: 'paypal', label: 'PayPal', placeholder: 'Ex : paypal@exemple.com', Icon: Wallet },
-  { id: 'binance', label: 'Binance', placeholder: 'Ex : identifiant ou email', Icon: Coins },
+  { id: 'telephone',       labelKey: 'home.hero.contactType.telephone',       placeholderKey: 'home.hero.placeholder.telephone',       Icon: Phone },
+  { id: 'whatsapp',        labelKey: 'home.hero.contactType.whatsapp',        placeholderKey: 'home.hero.placeholder.whatsapp',        Icon: MessageCircle },
+  { id: 'email',           labelKey: 'home.hero.contactType.email',           placeholderKey: 'home.hero.placeholder.email',           Icon: Mail },
+  { id: 'rib',             labelKey: 'home.hero.contactType.rib',             placeholderKey: 'home.hero.placeholder.rib',             Icon: CreditCard },
+  { id: 'site_web',        labelKey: 'home.hero.contactType.site_web',        placeholderKey: 'home.hero.placeholder.site_web',        Icon: Globe },
+  { id: 'reseaux_sociaux', labelKey: 'home.hero.contactType.reseaux_sociaux', placeholderKey: 'home.hero.placeholder.reseaux_sociaux', Icon: AtSign },
+  { id: 'paypal',          labelKey: 'home.hero.contactType.paypal',          placeholderKey: 'home.hero.placeholder.paypal',          Icon: Wallet },
+  { id: 'binance',         labelKey: 'home.hero.contactType.binance',         placeholderKey: 'home.hero.placeholder.binance',         Icon: Coins },
 ];
 
-type ProblemType = { id: string; label: string; Icon: LucideIcon };
+type ProblemType = { id: string; labelKey: string; Icon: LucideIcon };
 
 const PROBLEM_TYPES: ProblemType[] = [
-  { id: 'non_livraison',          label: 'Non livraison',           Icon: PackageX      },
-  { id: 'bloque_apres_paiement',  label: 'Bloqué après paiement',   Icon: Ban           },
-  { id: 'produit_non_conforme',   label: 'Produit non conforme',    Icon: AlertTriangle },
-  { id: 'usurpation_identite',    label: "Usurpation d'identité",   Icon: VenetianMask  },
+  { id: 'non_livraison',          labelKey: 'form.problem.nonDelivery',         Icon: PackageX      },
+  { id: 'bloque_apres_paiement',  labelKey: 'form.problem.blockedAfterPayment', Icon: Ban           },
+  { id: 'produit_non_conforme',   labelKey: 'form.problem.nonCompliant',        Icon: AlertTriangle },
+  { id: 'usurpation_identite',    labelKey: 'form.problem.identityTheft',       Icon: VenetianMask  },
 ];
 
 type Phase = 'idle' | 'sending' | 'success';
@@ -112,11 +115,19 @@ function ConfettiRain() {
 }
 
 function SuccessCelebration({ onAgain }: { onAgain: () => void }) {
+  const { t } = useI18n();
   useEffect(() => {
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }, []);
+
+  // Split the localised "Notre équipe examinera votre signalement sous
+  // {duration}." sentence around the duration so the bold span keeps
+  // its styling regardless of where the duration sits in the target
+  // language (FR puts it at the end, AR puts it after "خلال").
+  const etaTpl = t('form.success.eta', { duration: '__DURATION__' });
+  const [etaBefore = '', etaAfter = ''] = etaTpl.split('__DURATION__');
 
   return (
     <div className="relative rounded-3xl bg-gradient-to-br from-green-100/60 via-white to-brand-sky/40 backdrop-blur-sm border border-white/70 shadow-glow-green overflow-hidden animate-modal-pop scroll-mt-20">
@@ -141,39 +152,38 @@ function SuccessCelebration({ onAgain }: { onAgain: () => void }) {
         </div>
 
         <h2 className="mt-7 text-3xl md:text-5xl font-extrabold tracking-tight bg-gradient-to-r from-green-700 via-green-500 to-green-700 bg-clip-text text-transparent animate-fade-in-down">
-          Merci
+          {t('form.success.thanks')}
         </h2>
 
         <div className="mt-4 mx-auto max-w-lg space-y-3 text-sm md:text-base text-gray-600 leading-relaxed">
           <p className="font-semibold text-brand-navy text-base md:text-lg animate-fade-in-down [animation-delay:120ms]">
-            Votre contribution a bien été reçue.
+            {t('form.success.received')}
           </p>
           <p className="animate-fade-in-down [animation-delay:240ms]">
-            Vous aidez la communauté Hadar à rester vigilante et à
-            vérifier en toute confiance.
+            {t('form.success.community')}
           </p>
           <p className="animate-fade-in-down [animation-delay:360ms]">
-            Notre équipe examinera votre signalement sous{' '}
+            {etaBefore}
             <span className="font-semibold text-brand-navy">
-              48 heures ouvrées
+              {t('form.success.eta.duration')}
             </span>
-            .
+            {etaAfter}
           </p>
         </div>
 
         <div className="mt-8 grid grid-cols-3 gap-3 max-w-md mx-auto">
           {[
-            { Icon: Users,       value: '2 500+',  label: 'utilisateurs aidés', tint: 'text-brand-blue' },
-            { Icon: ShieldCheck, value: '+ 10 000', label: 'contacts vérifiés',  tint: 'text-green-700'  },
-            { Icon: Heart,       value: '∞',       label: 'merci à vous',        tint: 'text-red-500'    },
-          ].map(({ Icon, value, label, tint }) => (
+            { Icon: Users,       value: '2 500+',  labelKey: 'form.success.stat.users',    tint: 'text-brand-blue' },
+            { Icon: ShieldCheck, value: '+ 10 000', labelKey: 'form.success.stat.contacts', tint: 'text-green-700'  },
+            { Icon: Heart,       value: '∞',       labelKey: 'form.success.stat.thanks',   tint: 'text-red-500'    },
+          ].map(({ Icon, value, labelKey, tint }) => (
             <div
-              key={label}
+              key={labelKey}
               className="rounded-2xl bg-white/85 backdrop-blur-sm border border-white/80 p-3 shadow-sm"
             >
               <Icon className={`mx-auto h-5 w-5 ${tint} animate-sparkle-pop`} aria-hidden />
               <p className="mt-1 text-base font-bold text-brand-navy tabular-nums">{value}</p>
-              <p className="text-[10px] text-gray-500 leading-tight">{label}</p>
+              <p className="text-[10px] text-gray-500 leading-tight">{t(labelKey)}</p>
             </div>
           ))}
         </div>
@@ -185,13 +195,13 @@ function SuccessCelebration({ onAgain }: { onAgain: () => void }) {
             className="inline-flex items-center gap-2 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-5 py-2.5 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
           >
             <Sparkles className="h-4 w-4 animate-sparkle-pop" aria-hidden />
-            Faire un autre signalement
+            {t('form.success.again')}
           </button>
           <a
             href="/"
             className="inline-flex items-center gap-2 rounded-pill bg-white/85 hover:bg-white border border-white/80 hover:border-brand-blue/40 text-brand-navy px-5 py-2.5 text-sm font-semibold shadow-sm transition-all"
           >
-            Retour à l&apos;accueil
+            {t('form.success.home')}
           </a>
         </div>
       </div>
@@ -200,6 +210,7 @@ function SuccessCelebration({ onAgain }: { onAgain: () => void }) {
 }
 
 export function ReportForm() {
+  const { t } = useI18n();
   // Active currency drives the Montant input's placeholder and suffix
   // so the user always types in the unit they're seeing across the
   // rest of the site (header switcher, Montant signalé KPI, etc.).
@@ -275,25 +286,25 @@ export function ReportForm() {
           >
             <Phone className="h-3.5 w-3.5 animate-sparkle-pop" />
           </span>
-          Type de contact <span className="text-red-500">*</span>
+          {t('form.contactType.label')} <span className="text-red-500">*</span>
         </legend>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          {CONTACT_TYPES.map((t) => {
-            const isActive = t.id === contactType;
+          {CONTACT_TYPES.map((c) => {
+            const isActive = c.id === contactType;
             return (
               <button
-                key={t.id}
+                key={c.id}
                 type="button"
                 aria-pressed={isActive}
-                onClick={() => setContactType(t.id)}
+                onClick={() => setContactType(c.id)}
                 className={
                   isActive
                     ? 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-brand-navy text-white px-3 py-2 text-sm font-medium shadow-glow-navy scale-[1.02] transition-all'
                     : 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-white/80 backdrop-blur-sm border border-gray-200 text-brand-navy px-3 py-2 text-sm font-medium hover:border-brand-blue hover:text-brand-blue hover:-translate-y-0.5 hover:shadow-sm transition-all'
                 }
               >
-                <t.Icon className="h-4 w-4 shrink-0" aria-hidden />
-                <span className="truncate">{t.label}</span>
+                <c.Icon className="h-4 w-4 shrink-0" aria-hidden />
+                <span className="truncate">{t(c.labelKey)}</span>
               </button>
             );
           })}
@@ -311,13 +322,13 @@ export function ReportForm() {
           >
             <activeContact.Icon className="h-3.5 w-3.5 animate-sparkle-pop" />
           </span>
-          Information à signaler <span className="text-red-500">*</span>
+          {t('form.contactValue.label')} <span className="text-red-500">*</span>
         </label>
         <input
           id="contactValue"
           name="contactValue"
           type="text"
-          placeholder={activeContact.placeholder}
+          placeholder={t(activeContact.placeholderKey)}
           className="w-full rounded-xl bg-white/85 backdrop-blur-sm border border-gray-200 px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue focus:shadow-sm transition-all"
         />
       </div>
@@ -330,25 +341,25 @@ export function ReportForm() {
           >
             <AlertTriangle className="h-3.5 w-3.5 animate-sparkle-pop" />
           </span>
-          Type de problème <span className="text-red-500">*</span>
+          {t('form.problemType.label')} <span className="text-red-500">*</span>
         </legend>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {PROBLEM_TYPES.map((t) => {
-            const isActive = t.id === problemType;
+          {PROBLEM_TYPES.map((p) => {
+            const isActive = p.id === problemType;
             return (
               <button
-                key={t.id}
+                key={p.id}
                 type="button"
                 aria-pressed={isActive}
-                onClick={() => setProblemType(t.id)}
+                onClick={() => setProblemType(p.id)}
                 className={
                   isActive
                     ? 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-red-500 text-white px-4 py-2 text-sm font-medium shadow-glow-red scale-[1.02] transition-all'
                     : 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-white/80 backdrop-blur-sm border border-gray-200 text-brand-navy px-4 py-2 text-sm font-medium hover:border-red-500/50 hover:text-red-500 hover:-translate-y-0.5 hover:shadow-sm transition-all'
                 }
               >
-                <t.Icon className="h-4 w-4 shrink-0" aria-hidden />
-                <span className="truncate">{t.label}</span>
+                <p.Icon className="h-4 w-4 shrink-0" aria-hidden />
+                <span className="truncate">{t(p.labelKey)}</span>
               </button>
             );
           })}
@@ -366,7 +377,8 @@ export function ReportForm() {
           >
             <WalletIcon className="h-3.5 w-3.5 animate-sparkle-pop" />
           </span>
-          Montant estimé <span className="text-gray-400 font-normal">(optionnel)</span>
+          {t('form.amount.label')}{' '}
+          <span className="text-gray-400 font-normal">{t('form.amount.optional')}</span>
         </label>
         {/* Currency-aware amount input — the placeholder example and
             the right-side suffix both follow the active currency
@@ -401,7 +413,7 @@ export function ReportForm() {
           >
             <Pencil className="h-3.5 w-3.5 animate-sparkle-pop" />
           </span>
-          Description <span className="text-red-500">*</span>{' '}
+          {t('form.description.label')} <span className="text-red-500">*</span>{' '}
           <span className="text-gray-400 font-normal tabular-nums">
             ({description.length}/300)
           </span>
@@ -414,7 +426,7 @@ export function ReportForm() {
           required
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          placeholder="Décrivez brièvement la situation (informations factuelles uniquement)"
+          placeholder={t('form.description.placeholder')}
           aria-invalid={moderation.blocked}
           aria-describedby={moderation.blocked ? 'description-moderation' : 'description-hint'}
           className={
@@ -435,8 +447,11 @@ export function ReportForm() {
             </p>
             <p className="text-red-700/80">{MODERATION_HINT}</p>
             <p className="text-red-700/60">
-              Mot{moderation.matchedWords.length > 1 ? 's' : ''} détecté
-              {moderation.matchedWords.length > 1 ? 's' : ''} :{' '}
+              {t(
+                moderation.matchedWords.length > 1
+                  ? 'form.description.detected.plural'
+                  : 'form.description.detected.singular',
+              )}{' '}
               <span className="font-mono font-semibold">
                 {moderation.matchedWords.join(', ')}
               </span>
@@ -444,7 +459,7 @@ export function ReportForm() {
           </div>
         ) : (
           <p id="description-hint" className="mt-2 text-xs text-red-500">
-            Merci de décrire la situation de manière factuelle. Évitez les jugements ou accusations.
+            {t('form.description.hint')}
           </p>
         )}
       </div>
@@ -460,7 +475,7 @@ export function ReportForm() {
           >
             <Paperclip className="h-3.5 w-3.5 animate-sparkle-pop" />
           </span>
-          Preuves <span className="text-red-500">*</span>
+          {t('form.evidence.label')} <span className="text-red-500">*</span>
         </label>
 
         <input
@@ -478,14 +493,10 @@ export function ReportForm() {
           className="group block rounded-xl border-2 border-dashed border-brand-blue/30 bg-white/60 backdrop-blur-sm hover:bg-white/80 hover:border-brand-blue/60 px-4 py-8 text-center text-sm text-gray-500 transition-all cursor-pointer"
         >
           <UploadCloud className="mx-auto h-9 w-9 mb-2 text-brand-blue/70 group-hover:text-brand-blue group-hover:scale-110 group-hover:animate-sparkle-pop transition-all" aria-hidden />
-          <p className="text-brand-navy/80 font-medium">
-            Choisir un fichier ou glisser ici
-          </p>
-          <p className="mt-1 text-xs text-gray-500">
-            (capture, reçu, conversation…)
-          </p>
+          <p className="text-brand-navy/80 font-medium">{t('form.evidence.cta')}</p>
+          <p className="mt-1 text-xs text-gray-500">{t('form.evidence.hint')}</p>
           <p className="mt-2 text-[10px] text-gray-400">
-            JPG · PNG · WEBP · MP4 · WEBM · MOV — {MAX_EVIDENCE} fichiers max
+            {t('form.evidence.types', { n: MAX_EVIDENCE })}
           </p>
         </label>
 
@@ -504,7 +515,7 @@ export function ReportForm() {
                   type="button"
                   onClick={() => removeFile(f.name)}
                   className="-mr-1 inline-flex items-center justify-center h-5 w-5 rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
-                  aria-label={`Retirer ${f.name}`}
+                  aria-label={t('form.evidence.removeLabel', { name: f.name })}
                 >
                   <XIcon className="h-3 w-3" aria-hidden />
                 </button>
@@ -526,9 +537,9 @@ export function ReportForm() {
           className="mt-1 h-4 w-4 rounded accent-red-500 cursor-pointer"
         />
         <span>
-          Je confirme que les informations fournies respectent les{' '}
-          <span className="font-semibold text-brand-navy">règles de la plateforme</span>{' '}
-          et que mon témoignage est factuel.
+          {t('form.consent.intro')}{' '}
+          <span className="font-semibold text-brand-navy">{t('form.consent.rules')}</span>{' '}
+          {t('form.consent.suffix')}
         </span>
       </label>
 
@@ -540,19 +551,17 @@ export function ReportForm() {
         {phase === 'sending' ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-            Envoi en cours…
+            {t('form.submit.sending')}
           </>
         ) : (
           <>
             <Megaphone className="h-4 w-4 enabled:animate-siren-wiggle" aria-hidden />
-            Envoyer le signalement
+            {t('form.submit')}
           </>
         )}
       </button>
 
-      <p className="text-xs text-gray-400 text-center">
-        Authentification, upload sécurisé des preuves et soumission seront activés prochainement.
-      </p>
+      <p className="text-xs text-gray-400 text-center">{t('form.disabledNote')}</p>
     </form>
   );
 }

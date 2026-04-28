@@ -445,13 +445,15 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
           contact" side by side, both painted in the brand-navy →
           brand-blue gradient (charter) so the CTAs read as the
           single official next step regardless of the verdict.
-          - Wrap on mobile (flex-wrap), separator hidden when stacked.
+          - Single line on phone (flex-nowrap + tighter padding/
+            text/icon sizes via max-md: variants) so the two pills
+            sit on one row even on a 360px screen.
           - Both buttons share the same gradient, shadow-glow-blue
             and animate-pulse-blue halo so they pulse in unison.
           - Lands last in the cascade so it reads as the natural
             next step once the verdict is in. */}
       <div
-        className="mt-6 flex flex-wrap items-center justify-center gap-3 animate-fade-in-down"
+        className="mt-6 flex flex-nowrap items-center justify-center gap-3 max-md:gap-2 animate-fade-in-down"
         style={{ animationDelay: '860ms', animationFillMode: 'both' }}
       >
         {hydrated && (
@@ -459,12 +461,12 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
             type="button"
             onClick={toggleFollow}
             aria-pressed={followed}
-            className="group relative overflow-hidden inline-flex items-center gap-2 rounded-pill bg-gradient-to-r from-brand-navy via-brand-blue to-brand-blue text-white shadow-glow-blue animate-pulse-blue px-6 py-2.5 text-sm font-semibold hover:scale-[1.04] hover:[animation-play-state:paused] transition-all duration-300 ease-out"
+            className="group relative overflow-hidden inline-flex items-center justify-center gap-2 max-md:gap-1.5 rounded-pill bg-gradient-to-r from-brand-navy via-brand-blue to-brand-blue text-white shadow-glow-blue animate-pulse-blue px-6 py-2.5 max-md:px-3 max-md:py-2 text-sm max-md:text-xs font-semibold whitespace-nowrap hover:scale-[1.04] hover:[animation-play-state:paused] transition-all duration-300 ease-out"
           >
             {followed ? (
-              <BellRing className="h-4 w-4 animate-siren-wiggle" aria-hidden />
+              <BellRing className="h-4 w-4 max-md:h-3.5 max-md:w-3.5 animate-siren-wiggle" aria-hidden />
             ) : (
-              <Bell className="h-4 w-4 group-hover:animate-sparkle-pop" aria-hidden />
+              <Bell className="h-4 w-4 max-md:h-3.5 max-md:w-3.5 group-hover:animate-sparkle-pop" aria-hidden />
             )}
             <span className="relative z-10">
               {followed
@@ -499,10 +501,10 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
               }
             }
           }}
-          className="group relative overflow-hidden inline-flex items-center gap-2 rounded-pill bg-gradient-to-r from-brand-navy via-brand-blue to-brand-blue text-white shadow-glow-blue animate-pulse-blue px-6 py-2.5 text-sm font-semibold hover:scale-[1.04] hover:[animation-play-state:paused] transition-all duration-300 ease-out"
+          className="group relative overflow-hidden inline-flex items-center justify-center gap-2 max-md:gap-1.5 rounded-pill bg-gradient-to-r from-brand-navy via-brand-blue to-brand-blue text-white shadow-glow-blue animate-pulse-blue px-6 py-2.5 max-md:px-3 max-md:py-2 text-sm max-md:text-xs font-semibold whitespace-nowrap hover:scale-[1.04] hover:[animation-play-state:paused] transition-all duration-300 ease-out"
         >
           <RotateCw
-            className="h-4 w-4 transition-transform duration-500 group-hover:rotate-180"
+            className="h-4 w-4 max-md:h-3.5 max-md:w-3.5 transition-transform duration-500 group-hover:rotate-180"
             aria-hidden
           />
           <span className="relative z-10">{t('home.searchResult.again')}</span>

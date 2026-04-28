@@ -197,6 +197,22 @@ export function PlatformStats() {
               }}
             />
 
+            {/* Mobile-only second halo — the 9 s spotlight cycle is
+                too subtle to register on a phone (each card lit ~22%
+                of the cycle). This always-on coloured ring + glow
+                pulses softly so the lighting effect is unmistakable
+                on phone. Hidden md+ so desktop keeps the original
+                clean spotlight ripple unchanged. */}
+            <span
+              aria-hidden
+              className="pointer-events-none absolute inset-0 rounded-2xl md:hidden animate-pulse"
+              style={{
+                animationDelay: `${i * 600}ms`,
+                animationDuration: '3s',
+                boxShadow: `0 0 0 1px ${s.spotlight.ring}, 0 0 20px 4px ${s.spotlight.glow}`,
+              }}
+            />
+
             <article
               className="group relative h-full rounded-2xl bg-gradient-to-br from-white via-brand-sky/30 to-brand-sky/45 backdrop-blur-sm border border-white/70 p-5 flex items-center gap-4 shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1.5 transition-all duration-300 ease-out overflow-hidden"
             >

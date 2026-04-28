@@ -267,7 +267,7 @@ export function RecentReports() {
               return (
                 <li
                   key={r.id}
-                  className="snap-start shrink-0 w-[82%] sm:w-[48%] md:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-3rem)/4)] animate-fade-in-down"
+                  className="snap-start shrink-0 w-[68%] sm:w-[48%] md:w-[calc((100%-2rem)/3)] lg:w-[calc((100%-3rem)/4)] animate-fade-in-down"
                   style={{ animationDelay: `${i * 90}ms`, animationFillMode: 'both' }}
                 >
                   {/* Translucent gradient card — same recipe as the banner's
@@ -279,7 +279,7 @@ export function RecentReports() {
                     ref={(el) => {
                       cardRefs.current[i] = el;
                     }}
-                    className="group relative h-full rounded-2xl bg-gradient-to-br from-brand-sky/35 via-white to-brand-sky/45 backdrop-blur-sm border border-white/70 p-5 pt-6 flex flex-col shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1 transition-all duration-300 ease-out overflow-hidden"
+                    className="group relative h-full rounded-2xl bg-gradient-to-br from-brand-sky/35 via-white to-brand-sky/45 backdrop-blur-sm border border-white/70 p-4 pt-5 md:p-5 md:pt-6 flex flex-col shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1 transition-all duration-300 ease-out overflow-hidden"
                   >
                     {/* Risk-coloured top stripe — three layers stacked at
                         the top edge of the card to give it a "live data"
@@ -297,18 +297,23 @@ export function RecentReports() {
                         Each card gets a tiny animation-delay derived
                         from its index so the comets across the row
                         don't fire in lockstep. */}
+                    {/* Stripe heights bumped on mobile so the comet
+                        travelling across the top edge is visible on
+                        small cards (was h-[2px], invisible on phone).
+                        Halo bleed below also bumped so the lighting
+                        effect registers on a phone screen. */}
                     <div
                       aria-hidden
-                      className={`absolute top-0 inset-x-0 h-[2px] ${style.stripeBase}`}
+                      className={`absolute top-0 inset-x-0 h-[3px] md:h-[2px] ${style.stripeBase}`}
                     />
                     <div
                       aria-hidden
-                      className={`absolute top-0 inset-x-0 h-[2px] bg-[length:300%_100%] ${style.stripeComet} animate-stripe-travel mix-blend-screen`}
+                      className={`absolute top-0 inset-x-0 h-[3px] md:h-[2px] bg-[length:300%_100%] ${style.stripeComet} animate-stripe-travel mix-blend-screen`}
                       style={{ animationDelay: `${(i % 3) * 350}ms` }}
                     />
                     <div
                       aria-hidden
-                      className={`pointer-events-none absolute top-[2px] inset-x-0 h-4 bg-gradient-to-b ${style.haloFrom} to-transparent opacity-40`}
+                      className={`pointer-events-none absolute top-[3px] md:top-[2px] inset-x-0 h-5 md:h-4 bg-gradient-to-b ${style.haloFrom} to-transparent opacity-60 md:opacity-40`}
                     />
 
                     {/* Shimmer light passes diagonally across on hover */}

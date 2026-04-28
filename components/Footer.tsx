@@ -166,12 +166,13 @@ export function Footer() {
             ))}
           </div>
 
-          {/* App download — official store badges. Both buttons share
-              the standard "Download on the App Store" / "Get it on
-              Google Play" two-line layout: small caption on top,
-              store name in bold underneath, with the platform logo
-              on the start side. URLs are placeholders until the
-              apps are published. */}
+          {/* App download — store badges restyled with the brand
+              charter: translucent navy/blue gradient over a glassy
+              backdrop blur, brand-blue ring + soft glow on hover.
+              Standard two-line layout: small caption on top + bold
+              store name underneath, with the platform logo on the
+              start side. Hrefs are # placeholders until the apps
+              are published. */}
           <p className="mt-6 text-xs font-semibold uppercase tracking-wide text-white/60">
             {t('footer.app.title')}
           </p>
@@ -179,23 +180,28 @@ export function Footer() {
             <a
               href="#"
               aria-label={`${t('footer.app.ios.line1')} ${t('footer.app.ios.line2')}`}
-              className="group inline-flex items-center gap-2 rounded-xl bg-black hover:bg-white/10 border border-white/15 hover:border-white/40 px-3 py-2 text-white transition-all hover:-translate-y-0.5"
+              className="group relative inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-white/10 via-white/5 to-white/10 backdrop-blur-md border border-white/20 hover:border-brand-sky/60 hover:bg-white/15 px-3 py-2 text-white shadow-glow-soft hover:shadow-glow-blue transition-all duration-300 ease-out hover:-translate-y-0.5 overflow-hidden"
             >
-              <Apple className="h-6 w-6 fill-white shrink-0" aria-hidden />
+              <Apple className="h-6 w-6 fill-white shrink-0 group-hover:scale-110 transition-transform duration-300" aria-hidden />
               <span className="flex flex-col leading-tight text-start">
                 <span className="text-[9px] uppercase tracking-wide text-white/70">
                   {t('footer.app.ios.line1')}
                 </span>
                 <span className="text-sm font-semibold">{t('footer.app.ios.line2')}</span>
               </span>
+              {/* Diagonal shimmer wipe on hover */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/25 to-transparent skew-x-[-20deg] opacity-0 group-hover:opacity-100 group-hover:animate-shimmer rounded-xl"
+              />
             </a>
             <a
               href="#"
               aria-label={`${t('footer.app.android.line1')} ${t('footer.app.android.line2')}`}
-              className="group inline-flex items-center gap-2 rounded-xl bg-black hover:bg-white/10 border border-white/15 hover:border-white/40 px-3 py-2 text-white transition-all hover:-translate-y-0.5"
+              className="group relative inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-white/10 via-white/5 to-white/10 backdrop-blur-md border border-white/20 hover:border-brand-sky/60 hover:bg-white/15 px-3 py-2 text-white shadow-glow-soft hover:shadow-glow-blue transition-all duration-300 ease-out hover:-translate-y-0.5 overflow-hidden"
             >
               <Play
-                className="h-6 w-6 fill-white shrink-0 rtl:-scale-x-100"
+                className="h-6 w-6 fill-white shrink-0 rtl:-scale-x-100 group-hover:scale-110 transition-transform duration-300"
                 aria-hidden
               />
               <span className="flex flex-col leading-tight text-start">
@@ -204,6 +210,11 @@ export function Footer() {
                 </span>
                 <span className="text-sm font-semibold">{t('footer.app.android.line2')}</span>
               </span>
+              {/* Diagonal shimmer wipe on hover */}
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/25 to-transparent skew-x-[-20deg] opacity-0 group-hover:opacity-100 group-hover:animate-shimmer rounded-xl"
+              />
             </a>
           </div>
         </div>

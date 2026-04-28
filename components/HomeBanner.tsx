@@ -215,7 +215,7 @@ export function HomeBanner() {
               href="/signaler"
               className="inline-flex items-center gap-2 rounded-pill bg-red-500 hover:bg-red-700 text-white px-6 py-3 text-sm font-semibold shadow-glow-red animate-alert-pulse hover:scale-[1.03] hover:[animation-play-state:paused] transition-all max-md:flex-1 max-md:justify-center"
             >
-              <Siren className="h-5 w-5 animate-siren-wiggle" aria-hidden />
+              <Siren className="h-5 w-5 max-md:h-6 max-md:w-6 animate-siren-wiggle" aria-hidden />
               {t('home.banner.cta.share')}
             </Link>
           </div>
@@ -230,7 +230,7 @@ export function HomeBanner() {
               Inserted between the CTA row and the tagline so phone
               users still see the same composition as desktop. */}
           <div className="lg:hidden mt-10">
-            <div className="relative mx-auto w-full max-w-[20rem] aspect-[4/5]">
+            <div className="relative mx-auto w-full max-w-[24rem] aspect-[4/5]">
               {/* Soft halo behind the person */}
               <div
                 aria-hidden

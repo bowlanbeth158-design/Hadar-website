@@ -1,6 +1,8 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { Menu, X, Home, HelpCircle, Bell, Siren } from 'lucide-react';
 import { Logo } from './Logo';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { CurrencySwitcher } from './CurrencySwitcher';
@@ -30,6 +32,77 @@ const NAV_LINK_HOVER =
   'after:bg-gradient-to-r after:from-brand-navy after:via-brand-blue after:to-brand-sky ' +
   'after:transition-all after:duration-300 after:ease-out hover:after:w-full';
 
+// Mobile-only hamburger drawer. Opens a small dropdown anchored to
+// the start of the header with the 4 main pages so phone users still
+// reach Accueil / Comment ça marche / Mes alertes / Mes signalements
+// without scrolling through the desktop centre nav (which is hidden).
+function MobileNavMenu() {
+  const { t } = useI18n();
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const onClickOutside = (e: MouseEvent) => {
+      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const onEsc = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setOpen(false);
+    };
+    window.addEventListener('mousedown', onClickOutside);
+    window.addEventListener('keydown', onEsc);
+    return () => {
+      window.removeEventListener('mousedown', onClickOutside);
+      window.removeEventListener('keydown', onEsc);
+    };
+  }, [open]);
+
+  const items: { href: string; labelKey: string; Icon: typeof Home }[] = [
+    { href: '/',                  labelKey: 'nav.home',           Icon: Home },
+    { href: '/comment-ca-marche', labelKey: 'nav.howItWorks',     Icon: HelpCircle },
+    { href: '/mes-alertes',       labelKey: 'nav.myAlerts',       Icon: Bell },
+    { href: '/mes-signalements',  labelKey: 'userMenu.myReports', Icon: Siren },
+  ];
+
+  return (
+    <div ref={rootRef} className="relative md:hidden">
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="true"
+        aria-expanded={open}
+        aria-label={open ? t('header.menuClose') : t('header.menuOpen')}
+        className="inline-flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-brand-navy hover:border-brand-blue hover:text-brand-blue hover:shadow-glow-soft transition-all duration-200"
+      >
+        {open ? <X className="h-5 w-5" aria-hidden /> : <Menu className="h-5 w-5" aria-hidden />}
+      </button>
+
+      {open && (
+        <div
+          role="menu"
+          className="absolute start-0 top-full mt-2 w-60 rounded-2xl border border-gray-200 bg-white shadow-glow-soft p-2 animate-fade-in-down z-50"
+        >
+          <ul className="flex flex-col">
+            {items.map(({ href, labelKey, Icon }) => (
+              <li key={href}>
+                <Link
+                  href={href}
+                  role="menuitem"
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-brand-navy hover:bg-brand-sky/40 hover:text-brand-blue transition-colors"
+                >
+                  <Icon className="h-4 w-4 text-brand-blue" aria-hidden />
+                  <span>{t(labelKey)}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function Header() {
   const { t } = useI18n();
 
@@ -47,40 +120,53 @@ export function Header() {
       </div>
 
       <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur border-b border-gray-200">
-        <nav className="mx-auto max-w-[1440px] grid grid-cols-[1fr_auto_1fr] items-center gap-6 px-6 md:px-10 py-3">
-          {/* LEFT — logo */}
-          <div className="flex items-center">
-            <Link href="/" aria-label={t('header.homeAria')} className="shrink-0">
+        <nav className="mx-auto max-w-[1440px] grid grid-cols-[1fr_auto_1fr] items-center gap-6 px-4 md:px-10 py-3">
+          {/* LEFT cell — desktop: Logo. Mobile: hamburger drawer. */}
+          <div className="flex items-center md:justify-start">
+            <MobileNavMenu />
+            <Link
+              href="/"
+              aria-label={t('header.homeAria')}
+              className="hidden md:inline-flex shrink-0"
+            >
               <Logo size="lg" />
             </Link>
           </div>
 
-          {/* CENTER — nav (page-centered, sharing the same central axis as the WhatsApp banner) */}
-          <ul className="hidden md:flex items-center gap-8 text-sm font-medium text-brand-navy">
-            <li>
-              <Link href="/" className={`inline-block ${NAV_LINK_HOVER}`}>
-                {t('nav.home')}
-              </Link>
-            </li>
-            <li>
-              <Link href="/comment-ca-marche" className={`inline-block ${NAV_LINK_HOVER}`}>
-                {t('nav.howItWorks')}
-              </Link>
-            </li>
-            <li>
-              <AlertsPopover count={ALERT_COUNT} />
-            </li>
-          </ul>
+          {/* CENTER cell — desktop: page nav. Mobile: Logo
+              centred on the same axis as the WhatsApp strip above. */}
+          <div className="flex items-center justify-center">
+            <Link
+              href="/"
+              aria-label={t('header.homeAria')}
+              className="md:hidden shrink-0"
+            >
+              <Logo size="lg" />
+            </Link>
+            <ul className="hidden md:flex items-center gap-8 text-sm font-medium text-brand-navy">
+              <li>
+                <Link href="/" className={`inline-block ${NAV_LINK_HOVER}`}>
+                  {t('nav.home')}
+                </Link>
+              </li>
+              <li>
+                <Link href="/comment-ca-marche" className={`inline-block ${NAV_LINK_HOVER}`}>
+                  {t('nav.howItWorks')}
+                </Link>
+              </li>
+              <li>
+                <AlertsPopover count={ALERT_COUNT} />
+              </li>
+            </ul>
+          </div>
 
-          {/* RIGHT — langue + devise + profil */}
+          {/* RIGHT — langue + devise (desktop) + profil (always) */}
           <div className="flex items-center justify-end gap-3">
             <div className="hidden sm:flex items-center gap-1 pr-3 border-r border-gray-200">
               <LanguageSwitcher />
               <CurrencySwitcher />
             </div>
-            <div className="hidden sm:block">
-              <UserMenu />
-            </div>
+            <UserMenu />
           </div>
         </nav>
       </header>

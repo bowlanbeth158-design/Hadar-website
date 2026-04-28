@@ -755,6 +755,9 @@ const fr: Dict = {
   'header.whatsappStrip':
     'Rejoignez notre chaîne WhatsApp pour rester informé des alertes en temps réel.',
   'header.homeAria': "Retour à l'accueil Hadar",
+  'header.menu': 'Menu',
+  'header.menuOpen': 'Ouvrir le menu',
+  'header.menuClose': 'Fermer le menu',
   'nav.home': 'Accueil',
   'nav.howItWorks': 'Comment ça marche',
   'nav.myAlerts': 'Mes alertes',
@@ -2227,6 +2230,9 @@ const en: Dict = {
   // ----- Public Header / nav -------------------------------------------
   'header.whatsappStrip': 'Join our WhatsApp channel for real-time alerts.',
   'header.homeAria': 'Back to Hadar home',
+  'header.menu': 'Menu',
+  'header.menuOpen': 'Open menu',
+  'header.menuClose': 'Close menu',
   'nav.home': 'Home',
   'nav.howItWorks': 'How it works',
   'nav.myAlerts': 'My alerts',
@@ -3679,6 +3685,9 @@ const ar: Dict = {
   // ----- Public Header / nav -------------------------------------------
   'header.whatsappStrip': 'انضم إلى قناتنا على واتساب لتلقي التنبيهات في الوقت الفعلي.',
   'header.homeAria': 'العودة إلى الصفحة الرئيسية لـ Hadar',
+  'header.menu': 'القائمة',
+  'header.menuOpen': 'فتح القائمة',
+  'header.menuClose': 'إغلاق القائمة',
   'nav.home': 'الرئيسية',
   'nav.howItWorks': 'كيف يعمل',
   'nav.myAlerts': 'تنبيهاتي',

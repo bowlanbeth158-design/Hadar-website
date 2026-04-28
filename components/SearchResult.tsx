@@ -322,7 +322,7 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
           />
           <span
             aria-hidden
-            className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-orange-500/10 text-orange-500 ring-1 ring-orange-500/25 group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300"
+            className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-blue/10 text-brand-blue ring-1 ring-brand-blue/25 group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300"
           >
             <Clock className="h-4 w-4 animate-sparkle-pop" />
           </span>
@@ -342,7 +342,7 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
           />
           <span
             aria-hidden
-            className={`relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ${cfg.pillBg} ${cfg.pillText} ring-1 ${cfg.pillBorder} group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300`}
+            className="relative inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-brand-blue/10 text-brand-blue ring-1 ring-brand-blue/25 group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300"
           >
             <Gauge className="h-4 w-4 animate-sparkle-pop" />
           </span>

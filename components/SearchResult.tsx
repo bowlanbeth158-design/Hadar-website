@@ -48,6 +48,11 @@ type RiskConfig = {
   pillAnim: string;
   pillGlow: string;
   cardAuraBg: string;
+  // Bottom-row CTAs are tinted with the risk colour so the
+  // "Vérifier un autre contact" + "Suivre ce contact" buttons
+  // visually echo the verdict.
+  ctaGradient: string; // bg-gradient-to-r ... ... ...
+  ctaGlow: string; // shadow-glow-{green|yellow|orange|red}
 };
 
 // Owner-confirmed labels (April 26 2026):
@@ -75,6 +80,8 @@ const RISK_CONFIG: Record<RiskLevel, RiskConfig> = {
     pillAnim: 'animate-verify-pulse',
     pillGlow: 'shadow-glow-green',
     cardAuraBg: 'bg-green-500/15',
+    ctaGradient: 'bg-gradient-to-r from-green-500 via-green-600 to-green-700',
+    ctaGlow: 'shadow-glow-green',
   },
   vigilance: {
     labelKey: 'home.searchResult.risk.vigilance.label',
@@ -89,6 +96,8 @@ const RISK_CONFIG: Record<RiskLevel, RiskConfig> = {
     pillAnim: 'animate-pulse-yellow',
     pillGlow: 'shadow-glow-yellow',
     cardAuraBg: 'bg-yellow-300/20',
+    ctaGradient: 'bg-gradient-to-r from-yellow-400 via-yellow-500 to-orange-400',
+    ctaGlow: 'shadow-glow-yellow',
   },
   modere: {
     labelKey: 'home.searchResult.risk.modere.label',
@@ -103,6 +112,8 @@ const RISK_CONFIG: Record<RiskLevel, RiskConfig> = {
     pillAnim: 'animate-pulse-orange',
     pillGlow: 'shadow-glow-orange',
     cardAuraBg: 'bg-orange-500/20',
+    ctaGradient: 'bg-gradient-to-r from-orange-500 via-orange-600 to-red-500',
+    ctaGlow: 'shadow-glow-orange',
   },
   eleve: {
     labelKey: 'home.searchResult.risk.eleve.label',
@@ -117,6 +128,8 @@ const RISK_CONFIG: Record<RiskLevel, RiskConfig> = {
     pillAnim: 'animate-alert-pulse',
     pillGlow: 'shadow-glow-red',
     cardAuraBg: 'bg-red-500/20',
+    ctaGradient: 'bg-gradient-to-r from-red-500 via-red-600 to-red-700',
+    ctaGlow: 'shadow-glow-red',
   },
 };
 
@@ -278,110 +291,90 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
         </div>
       </div>
 
-      {/* Info row — three pill chips so the verdict reads at a glance:
-            (1) report count with a Siren icon, count in brand-navy
-                gradient bold so the number is the visual anchor.
-            (2) last-report time with a Clock icon.
-            (3) Risk level with the 4 dot indicator + a Gauge icon,
-                tinted by the risk colour and a soft pulse on the
-                active dot.
-          Each chip sits on a backdrop-blurred white surface with a
-          brand-blue ring + glow so they pop against the page wash. */}
-      <div
-        className="flex items-center justify-center gap-2 mb-6 flex-wrap animate-fade-in-down"
-        style={{ animationDelay: '120ms', animationFillMode: 'both' }}
-      >
-        <span className="inline-flex items-center gap-2 rounded-pill bg-white/80 backdrop-blur-sm border border-brand-blue/20 px-3.5 py-1.5 text-sm shadow-glow-soft">
+      {/* Info row — three prominent CARDS (was small pills) so the
+          verdict KPIs read with proper visual weight. Same recipe as
+          the homepage stats grid: white → brand-sky/45 surface,
+          rounded-2xl, accent chip on the left, larger value on the
+          right. Stagger 60 ms between cards so they cascade in. */}
+      <div className="grid gap-3 sm:grid-cols-3 mb-6">
+        <article
+          className="group relative h-full rounded-2xl bg-gradient-to-br from-white via-brand-sky/30 to-brand-sky/45 backdrop-blur-sm border border-white/70 p-4 flex items-center gap-3 shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1 transition-all duration-300 ease-out animate-fade-in-down"
+          style={{ animationDelay: '120ms', animationFillMode: 'both' }}
+        >
           <span
             aria-hidden
-            className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-brand-blue/10 text-brand-blue ring-1 ring-brand-blue/20"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-blue/10 text-brand-blue ring-1 ring-brand-blue/25 group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300"
           >
-            <Siren className="h-3.5 w-3.5" />
+            <Siren className="h-5 w-5 animate-sparkle-pop" />
           </span>
-          <span className="font-bold text-base tabular-nums bg-grad-stat-navy bg-clip-text text-transparent">
-            {demo.reports}
-          </span>
-          <span className="text-gray-600">{reportLabel}</span>
-        </span>
+          <div className="min-w-0">
+            <p className="text-2xl font-bold tabular-nums leading-none bg-grad-stat-navy bg-clip-text text-transparent">
+              {demo.reports}
+            </p>
+            <p className="mt-1 text-xs text-gray-600 truncate">{reportLabel}</p>
+          </div>
+        </article>
 
-        <span className="inline-flex items-center gap-2 rounded-pill bg-white/80 backdrop-blur-sm border border-brand-blue/20 px-3.5 py-1.5 text-sm shadow-glow-soft">
+        <article
+          className="group relative h-full rounded-2xl bg-gradient-to-br from-white via-brand-sky/30 to-brand-sky/45 backdrop-blur-sm border border-white/70 p-4 flex items-center gap-3 shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1 transition-all duration-300 ease-out animate-fade-in-down"
+          style={{ animationDelay: '180ms', animationFillMode: 'both' }}
+        >
           <span
             aria-hidden
-            className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-brand-blue/10 text-brand-blue ring-1 ring-brand-blue/20"
+            className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-orange-500/10 text-orange-500 ring-1 ring-orange-500/25 group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300"
           >
-            <Clock className="h-3.5 w-3.5" />
+            <Clock className="h-5 w-5 animate-sparkle-pop" />
           </span>
-          <span className="text-gray-700">{lastReportText}</span>
-        </span>
+          <div className="min-w-0">
+            <p className="text-sm font-semibold text-brand-navy leading-tight">
+              {lastReportText}
+            </p>
+          </div>
+        </article>
 
-        <span
-          className={`inline-flex items-center gap-2 rounded-pill bg-white/80 backdrop-blur-sm border ${cfg.pillBorder} px-3.5 py-1.5 text-sm shadow-glow-soft`}
+        <article
+          className="group relative h-full rounded-2xl bg-gradient-to-br from-white via-brand-sky/30 to-brand-sky/45 backdrop-blur-sm border border-white/70 p-4 flex items-center gap-3 shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1 transition-all duration-300 ease-out animate-fade-in-down"
+          style={{ animationDelay: '240ms', animationFillMode: 'both' }}
           aria-label={t('home.searchResult.aria.riskLevel', { label: t(cfg.labelKey) })}
         >
           <span
             aria-hidden
-            className={`inline-flex h-6 w-6 items-center justify-center rounded-full ${cfg.pillBg} ${cfg.pillText} ring-1 ${cfg.pillBorder}`}
+            className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${cfg.pillBg} ${cfg.pillText} ring-1 ${cfg.pillBorder} group-hover:scale-110 group-hover:rotate-[-4deg] transition-transform duration-300`}
           >
-            <Gauge className="h-3.5 w-3.5" />
+            <Gauge className="h-5 w-5 animate-sparkle-pop" />
           </span>
-          <span className="text-gray-600">{t('home.searchResult.risk.prefix')}</span>
-          <span className={`${cfg.pillText} font-semibold capitalize`}>{t(cfg.labelKey)}</span>
-          <span className="flex items-center gap-1 ml-0.5">
-            {DOT_COLORS.map((color, i) => {
-              const isActive = i === cfg.dotIndex;
-              return (
-                <span
-                  key={color}
-                  className={`relative h-2 w-2 rounded-full ${color} ${
-                    isActive ? 'shadow-md' : 'opacity-25'
-                  }`}
-                >
-                  {isActive && (
-                    <span
-                      aria-hidden
-                      className={`absolute inset-0 rounded-full ${color} animate-ping opacity-60`}
-                    />
-                  )}
-                </span>
-              );
-            })}
-          </span>
-        </span>
+          <div className="min-w-0 flex-1">
+            <p className="text-xs text-gray-500">{t('home.searchResult.risk.prefix')}</p>
+            <p className={`text-base font-bold capitalize leading-tight ${cfg.pillText}`}>
+              {t(cfg.labelKey)}
+            </p>
+            <span className="mt-1.5 flex items-center gap-1">
+              {DOT_COLORS.map((color, i) => {
+                const isActive = i === cfg.dotIndex;
+                return (
+                  <span
+                    key={color}
+                    className={`relative h-2 w-2 rounded-full ${color} ${
+                      isActive ? 'shadow-md' : 'opacity-25'
+                    }`}
+                  >
+                    {isActive && (
+                      <span
+                        aria-hidden
+                        className={`absolute inset-0 rounded-full ${color} animate-ping opacity-60`}
+                      />
+                    )}
+                  </span>
+                );
+              })}
+            </span>
+          </div>
+        </article>
       </div>
 
-      {/* Follow button — persists the (contactValue, contactType) tuple
-          in localStorage so the Mes alertes view can show new reports
-          on this contact later. Hidden until the hook hydrates so we
-          don't flash the wrong "Suivre / Suivi" state on first paint. */}
-      {hydrated && (
-        <div
-          className="flex justify-center mb-6 animate-fade-in-down"
-          style={{ animationDelay: '240ms', animationFillMode: 'both' }}
-        >
-          <button
-            type="button"
-            onClick={toggleFollow}
-            aria-pressed={followed}
-            className={
-              followed
-                ? 'group inline-flex items-center gap-2 rounded-pill bg-gradient-to-r from-brand-navy to-brand-blue text-white px-5 py-2 text-sm font-semibold shadow-glow-blue hover:scale-[1.03] transition-all'
-                : 'group inline-flex items-center gap-2 rounded-pill bg-white text-brand-navy border-2 border-brand-blue/30 hover:border-brand-blue hover:bg-brand-sky/30 hover:-translate-y-0.5 hover:shadow-glow-soft px-5 py-2 text-sm font-semibold transition-all'
-            }
-          >
-            {followed ? (
-              <>
-                <BellRing className="h-4 w-4 animate-siren-wiggle" aria-hidden />
-                {t('home.searchResult.follow.followed')}
-              </>
-            ) : (
-              <>
-                <Bell className="h-4 w-4 group-hover:animate-sparkle-pop" aria-hidden />
-                {t('home.searchResult.follow.follow')}
-              </>
-            )}
-          </button>
-        </div>
-      )}
+      {/* Follow button moved to the bottom row — see the action bar
+          right after the bottom message; it now sits next to
+          "Vérifier un autre contact" with a vertical separator. */}
 
       {/* KPI cards — number rendered with the brand-navy → brand-blue
           gradient (bg-clip-text) so the figure pops with the platform
@@ -430,16 +423,56 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
         </span>
       </div>
 
-      {/* "Vérifier un autre contact" CTA — pushes the user towards
-          the next search. Lands last in the cascade (≈860 ms) so it
-          reads as the natural next step once the verdict is in.
-          Calls onAgain() if provided so the host (HomeHero) can
-          clear its input and scroll the search section back into
-          view; falls back to a smooth scroll when no callback. */}
+      {/* Action row — "Suivre ce contact" + "Vérifier un autre
+          contact" side by side, both tinted with the active risk
+          colour so the bar visually echoes the verdict.
+          - Wrap on mobile (flex-wrap), separator hidden when stacked.
+          - Both buttons use the same gradient + glow + risk-coloured
+            pulse from RISK_CONFIG so they stay visually paired.
+          - Lands last in the cascade so it reads as the natural next
+            step once the verdict is in. */}
       <div
-        className="mt-6 flex flex-col items-center gap-2 animate-fade-in-down"
+        className="mt-6 flex flex-wrap items-center justify-center gap-3 animate-fade-in-down"
         style={{ animationDelay: '860ms', animationFillMode: 'both' }}
       >
+        {hydrated && (
+          <button
+            type="button"
+            onClick={toggleFollow}
+            aria-pressed={followed}
+            className={
+              followed
+                ? `group relative overflow-hidden inline-flex items-center gap-2 rounded-pill ${cfg.ctaGradient} text-white ${cfg.ctaGlow} ${cfg.pillAnim} px-6 py-2.5 text-sm font-semibold hover:scale-[1.04] hover:[animation-play-state:paused] transition-all duration-300 ease-out`
+                : `group relative overflow-hidden inline-flex items-center gap-2 rounded-pill bg-white text-brand-navy border-2 ${cfg.pillBorder} hover:bg-brand-sky/30 hover:-translate-y-0.5 hover:shadow-glow-soft px-6 py-2.5 text-sm font-semibold transition-all duration-300 ease-out`
+            }
+          >
+            {followed ? (
+              <BellRing className="h-4 w-4 animate-siren-wiggle" aria-hidden />
+            ) : (
+              <Bell className="h-4 w-4 group-hover:animate-sparkle-pop" aria-hidden />
+            )}
+            <span className="relative z-10">
+              {followed
+                ? t('home.searchResult.follow.followed')
+                : t('home.searchResult.follow.follow')}
+            </span>
+            {/* Shimmer wipe across the followed state on hover. */}
+            {followed && (
+              <span
+                aria-hidden
+                className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/35 to-transparent skew-x-[-20deg] opacity-0 group-hover:opacity-100 group-hover:animate-shimmer rounded-pill"
+              />
+            )}
+          </button>
+        )}
+
+        {/* Vertical separator — only between the two buttons on
+            wide screens; collapses cleanly when they stack on mobile. */}
+        <span
+          aria-hidden
+          className="hidden sm:inline-block h-6 w-px bg-gradient-to-b from-transparent via-gray-300 to-transparent"
+        />
+
         <button
           type="button"
           onClick={() => {
@@ -453,7 +486,7 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
               }
             }
           }}
-          className="group inline-flex items-center gap-2 rounded-pill bg-gradient-to-r from-brand-navy via-brand-blue to-brand-navy text-white px-6 py-2.5 text-sm font-semibold shadow-glow-blue hover:shadow-glow-navy hover:scale-[1.04] transition-all duration-300 ease-out overflow-hidden relative"
+          className={`group relative overflow-hidden inline-flex items-center gap-2 rounded-pill ${cfg.ctaGradient} text-white ${cfg.ctaGlow} ${cfg.pillAnim} px-6 py-2.5 text-sm font-semibold hover:scale-[1.04] hover:[animation-play-state:paused] transition-all duration-300 ease-out`}
         >
           <RotateCw
             className="h-4 w-4 transition-transform duration-500 group-hover:rotate-180"
@@ -466,11 +499,17 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
             className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/35 to-transparent skew-x-[-20deg] opacity-0 group-hover:opacity-100 group-hover:animate-shimmer rounded-pill"
           />
         </button>
+      </div>
+
+      <div
+        className="mt-3 flex justify-center animate-fade-in-down"
+        style={{ animationDelay: '960ms', animationFillMode: 'both' }}
+      >
 
         {/* Trust strip — tiny static social-proof line so the user
             sees that "vérifier" is a worthwhile, frequent action.
             Three icons, three counters, all tinted navy. */}
-        <p className="mt-3 inline-flex items-center gap-3 text-[11px] text-gray-500">
+        <p className="inline-flex items-center gap-3 text-[11px] text-gray-500">
           <span className="inline-flex items-center gap-1">
             <ShieldCheck className="h-3 w-3 text-green-600 animate-sparkle-pop" aria-hidden />
             {t('home.searchResult.trust.encrypted')}

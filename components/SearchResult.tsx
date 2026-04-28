@@ -288,7 +288,7 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
           as a lightweight summary, not a duplicate of the KPI grid. */}
       <div className="mx-auto max-w-3xl grid gap-2.5 sm:grid-cols-3 mb-6">
         <article
-          className="group relative h-full rounded-xl bg-white/30 backdrop-blur-md ring-1 ring-brand-blue/25 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.55),0_3px_12px_-6px_rgb(0_120_186_/_0.18)] px-3 py-3 flex flex-col items-center justify-center text-center gap-1.5 hover:bg-white/45 hover:ring-brand-blue/40 hover:-translate-y-0.5 transition-all duration-300 ease-out animate-fade-in-down overflow-hidden"
+          className="group relative h-full rounded-xl bg-white/30 backdrop-blur-md ring-1 ring-brand-blue/25 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.55),0_3px_12px_-6px_rgb(0_120_186_/_0.18)] px-3 py-2.5 flex items-center justify-center gap-2 hover:bg-white/45 hover:ring-brand-blue/40 hover:-translate-y-0.5 transition-all duration-300 ease-out animate-fade-in-down overflow-hidden"
           style={{ animationDelay: '120ms', animationFillMode: 'both' }}
         >
           {/* Diagonal glass sheen — subtle white wash from top-left
@@ -304,16 +304,16 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
           >
             <Siren className="h-4 w-4 animate-sparkle-pop" />
           </span>
-          <div className="relative">
-            <p className="text-xl font-extrabold tabular-nums leading-none bg-grad-stat-navy bg-clip-text text-transparent">
-              {demo.reports}
-            </p>
-            <p className="mt-1 text-xs font-bold text-brand-navy">{reportLabel}</p>
-          </div>
+          <p className="relative text-xl font-extrabold tabular-nums leading-none bg-grad-stat-navy bg-clip-text text-transparent">
+            {demo.reports}
+          </p>
+          <p className="relative text-xs font-bold text-brand-navy whitespace-nowrap">
+            {reportLabel}
+          </p>
         </article>
 
         <article
-          className="group relative h-full rounded-xl bg-white/30 backdrop-blur-md ring-1 ring-brand-blue/25 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.55),0_3px_12px_-6px_rgb(0_120_186_/_0.18)] px-3 py-3 flex flex-col items-center justify-center text-center gap-1.5 hover:bg-white/45 hover:ring-brand-blue/40 hover:-translate-y-0.5 transition-all duration-300 ease-out animate-fade-in-down overflow-hidden"
+          className="group relative h-full rounded-xl bg-white/30 backdrop-blur-md ring-1 ring-brand-blue/25 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.55),0_3px_12px_-6px_rgb(0_120_186_/_0.18)] px-3 py-2.5 flex items-center justify-center gap-2 hover:bg-white/45 hover:ring-brand-blue/40 hover:-translate-y-0.5 transition-all duration-300 ease-out animate-fade-in-down overflow-hidden"
           style={{ animationDelay: '180ms', animationFillMode: 'both' }}
         >
           <span
@@ -326,15 +326,13 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
           >
             <Clock className="h-4 w-4 animate-sparkle-pop" />
           </span>
-          <div className="relative">
-            <p className="text-xs font-bold text-brand-navy leading-tight">
-              {lastReportText}
-            </p>
-          </div>
+          <p className="relative text-xs font-bold text-brand-navy leading-tight">
+            {lastReportText}
+          </p>
         </article>
 
         <article
-          className="group relative h-full rounded-xl bg-white/30 backdrop-blur-md ring-1 ring-brand-blue/25 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.55),0_3px_12px_-6px_rgb(0_120_186_/_0.18)] px-3 py-3 flex flex-col items-center justify-center text-center gap-1.5 hover:bg-white/45 hover:ring-brand-blue/40 hover:-translate-y-0.5 transition-all duration-300 ease-out animate-fade-in-down overflow-hidden"
+          className="group relative h-full rounded-xl bg-white/30 backdrop-blur-md ring-1 ring-brand-blue/25 shadow-[inset_0_1px_0_0_rgb(255_255_255_/_0.55),0_3px_12px_-6px_rgb(0_120_186_/_0.18)] px-3 py-2.5 flex items-center justify-center gap-2 hover:bg-white/45 hover:ring-brand-blue/40 hover:-translate-y-0.5 transition-all duration-300 ease-out animate-fade-in-down overflow-hidden"
           style={{ animationDelay: '240ms', animationFillMode: 'both' }}
           aria-label={t('home.searchResult.aria.riskLevel', { label: t(cfg.labelKey) })}
         >
@@ -348,47 +346,47 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
           >
             <Gauge className="h-4 w-4 animate-sparkle-pop" />
           </span>
-          <div className="relative flex flex-col items-center">
-            <p className="text-[10px] font-semibold text-gray-500 leading-none uppercase tracking-wide">{t('home.searchResult.risk.prefix')}</p>
-            <p className={`mt-0.5 text-sm font-extrabold capitalize leading-tight ${cfg.pillText}`}>
+          <p className="relative text-xs font-bold text-brand-navy whitespace-nowrap">
+            {t('home.searchResult.risk.prefix')}{' '}
+            <span className={`font-extrabold capitalize ${cfg.pillText}`}>
               {t(cfg.labelKey)}
-            </p>
-            {/* Risk dots — bumped from h-1.5 to h-3 so they read
-                clearly. The active dot adds a coloured glow ring + an
-                extra ping pulse on top of the existing animate-ping
-                halo so it really FLASHES instead of being a quiet
-                bullet. Inactive dots get bumped to opacity-50 (was 25)
-                so the row is visibly a 4-step gauge. */}
-            <span className="mt-1.5 flex items-center gap-1.5">
-              {DOT_COLORS.map((color, i) => {
-                const isActive = i === cfg.dotIndex;
-                return (
-                  <span
-                    key={color}
-                    className={`relative h-3 w-3 rounded-full ${color} ${
-                      isActive
-                        ? `ring-2 ring-white shadow-[0_0_10px_2px_currentColor] animate-pulse ${cfg.pillText}`
-                        : 'opacity-50'
-                    }`}
-                  >
-                    {isActive && (
-                      <>
-                        <span
-                          aria-hidden
-                          className={`absolute inset-0 rounded-full ${color} animate-ping opacity-75`}
-                        />
-                        <span
-                          aria-hidden
-                          className={`absolute -inset-1 rounded-full ${color} animate-ping opacity-30`}
-                          style={{ animationDelay: '300ms' }}
-                        />
-                      </>
-                    )}
-                  </span>
-                );
-              })}
             </span>
-          </div>
+          </p>
+          {/* Risk dots — bumped from h-1.5 to h-3 so they read
+              clearly. The active dot adds a coloured glow ring + an
+              extra ping pulse on top of the existing animate-ping
+              halo so it really FLASHES instead of being a quiet
+              bullet. Inactive dots get bumped to opacity-50 (was 25)
+              so the row is visibly a 4-step gauge. */}
+          <span className="relative flex items-center gap-1">
+            {DOT_COLORS.map((color, i) => {
+              const isActive = i === cfg.dotIndex;
+              return (
+                <span
+                  key={color}
+                  className={`relative h-2.5 w-2.5 rounded-full ${color} ${
+                    isActive
+                      ? `ring-2 ring-white shadow-[0_0_10px_2px_currentColor] animate-pulse ${cfg.pillText}`
+                      : 'opacity-50'
+                  }`}
+                >
+                  {isActive && (
+                    <>
+                      <span
+                        aria-hidden
+                        className={`absolute inset-0 rounded-full ${color} animate-ping opacity-75`}
+                      />
+                      <span
+                        aria-hidden
+                        className={`absolute -inset-1 rounded-full ${color} animate-ping opacity-30`}
+                        style={{ animationDelay: '300ms' }}
+                      />
+                    </>
+                  )}
+                </span>
+              );
+            })}
+          </span>
         </article>
       </div>
 

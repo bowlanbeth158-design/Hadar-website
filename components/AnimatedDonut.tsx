@@ -18,6 +18,7 @@ export function AnimatedDonut({
   const [current, setCurrent] = useState(0);
   const ref = useRef<SVGSVGElement>(null);
   const played = useRef(false);
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     if (!ref.current) return;
@@ -33,20 +34,42 @@ export function AnimatedDonut({
       return;
     }
 
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+
+    const animateFromZero = () => {
+      setCurrent(0);
+      const start = performance.now();
+      const tick = (now: number) => {
+        const p = Math.min((now - start) / duration, 1);
+        const eased = 1 - Math.pow(1 - p, 3);
+        setCurrent(Math.round(eased * value));
+        if (p < 1) {
+          rafRef.current = requestAnimationFrame(tick);
+        } else {
+          setCurrent(value);
+          rafRef.current = null;
+        }
+      };
+      rafRef.current = requestAnimationFrame(tick);
+    };
+
+    // After the first play, every subsequent value change re-runs
+    // the 0 → value tween immediately so the donut + center digit
+    // animate when the period tab changes.
+    if (played.current) {
+      animateFromZero();
+      return;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         for (const entry of entries) {
           if (entry.isIntersecting && !played.current) {
             played.current = true;
-            const start = performance.now();
-            const tick = (now: number) => {
-              const p = Math.min((now - start) / duration, 1);
-              const eased = 1 - Math.pow(1 - p, 3);
-              setCurrent(Math.round(eased * value));
-              if (p < 1) requestAnimationFrame(tick);
-              else setCurrent(value);
-            };
-            requestAnimationFrame(tick);
+            animateFromZero();
             observer.disconnect();
           }
         }
@@ -54,7 +77,13 @@ export function AnimatedDonut({
       { threshold: 0.3 },
     );
     observer.observe(node);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (rafRef.current !== null) {
+        cancelAnimationFrame(rafRef.current);
+        rafRef.current = null;
+      }
+    };
   }, [value, duration]);
 
   const radius = 42;

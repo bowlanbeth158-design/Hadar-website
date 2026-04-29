@@ -1,27 +1,21 @@
 import type { Metadata } from 'next';
 import { PageLayout } from '@/components/PageLayout';
 import { BackButton } from '@/components/BackButton';
-import { PageHeading } from '@/components/PageHeading';
-import { ReportForm } from '@/components/ReportForm';
+import { SignalerPageBody } from '@/components/SignalerPageBody';
 
 export const metadata: Metadata = {
-  title: 'Signaler un contact',
+  title: 'Partager une expérience',
   description:
-    'Signalez un numéro, un email, un site ou un moyen de paiement suspect. Votre signalement aide à protéger la communauté.',
+    "Partagez votre expérience concernant un contact, un site ou un moyen de paiement. Votre contribution aide la communauté Hadar à prendre de meilleures décisions.",
 };
 
 export default function Page() {
   return (
-    <PageLayout>
+    <PageLayout narrow>
       <div className="mb-8">
         <BackButton />
       </div>
-      <PageHeading
-        title="Signaler un contact ou un profil"
-        subtitle="Votre signalement aide à protéger d'autres utilisateurs."
-        accent="red"
-      />
-      <ReportForm />
+      <SignalerPageBody />
     </PageLayout>
   );
 }

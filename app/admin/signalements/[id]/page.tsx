@@ -13,7 +13,9 @@ import {
 } from 'lucide-react';
 import { ModerationDecision, type Decision } from '@/components/admin/ModerationDecision';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
-import { getReport, STATUS_LABEL, type Status } from '@/lib/mock/signalements';
+import { getReport, type Status } from '@/lib/mock/signalements';
+import { useI18n } from '@/lib/i18n/provider';
+import { translateProblem, translateChannel, translateStatus } from '@/lib/i18n/helpers';
 
 const STATUS_PILL: Record<Status, string> = {
   en_cours: 'bg-orange-100 text-orange-700',
@@ -44,6 +46,7 @@ function writeStore<T>(key: string, value: T) {
 }
 
 export default function Page() {
+  const { t } = useI18n();
   const params = useParams<{ id: string }>();
   const id = params?.id;
   const report = id ? getReport(id) : undefined;
@@ -64,23 +67,23 @@ export default function Page() {
 
   const exportRows = useMemo(
     () => (): (string | number)[][] => {
-      if (!report) return [['Aucun signalement']];
+      if (!report) return [[t('csv.noReport')]];
       return [
-        ['Champ', 'Valeur'],
-        ['ID', `#${report.id}`],
-        ['Statut', STATUS_LABEL[currentStatus]],
-        ['Type de contact', report.contact],
-        ['Contact signalé', report.contactMasked],
-        ['Type de problème', report.problem],
-        ['Montant', report.amount],
-        ['Date', report.date],
-        ['Utilisateur', report.userId],
-        ['Description', report.description.join('\n')],
-        ['Preuves', report.proofs.map((p) => p.name).join(' · ')],
-        ['Motif modération', savedReason || '—'],
+        [t('csv.col.field'), t('csv.col.value')],
+        [t('signalements.col.id'), `#${report.id}`],
+        [t('signalements.col.status'), translateStatus(t, currentStatus)],
+        [t('detail.contactType'), translateChannel(t, report.contact)],
+        [t('detail.reportedContact'), report.contactMasked],
+        [t('detail.problemType'), translateProblem(t, report.problem)],
+        [t('detail.amount'), report.amount],
+        [t('detail.date'), report.date],
+        [t('csv.user'), report.userId],
+        [t('detail.description'), report.description.join('\n')],
+        [t('detail.proofs'), report.proofs.map((p) => p.name).join(' · ')],
+        [t('csv.modReason'), savedReason || '—'],
       ];
     },
-    [report, currentStatus, savedReason],
+    [report, currentStatus, savedReason, t],
   );
 
   const handleExport = () => {
@@ -130,11 +133,11 @@ export default function Page() {
             className="inline-flex items-center gap-1.5 rounded-pill border border-gray-200 bg-white text-brand-navy px-3.5 py-1.5 text-sm font-medium hover:border-brand-blue transition-all shadow-glow-soft hover:shadow-glow-navy"
           >
             <ArrowLeft className="h-4 w-4" aria-hidden />
-            Retour
+            {t('common.back')}
           </Link>
-          <nav aria-label="Fil d'ariane" className="text-xs text-gray-400 hidden sm:block">
+          <nav aria-label={t('detail.breadcrumbAria')} className="text-xs text-gray-400 hidden sm:block">
             <Link href="/admin/signalements" className="hover:text-brand-navy">
-              Signalements
+              {t('page.signalements.title')}
             </Link>
             <span className="mx-2">/</span>
             <span className="text-brand-navy font-semibold">#{report.id}</span>
@@ -147,7 +150,7 @@ export default function Page() {
             className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-4 py-1.5 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
           >
             <RefreshCw className="h-4 w-4" aria-hidden />
-            Rafraîchir
+            {t('common.refresh')}
           </button>
           <button
             type="button"
@@ -155,24 +158,31 @@ export default function Page() {
             className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-4 py-1.5 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
           >
             <Download className="h-4 w-4" aria-hidden />
-            Exporter
+            {t('common.export')}
           </button>
         </div>
       </div>
 
-      <h1 className="text-2xl md:text-3xl font-bold text-brand-navy mb-2">Signalements</h1>
+      <h1 className="text-2xl md:text-3xl font-bold text-brand-navy mb-2">
+        {t('page.signalements.title')}
+      </h1>
 
       <div className="flex items-center gap-2 flex-wrap text-sm text-gray-500 mb-8">
-        <span className="font-semibold text-brand-navy">#{report.id} — Signalement</span>
+        <span className="font-semibold text-brand-navy">
+          #{report.id} — {t('detail.reportLabel')}
+        </span>
         <span className="text-gray-300">|</span>
         <span
           className={`inline-flex items-center rounded-pill px-2.5 py-0.5 text-xs font-semibold ${STATUS_PILL[currentStatus]}`}
         >
-          <AnimatedCounter key={`${refreshKey}-${currentStatus}`} value={STATUS_LABEL[currentStatus]} />
+          <AnimatedCounter
+            key={`${refreshKey}-${currentStatus}`}
+            value={translateStatus(t, currentStatus)}
+          />
         </span>
         <span className="text-gray-300">|</span>
         <span>
-          ID Utilisateur :{' '}
+          {t('detail.userId')} :{' '}
           <Link
             href={`/admin/utilisateurs/${report.userId}`}
             className="text-brand-blue font-semibold hover:underline"
@@ -181,29 +191,29 @@ export default function Page() {
           </Link>
         </span>
         <span className="text-gray-300">|</span>
-        <span>Date : {report.date}</span>
+        <span>{t('detail.date')} : {report.date}</span>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3 mb-6">
         <div className="rounded-2xl bg-gray-50 border border-gray-200 shadow-glow-soft p-5">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">
-            Infos principales
+            {t('detail.mainInfo')}
           </h2>
           <dl className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <dt className="text-gray-500">Type de contact</dt>
-              <dd className="font-semibold text-brand-navy">{report.contact}</dd>
+              <dt className="text-gray-500">{t('detail.contactType')}</dt>
+              <dd className="font-semibold text-brand-navy">{translateChannel(t, report.contact)}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-gray-500">Type de problème</dt>
-              <dd className="font-semibold text-brand-navy">{report.problem}</dd>
+              <dt className="text-gray-500">{t('detail.problemType')}</dt>
+              <dd className="font-semibold text-brand-navy">{translateProblem(t, report.problem)}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-gray-500">Montant</dt>
+              <dt className="text-gray-500">{t('detail.amount')}</dt>
               <dd className="font-semibold text-brand-navy">{report.amount}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-gray-500">Contact signalé</dt>
+              <dt className="text-gray-500">{t('detail.reportedContact')}</dt>
               <dd className="font-mono text-sm text-brand-navy">{report.contactMasked}</dd>
             </div>
           </dl>
@@ -211,7 +221,7 @@ export default function Page() {
 
         <div className="rounded-2xl bg-gray-50 border border-gray-200 shadow-glow-soft p-5 lg:col-span-1">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">
-            Description
+            {t('detail.description')}
           </h2>
           <div className="text-sm text-brand-navy leading-relaxed max-h-48 overflow-y-auto pr-1 space-y-2">
             {report.description.map((p, i) => (
@@ -222,7 +232,7 @@ export default function Page() {
 
         <div className="rounded-2xl bg-gray-50 border border-gray-200 shadow-glow-soft p-5">
           <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-400 mb-3">
-            Preuves
+            {t('detail.proofs')}
           </h2>
           <ul className="space-y-2">
             {report.proofs.map((proof) => {
@@ -238,8 +248,8 @@ export default function Page() {
                   </span>
                   <button
                     type="button"
-                    aria-label={`Télécharger ${proof.name}`}
-                    onClick={() => window.alert(`Téléchargement de ${proof.name} (simulation)`)}
+                    aria-label={t('detail.downloadAria', { name: proof.name })}
+                    onClick={() => window.alert(t('detail.downloadSim', { name: proof.name }))}
                     className="text-gray-400 hover:text-brand-navy shrink-0"
                   >
                     <DownloadIcon className="h-4 w-4" />
@@ -254,7 +264,7 @@ export default function Page() {
       {savedReason && currentStatus !== 'en_cours' && (
         <div className="rounded-2xl bg-brand-sky/40 border border-brand-blue/30 p-4 mb-6 text-sm">
           <p className="text-[11px] font-semibold uppercase tracking-wide text-brand-navy/70 mb-1">
-            Motif enregistré
+            {t('detail.savedReason')}
           </p>
           <p className="text-brand-navy whitespace-pre-wrap">{savedReason}</p>
         </div>

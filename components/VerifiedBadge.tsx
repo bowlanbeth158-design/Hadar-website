@@ -1,10 +1,14 @@
-type Props = { className?: string };
+type Props = {
+  className?: string;
+  style?: React.CSSProperties;
+};
 
-export function VerifiedBadge({ className = 'h-5 w-5' }: Props) {
+export function VerifiedBadge({ className = 'h-5 w-5', style }: Props) {
   return (
     <svg
       viewBox="0 0 22 22"
       className={className}
+      style={style}
       role="img"
       aria-label="Signalement vérifié"
     >

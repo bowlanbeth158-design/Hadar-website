@@ -33,6 +33,8 @@ import {
   signupMonthKey,
   type UserGroup,
 } from '@/lib/groups';
+import { useI18n } from '@/lib/i18n/provider';
+import { translateUserStatus } from '@/lib/i18n/helpers';
 
 const ROWS_PER_PAGE_OPTIONS = [10, 20, 30, 50, 100];
 const STATUS_KEY = 'hadar:users:status';
@@ -59,6 +61,7 @@ function writeJson<T>(key: string, value: T) {
 }
 
 export default function Page() {
+  const { t } = useI18n();
   const [refreshKey, setRefreshKey] = useState(0);
   const [statusOverrides, setStatusOverrides] = useState<StatusStore>({});
   const [reasons, setReasons] = useState<ReasonStore>({});
@@ -230,9 +233,9 @@ export default function Page() {
     };
     persistGroups([...groups, next]);
     if (seedUserIds && seedUserIds.length > 0) {
-      showFlash(`Groupe « ${name} » créé avec ${seedUserIds.length} utilisateur${seedUserIds.length > 1 ? 's' : ''}`);
+      showFlash(t('users.flash.groupCreatedWith', { name, count: seedUserIds.length }));
     } else {
-      showFlash(`Groupe « ${name} » créé`);
+      showFlash(t('users.flash.groupCreated', { name }));
     }
     setGroupsModal({ open: false, mode: 'manage' });
     clearSelection();
@@ -240,13 +243,13 @@ export default function Page() {
 
   const updateGroup = (id: string, patch: Partial<Omit<UserGroup, 'id' | 'createdAt'>>) => {
     persistGroups(groups.map((g) => (g.id === id ? { ...g, ...patch } : g)));
-    showFlash('Groupe mis à jour');
+    showFlash(t('users.flash.groupUpdated'));
   };
 
   const deleteGroup = (id: string) => {
     persistGroups(groups.filter((g) => g.id !== id));
     if (groupFilter === id) setGroupFilter('all');
-    showFlash('Groupe supprimé');
+    showFlash(t('users.flash.groupDeleted'));
   };
 
   const addToGroup = (groupId: string, userIds: string[]) => {
@@ -259,7 +262,10 @@ export default function Page() {
     );
     const group = groups.find((g) => g.id === groupId);
     showFlash(
-      `${userIds.length} utilisateur${userIds.length > 1 ? 's' : ''} ajouté${userIds.length > 1 ? 's' : ''} à « ${group?.name ?? groupId} »`,
+      t('users.flash.addedToGroup', {
+        count: userIds.length,
+        name: group?.name ?? groupId,
+      }),
     );
     setGroupsModal({ open: false, mode: 'manage' });
     clearSelection();
@@ -277,7 +283,10 @@ export default function Page() {
       );
       const group = groups.find((g) => g.id === groupFilter);
       showFlash(
-        `${ids.length} utilisateur${ids.length > 1 ? 's' : ''} retiré${ids.length > 1 ? 's' : ''} de « ${group?.name ?? ''} »`,
+        t('users.flash.removedFromGroup', {
+          count: ids.length,
+          name: group?.name ?? '',
+        }),
       );
       clearSelection();
       setActionsOpen(false);
@@ -360,8 +369,10 @@ export default function Page() {
     setActionsOpen(false);
     showFlash(
       ids.length > 1
-        ? `${ids.length} utilisateurs ${action === 'block' ? 'bloqués' : 'supprimés'}`
-        : `Utilisateur ${action === 'block' ? 'bloqué' : 'supprimé'}`,
+        ? t(action === 'block' ? 'users.flash.blocked.many' : 'users.flash.deleted.many', {
+            count: ids.length,
+          })
+        : t(action === 'block' ? 'users.flash.blocked.one' : 'users.flash.deleted.one'),
     );
   };
 
@@ -369,17 +380,17 @@ export default function Page() {
     const user = users.find((u) => u.id === id);
     const label = user ? user.name : `#${id}`;
     if (action === 'reset') {
-      showFlash(`Lien de réinitialisation envoyé à ${label}`);
+      showFlash(t('users.flash.resetSent.one', { name: label }));
       return;
     }
     if (action === 'unblock') {
       applyStatus([id], 'actif');
-      showFlash(`${label} débloqué`);
+      showFlash(t('users.flash.unblocked.one', { name: label }));
       return;
     }
     if (action === 'restore') {
       applyStatus([id], 'actif');
-      showFlash(`${label} restauré`);
+      showFlash(t('users.flash.restored.one', { name: label }));
       return;
     }
     if (action === 'block') openReasonModal('block', [id]);
@@ -390,21 +401,21 @@ export default function Page() {
     const ids = Array.from(selectedIds);
     if (ids.length === 0) return;
     if (action === 'reset') {
-      showFlash(`Liens de réinitialisation envoyés (${ids.length})`);
+      showFlash(t('users.flash.resetSent.many', { count: ids.length }));
       clearSelection();
       setActionsOpen(false);
       return;
     }
     if (action === 'unblock') {
       applyStatus(ids, 'actif');
-      showFlash(`${ids.length} utilisateur(s) débloqué(s)`);
+      showFlash(t('users.flash.unblocked.many', { count: ids.length }));
       clearSelection();
       setActionsOpen(false);
       return;
     }
     if (action === 'restore') {
       applyStatus(ids, 'actif');
-      showFlash(`${ids.length} utilisateur(s) restauré(s)`);
+      showFlash(t('users.flash.restored.many', { count: ids.length }));
       clearSelection();
       setActionsOpen(false);
       return;
@@ -414,7 +425,16 @@ export default function Page() {
   };
 
   const exportRows = (): (string | number)[][] => [
-    ['ID', 'Nom', 'Email', 'Téléphone', 'Inscription', 'Dernière activité', 'Statut', 'Motif'],
+    [
+      t('users.col.id'),
+      t('users.col.name'),
+      t('users.col.email'),
+      t('users.col.phone'),
+      t('users.col.signup'),
+      t('users.col.lastSeen'),
+      t('users.col.status'),
+      t('users.col.reason'),
+    ],
     ...filtered.map((u) => [
       `#${u.id}`,
       u.name,
@@ -422,7 +442,7 @@ export default function Page() {
       u.phone,
       u.signup,
       u.lastSeen,
-      STATUS_STYLE[u.status].label,
+      translateUserStatus(t, u.status),
       reasons[u.id]?.reason ?? '',
     ]),
   ];
@@ -433,22 +453,22 @@ export default function Page() {
       ? users.find((u) => u.id === reasonModal.ids[0])?.name ?? `#${reasonModal.ids[0]}`
       : `${reasonModal.ids.length} utilisateurs`;
 
-  const STATUS_FILTERS: { id: 'all' | Status; label: string }[] = [
-    { id: 'all', label: 'Tous' },
-    { id: 'actif', label: 'Actifs' },
-    { id: 'inactif', label: 'Inactifs' },
-    { id: 'bloque', label: 'Bloqués' },
-    { id: 'supprime', label: 'Supprimés' },
+  const STATUS_FILTERS: { id: 'all' | Status; labelKey: string }[] = [
+    { id: 'all', labelKey: 'filter.all' },
+    { id: 'actif', labelKey: 'users.filter.status.actif' },
+    { id: 'inactif', labelKey: 'users.filter.status.inactif' },
+    { id: 'bloque', labelKey: 'users.filter.status.bloque' },
+    { id: 'supprime', labelKey: 'users.filter.status.supprime' },
   ];
 
   return (
     <div>
       <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">Utilisateurs</h1>
+          <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">{t('users.title')}</h1>
           <p className="mt-1 text-sm text-gray-500">
-            <AnimatedCounter key={`${refreshKey}-total`} value={`${users.length}`} /> utilisateurs
-            inscrits
+            <AnimatedCounter key={`${refreshKey}-total`} value={`${users.length}`} />{' '}
+            {t('users.subtitle.registered')}
             {search && (
               <>
                 {' '}·{' '}
@@ -456,7 +476,7 @@ export default function Page() {
                   key={`${refreshKey}-filtered-${filtered.length}`}
                   value={`${filtered.length}`}
                 />{' '}
-                correspondent à « {search} »
+                {t('users.subtitle.match', { query: search })}
               </>
             )}
           </p>
@@ -468,7 +488,7 @@ export default function Page() {
             className="inline-flex items-center gap-1.5 rounded-pill bg-brand-navy hover:bg-brand-blue text-white px-4 py-1.5 text-sm font-semibold shadow-glow-navy hover:shadow-glow-blue transition-all"
           >
             <UsersIcon className="h-4 w-4" aria-hidden />
-            Groupes
+            {t('users.groups')}
             {groups.length > 0 && (
               <span className="rounded-full bg-white/20 text-white h-4 min-w-4 px-1 text-[10px] font-bold flex items-center justify-center">
                 {groups.length}
@@ -501,7 +521,7 @@ export default function Page() {
                 className="inline-flex items-center gap-1.5 rounded-pill bg-yellow-100 text-yellow-700 px-3 py-1.5 text-xs font-semibold hover:bg-yellow-200 shadow-glow-yellow transition-colors"
               >
                 <Filter className="h-3.5 w-3.5" aria-hidden />
-                Lignes par page
+                {t('users.rowsPerPage')}
                 <span className="rounded-full bg-yellow-500 text-white h-4 min-w-4 px-1 text-[10px] flex items-center justify-center">
                   {rowsPerPage}
                 </span>
@@ -510,10 +530,10 @@ export default function Page() {
               {filterOpen && (
                 <div
                   role="menu"
-                  className="absolute left-0 top-full mt-2 w-44 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-20 py-1"
+                  className="absolute left-0 rtl:left-auto rtl:right-0 top-full mt-2 w-44 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-20 py-1"
                 >
                   <p className="px-3 py-2 text-[10px] font-semibold uppercase tracking-wide text-gray-400 border-b border-gray-100">
-                    Afficher par page
+                    {t('users.perPage')}
                   </p>
                   {ROWS_PER_PAGE_OPTIONS.map((n) => (
                     <button
@@ -532,7 +552,7 @@ export default function Page() {
                           : 'text-gray-600 hover:bg-gray-50'
                       }`}
                     >
-                      <span>{n} lignes</span>
+                      <span>{t('users.rows', { n })}</span>
                       {n === rowsPerPage && (
                         <CheckCircle2 className="h-4 w-4 text-brand-blue" aria-hidden />
                       )}
@@ -555,7 +575,7 @@ export default function Page() {
                       : 'inline-flex items-center rounded-pill border border-gray-200 text-brand-navy px-3 py-1 text-[11px] font-medium hover:border-brand-blue'
                   }
                 >
-                  {f.label}
+                  {t(f.labelKey)}
                 </button>
               ))}
             </div>
@@ -570,16 +590,16 @@ export default function Page() {
               >
                 <UsersIcon className="h-3.5 w-3.5" aria-hidden />
                 {groupFilter === 'all'
-                  ? 'Tous les groupes'
+                  ? t('users.filter.allGroups')
                   : groupFilter === 'new'
-                    ? 'Nouveaux (30 j)'
-                    : groups.find((g) => g.id === groupFilter)?.name ?? 'Groupe'}
+                    ? t('users.filter.newUsers')
+                    : groups.find((g) => g.id === groupFilter)?.name ?? t('users.filter.group')}
                 <ChevronDown className="h-3 w-3" aria-hidden />
               </button>
               {groupMenuOpen && (
                 <div
                   role="menu"
-                  className="absolute left-0 top-full mt-2 w-56 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-20 py-1 max-h-72 overflow-y-auto"
+                  className="absolute left-0 rtl:left-auto rtl:right-0 top-full mt-2 w-56 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-20 py-1 max-h-72 overflow-y-auto"
                 >
                   <button
                     type="button"
@@ -593,7 +613,7 @@ export default function Page() {
                         : 'text-brand-navy hover:bg-gray-50'
                     }`}
                   >
-                    Tous les utilisateurs
+                    {t('users.filter.allUsers')}
                     {groupFilter === 'all' && (
                       <CheckCircle2 className="h-4 w-4 text-brand-blue" aria-hidden />
                     )}
@@ -612,7 +632,7 @@ export default function Page() {
                   >
                     <span className="inline-flex items-center gap-1.5">
                       <Sparkles className="h-3.5 w-3.5 text-orange-500" aria-hidden />
-                      Nouveaux (30 j)
+                      {t('users.filter.newUsers')}
                     </span>
                     {groupFilter === 'new' && (
                       <CheckCircle2 className="h-4 w-4 text-brand-blue" aria-hidden />
@@ -621,7 +641,7 @@ export default function Page() {
                   {groups.length > 0 && (
                     <>
                       <p className="px-3 pt-2 pb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-400 border-t border-gray-100 mt-1">
-                        Groupes
+                        {t('users.groups')}
                       </p>
                       {groups.map((g) => (
                         <button
@@ -661,7 +681,7 @@ export default function Page() {
                     className="w-full flex items-center gap-1.5 px-3 py-2 text-xs text-brand-blue hover:bg-gray-50 border-t border-gray-100 mt-1 font-semibold"
                   >
                     <UsersIcon className="h-3.5 w-3.5" aria-hidden />
-                    Gérer les groupes
+                    {t('users.filter.manageGroups')}
                   </button>
                 </div>
               )}
@@ -676,16 +696,16 @@ export default function Page() {
                 className="inline-flex items-center gap-1.5 rounded-pill bg-brand-sky/60 text-brand-navy px-3 py-1.5 text-xs font-semibold hover:bg-brand-sky transition-colors"
               >
                 <CalendarDays className="h-3.5 w-3.5" aria-hidden />
-                {monthFilter === 'all' ? "Tous les mois" : monthLabel(monthFilter)}
+                {monthFilter === 'all' ? t('users.filter.allMonths') : monthLabel(monthFilter)}
                 <ChevronDown className="h-3 w-3" aria-hidden />
               </button>
               {monthMenuOpen && (
                 <div
                   role="menu"
-                  className="absolute left-0 top-full mt-2 w-52 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-20 py-1 max-h-72 overflow-y-auto"
+                  className="absolute left-0 rtl:left-auto rtl:right-0 top-full mt-2 w-52 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-20 py-1 max-h-72 overflow-y-auto"
                 >
                   <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
-                    Mois d&apos;inscription
+                    {t('users.filter.monthSignup')}
                   </p>
                   <button
                     type="button"
@@ -699,7 +719,7 @@ export default function Page() {
                         : 'text-brand-navy hover:bg-gray-50'
                     }`}
                   >
-                    Tous les mois
+                    {t('users.filter.allMonths')}
                     {monthFilter === 'all' && (
                       <CheckCircle2 className="h-4 w-4 text-brand-blue" aria-hidden />
                     )}
@@ -742,7 +762,7 @@ export default function Page() {
               className="inline-flex items-center gap-1.5 rounded-pill border border-gray-200 text-brand-navy px-3 py-1.5 text-xs font-medium hover:border-brand-blue shadow-glow-soft transition-all"
             >
               <ListChecks className="h-3.5 w-3.5" aria-hidden />
-              {allSelectedOnPage ? 'Tout désélectionner' : 'Sélectionner tous'}
+              {allSelectedOnPage ? t('users.deselectAll') : t('users.selectAll')}
             </button>
 
             <div ref={actionsRef} className="relative">
@@ -754,7 +774,7 @@ export default function Page() {
                 aria-expanded={actionsOpen}
                 className="inline-flex items-center gap-1.5 rounded-pill border border-gray-200 text-brand-navy px-3 py-1.5 text-xs font-medium hover:border-brand-blue shadow-glow-soft disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               >
-                Actions
+                {t('users.actions')}
                 {selectionCount > 0 && (
                   <span className="rounded-full bg-brand-navy text-white h-4 min-w-4 px-1.5 text-[10px] flex items-center justify-center">
                     {selectionCount}
@@ -765,7 +785,7 @@ export default function Page() {
               {actionsOpen && (
                 <div
                   role="menu"
-                  className="absolute left-0 top-full mt-2 w-60 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-20 py-1"
+                  className="absolute left-0 rtl:left-auto rtl:right-0 top-full mt-2 w-60 rounded-xl bg-white border border-gray-200 shadow-glow-navy overflow-hidden z-20 py-1"
                 >
                   <button
                     type="button"
@@ -773,7 +793,7 @@ export default function Page() {
                     className="w-full flex items-center gap-2 px-3 py-2 text-sm text-orange-600 hover:bg-orange-50"
                   >
                     <KeyRound className="h-4 w-4" aria-hidden />
-                    Réinitialiser mot de passe
+                    {t('users.bulk.resetPassword')}
                   </button>
                   <button
                     type="button"
@@ -781,7 +801,7 @@ export default function Page() {
                     className="w-full flex items-center gap-2 px-3 py-2 text-sm text-brand-navy hover:bg-gray-50"
                   >
                     <Ban className="h-4 w-4" aria-hidden />
-                    Bloquer (motif requis)
+                    {t('users.bulk.block')}
                   </button>
                   <button
                     type="button"
@@ -789,7 +809,7 @@ export default function Page() {
                     className="w-full flex items-center gap-2 px-3 py-2 text-sm text-green-700 hover:bg-green-50"
                   >
                     <CheckCircle2 className="h-4 w-4" aria-hidden />
-                    Débloquer
+                    {t('users.bulk.unblock')}
                   </button>
                   <div className="my-1 border-t border-gray-100" />
                   <button
@@ -798,7 +818,7 @@ export default function Page() {
                     className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-600 hover:bg-red-50"
                   >
                     <Trash2 className="h-4 w-4" aria-hidden />
-                    Supprimer (motif requis)
+                    {t('users.bulk.delete')}
                   </button>
                   <button
                     type="button"
@@ -806,7 +826,7 @@ export default function Page() {
                     className="w-full flex items-center gap-2 px-3 py-2 text-sm text-green-700 hover:bg-green-50"
                   >
                     <Undo2 className="h-4 w-4" aria-hidden />
-                    Restaurer
+                    {t('users.bulk.restore')}
                   </button>
                   <div className="my-1 border-t border-gray-100" />
                   <button
@@ -818,7 +838,7 @@ export default function Page() {
                     className="w-full flex items-center gap-2 px-3 py-2 text-sm text-brand-navy hover:bg-gray-50"
                   >
                     <UsersIcon className="h-4 w-4" aria-hidden />
-                    Ajouter à un groupe
+                    {t('users.bulk.addToGroup')}
                   </button>
                   {groupFilter !== 'all' && groupFilter !== 'new' && (
                     <button
@@ -827,7 +847,7 @@ export default function Page() {
                       className="w-full flex items-center gap-2 px-3 py-2 text-sm text-orange-600 hover:bg-orange-50"
                     >
                       <UserMinus className="h-4 w-4" aria-hidden />
-                      Retirer du groupe affiché
+                      {t('users.bulk.removeFromGroup')}
                     </button>
                   )}
                 </div>
@@ -841,7 +861,9 @@ export default function Page() {
                 className="inline-flex items-center gap-1 text-xs text-gray-500 hover:text-brand-navy"
               >
                 <X className="h-3 w-3" aria-hidden />
-                {selectionCount} sélectionné{selectionCount > 1 ? 's' : ''}
+                {t(selectionCount > 1 ? 'users.selected.other' : 'users.selected.one', {
+                  count: selectionCount,
+                })}
               </button>
             )}
           </div>
@@ -858,7 +880,7 @@ export default function Page() {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              placeholder="Rechercher (nom, email, téléphone…)"
+              placeholder={t('users.searchPlaceholder')}
               className="w-72 rounded-pill bg-gray-50 border border-gray-200 pl-9 pr-3 py-1.5 text-xs text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue"
             />
           </div>
@@ -873,24 +895,24 @@ export default function Page() {
                     type="checkbox"
                     checked={allSelectedOnPage}
                     onChange={toggleAllOnPage}
-                    aria-label="Tout sélectionner sur cette page"
+                    aria-label={t('users.selectAllPage')}
                   />
                 </th>
-                <th className="px-4 py-3 text-left font-semibold">ID</th>
-                <th className="px-4 py-3 text-left font-semibold">Nom</th>
-                <th className="px-4 py-3 text-left font-semibold">Email</th>
-                <th className="px-4 py-3 text-left font-semibold">Téléphone</th>
-                <th className="px-4 py-3 text-left font-semibold">Inscription</th>
-                <th className="px-4 py-3 text-left font-semibold">Dernière activité</th>
-                <th className="px-4 py-3 text-left font-semibold">Statut</th>
-                <th className="px-4 py-3 text-right font-semibold">Action</th>
+                <th className="px-4 py-3 text-left font-semibold">{t('users.col.id')}</th>
+                <th className="px-4 py-3 text-left font-semibold">{t('users.col.name')}</th>
+                <th className="px-4 py-3 text-left font-semibold">{t('users.col.email')}</th>
+                <th className="px-4 py-3 text-left font-semibold">{t('users.col.phone')}</th>
+                <th className="px-4 py-3 text-left font-semibold">{t('users.col.signup')}</th>
+                <th className="px-4 py-3 text-left font-semibold">{t('users.col.lastSeen')}</th>
+                <th className="px-4 py-3 text-left font-semibold">{t('users.col.status')}</th>
+                <th className="px-4 py-3 text-right font-semibold">{t('users.col.action')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {pageRows.length === 0 ? (
                 <tr>
                   <td colSpan={9} className="px-4 py-10 text-center text-gray-400 text-sm">
-                    Aucun utilisateur ne correspond à la recherche.
+                    {t('users.empty')}
                   </td>
                 </tr>
               ) : (
@@ -907,7 +929,7 @@ export default function Page() {
                           type="checkbox"
                           checked={selected}
                           onChange={() => toggleOne(u.id)}
-                          aria-label={`Sélectionner ${u.name}`}
+                          aria-label={t('users.selectRow', { name: u.name })}
                         />
                       </td>
                       <td className="px-4 py-3 font-mono text-brand-navy">#{u.id}</td>
@@ -938,7 +960,7 @@ export default function Page() {
                         <span
                           className={`inline-flex items-center rounded-pill px-2.5 py-0.5 text-xs font-semibold ${s.cls}`}
                         >
-                          {s.label}
+                          {translateUserStatus(t, u.status)}
                         </span>
                       </td>
                       <td className="px-4 py-3 text-right">
@@ -958,12 +980,12 @@ export default function Page() {
 
         <div className="flex items-center justify-between px-5 py-3 border-t border-gray-100 text-xs text-gray-500 flex-wrap gap-2">
           <span>
-            Page {safePage} / {totalPages} ·{' '}
+            {t('users.pageOf', { current: safePage, total: totalPages })} ·{' '}
             <AnimatedCounter
               key={`${refreshKey}-count-${filtered.length}`}
               value={`${filtered.length}`}
             />{' '}
-            utilisateur{filtered.length > 1 ? 's' : ''}
+            {t(filtered.length > 1 ? 'users.countUsers.other' : 'users.countUsers.one')}
           </span>
           <div className="flex items-center gap-1">
             <button
@@ -971,7 +993,7 @@ export default function Page() {
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={safePage === 1}
               className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
-              aria-label="Page précédente"
+              aria-label={t('pagination.prev')}
             >
               ‹
             </button>
@@ -994,7 +1016,7 @@ export default function Page() {
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={safePage === totalPages}
               className="px-2 py-1 rounded hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
-              aria-label="Page suivante"
+              aria-label={t('pagination.next')}
             >
               ›
             </button>

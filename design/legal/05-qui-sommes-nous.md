@@ -25,13 +25,7 @@ Notre rôle est de :
 
 - Les contenus représentent uniquement les expériences de leurs auteurs.
 
-## Processus des signalements
-> 🎨 **UI** : afficher le composant `<ProcessSteps />` réutilisé depuis l'accueil (les 4 étapes Signalement → Examen → Modération → Publication).
-
-1. **Signalement** — Un utilisateur partage un signalement sur un contact ou un moyen de paiement.
-2. **Examen** — Le contenu est examiné selon les règles de la plateforme.
-3. **Modération** — Le contenu peut être modifié ou supprimé si nécessaire.
-4. **Publication** — Les signalements conformes sont publiés sur la plateforme.
+<!-- PROCESS_STEPS -->
 
 ## Responsabilité
 Nous veillons à maintenir un espace responsable en :

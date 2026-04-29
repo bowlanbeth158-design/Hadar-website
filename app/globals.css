@@ -63,10 +63,38 @@ html.dark .to-white {
   --tw-gradient-to: rgba(15, 23, 42, 0.5) var(--tw-gradient-to-position);
 }
 
-html.dark .text-brand-navy { color: #DBE5F3; }
-html.dark .text-brand-navy\/80 { color: rgba(219, 229, 243, 0.85); }
-html.dark .text-brand-navy\/60 { color: rgba(219, 229, 243, 0.7); }
+html.dark .text-brand-navy { color: #f1f5f9; }
+html.dark .text-brand-navy\/80 { color: rgba(241, 245, 249, 0.85); }
+html.dark .text-brand-navy\/70 { color: rgba(241, 245, 249, 0.75); }
+html.dark .text-brand-navy\/60 { color: rgba(241, 245, 249, 0.7); }
 html.dark .text-brand-blue { color: #6FC1E8; }
+
+/* Headings: white-ish gradient instead of flat colour. Targets only
+   text-brand-navy headings (skips PageHeading accent='gradient' which
+   sets text-transparent and won't match this selector). */
+html.dark h1.text-brand-navy,
+html.dark h2.text-brand-navy,
+html.dark h3.text-brand-navy {
+  background: linear-gradient(135deg, #ffffff 0%, #DBE5F3 45%, #6FC1E8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Light-tinted pills (brand-sky / blue-100 / green-100 / orange-100
+   backgrounds) keep their dark navy text in dark mode — otherwise
+   text-brand-navy gets overridden to near-white and blends into the
+   light pill colour. */
+html.dark .text-brand-navy.bg-brand-sky,
+html.dark .text-brand-navy.from-brand-sky,
+html.dark .text-brand-navy.from-blue-100,
+html.dark .text-brand-navy.from-green-100,
+html.dark .text-brand-navy.from-orange-100,
+html.dark .text-brand-navy.from-yellow-100 {
+  color: #00327D;
+  -webkit-background-clip: border-box;
+  background-clip: border-box;
+}
 
 html.dark .text-gray-400 { color: #94a3b8; }
 html.dark .text-gray-500 { color: #cbd5e1; }

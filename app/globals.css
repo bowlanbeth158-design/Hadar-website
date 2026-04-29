@@ -19,6 +19,77 @@ body {
   background: #ffffff;
 }
 
+html.dark body {
+  color: #e5e7eb;
+  background: #0b1220;
+}
+
+/* Dark mode global utility overrides --------------------------------------- *
+ * Tailwind utilities are atomic; rather than scattering `dark:` variants
+ * across 50+ components, we override the most common visibility-killers
+ * here. Rules use `html.dark + .class` (specificity 0,2,1) which beats
+ * plain Tailwind utilities (0,1,0) without needing !important.
+ * --------------------------------------------------------------------------- */
+html.dark { color-scheme: dark; }
+
+html.dark .bg-white,
+html.dark .bg-white\/40,
+html.dark .bg-white\/50,
+html.dark .bg-white\/60,
+html.dark .bg-white\/65,
+html.dark .bg-white\/70,
+html.dark .bg-white\/75,
+html.dark .bg-white\/80,
+html.dark .bg-white\/85,
+html.dark .bg-white\/90,
+html.dark .bg-white\/95 {
+  background-color: rgba(15, 23, 42, 0.55);
+}
+
+html.dark .hover\:bg-white:hover,
+html.dark .hover\:bg-white\/80:hover,
+html.dark .hover\:bg-white\/15:hover {
+  background-color: rgba(15, 23, 42, 0.7);
+}
+
+html.dark .from-white {
+  --tw-gradient-from: rgba(15, 23, 42, 0.5) var(--tw-gradient-from-position);
+}
+html.dark .via-white {
+  --tw-gradient-stops: var(--tw-gradient-from), rgba(15, 23, 42, 0.5)
+    var(--tw-gradient-via-position), var(--tw-gradient-to);
+}
+html.dark .to-white {
+  --tw-gradient-to: rgba(15, 23, 42, 0.5) var(--tw-gradient-to-position);
+}
+
+html.dark .text-brand-navy { color: #DBE5F3; }
+html.dark .text-brand-navy\/80 { color: rgba(219, 229, 243, 0.85); }
+html.dark .text-brand-navy\/60 { color: rgba(219, 229, 243, 0.7); }
+html.dark .text-brand-blue { color: #6FC1E8; }
+
+html.dark .text-gray-400 { color: #94a3b8; }
+html.dark .text-gray-500 { color: #cbd5e1; }
+html.dark .text-gray-600 { color: #d1d5db; }
+html.dark .text-gray-700 { color: #e5e7eb; }
+
+html.dark .border-gray-200,
+html.dark .border-white\/70,
+html.dark .border-white\/80 {
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+html.dark input,
+html.dark textarea,
+html.dark select {
+  color-scheme: dark;
+  color: #e5e7eb;
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder {
+  color: rgba(229, 231, 235, 0.45);
+}
+
 /* Respect user's reduced-motion preference */
 @media (prefers-reduced-motion: reduce) {
   *,

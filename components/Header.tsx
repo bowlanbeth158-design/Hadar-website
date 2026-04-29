@@ -6,6 +6,7 @@ import { Menu, X, Home, HelpCircle, Bell, Siren } from 'lucide-react';
 import { Logo } from './Logo';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { CurrencySwitcher } from './CurrencySwitcher';
+import { ThemeSwitcher } from './ThemeSwitcher';
 import { UserMenu } from './UserMenu';
 import { AlertsPopover } from './AlertsPopover';
 import { useI18n } from '@/lib/i18n/provider';
@@ -162,7 +163,7 @@ export function Header() {
         <span className="relative">{t('header.whatsappStrip')}</span>
       </div>
 
-      <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur border-b border-gray-200">
+      <header className="sticky top-0 z-40 w-full bg-white/90 dark:bg-[#0b1220]/90 backdrop-blur border-b border-gray-200 dark:border-white/10">
         <nav className="mx-auto max-w-[1440px] grid grid-cols-[1fr_auto_1fr] items-center gap-6 px-4 md:px-10 py-3">
           {/* LEFT cell — desktop: Logo. Mobile: hamburger drawer. */}
           <div className="flex items-center md:justify-start">
@@ -203,11 +204,12 @@ export function Header() {
             </ul>
           </div>
 
-          {/* RIGHT — langue + devise (desktop) + profil (always) */}
+          {/* RIGHT — langue + devise + thème (desktop) + profil (always) */}
           <div className="flex items-center justify-end gap-3">
-            <div className="hidden sm:flex items-center gap-1 pr-3 border-r border-gray-200">
+            <div className="hidden sm:flex items-center gap-1 pr-3 border-r border-gray-200 dark:border-white/10">
               <LanguageSwitcher />
               <CurrencySwitcher />
+              <ThemeSwitcher />
             </div>
             <UserMenu />
           </div>

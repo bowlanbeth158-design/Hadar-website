@@ -48,9 +48,19 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
+const THEME_INIT_SCRIPT = `(()=>{try{var t=localStorage.getItem('hadar:theme');if(t==='dark'){document.documentElement.classList.add('dark');}}catch(e){}})();`;
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="fr" dir="ltr" className={`${poppins.variable} ${cairo.variable} overflow-x-clip scroll-smooth`}>
+    <html
+      lang="fr"
+      dir="ltr"
+      suppressHydrationWarning
+      className={`${poppins.variable} ${cairo.variable} overflow-x-clip scroll-smooth`}
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="relative min-h-screen antialiased font-sans bg-gradient-to-b from-brand-sky/60 via-white to-white isolate overflow-x-clip">
         {/* Decorative brand blurs — symmetric soft tints anchored to the
             viewport so every page shares the same atmospheric backdrop. */}

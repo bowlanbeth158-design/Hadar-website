@@ -360,7 +360,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                   </span>
                 </div>
 
-                <h2 className="mt-5 text-3xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 bg-clip-text text-transparent leading-tight">
+                <h2 className="mt-5 text-3xl md:text-5xl font-bold tracking-tight text-brand-navy leading-tight">
                   {t('home.hero.spotlightH2.prefix')}{' '}
                   <span className="bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 bg-clip-text text-transparent">
                     {t('home.hero.spotlightH2.highlight')}

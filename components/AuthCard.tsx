@@ -22,7 +22,7 @@ export function AuthCard({ title, titleKey, children, footer }: Props) {
         <Link href="/" className="flex justify-center mb-6" aria-label={t('auth.aria.home')}>
           <Logo size="md" />
         </Link>
-        <h1 className="text-2xl font-bold bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 bg-clip-text text-transparent text-center mb-2">{resolvedTitle}</h1>
+        <h1 className="text-2xl font-bold text-brand-navy text-center mb-2">{resolvedTitle}</h1>
         <div className="mt-6">{children}</div>
         {footer && <div className="mt-6 text-center text-sm">{footer}</div>}
         <div className="mt-8 pt-4 border-t border-gray-200 flex items-center justify-center gap-3 text-xs text-gray-400">

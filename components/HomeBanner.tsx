@@ -146,7 +146,7 @@ export function HomeBanner() {
           </div>
           </div>
 
-          <h1 className="mt-8 md:mt-10 text-4xl md:text-6xl font-bold tracking-tight bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 bg-clip-text text-transparent leading-[1.05]">
+          <h1 className="mt-8 md:mt-10 text-4xl md:text-6xl font-bold tracking-tight text-brand-navy leading-[1.05]">
             {t('home.banner.h1.line1')}
             <br />
             <span className="bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 bg-clip-text text-transparent">

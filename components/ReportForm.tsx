@@ -32,6 +32,8 @@ import {
   Sparkles,
   Loader2,
   X as XIcon,
+  ChevronLeft,
+  ChevronRight,
   type LucideIcon,
 } from 'lucide-react';
 
@@ -110,6 +112,62 @@ function ConfettiRain() {
       className="pointer-events-none absolute inset-0 overflow-hidden"
     >
       {pieces}
+    </div>
+  );
+}
+
+type Step = 1 | 2 | 3 | 4 | 5;
+const TOTAL_STEPS = 5;
+const STEP_TITLES: Record<Step, string> = {
+  1: 'Type de contact',
+  2: 'Type de problème',
+  3: 'Description',
+  4: 'Preuves',
+  5: 'Confirmation et envoi',
+};
+
+function Stepper({ step }: { step: Step }) {
+  const pct = ((step - 1) / (TOTAL_STEPS - 1)) * 100;
+  return (
+    <div className="mb-7">
+      <div className="flex items-center justify-between mb-3">
+        <span className="text-xs font-semibold text-brand-blue tabular-nums">
+          Étape {step} sur {TOTAL_STEPS}
+        </span>
+        <span className="text-xs font-semibold text-brand-navy">
+          {STEP_TITLES[step]}
+        </span>
+      </div>
+      <div className="relative">
+        <div className="h-1.5 w-full rounded-full bg-gray-200/70 overflow-hidden">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-brand-blue via-brand-blue to-brand-navy transition-all duration-500 ease-out"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+        <div className="mt-3 grid grid-cols-5 gap-1">
+          {([1, 2, 3, 4, 5] as Step[]).map((n) => {
+            const done = n < step;
+            const active = n === step;
+            return (
+              <div key={n} className="flex flex-col items-center gap-1">
+                <span
+                  className={
+                    active
+                      ? 'inline-flex h-7 w-7 items-center justify-center rounded-full bg-brand-navy text-white text-xs font-bold shadow-glow-navy ring-2 ring-brand-blue/40'
+                      : done
+                      ? 'inline-flex h-7 w-7 items-center justify-center rounded-full bg-green-500 text-white text-xs font-bold shadow-sm'
+                      : 'inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/85 border border-gray-200 text-gray-400 text-xs font-bold'
+                  }
+                  aria-current={active ? 'step' : undefined}
+                >
+                  {done ? <CheckCircle2 className="h-4 w-4" aria-hidden /> : n}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
     </div>
   );
 }
@@ -215,27 +273,47 @@ export function ReportForm() {
   // so the user always types in the unit they're seeing across the
   // rest of the site (header switcher, Montant signalé KPI, etc.).
   const { symbol: currencySymbol, placeholderAmount } = useCurrency();
+  const [step, setStep] = useState<Step>(1);
   const [contactType, setContactType] = useState<string>(CONTACT_TYPES[0]!.id);
+  const [contactValue, setContactValue] = useState('');
   const [problemType, setProblemType] = useState<string | null>(null);
+  const [amount, setAmount] = useState('');
   const [accepted, setAccepted] = useState(false);
   const [description, setDescription] = useState('');
   const [evidenceFiles, setEvidenceFiles] = useState<File[]>([]);
   const [phase, setPhase] = useState<Phase>('idle');
 
   const activeContact = CONTACT_TYPES.find((c) => c.id === contactType) ?? CONTACT_TYPES[0]!;
+  const activeProblem = PROBLEM_TYPES.find((p) => p.id === problemType);
 
   // Live content moderation on the description. Recomputed on every
   // keystroke; cheap (single regex scan per forbidden lemma over a
   // <=300-char string).
   const moderation = useMemo(() => detectUnsafeContent(description), [description]);
 
+  const stepValid: Record<Step, boolean> = {
+    1: contactValue.trim() !== '',
+    2: problemType !== null,
+    3: description.trim() !== '' && !moderation.blocked,
+    4: evidenceFiles.length > 0,
+    5: accepted,
+  };
+
   const canSubmit =
-    accepted &&
-    problemType !== null &&
-    description.trim() !== '' &&
-    !moderation.blocked &&
-    evidenceFiles.length > 0 &&
+    stepValid[1] &&
+    stepValid[2] &&
+    stepValid[3] &&
+    stepValid[4] &&
+    stepValid[5] &&
     phase === 'idle';
+
+  const goNext = () => {
+    if (!stepValid[step]) return;
+    if (step < TOTAL_STEPS) setStep((s) => (s + 1) as Step);
+  };
+  const goBack = () => {
+    if (step > 1) setStep((s) => (s - 1) as Step);
+  };
 
   const scrollToTop = () => {
     if (typeof window !== 'undefined') {
@@ -254,7 +332,11 @@ export function ReportForm() {
   };
 
   const reset = () => {
+    setStep(1);
+    setContactType(CONTACT_TYPES[0]!.id);
+    setContactValue('');
     setProblemType(null);
+    setAmount('');
     setAccepted(false);
     setDescription('');
     setEvidenceFiles([]);
@@ -264,6 +346,10 @@ export function ReportForm() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (step < TOTAL_STEPS) {
+      goNext();
+      return;
+    }
     if (!canSubmit) return;
     setPhase('sending');
     setTimeout(() => setPhase('success'), 1200);
@@ -278,6 +364,10 @@ export function ReportForm() {
       className="space-y-7 rounded-3xl bg-gradient-to-br from-brand-sky/30 via-white to-brand-sky/35 backdrop-blur-sm border border-white/70 p-6 md:p-8 shadow-glow-soft"
       onSubmit={handleSubmit}
     >
+      <Stepper step={step} />
+
+      {step === 1 && (
+      <div className="space-y-6 animate-fade-in-down">
       <fieldset>
         <legend className="inline-flex items-center gap-2 text-sm font-semibold text-brand-navy mb-3">
           <span
@@ -328,11 +418,17 @@ export function ReportForm() {
           id="contactValue"
           name="contactValue"
           type="text"
+          value={contactValue}
+          onChange={(e) => setContactValue(e.target.value)}
           placeholder={t(activeContact.placeholderKey)}
           className="w-full rounded-xl bg-white/85 backdrop-blur-sm border border-gray-200 px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue focus:shadow-sm transition-all"
         />
       </div>
+      </div>
+      )}
 
+      {step === 2 && (
+      <div className="space-y-6 animate-fade-in-down">
       <fieldset>
         <legend className="inline-flex items-center gap-2 text-sm font-semibold text-brand-navy mb-3">
           <span
@@ -390,6 +486,8 @@ export function ReportForm() {
             id="amount"
             name="amount"
             type="number"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
             placeholder={`Ex : ${placeholderAmount}`}
             className="w-full rounded-xl bg-white/85 backdrop-blur-sm border border-gray-200 px-4 py-2.5 pr-16 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue focus:shadow-sm transition-all"
           />
@@ -401,8 +499,11 @@ export function ReportForm() {
           </span>
         </div>
       </div>
+      </div>
+      )}
 
-      <div>
+      {step === 3 && (
+      <div className="animate-fade-in-down">
         <label
           htmlFor="description"
           className="inline-flex items-center gap-2 text-sm font-semibold text-brand-navy mb-2"
@@ -463,8 +564,10 @@ export function ReportForm() {
           </p>
         )}
       </div>
+      )}
 
-      <div>
+      {step === 4 && (
+      <div className="animate-fade-in-down">
         <label
           htmlFor="evidence"
           className="inline-flex items-center gap-2 text-sm font-semibold text-brand-navy mb-2"
@@ -524,44 +627,176 @@ export function ReportForm() {
           </ul>
         )}
       </div>
+      )}
 
-      <label
-        htmlFor="accept"
-        className="flex items-start gap-2.5 text-sm text-gray-600 cursor-pointer rounded-xl bg-white/60 border border-white/70 p-3 hover:bg-white/80 transition-colors"
-      >
-        <input
-          type="checkbox"
-          id="accept"
-          checked={accepted}
-          onChange={(e) => setAccepted(e.target.checked)}
-          className="mt-1 h-4 w-4 rounded accent-red-500 cursor-pointer"
-        />
-        <span>
-          {t('form.consent.intro')}{' '}
-          <span className="font-semibold text-brand-navy">{t('form.consent.rules')}</span>{' '}
-          {t('form.consent.suffix')}
-        </span>
-      </label>
+      {step === 5 && (
+      <div className="space-y-5 animate-fade-in-down">
+        <h3 className="text-base font-bold text-brand-navy">
+          Vérifiez votre signalement
+        </h3>
 
-      <button
-        type="submit"
-        disabled={!canSubmit}
-        className="w-full inline-flex items-center justify-center gap-2 rounded-pill bg-red-500 enabled:hover:bg-red-700 text-white px-5 py-3.5 text-sm font-semibold shadow-glow-red enabled:animate-alert-pulse enabled:hover:scale-[1.02] enabled:hover:[animation-play-state:paused] disabled:opacity-60 disabled:cursor-not-allowed transition-all"
-      >
-        {phase === 'sending' ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-            {t('form.submit.sending')}
-          </>
+        <dl className="grid gap-3 rounded-2xl bg-white/70 border border-white/80 p-4 text-sm">
+          <div className="flex items-start gap-3">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-pill bg-brand-blue/10 text-brand-blue ring-1 ring-brand-blue/20 shrink-0">
+              <activeContact.Icon className="h-4 w-4" aria-hidden />
+            </span>
+            <div className="min-w-0 flex-1">
+              <dt className="text-xs font-semibold text-gray-500">
+                {t(activeContact.labelKey)}
+              </dt>
+              <dd className="font-medium text-brand-navy break-words">
+                {contactValue || <span className="text-gray-400">—</span>}
+              </dd>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-pill bg-red-500/10 text-red-500 ring-1 ring-red-500/20 shrink-0">
+              {activeProblem ? (
+                <activeProblem.Icon className="h-4 w-4" aria-hidden />
+              ) : (
+                <AlertTriangle className="h-4 w-4" aria-hidden />
+              )}
+            </span>
+            <div className="min-w-0 flex-1">
+              <dt className="text-xs font-semibold text-gray-500">
+                {t('form.problemType.label')}
+              </dt>
+              <dd className="font-medium text-brand-navy">
+                {activeProblem ? t(activeProblem.labelKey) : <span className="text-gray-400">—</span>}
+              </dd>
+            </div>
+          </div>
+
+          {amount.trim() !== '' && (
+            <div className="flex items-start gap-3">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-pill bg-green-500/10 text-green-700 ring-1 ring-green-500/20 shrink-0">
+                <WalletIcon className="h-4 w-4" aria-hidden />
+              </span>
+              <div className="min-w-0 flex-1">
+                <dt className="text-xs font-semibold text-gray-500">
+                  {t('form.amount.label')}
+                </dt>
+                <dd className="font-medium text-brand-navy">
+                  {amount} {currencySymbol}
+                </dd>
+              </div>
+            </div>
+          )}
+
+          <div className="flex items-start gap-3">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-pill bg-violet-500/10 text-violet-500 ring-1 ring-violet-500/20 shrink-0">
+              <Pencil className="h-4 w-4" aria-hidden />
+            </span>
+            <div className="min-w-0 flex-1">
+              <dt className="text-xs font-semibold text-gray-500">
+                {t('form.description.label')}
+              </dt>
+              <dd className="text-brand-navy whitespace-pre-wrap break-words">
+                {description || <span className="text-gray-400">—</span>}
+              </dd>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-3">
+            <span className="inline-flex h-8 w-8 items-center justify-center rounded-pill bg-sky-400/15 text-sky-400 ring-1 ring-sky-400/30 shrink-0">
+              <Paperclip className="h-4 w-4" aria-hidden />
+            </span>
+            <div className="min-w-0 flex-1">
+              <dt className="text-xs font-semibold text-gray-500">
+                {t('form.evidence.label')} ({evidenceFiles.length})
+              </dt>
+              <dd className="font-medium text-brand-navy">
+                {evidenceFiles.length === 0 ? (
+                  <span className="text-gray-400">—</span>
+                ) : (
+                  <ul className="flex flex-wrap gap-1.5 mt-1">
+                    {evidenceFiles.map((f) => (
+                      <li
+                        key={f.name}
+                        className="inline-flex items-center gap-1.5 rounded-pill bg-white border border-brand-blue/30 px-2 py-1 text-xs"
+                      >
+                        <Paperclip className="h-3 w-3 text-brand-blue" aria-hidden />
+                        <span className="max-w-[14ch] truncate" title={f.name}>
+                          {f.name}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </dd>
+            </div>
+          </div>
+        </dl>
+
+        <label
+          htmlFor="accept"
+          className="flex items-start gap-2.5 text-sm text-gray-600 cursor-pointer rounded-xl bg-white/60 border border-white/70 p-3 hover:bg-white/80 transition-colors"
+        >
+          <input
+            type="checkbox"
+            id="accept"
+            checked={accepted}
+            onChange={(e) => setAccepted(e.target.checked)}
+            className="mt-1 h-4 w-4 rounded accent-red-500 cursor-pointer"
+          />
+          <span>
+            {t('form.consent.intro')}{' '}
+            <span className="font-semibold text-brand-navy">{t('form.consent.rules')}</span>{' '}
+            {t('form.consent.suffix')}
+          </span>
+        </label>
+      </div>
+      )}
+
+      <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 pt-2">
+        {step > 1 ? (
+          <button
+            type="button"
+            onClick={goBack}
+            className="inline-flex items-center justify-center gap-2 rounded-pill bg-white/85 hover:bg-white border border-white/80 hover:border-brand-blue/40 text-brand-navy px-5 py-2.5 text-sm font-semibold shadow-sm transition-all"
+          >
+            <ChevronLeft className="h-4 w-4" aria-hidden />
+            Précédent
+          </button>
         ) : (
-          <>
-            <Megaphone className="h-4 w-4 enabled:animate-siren-wiggle" aria-hidden />
-            {t('form.submit')}
-          </>
+          <span className="hidden sm:block" />
         )}
-      </button>
 
-      <p className="text-xs text-gray-400 text-center">{t('form.disabledNote')}</p>
+        {step < TOTAL_STEPS ? (
+          <button
+            type="button"
+            onClick={goNext}
+            disabled={!stepValid[step]}
+            className="inline-flex items-center justify-center gap-2 rounded-pill bg-brand-navy enabled:hover:bg-brand-blue text-white px-6 py-3 text-sm font-semibold shadow-glow-navy enabled:hover:shadow-glow-blue enabled:hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed transition-all"
+          >
+            Suivant
+            <ChevronRight className="h-4 w-4" aria-hidden />
+          </button>
+        ) : (
+          <button
+            type="submit"
+            disabled={!canSubmit}
+            className="inline-flex items-center justify-center gap-2 rounded-pill bg-red-500 enabled:hover:bg-red-700 text-white px-6 py-3 text-sm font-semibold shadow-glow-red enabled:animate-alert-pulse enabled:hover:scale-[1.02] enabled:hover:[animation-play-state:paused] disabled:opacity-60 disabled:cursor-not-allowed transition-all"
+          >
+            {phase === 'sending' ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
+                {t('form.submit.sending')}
+              </>
+            ) : (
+              <>
+                <Megaphone className="h-4 w-4 enabled:animate-siren-wiggle" aria-hidden />
+                {t('form.submit')}
+              </>
+            )}
+          </button>
+        )}
+      </div>
+
+      {step === TOTAL_STEPS && (
+        <p className="text-xs text-gray-400 text-center">{t('form.disabledNote')}</p>
+      )}
     </form>
   );
 }

@@ -18,7 +18,7 @@ export function PageHeading({
   titleKey,
   subtitle,
   subtitleKey,
-  accent = 'navy',
+  accent = 'gradient',
   align = 'center',
 }: Props) {
   const { t } = useI18n();

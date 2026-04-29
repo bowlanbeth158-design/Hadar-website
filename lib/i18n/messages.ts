@@ -3880,9 +3880,9 @@ const ar: Dict = {
     'المعلومات المعروضة تستند إلى بلاغات وتجارب المستخدمين، ويتم التحقق منها عند الإمكان، وتُعرض لأغراض استرشادية فقط.',
 
   'home.recentReports.pill': 'تحديث مباشر',
-  'home.recentReports.title': 'بلاغات حديثة من المجتمع',
-  'home.recentReports.subtitle': 'آخر 6 بلاغات نشرها المجتمع',
-  'home.recentReports.demoTitle': 'بلاغ مع عناصر مرفقة',
+  'home.recentReports.title': 'مشاركات حديثة من المستخدمين',
+  'home.recentReports.subtitle': 'آخر 6 مشاركات من المجتمع',
+  'home.recentReports.demoTitle': 'مشاركة مع مرفقات',
   'home.recentReports.demo1.description':
     'هذه الجهة تطلب الدفع عبر PayPal ثم تتوقف عن الرد بعد التسلّم.',
   'home.recentReports.demo2.description':
@@ -3895,7 +3895,7 @@ const ar: Dict = {
     'رقم واتساب يُستعمل لعروض وهمية ويحوّل إلى موقع تصيّد.',
   'home.recentReports.demo6.description':
     'RIB يُتشارك في مجموعة تيليغرام لاستلام الدفعات ثم يختفي صاحب الحساب.',
-  'home.recentReports.user.anonymous': 'مستخدم مجهول',
+  'home.recentReports.user.anonymous': 'مستخدم خاص',
   'home.recentReports.risk.vigilance': 'يقظة',
   'home.recentReports.risk.modere': 'متوسط',
   'home.recentReports.risk.eleve': 'مرتفع',

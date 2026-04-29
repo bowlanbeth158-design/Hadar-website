@@ -964,18 +964,18 @@ const fr: Dict = {
     'Les contenus sont examinés avant publication et peuvent être modifiés ou supprimés s’ils ne respectent pas nos règles.',
 
   // Process Steps
-  'home.processSteps.title': 'Processus de vérification des signalements',
+  'home.processSteps.title': 'Processus de vérification des partages',
   'home.processSteps.step.label': 'Étape',
-  'home.processSteps.step1.title': 'Signalement',
-  'home.processSteps.step1.description': 'Une expérience est signalée par un utilisateur.',
-  'home.processSteps.step2.title': 'Examen',
+  'home.processSteps.step1.title': 'Partage',
+  'home.processSteps.step1.description': 'L’utilisateur partage une expérience.',
+  'home.processSteps.step2.title': 'Vérification',
   'home.processSteps.step2.description':
-    'Le contenu est vérifié selon les règles de la plateforme.',
+    'Le contenu est examiné selon les règles de la plateforme.',
   'home.processSteps.step3.title': 'Modération',
-  'home.processSteps.step3.description': 'Le contenu peut être ajusté ou refusé si nécessaire.',
+  'home.processSteps.step3.description': 'Le contenu peut être ajusté ou non validé si nécessaire.',
   'home.processSteps.step4.title': 'Publication',
-  'home.processSteps.step4.description': 'Les contenus conformes sont publiés sur la plateforme.',
-  'home.processSteps.sla.label': 'Délai d’examen moyen :',
+  'home.processSteps.step4.description': 'Le contenu conforme est publié sur la plateforme.',
+  'home.processSteps.sla.label': 'Délai moyen de vérification :',
   'home.processSteps.sla.value': '48 heures ouvrées',
 
   // Search Result
@@ -2445,18 +2445,18 @@ const en: Dict = {
   'home.recentReports.disclaimer':
     'Contents are reviewed before publication and may be edited or removed if they don’t comply with our rules.',
 
-  'home.processSteps.title': 'Report verification process',
+  'home.processSteps.title': 'Verification Process for Shared Reports',
   'home.processSteps.step.label': 'Step',
-  'home.processSteps.step1.title': 'Report',
-  'home.processSteps.step1.description': 'A user shares an experience.',
-  'home.processSteps.step2.title': 'Review',
-  'home.processSteps.step2.description': 'The content is checked against the platform rules.',
+  'home.processSteps.step1.title': 'Sharing',
+  'home.processSteps.step1.description': 'The user shares an experience.',
+  'home.processSteps.step2.title': 'Verification',
+  'home.processSteps.step2.description': 'The content is reviewed according to the platform rules.',
   'home.processSteps.step3.title': 'Moderation',
-  'home.processSteps.step3.description': 'The content can be adjusted or rejected if necessary.',
+  'home.processSteps.step3.description': 'The content may be adjusted or not approved if necessary.',
   'home.processSteps.step4.title': 'Publication',
   'home.processSteps.step4.description': 'Compliant content is published on the platform.',
-  'home.processSteps.sla.label': 'Average review time:',
-  'home.processSteps.sla.value': '48 working hours',
+  'home.processSteps.sla.label': 'Average verification time:',
+  'home.processSteps.sla.value': '48 business hours',
 
   'home.searchResult.aria': 'Search result',
   'home.searchResult.aria.queryFor': 'Result for {query}',

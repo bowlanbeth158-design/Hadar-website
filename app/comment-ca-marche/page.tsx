@@ -16,7 +16,7 @@ export default function Page() {
       <div className="mb-8">
         <BackButton />
       </div>
-      <PageHeading titleKey="howPage.title" subtitleKey="howPage.subtitle" />
+      <PageHeading titleKey="howPage.title" subtitleKey="howPage.subtitle" accent="gradient" />
       <HowItWorksGrid />
     </PageLayout>
   );

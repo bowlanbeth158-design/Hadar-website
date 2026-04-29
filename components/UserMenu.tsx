@@ -2,14 +2,16 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import { ChevronDown, LogOut, UserCircle2, UserRound } from 'lucide-react';
+import { ChevronDown, LogOut, Siren, UserCircle2, UserRound } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/provider';
 
-// Profile dropdown — kept lean now: only the personal profile link.
-// "Mes signalements" lives in the mobile hamburger drawer + the
-// desktop centre nav so it's not duplicated here.
-const ITEMS = [
-  { href: '/mon-profil', labelKey: 'userMenu.myProfile', Icon: UserRound },
+// Profile dropdown items. "Mes signalements" is also in the mobile
+// hamburger drawer, so we hide that line on phone via mobileHidden
+// to avoid duplicating the same link in the same header — but keep
+// it on desktop where the hamburger drawer is itself hidden.
+const ITEMS: { href: string; labelKey: string; Icon: typeof UserRound; mobileHidden?: boolean }[] = [
+  { href: '/mes-signalements', labelKey: 'userMenu.myReports', Icon: Siren, mobileHidden: true },
+  { href: '/mon-profil',       labelKey: 'userMenu.myProfile', Icon: UserRound },
 ];
 
 export function UserMenu() {
@@ -55,18 +57,24 @@ export function UserMenu() {
           role="menu"
           className="absolute right-0 top-full mt-2 w-60 rounded-xl bg-white border border-gray-200 shadow-lg overflow-hidden z-50 py-1 animate-fade-in-down"
         >
-          {ITEMS.map(({ href, labelKey, Icon }) => (
+          {ITEMS.map(({ href, labelKey, Icon, mobileHidden }) => (
             <Link
               key={href}
               href={href}
               role="menuitem"
               onClick={() => setOpen(false)}
-              className="group relative flex items-center gap-3 px-4 py-2.5 text-sm text-brand-navy
+              className={`group relative flex items-center gap-3 px-4 py-2.5 text-sm text-brand-navy
                          hover:bg-gray-50 transition-colors duration-200
                          before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2
                          before:h-0 before:w-[3px] before:rounded-r-full
                          before:bg-gradient-to-b before:from-brand-navy before:via-brand-blue before:to-brand-sky
-                         before:transition-all before:duration-300 hover:before:h-2/3"
+                         before:transition-all before:duration-300 hover:before:h-2/3 ${
+                           // Phone: this link already lives in the
+                           // hamburger drawer (top-left), so we hide
+                           // the duplicate here. Desktop has no
+                           // hamburger so the line stays visible.
+                           mobileHidden ? 'hidden md:flex' : 'flex'
+                         }`}
             >
               <Icon
                 className="h-4 w-4 text-gray-400 transition-all duration-200

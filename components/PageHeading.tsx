@@ -29,7 +29,11 @@ export function PageHeading({
     accent === 'red'
       ? 'text-red-500'
       : accent === 'gradient'
-        ? 'bg-grad-stat-navy bg-clip-text text-transparent'
+        ? // Brand-vibrant gradient — same recipe as the home
+          // banner H1 highlight (navy → brand-blue → sky-400)
+          // so legal / info page titles read as part of the
+          // same identity instead of a flat navy heading.
+          'bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 bg-clip-text text-transparent'
         : 'text-brand-navy';
   const isLeft = align === 'left';
   // text-start is "left" in LTR and "right" in RTL — so the

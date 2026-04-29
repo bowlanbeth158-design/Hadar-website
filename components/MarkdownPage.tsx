@@ -28,7 +28,12 @@ export function MarkdownPage({ titleKey, markdown, markdownByLocale }: Props) {
       <div className="mb-8">
         <BackButton />
       </div>
-      <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-brand-navy mb-8">
+      {/* Legal page H1 — painted with the brand gradient (navy →
+          brand-blue → sky-400), matching the home banner highlight
+          and the PageHeading accent="gradient" variant so the four
+          legal pages (CGU, privacy, cookies, publishing rules)
+          carry the same visual identity as the rest of the site. */}
+      <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 bg-clip-text text-transparent mb-8">
         {t(titleKey)}
       </h1>
       <article

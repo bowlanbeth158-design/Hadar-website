@@ -83,24 +83,15 @@ html.dark h3.text-brand-navy {
 
 /* PageHeading accent='gradient' uses
    `bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 bg-clip-text text-transparent`.
+   Logo wordmark uses the same gradient.
    In light mode the dark navy → blue gradient is great. In dark mode
    the brand-navy stop almost disappears against the dark backdrop, so
-   we remap the stops (only when paired with bg-clip-text — i.e. text
-   gradients, never solid background gradients) to a brighter palette
-   that reads as a luminous white-to-sky gradient. */
+   we override the background-image directly (bypasses Tailwind's CSS
+   variable chain which proved fragile in cascade tests) — only when
+   paired with bg-clip-text so solid background gradients (buttons,
+   banners) keep their original brand colours. */
 html.dark .bg-clip-text.from-brand-navy {
-  --tw-gradient-from: #ffffff var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-}
-html.dark .bg-clip-text.via-brand-blue {
-  --tw-gradient-via: #DBE5F3;
-  --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from),
-    var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to);
-  --tw-gradient-stops: var(--tw-gradient-via-stops);
-}
-html.dark .bg-clip-text.to-sky-400 {
-  --tw-gradient-to: #6FC1E8 var(--tw-gradient-to-position);
+  background-image: linear-gradient(to right, #ffffff 0%, #DBE5F3 50%, #6FC1E8 100%);
 }
 
 /* Tailwind typography plugin — `prose-headings:text-brand-navy` and

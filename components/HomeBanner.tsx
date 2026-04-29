@@ -272,14 +272,14 @@ export function HomeBanner() {
                 src={AMBASSADOR_IMAGE_URL}
                 alt=""
                 aria-hidden
-                className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top blur-md opacity-80 [mask-image:linear-gradient(to_bottom,transparent_50%,black_70%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_50%,black_70%,transparent_100%)]"
+                className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top blur-md opacity-80 [mask-image:linear-gradient(to_bottom,transparent_40%,rgba(0,0,0,0.9)_60%,rgba(0,0,0,0.4)_82%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_40%,rgba(0,0,0,0.9)_60%,rgba(0,0,0,0.4)_82%,transparent_100%)]"
               />
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={AMBASSADOR_IMAGE_URL}
                 alt=""
                 aria-hidden
-                className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top [mask-image:linear-gradient(to_bottom,black_60%,transparent_85%)] [-webkit-mask-image:linear-gradient(to_bottom,black_60%,transparent_85%)]"
+                className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top [mask-image:linear-gradient(to_bottom,black_40%,rgba(0,0,0,0.85)_60%,rgba(0,0,0,0.5)_75%,rgba(0,0,0,0.2)_88%,transparent_98%)] [-webkit-mask-image:linear-gradient(to_bottom,black_40%,rgba(0,0,0,0.85)_60%,rgba(0,0,0,0.5)_75%,rgba(0,0,0,0.2)_88%,transparent_98%)]"
               />
 
               {/* Card 1 — Recherche instantanée (mid-left, slightly
@@ -460,14 +460,14 @@ export function HomeBanner() {
               src={AMBASSADOR_IMAGE_URL}
               alt=""
               aria-hidden
-              className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top blur-md opacity-80 [mask-image:linear-gradient(to_bottom,transparent_50%,black_70%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_50%,black_70%,transparent_100%)]"
+              className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top blur-md opacity-80 [mask-image:linear-gradient(to_bottom,transparent_40%,rgba(0,0,0,0.9)_60%,rgba(0,0,0,0.4)_82%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_40%,rgba(0,0,0,0.9)_60%,rgba(0,0,0,0.4)_82%,transparent_100%)]"
             />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={AMBASSADOR_IMAGE_URL}
               alt=""
               aria-hidden
-              className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top [mask-image:linear-gradient(to_bottom,black_60%,transparent_85%)] [-webkit-mask-image:linear-gradient(to_bottom,black_60%,transparent_85%)]"
+              className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top [mask-image:linear-gradient(to_bottom,black_40%,rgba(0,0,0,0.85)_60%,rgba(0,0,0,0.5)_75%,rgba(0,0,0,0.2)_88%,transparent_98%)] [-webkit-mask-image:linear-gradient(to_bottom,black_40%,rgba(0,0,0,0.85)_60%,rgba(0,0,0,0.5)_75%,rgba(0,0,0,0.2)_88%,transparent_98%)]"
             />
 
             {/* Card 1 — Recherche instantanée (MID-LEFT, extends well outside)

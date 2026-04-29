@@ -3802,7 +3802,7 @@ const ar: Dict = {
     'تحقق من المعلومات قبل أي معاملة، واتخذ قرارات بثقة ووضوح.',
   'home.banner.bullet1': 'أكثر من 10 000 عملية تحقق',
   'home.banner.bullet2': 'نتيجة فورية',
-  'home.banner.bullet3': 'مجتمع مغربي',
+  'home.banner.bullet3': 'شبكة مغربية',
   'home.banner.bullet4': '100% سرية',
   'home.banner.statsCaption': 'عمليات تحقق مفيدة خلال آخر 30 يوماً.',
   'home.banner.cta.verify': 'تحقّق الآن',
@@ -3815,7 +3815,7 @@ const ar: Dict = {
   'home.banner.card1.placeholder': 'رقم، بريد إلكتروني أو RIB...',
   'home.banner.card2.title': 'مستخدمون واثقون',
   'home.banner.card2.subtitle': 'توصية منشورة',
-  'home.banner.card3.title': 'تنبيهات اليوم',
+  'home.banner.card3.title': 'إشعارات اليوم',
   'home.banner.alert.vigilance': 'مراقبة',
   'home.banner.alert.moderee': 'متوسطة',
   'home.banner.alert.elevee': 'مرتفعة',
@@ -3859,7 +3859,7 @@ const ar: Dict = {
   'home.hero.trust.channels': 'قناة مغطاة',
 
   'home.platformStats.pill': 'المنصة بالأرقام',
-  'home.platformStats.title': 'أرقام المنصة',
+  'home.platformStats.title': 'إحصائيات المنصة',
   'home.platformStats.subtitle':
     'تُحدَّث مباشرة من مساهمات مجتمع Hadar.',
   'home.platformStats.kpi.usersActive': 'المستخدمون النشطون',
@@ -3949,7 +3949,7 @@ const ar: Dict = {
   'home.searchResult.report.plural': 'مشاركات',
   'home.searchResult.lastReportPrefix': 'آخر مشاركة :',
   'home.searchResult.noRecentReport': 'لا توجد مشاركات حديثة حتى الآن',
-  'home.searchResult.risk.prefix': 'مستوى التنبيه :',
+  'home.searchResult.risk.prefix': 'مستوى المؤشر :',
   'home.searchResult.aria.riskLevel': 'مستوى الخطر : {label}',
   'home.searchResult.time.now': 'الآن',
   'home.searchResult.time.hour': 'منذ ساعة',
@@ -4066,7 +4066,7 @@ const ar: Dict = {
   'howPage.cta.comingSoon': 'الفيديو قادم قريباً',
 
   // ===== Statistics page =====
-  'statsPage.title': 'أرقام المنصة',
+  'statsPage.title': 'إحصائيات المنصة',
   'statsPage.subtitle': 'تابع تطور المشاركات واتجاهاتها على المنصة.',
   'statsPage.aria.global': 'المؤشرات العامة',
   'statsPage.disclaimer':

@@ -112,7 +112,13 @@ export function HomeBanner() {
         {/* LEFT — copy + CTAs */}
         <div>
           {/* "Introducing"-style pill with animated icon, gradient bg
-              and a shimmer line travelling left → right under it (5 s loop). */}
+              and a shimmer line travelling left → right under it (5 s loop).
+              Phone-only: the pill column is centred under the banner
+              (max-md:mx-auto + a parent text-center wrapper would be
+              heavier — we just nudge the inline-flex column to mx-auto
+              on phone via max-md:flex max-md:justify-center on the
+              outer wrap, then hand-roll mx-auto on the inner column). */}
+          <div className="max-md:flex max-md:justify-center">
           <div className="inline-flex flex-col">
             <span className="relative inline-flex items-center gap-2 rounded-pill border border-white/70 bg-gradient-to-r from-brand-sky via-blue-100 to-brand-sky text-brand-navy px-4 py-1.5 text-xs font-semibold shadow-sm overflow-hidden">
               {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -137,6 +143,7 @@ export function HomeBanner() {
             >
               <span className="absolute inset-y-0 left-0 w-1/4 bg-gradient-to-r from-transparent via-brand-blue to-transparent animate-shimmer" />
             </div>
+          </div>
           </div>
 
           <h1 className="mt-8 md:mt-10 text-4xl md:text-6xl font-bold tracking-tight text-brand-navy leading-[1.05]">

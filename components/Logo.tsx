@@ -29,7 +29,7 @@ export function Logo({ variant = 'color', withWordmark = true, size = 'md' }: Pr
       <img
         src={OFFICIAL_LOGO_URL}
         alt=""
-        className={`${s.shield} object-contain ${variant === 'white' ? 'brightness-0 invert' : ''}`}
+        className={`${s.shield} object-contain ${variant === 'white' ? 'brightness-0 invert' : 'dark:brightness-0 dark:invert'}`}
       />
       {withWordmark && (
         <span className={`${s.text} font-bold ${wordmarkClass} tracking-tight`}>Hadar</span>

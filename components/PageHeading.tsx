@@ -48,7 +48,7 @@ export function PageHeading({
       </h1>
       {resolvedSubtitle && (
         <p
-          className={`mt-2 md:mt-3 text-sm md:text-lg text-gray-500 ${isLeft ? '' : 'max-w-2xl mx-auto'}`}
+          className={`mt-2 md:mt-3 text-sm md:text-lg text-gray-500 dark:bg-gradient-to-r dark:from-white dark:via-brand-sky dark:to-sky-400 dark:bg-clip-text dark:text-transparent ${isLeft ? '' : 'max-w-2xl mx-auto'}`}
         >
           {resolvedSubtitle}
         </p>

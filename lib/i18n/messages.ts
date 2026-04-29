@@ -3859,19 +3859,25 @@ const ar: Dict = {
   'home.hero.trust.channels': 'قناة مغطاة',
 
   'home.platformStats.pill': 'المنصة بالأرقام',
-  'home.platformStats.title': 'إحصائيات المنصة',
+  'home.platformStats.title': 'أرقام المنصة',
   'home.platformStats.subtitle':
     'تُحدَّث مباشرة من مساهمات مجتمع Hadar.',
   'home.platformStats.kpi.usersActive': 'المستخدمون النشطون',
   'home.platformStats.kpi.reportsLogged': 'البلاغات المسجّلة',
-  'home.platformStats.kpi.contactsReported': 'جهات الاتصال المُبلَّغ عنها',
-  'home.platformStats.kpi.verifications': 'عمليات التحقق المُنجزة',
-  'home.platformStats.kpi.amountReported': 'المبلغ المبلَّغ عنه',
-  'home.platformStats.kpi.lastReport': 'آخر بلاغ',
-  'home.platformStats.lastReport.value': 'منذ ساعتين',
-  'home.platformStats.viewMore': 'عرض المزيد',
+  'home.platformStats.kpi.contactsReported': 'جهات الاتصال المتحقَّق منها',
+  'home.platformStats.kpi.verifications': 'عمليات التحقق المنجزة',
+  'home.platformStats.kpi.amountReported': 'المبلغ المُبلَّغ عنه',
+  // For AR the natural phrasing is "آخر بلاغ منذ ساعتين"
+  // (last report from 2 hours ago). The card renders the value
+  // big on top and the label small underneath, so we put the
+  // label "آخر بلاغ" in the value slot and the time "منذ ساعتين"
+  // in the label slot — visually the user reads top-to-bottom
+  // exactly as the validated phrasing.
+  'home.platformStats.kpi.lastReport': 'منذ ساعتين',
+  'home.platformStats.lastReport.value': 'آخر بلاغ',
+  'home.platformStats.viewMore': 'عرض المزيد من الإحصائيات',
   'home.platformStats.disclaimer':
-    'المعلومات المعروضة مبنية على بلاغات وتجارب المستخدمين، يتم التحقق منها عند الإمكان، وتُقدَّم للاسترشاد فقط.',
+    'المعلومات المعروضة تستند إلى بلاغات وتجارب المستخدمين، ويتم التحقق منها عند الإمكان، وتُعرض لأغراض استرشادية فقط.',
 
   'home.recentReports.pill': 'تحديث مباشر',
   'home.recentReports.title': 'بلاغات حديثة من المجتمع',
@@ -4060,7 +4066,7 @@ const ar: Dict = {
   'howPage.cta.comingSoon': 'الفيديو قادم قريباً',
 
   // ===== Statistics page =====
-  'statsPage.title': 'إحصائيات المنصة',
+  'statsPage.title': 'أرقام المنصة',
   'statsPage.subtitle': 'تابع تطور البلاغات واتجاهاتها على المنصة.',
   'statsPage.aria.global': 'المؤشرات العامة',
   'statsPage.disclaimer':
@@ -4289,7 +4295,7 @@ const ar: Dict = {
   'mesAlertes.viewMore.singular': 'عرض {n} تنبيه إضافي',
   'mesAlertes.viewMore.plural': 'عرض {n} تنبيهات إضافية',
   'mesAlertes.disclaimer':
-    'المعلومات المعروضة مبنية على بلاغات وتجارب المستخدمين، يتم التحقق منها عند الإمكان، وتُقدَّم للاسترشاد فقط.',
+    'المعلومات المعروضة تستند إلى بلاغات وتجارب المستخدمين، ويتم التحقق منها عند الإمكان، وتُعرض لأغراض استرشادية فقط.',
 
   // ===== /mes-signalements =====
   'mesSignalements.filter.all': 'الكل',

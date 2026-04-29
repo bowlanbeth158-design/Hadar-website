@@ -241,7 +241,7 @@ export function PlatformStats() {
                 <p className="text-2xl md:text-3xl font-bold text-brand-navy tabular-nums leading-none">
                   <AnimatedCounter value={s.valueKey ? t(s.valueKey) : s.value} />
                 </p>
-                <p className="mt-1.5 text-xs md:text-sm text-gray-500 truncate">{t(s.labelKey)}</p>
+                <p className="mt-1.5 text-xs md:text-sm text-gray-500 line-clamp-2 leading-tight">{t(s.labelKey)}</p>
               </div>
             </article>
           </li>

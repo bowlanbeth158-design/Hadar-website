@@ -3912,7 +3912,7 @@ const ar: Dict = {
 
   'home.processSteps.title': 'آلية التحقق من البلاغات',
   'home.processSteps.step.label': 'مرحلة',
-  'home.processSteps.step1.title': 'البلاغ',
+  'home.processSteps.step1.title': 'المشاركة',
   'home.processSteps.step1.description': 'يشارك المستخدم تجربة.',
   'home.processSteps.step2.title': 'المراجعة',
   'home.processSteps.step2.description': 'يتم مراجعة المحتوى وفق قواعد المنصة.',

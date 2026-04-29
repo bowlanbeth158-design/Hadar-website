@@ -81,6 +81,28 @@ html.dark h3.text-brand-navy {
   color: transparent;
 }
 
+/* PageHeading accent='gradient' uses
+   `bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 bg-clip-text text-transparent`.
+   In light mode the dark navy → blue gradient is great. In dark mode
+   the brand-navy stop almost disappears against the dark backdrop, so
+   we remap the stops (only when paired with bg-clip-text — i.e. text
+   gradients, never solid background gradients) to a brighter palette
+   that reads as a luminous white-to-sky gradient. */
+html.dark .bg-clip-text.from-brand-navy {
+  --tw-gradient-from: #ffffff var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(255 255 255 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
+}
+html.dark .bg-clip-text.via-brand-blue {
+  --tw-gradient-via: #DBE5F3;
+  --tw-gradient-via-stops: var(--tw-gradient-position), var(--tw-gradient-from),
+    var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to);
+  --tw-gradient-stops: var(--tw-gradient-via-stops);
+}
+html.dark .bg-clip-text.to-sky-400 {
+  --tw-gradient-to: #6FC1E8 var(--tw-gradient-to-position);
+}
+
 /* Light-tinted pills (brand-sky / blue-100 / green-100 / orange-100
    backgrounds) keep their dark navy text in dark mode — otherwise
    text-brand-navy gets overridden to near-white and blends into the

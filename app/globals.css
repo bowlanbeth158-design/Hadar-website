@@ -103,6 +103,25 @@ html.dark .bg-clip-text.to-sky-400 {
   --tw-gradient-to: #6FC1E8 var(--tw-gradient-to-position);
 }
 
+/* Tailwind typography plugin — `prose-headings:text-brand-navy` and
+   `prose-strong:text-brand-navy` set the colour via descendant
+   selectors, not via .text-brand-navy on the element itself, so the
+   plain text-brand-navy override above doesn't reach them. Apply
+   the same white-to-blue gradient here for consistency on legal /
+   markdown pages (CGU, privacy, cookies, regles-publication). */
+html.dark .prose-headings\:text-brand-navy :where(h1, h2, h3, h4) {
+  background: linear-gradient(135deg, #ffffff 0%, #DBE5F3 45%, #6FC1E8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+html.dark .prose-strong\:text-brand-navy :where(strong) {
+  color: #f1f5f9;
+}
+html.dark .prose-slate :where(p, li, td, th) {
+  color: #cbd5e1;
+}
+
 /* Light-tinted pills (brand-sky / blue-100 / green-100 / orange-100
    backgrounds) keep their dark navy text in dark mode — otherwise
    text-brand-navy gets overridden to near-white and blends into the

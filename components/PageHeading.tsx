@@ -40,15 +40,15 @@ export function PageHeading({
   // /mes-alertes and /mes-signalements headings naturally land on
   // the right edge of the column when the user picks Arabic.
   return (
-    <div className={`mb-10 md:mb-14 ${isLeft ? 'text-start' : 'text-center'}`}>
+    <div className={`mb-8 md:mb-14 ${isLeft ? 'text-start' : 'text-center'}`}>
       <h1
-        className={`text-3xl md:text-5xl font-bold tracking-tight ${titleClass}`}
+        className={`text-2xl md:text-5xl font-bold tracking-tight ${titleClass}`}
       >
         {resolvedTitle}
       </h1>
       {resolvedSubtitle && (
         <p
-          className={`mt-3 text-base md:text-lg text-gray-500 ${isLeft ? '' : 'max-w-2xl mx-auto'}`}
+          className={`mt-2 md:mt-3 text-sm md:text-lg text-gray-500 ${isLeft ? '' : 'max-w-2xl mx-auto'}`}
         >
           {resolvedSubtitle}
         </p>

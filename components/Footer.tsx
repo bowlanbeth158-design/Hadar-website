@@ -180,14 +180,14 @@ export function Footer() {
             <a
               href="#"
               aria-label={`${t('footer.app.ios.line1')} ${t('footer.app.ios.line2')}`}
-              className="group relative inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-white/10 via-white/5 to-white/10 backdrop-blur-md border border-white/20 hover:border-brand-sky/60 hover:bg-white/15 px-3 py-2 text-white shadow-glow-soft hover:shadow-glow-blue transition-all duration-300 ease-out hover:-translate-y-0.5 overflow-hidden"
+              className="group relative inline-flex items-center gap-1.5 md:gap-2 rounded-xl bg-gradient-to-br from-white/10 via-white/5 to-white/10 backdrop-blur-md border border-white/20 hover:border-brand-sky/60 hover:bg-white/15 px-2.5 md:px-3 py-1.5 md:py-2 text-white shadow-glow-soft hover:shadow-glow-blue transition-all duration-300 ease-out hover:-translate-y-0.5 overflow-hidden"
             >
-              <Apple className="h-6 w-6 fill-white shrink-0 group-hover:scale-110 transition-transform duration-300" aria-hidden />
+              <Apple className="h-5 w-5 md:h-6 md:w-6 fill-white shrink-0 group-hover:scale-110 transition-transform duration-300" aria-hidden />
               <span className="flex flex-col leading-tight text-start">
-                <span className="text-[9px] uppercase tracking-wide text-white/70">
+                <span className="text-[8px] md:text-[9px] uppercase tracking-wide text-white/70">
                   {t('footer.app.ios.line1')}
                 </span>
-                <span className="text-sm font-semibold">{t('footer.app.ios.line2')}</span>
+                <span className="text-xs md:text-sm font-semibold">{t('footer.app.ios.line2')}</span>
               </span>
               {/* Diagonal shimmer wipe on hover */}
               <span
@@ -198,17 +198,17 @@ export function Footer() {
             <a
               href="#"
               aria-label={`${t('footer.app.android.line1')} ${t('footer.app.android.line2')}`}
-              className="group relative inline-flex items-center gap-2 rounded-xl bg-gradient-to-br from-white/10 via-white/5 to-white/10 backdrop-blur-md border border-white/20 hover:border-brand-sky/60 hover:bg-white/15 px-3 py-2 text-white shadow-glow-soft hover:shadow-glow-blue transition-all duration-300 ease-out hover:-translate-y-0.5 overflow-hidden"
+              className="group relative inline-flex items-center gap-1.5 md:gap-2 rounded-xl bg-gradient-to-br from-white/10 via-white/5 to-white/10 backdrop-blur-md border border-white/20 hover:border-brand-sky/60 hover:bg-white/15 px-2.5 md:px-3 py-1.5 md:py-2 text-white shadow-glow-soft hover:shadow-glow-blue transition-all duration-300 ease-out hover:-translate-y-0.5 overflow-hidden"
             >
               <Play
-                className="h-6 w-6 fill-white shrink-0 rtl:-scale-x-100 group-hover:scale-110 transition-transform duration-300"
+                className="h-5 w-5 md:h-6 md:w-6 fill-white shrink-0 rtl:-scale-x-100 group-hover:scale-110 transition-transform duration-300"
                 aria-hidden
               />
               <span className="flex flex-col leading-tight text-start">
-                <span className="text-[9px] uppercase tracking-wide text-white/70">
+                <span className="text-[8px] md:text-[9px] uppercase tracking-wide text-white/70">
                   {t('footer.app.android.line1')}
                 </span>
-                <span className="text-sm font-semibold">{t('footer.app.android.line2')}</span>
+                <span className="text-xs md:text-sm font-semibold">{t('footer.app.android.line2')}</span>
               </span>
               {/* Diagonal shimmer wipe on hover */}
               <span

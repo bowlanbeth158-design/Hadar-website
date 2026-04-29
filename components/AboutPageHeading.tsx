@@ -8,7 +8,7 @@ import { useI18n } from '@/lib/i18n/provider';
 export function AboutPageHeading() {
   const { t } = useI18n();
   return (
-    <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 bg-clip-text text-transparent mb-8">
+    <h1 className="text-2xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 bg-clip-text text-transparent mb-6 md:mb-8">
       {t('aboutPage.title')}
     </h1>
   );

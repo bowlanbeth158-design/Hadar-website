@@ -33,7 +33,7 @@ export function MarkdownPage({ titleKey, markdown, markdownByLocale }: Props) {
           and the PageHeading accent="gradient" variant so the four
           legal pages (CGU, privacy, cookies, publishing rules)
           carry the same visual identity as the rest of the site. */}
-      <h1 className="text-3xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 bg-clip-text text-transparent mb-8">
+      <h1 className="text-2xl md:text-4xl font-bold tracking-tight bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 bg-clip-text text-transparent mb-6 md:mb-8">
         {t(titleKey)}
       </h1>
       <article

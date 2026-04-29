@@ -26,7 +26,7 @@ export function StatsPeriodTabs({ value, onChange }: Props) {
     <div
       role="tablist"
       aria-label={t('period.label')}
-      className="flex flex-wrap justify-center gap-3 mb-8"
+      className="flex flex-nowrap justify-center gap-2 md:gap-3 mb-8"
     >
       {PERIODS.map((p) => {
         const isActive = p.id === value;
@@ -39,8 +39,8 @@ export function StatsPeriodTabs({ value, onChange }: Props) {
             onClick={() => onChange(p.id)}
             className={
               isActive
-                ? 'rounded-pill bg-grad-stat-navy text-white px-5 py-2 text-sm font-semibold shadow-glow-navy scale-[1.03] transition-all'
-                : 'rounded-pill bg-white/70 backdrop-blur-sm border border-white/80 text-brand-navy/70 px-5 py-2 text-sm font-medium hover:bg-white hover:text-brand-navy hover:-translate-y-0.5 hover:shadow-sm transition-all'
+                ? 'rounded-pill bg-grad-stat-navy text-white px-3 md:px-5 py-1.5 md:py-2 text-xs md:text-sm font-semibold shadow-glow-navy scale-[1.03] whitespace-nowrap transition-all'
+                : 'rounded-pill bg-white/70 backdrop-blur-sm border border-white/80 text-brand-navy/70 px-3 md:px-5 py-1.5 md:py-2 text-xs md:text-sm font-medium hover:bg-white hover:text-brand-navy hover:-translate-y-0.5 hover:shadow-sm whitespace-nowrap transition-all'
             }
           >
             {t(p.labelKey)}

@@ -44,6 +44,8 @@ export function MarkdownPage({ titleKey, markdown, markdownByLocale }: Props) {
         className="
           prose prose-slate max-w-none
           prose-headings:text-brand-navy prose-headings:font-bold prose-headings:tracking-tight
+          prose-h2:text-xl md:prose-h2:text-2xl
+          prose-h3:text-base md:prose-h3:text-xl
           prose-a:text-brand-blue prose-a:no-underline hover:prose-a:underline
           prose-strong:text-brand-navy
           prose-table:text-sm

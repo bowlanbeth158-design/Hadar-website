@@ -249,6 +249,23 @@ export function HomeBanner() {
                 className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-3 w-3/5 h-10 rounded-[50%] bg-brand-navy/35 blur-2xl"
               />
 
+              {/* Flow effect — same layered breathing glow as desktop,
+                  scaled down to fit the smaller mobile silhouette. */}
+              <div
+                aria-hidden
+                className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-4 w-[78%] h-[44%] rounded-[50%] bg-gradient-to-t from-brand-blue/45 via-brand-sky/35 to-transparent blur-2xl animate-flow-up"
+              />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-9 w-[60%] h-[34%] rounded-[50%] bg-gradient-to-t from-sky-400/40 via-brand-blue/30 to-transparent blur-xl animate-flow-wave"
+                style={{ animationDelay: '0.8s' }}
+              />
+              <div
+                aria-hidden
+                className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-14 w-[42%] h-[26%] rounded-[50%] bg-gradient-to-t from-brand-sky/55 to-transparent blur-lg animate-flow-up"
+                style={{ animationDelay: '1.6s' }}
+              />
+
               {/* Ambassador photo — same dissolve recipe as desktop. */}
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
@@ -413,6 +430,25 @@ export function HomeBanner() {
             <div
               aria-hidden
               className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-4 w-3/5 h-14 rounded-[50%] bg-brand-navy/35 blur-2xl"
+            />
+
+            {/* Ultahost-style flow effect — three stacked breathing /
+                drifting glow layers anchored to the lower body of the
+                figure. They sit BEHIND the photo so the masked dissolve
+                reads as "energy flowing out of the silhouette". */}
+            <div
+              aria-hidden
+              className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-6 w-[78%] h-[44%] rounded-[50%] bg-gradient-to-t from-brand-blue/45 via-brand-sky/35 to-transparent blur-2xl animate-flow-up"
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-12 w-[60%] h-[34%] rounded-[50%] bg-gradient-to-t from-sky-400/40 via-brand-blue/30 to-transparent blur-xl animate-flow-wave"
+              style={{ animationDelay: '0.8s' }}
+            />
+            <div
+              aria-hidden
+              className="pointer-events-none absolute left-1/2 -translate-x-1/2 bottom-20 w-[42%] h-[26%] rounded-[50%] bg-gradient-to-t from-brand-sky/55 to-transparent blur-lg animate-flow-up"
+              style={{ animationDelay: '1.6s' }}
             />
 
             {/* Ambassador photo — Ultahost-style soft dissolve:

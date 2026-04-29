@@ -110,6 +110,20 @@ const config: Config = {
           '0%, 100%': { transform: 'translateY(0)' },
           '50%': { transform: 'translateY(-8px)' },
         },
+        // Ultahost-style "flow" — soft glow rises from below the
+        // ambassador's lower body, breathes scale + opacity, gives
+        // the feeling that energy is flowing through the figure.
+        'flow-up': {
+          '0%, 100%': { transform: 'translateY(0) scale(1)', opacity: '0.55' },
+          '50%': { transform: 'translateY(-14px) scale(1.05)', opacity: '0.9' },
+        },
+        // Wave bands rising and shifting horizontally — paired with
+        // flow-up to read as "flowing energy", not a static glow.
+        'flow-wave': {
+          '0%': { transform: 'translate(-12%, 4px)', opacity: '0.4' },
+          '50%': { transform: 'translate(0, -8px)', opacity: '0.85' },
+          '100%': { transform: 'translate(12%, 4px)', opacity: '0.4' },
+        },
         'fade-in-down': {
           '0%': { opacity: '0', transform: 'translateY(-6px) scale(0.98)' },
           '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
@@ -294,6 +308,8 @@ const config: Config = {
         'pulse-blue': 'pulse-blue 2s cubic-bezier(0, 0, 0.2, 1) infinite',
         'siren-wiggle': 'siren-wiggle 4s ease-in-out infinite',
         'float-soft': 'float-soft 5s ease-in-out infinite',
+        'flow-up': 'flow-up 4.5s ease-in-out infinite',
+        'flow-wave': 'flow-wave 6s ease-in-out infinite',
         'fade-in-down': 'fade-in-down 180ms cubic-bezier(0.16, 1, 0.3, 1)',
         'fade-in': 'fade-in 200ms ease-out',
         'modal-pop': 'modal-pop 280ms cubic-bezier(0.16, 1, 0.3, 1)',

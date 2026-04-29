@@ -17,7 +17,7 @@ import { VerifyNowCta } from './VerifyNowCta';
 import { useI18n } from '@/lib/i18n/provider';
 
 // URL postimg de la photo ambassadeur Hadar.
-const AMBASSADOR_IMAGE_URL = 'https://i.postimg.cc/Y0V7C7w3/Hadar-man.png';
+const AMBASSADOR_IMAGE_URL = 'https://i.postimg.cc/NGmrbRDN/Hadar-man-ggg.png';
 
 // 4 visages des "utilisateurs rassurés" (carte flottante top-right).
 // Ordre = ordre d'affichage gauche → droite (avec léger overlap).
@@ -272,14 +272,14 @@ export function HomeBanner() {
                 src={AMBASSADOR_IMAGE_URL}
                 alt=""
                 aria-hidden
-                className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top blur-md opacity-80 [mask-image:linear-gradient(to_bottom,transparent_28%,rgba(0,0,0,0.7)_45%,rgba(0,0,0,0.3)_62%,transparent_82%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_28%,rgba(0,0,0,0.7)_45%,rgba(0,0,0,0.3)_62%,transparent_82%)]"
+                className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top blur-md opacity-80 [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]"
               />
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={AMBASSADOR_IMAGE_URL}
                 alt=""
                 aria-hidden
-                className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top [mask-image:linear-gradient(to_bottom,black_25%,rgba(0,0,0,0.85)_42%,rgba(0,0,0,0.45)_56%,rgba(0,0,0,0.15)_70%,transparent_85%)] [-webkit-mask-image:linear-gradient(to_bottom,black_25%,rgba(0,0,0,0.85)_42%,rgba(0,0,0,0.45)_56%,rgba(0,0,0,0.15)_70%,transparent_85%)]"
+                className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top [mask-image:linear-gradient(to_bottom,black_85%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_85%,transparent_100%)]"
               />
 
               {/* Card 1 — Recherche instantanée (mid-left, slightly
@@ -460,14 +460,14 @@ export function HomeBanner() {
               src={AMBASSADOR_IMAGE_URL}
               alt=""
               aria-hidden
-              className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top blur-md opacity-80 [mask-image:linear-gradient(to_bottom,transparent_28%,rgba(0,0,0,0.7)_45%,rgba(0,0,0,0.3)_62%,transparent_82%)] [-webkit-mask-image:linear-gradient(to_bottom,transparent_28%,rgba(0,0,0,0.7)_45%,rgba(0,0,0,0.3)_62%,transparent_82%)]"
+              className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top blur-md opacity-80 [mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_75%,transparent_100%)]"
             />
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={AMBASSADOR_IMAGE_URL}
               alt=""
               aria-hidden
-              className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top [mask-image:linear-gradient(to_bottom,black_25%,rgba(0,0,0,0.85)_42%,rgba(0,0,0,0.45)_56%,rgba(0,0,0,0.15)_70%,transparent_85%)] [-webkit-mask-image:linear-gradient(to_bottom,black_25%,rgba(0,0,0,0.85)_42%,rgba(0,0,0,0.45)_56%,rgba(0,0,0,0.15)_70%,transparent_85%)]"
+              className="absolute inset-0 h-full w-full object-contain object-top scale-110 origin-top [mask-image:linear-gradient(to_bottom,black_85%,transparent_100%)] [-webkit-mask-image:linear-gradient(to_bottom,black_85%,transparent_100%)]"
             />
 
             {/* Card 1 — Recherche instantanée (MID-LEFT, extends well outside)

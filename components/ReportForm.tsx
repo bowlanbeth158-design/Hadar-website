@@ -8,6 +8,11 @@ import {
 import { useCurrency } from '@/lib/currency/provider';
 import { useI18n } from '@/lib/i18n/provider';
 import {
+  CountryCodeSelector,
+  DEFAULT_COUNTRY,
+  type Country,
+} from './CountryCodeSelector';
+import {
   Megaphone,
   UploadCloud,
   Phone,
@@ -276,6 +281,7 @@ export function ReportForm() {
   const [step, setStep] = useState<Step>(1);
   const [contactType, setContactType] = useState<string>(CONTACT_TYPES[0]!.id);
   const [contactValue, setContactValue] = useState('');
+  const [country, setCountry] = useState<Country>(DEFAULT_COUNTRY);
   const [problemType, setProblemType] = useState<string | null>(null);
   const [amount, setAmount] = useState('');
   const [accepted, setAccepted] = useState(false);
@@ -335,6 +341,7 @@ export function ReportForm() {
     setStep(1);
     setContactType(CONTACT_TYPES[0]!.id);
     setContactValue('');
+    setCountry(DEFAULT_COUNTRY);
     setProblemType(null);
     setAmount('');
     setAccepted(false);
@@ -414,15 +421,31 @@ export function ReportForm() {
           </span>
           {t('form.contactValue.label')} <span className="text-red-500">*</span>
         </label>
-        <input
-          id="contactValue"
-          name="contactValue"
-          type="text"
-          value={contactValue}
-          onChange={(e) => setContactValue(e.target.value)}
-          placeholder={t(activeContact.placeholderKey)}
-          className="w-full rounded-xl bg-white/85 backdrop-blur-sm border border-gray-200 px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue focus:shadow-sm transition-all"
-        />
+        {contactType === 'telephone' || contactType === 'whatsapp' ? (
+          <div className="flex">
+            <CountryCodeSelector value={country} onChange={setCountry} />
+            <input
+              id="contactValue"
+              name="contactValue"
+              type="tel"
+              inputMode="numeric"
+              value={contactValue}
+              onChange={(e) => setContactValue(e.target.value)}
+              placeholder="6 12 34 56 78"
+              className="flex-1 min-w-0 rounded-r-xl bg-white/85 backdrop-blur-sm border border-gray-200 px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue focus:shadow-sm transition-all"
+            />
+          </div>
+        ) : (
+          <input
+            id="contactValue"
+            name="contactValue"
+            type="text"
+            value={contactValue}
+            onChange={(e) => setContactValue(e.target.value)}
+            placeholder={t(activeContact.placeholderKey)}
+            className="w-full rounded-xl bg-white/85 backdrop-blur-sm border border-gray-200 px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue focus:shadow-sm transition-all"
+          />
+        )}
       </div>
       </div>
       )}
@@ -645,7 +668,13 @@ export function ReportForm() {
                 {t(activeContact.labelKey)}
               </dt>
               <dd className="font-medium text-brand-navy break-words">
-                {contactValue || <span className="text-gray-400">—</span>}
+                {contactValue ? (
+                  contactType === 'telephone' || contactType === 'whatsapp'
+                    ? `${country.dial} ${contactValue}`
+                    : contactValue
+                ) : (
+                  <span className="text-gray-400">—</span>
+                )}
               </dd>
             </div>
           </div>

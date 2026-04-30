@@ -23,6 +23,11 @@ import { SearchResult } from './SearchResult';
 import { useI18n } from '@/lib/i18n/provider';
 import { OFFICIAL_LOGO_URL } from './Logo';
 import { CountUp } from './CountUp';
+import {
+  CountryCodeSelector,
+  DEFAULT_COUNTRY,
+  type Country,
+} from './CountryCodeSelector';
 
 type ContactType = {
   id: string;
@@ -102,6 +107,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
     initialType && CONTACT_TYPES.some((c) => c.id === initialType) ? initialType : CONTACT_TYPES[0]!.id;
   const [selected, setSelected] = useState<string>(defaultType);
   const [inputValue, setInputValue] = useState<string>(initialQuery);
+  const [country, setCountry] = useState<Country>(DEFAULT_COUNTRY);
   const [submitted, setSubmitted] = useState<{ query: string; type: string } | null>(
     initialQuery ? { query: initialQuery, type: defaultType } : null,
   );
@@ -420,14 +426,25 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                 >
                   <Search className="h-5 w-5 text-gray-400" aria-hidden />
                   <input type="hidden" name="type" value={selected} />
+                  {(selected === 'telephone' || selected === 'whatsapp') && (
+                    <>
+                      <input type="hidden" name="dial" value={country.dial} />
+                      <CountryCodeSelector value={country} onChange={setCountry} />
+                    </>
+                  )}
                   <input
-                    type="search"
+                    type={selected === 'telephone' || selected === 'whatsapp' ? 'tel' : 'search'}
+                    inputMode={selected === 'telephone' || selected === 'whatsapp' ? 'numeric' : undefined}
                     name="q"
                     value={inputValue}
                     onChange={handleInputChange}
-                    placeholder={activePlaceholder}
+                    placeholder={
+                      selected === 'telephone' || selected === 'whatsapp'
+                        ? '6 12 34 56 78'
+                        : activePlaceholder
+                    }
                     aria-label={t('home.hero.search.aria', { label: activeLabel.toLowerCase() })}
-                    className="flex-1 bg-transparent outline-none text-gray-900 placeholder:text-gray-400 py-2.5 text-base"
+                    className="flex-1 min-w-0 bg-transparent outline-none text-gray-900 placeholder:text-gray-400 py-2.5 text-base"
                   />
                   <button
                     type="button"

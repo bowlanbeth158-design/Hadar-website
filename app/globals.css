@@ -232,6 +232,17 @@ html.dark textarea::placeholder {
   background-color: #ffffff;
 }
 
+/* The Vigilance badge keeps brand-navy text on its yellow #FBED21
+   surface for contrast — but the global dark-mode override remaps
+   .text-brand-navy to near-white, which would disappear on yellow.
+   Force the original navy back inside the Vigilance badge in dark
+   mode (a Tailwind dark: variant on the component would be cleaner
+   but the badge classes are concatenated from RISK_STYLE so we'd
+   have to special-case the loop — a one-liner CSS rule is simpler). */
+html.dark [data-risk-badge='vigilance'] {
+  color: #00327D;
+}
+
 /* Respect user's reduced-motion preference */
 @media (prefers-reduced-motion: reduce) {
   *,

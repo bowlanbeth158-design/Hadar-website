@@ -21,7 +21,9 @@ export function Logo({ variant = 'color', withWordmark = true, size = 'md' }: Pr
   const wordmarkClass =
     variant === 'white'
       ? 'text-white'
-      : 'bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 bg-clip-text text-transparent';
+      : // logo-wordmark marker class is what globals.css uses to apply
+        // the flowing gradient animation, keeping it scoped to the logo.
+        'logo-wordmark bg-gradient-to-r from-brand-navy via-brand-blue to-sky-400 bg-clip-text text-transparent';
 
   return (
     <div className={`flex items-center ${s.gap}`}>

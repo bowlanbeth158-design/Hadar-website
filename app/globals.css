@@ -115,7 +115,8 @@ html.dark .bg-clip-text.from-brand-navy {
 
 h1.bg-clip-text.from-brand-navy,
 h2.bg-clip-text.from-brand-navy,
-h3.bg-clip-text.from-brand-navy {
+h3.bg-clip-text.from-brand-navy,
+.logo-wordmark {
   background-image: linear-gradient(
     to right,
     #00327D 0%,
@@ -130,7 +131,8 @@ h3.bg-clip-text.from-brand-navy {
 
 html.dark h1.bg-clip-text.from-brand-navy,
 html.dark h2.bg-clip-text.from-brand-navy,
-html.dark h3.bg-clip-text.from-brand-navy {
+html.dark h3.bg-clip-text.from-brand-navy,
+html.dark .logo-wordmark {
   background-image: linear-gradient(
     to right,
     #ffffff 0%,

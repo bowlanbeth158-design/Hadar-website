@@ -91,7 +91,56 @@ html.dark h3.text-brand-navy {
    paired with bg-clip-text so solid background gradients (buttons,
    banners) keep their original brand colours. */
 html.dark .bg-clip-text.from-brand-navy {
-  background-image: linear-gradient(to right, #ffffff 0%, #DBE5F3 50%, #6FC1E8 100%);
+  background-image: linear-gradient(
+    to right,
+    #ffffff 0%,
+    #DBE5F3 25%,
+    #6FC1E8 50%,
+    #DBE5F3 75%,
+    #ffffff 100%
+  );
+}
+
+/* Animated gradient on big page headings — same recipe as the
+   "Hadar" wordmark but with a 5-stop palette repeated end-to-end
+   and a 4 s easing loop that scrolls the background-position so the
+   colours flow across the letters. Applied only to h1/h2/h3 with
+   the brand text-clip gradient (PageHeading accent='gradient',
+   AboutPageHeading, MarkdownPage h1) so the static Logo wordmark
+   stays calm. */
+@keyframes title-gradient-flow {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+h1.bg-clip-text.from-brand-navy,
+h2.bg-clip-text.from-brand-navy,
+h3.bg-clip-text.from-brand-navy {
+  background-image: linear-gradient(
+    to right,
+    #00327D 0%,
+    #0078BA 25%,
+    #29AAE1 50%,
+    #0078BA 75%,
+    #00327D 100%
+  );
+  background-size: 200% auto;
+  animation: title-gradient-flow 4s ease-in-out infinite;
+}
+
+html.dark h1.bg-clip-text.from-brand-navy,
+html.dark h2.bg-clip-text.from-brand-navy,
+html.dark h3.bg-clip-text.from-brand-navy {
+  background-image: linear-gradient(
+    to right,
+    #ffffff 0%,
+    #DBE5F3 25%,
+    #6FC1E8 50%,
+    #DBE5F3 75%,
+    #ffffff 100%
+  );
+  background-size: 200% auto;
+  animation: title-gradient-flow 4s ease-in-out infinite;
 }
 
 /* Tailwind typography plugin — `prose-headings:text-brand-navy` and

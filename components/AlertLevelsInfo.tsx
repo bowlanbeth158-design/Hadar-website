@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { HelpCircle, X } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/provider';
 
@@ -27,15 +28,55 @@ const LEVELS = [
   },
 ] as const;
 
+const POPOVER_WIDTH = 256; // matches w-64
+const POPOVER_GAP = 8;
+
 export function AlertLevelsInfo({ size = 'md' }: Props) {
   const { t } = useI18n();
   const [open, setOpen] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const popoverRef = useRef<HTMLDivElement>(null);
+
+  // Recompute popover position from the button rect — used both on
+  // open and when the viewport scrolls/resizes so it stays anchored.
+  const updatePos = () => {
+    const btn = buttonRef.current;
+    if (!btn) return;
+    const r = btn.getBoundingClientRect();
+    // Anchor right edge of popover to right edge of button (end-0
+    // semantics) but keep it inside the viewport with an 8 px margin.
+    const left = Math.max(
+      8,
+      Math.min(window.innerWidth - POPOVER_WIDTH - 8, r.right - POPOVER_WIDTH),
+    );
+    const top = r.bottom + POPOVER_GAP;
+    setPos({ top, left });
+  };
+
+  useLayoutEffect(() => {
+    if (!open) return;
+    updatePos();
+    const onScroll = () => updatePos();
+    const onResize = () => updatePos();
+    window.addEventListener('scroll', onScroll, true);
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('scroll', onScroll, true);
+      window.removeEventListener('resize', onResize);
+    };
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
     const onClickOutside = (e: MouseEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) setOpen(false);
+      const target = e.target as Node;
+      if (
+        !buttonRef.current?.contains(target) &&
+        !popoverRef.current?.contains(target)
+      ) {
+        setOpen(false);
+      }
     };
     const onEsc = (e: KeyboardEvent) => {
       if (e.key === 'Escape') setOpen(false);
@@ -51,24 +92,14 @@ export function AlertLevelsInfo({ size = 'md' }: Props) {
   const iconSize = size === 'sm' ? 'h-3 w-3' : 'h-3.5 w-3.5';
   const buttonSize = size === 'sm' ? 'h-5 w-5' : 'h-6 w-6';
 
-  return (
-    <div ref={rootRef} className="relative shrink-0">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-haspopup="dialog"
-        aria-expanded={open}
-        aria-label={t('home.banner.card3.help.label')}
-        className={`inline-flex items-center justify-center rounded-full ${buttonSize} text-gray-400 hover:text-brand-blue hover:bg-brand-blue/10 transition-colors`}
-      >
-        <HelpCircle className={iconSize} aria-hidden />
-      </button>
-
-      {open && (
+  const popover = open && pos && typeof document !== 'undefined'
+    ? createPortal(
         <div
+          ref={popoverRef}
           role="dialog"
           aria-label={t('home.banner.card3.help.title')}
-          className="absolute end-0 top-full mt-2 w-64 rounded-xl bg-[#ffffff] dark:bg-[#0b1220] border border-gray-200 dark:border-white/10 shadow-glow-soft p-3 z-50 animate-fade-in-down"
+          style={{ position: 'fixed', top: pos.top, left: pos.left, width: POPOVER_WIDTH }}
+          className="rounded-xl bg-[#ffffff] dark:bg-[#0b1220] border border-gray-200 dark:border-white/10 shadow-glow-soft p-3 z-[200] animate-fade-in-down"
         >
           <div className="flex items-start justify-between gap-2 mb-2">
             <h4 className="text-xs font-bold text-brand-navy">
@@ -87,7 +118,9 @@ export function AlertLevelsInfo({ size = 'md' }: Props) {
           <ul className="space-y-2 text-[11px] leading-snug">
             {LEVELS.map((lvl) => (
               <li key={lvl.key} className="flex items-start gap-2">
-                <span className={`mt-0.5 inline-block h-2.5 w-2.5 rounded-full ${lvl.dot} shrink-0`} />
+                <span
+                  className={`mt-0.5 inline-block h-2.5 w-2.5 rounded-full ${lvl.dot} shrink-0`}
+                />
                 <div className="min-w-0">
                   <p className="font-semibold text-brand-navy">
                     {t(`home.banner.card3.help.${lvl.key}.title`)}
@@ -102,8 +135,25 @@ export function AlertLevelsInfo({ size = 'md' }: Props) {
               </li>
             ))}
           </ul>
-        </div>
-      )}
-    </div>
+        </div>,
+        document.body,
+      )
+    : null;
+
+  return (
+    <>
+      <button
+        ref={buttonRef}
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="dialog"
+        aria-expanded={open}
+        aria-label={t('home.banner.card3.help.label')}
+        className={`inline-flex items-center justify-center rounded-full ${buttonSize} text-gray-400 hover:text-brand-blue hover:bg-brand-blue/10 transition-colors shrink-0`}
+      >
+        <HelpCircle className={iconSize} aria-hidden />
+      </button>
+      {popover}
+    </>
   );
 }

@@ -218,6 +218,83 @@ html.dark textarea::placeholder {
   opacity: 1;
 }
 
+/* RecentReports — dark-mode hover/click flair --------------------------------- *
+ * In dark mode only, when a recent-report card is hovered or pressed, its
+ * translucent surface flips to the solid risk colour and the small risk
+ * badge in the top-right inverts to a white→sky gradient with the risk
+ * colour as text. Light mode keeps its original gentle shadow lift.
+ * --------------------------------------------------------------------------- */
+html.dark article[data-risk]:hover,
+html.dark article[data-risk]:active {
+  background-image: none;
+  border-color: transparent;
+}
+html.dark article[data-risk='eleve']:hover,
+html.dark article[data-risk='eleve']:active {
+  background-color: #EE4444;
+  box-shadow: 0 16px 40px -10px rgba(238, 68, 68, 0.55);
+}
+html.dark article[data-risk='vigilance']:hover,
+html.dark article[data-risk='vigilance']:active {
+  background-color: #FBED21;
+  box-shadow: 0 16px 40px -10px rgba(251, 237, 33, 0.55);
+}
+html.dark article[data-risk='modere']:hover,
+html.dark article[data-risk='modere']:active {
+  background-color: #F29B11;
+  box-shadow: 0 16px 40px -10px rgba(242, 155, 17, 0.55);
+}
+
+/* Inside the lit card, lighten body text for legibility on the new
+   solid risk surface — text-brand-navy is already remapped to white-ish
+   by the global override but on a yellow #FBED21 background we want the
+   navy back for contrast. */
+html.dark article[data-risk='vigilance']:hover *,
+html.dark article[data-risk='vigilance']:active * {
+  color: #00327D;
+}
+html.dark article[data-risk='eleve']:hover *,
+html.dark article[data-risk='eleve']:active *,
+html.dark article[data-risk='modere']:hover *,
+html.dark article[data-risk='modere']:active * {
+  color: #ffffff;
+}
+
+/* Risk badge inverts to a white → sky gradient with the matching risk
+   colour as its text + dot, the moment its parent card lights up. */
+html.dark article[data-risk]:hover [data-risk-badge],
+html.dark article[data-risk]:active [data-risk-badge] {
+  background-image: linear-gradient(135deg, #ffffff 0%, #DBE5F3 100%);
+  background-color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.6);
+}
+html.dark article[data-risk='eleve']:hover [data-risk-badge],
+html.dark article[data-risk='eleve']:active [data-risk-badge] {
+  color: #EE4444;
+}
+html.dark article[data-risk='vigilance']:hover [data-risk-badge],
+html.dark article[data-risk='vigilance']:active [data-risk-badge] {
+  color: #00327D;
+}
+html.dark article[data-risk='modere']:hover [data-risk-badge],
+html.dark article[data-risk='modere']:active [data-risk-badge] {
+  color: #F29B11;
+}
+/* The pulsing dot inside the badge takes the risk colour too so it
+   stays visible against the new white surface. */
+html.dark article[data-risk='eleve']:hover [data-risk-badge] span > span,
+html.dark article[data-risk='eleve']:active [data-risk-badge] span > span {
+  background-color: #EE4444;
+}
+html.dark article[data-risk='vigilance']:hover [data-risk-badge] span > span,
+html.dark article[data-risk='vigilance']:active [data-risk-badge] span > span {
+  background-color: #FBED21;
+}
+html.dark article[data-risk='modere']:hover [data-risk-badge] span > span,
+html.dark article[data-risk='modere']:active [data-risk-badge] span > span {
+  background-color: #F29B11;
+}
+
 /* Respect user's reduced-motion preference */
 @media (prefers-reduced-motion: reduce) {
   *,

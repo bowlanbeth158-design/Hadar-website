@@ -49,8 +49,8 @@ type RiskStyle = {
 const RISK_STYLE: Record<RiskLevel, RiskStyle> = {
   vigilance: {
     dot: 'bg-yellow-300',
-    bg: 'bg-yellow-100/90',
-    text: 'text-yellow-500',
+    bg: 'bg-yellow-300',
+    text: 'text-brand-navy',
     border: 'border-yellow-500/40',
     stripeBase: 'bg-gradient-to-r from-yellow-300/25 via-yellow-300/45 to-yellow-300/25',
     stripeComet:
@@ -60,8 +60,8 @@ const RISK_STYLE: Record<RiskLevel, RiskStyle> = {
   },
   modere: {
     dot: 'bg-orange-500',
-    bg: 'bg-orange-100/90',
-    text: 'text-orange-500',
+    bg: 'bg-orange-500',
+    text: 'text-white',
     border: 'border-orange-500/40',
     stripeBase: 'bg-gradient-to-r from-orange-500/25 via-orange-500/45 to-orange-500/25',
     stripeComet:
@@ -71,8 +71,8 @@ const RISK_STYLE: Record<RiskLevel, RiskStyle> = {
   },
   eleve: {
     dot: 'bg-red-500',
-    bg: 'bg-red-100/90',
-    text: 'text-red-700',
+    bg: 'bg-red-500',
+    text: 'text-white',
     border: 'border-red-500/40',
     stripeBase: 'bg-gradient-to-r from-red-500/28 via-red-500/50 to-red-500/28',
     stripeComet:
@@ -279,6 +279,7 @@ export function RecentReports() {
                     ref={(el) => {
                       cardRefs.current[i] = el;
                     }}
+                    data-risk={r.risk}
                     className="group relative h-full rounded-2xl bg-gradient-to-br from-brand-sky/35 via-white to-brand-sky/45 backdrop-blur-sm border border-white/70 p-3 pt-4 md:p-5 md:pt-6 flex flex-col shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1 transition-all duration-300 ease-out overflow-hidden"
                   >
                     {/* Risk-coloured top stripe — three layers stacked at
@@ -337,7 +338,8 @@ export function RecentReports() {
 
                       {/* Risk badge — pill with pulsing dot in the matching colour */}
                       <span
-                        className={`inline-flex items-center gap-1.5 rounded-pill ${style.bg} ${style.text} border ${style.border} px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide backdrop-blur-sm`}
+                        data-risk-badge={r.risk}
+                        className={`inline-flex items-center gap-1.5 rounded-pill ${style.bg} ${style.text} border ${style.border} px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide backdrop-blur-sm transition-colors duration-300`}
                         aria-label={`${t('home.recentReports.aria.riskLevel')}: ${t(style.labelKey)}`}
                       >
                         <span className="relative flex h-1.5 w-1.5">

@@ -423,15 +423,29 @@ export function ReportForm() {
         </label>
         {contactType === 'telephone' || contactType === 'whatsapp' ? (
           <div className="flex">
-            <CountryCodeSelector value={country} onChange={setCountry} />
+            <CountryCodeSelector
+              value={country}
+              onChange={(c) => {
+                setCountry(c);
+                // Truncate any digits already typed beyond the new
+                // country's max so we never carry an invalid length
+                // across a country switch.
+                setContactValue((v) => v.slice(0, c.digits));
+              }}
+            />
             <input
               id="contactValue"
               name="contactValue"
               type="tel"
               inputMode="numeric"
               value={contactValue}
-              onChange={(e) => setContactValue(e.target.value)}
-              placeholder="6 12 34 56 78"
+              onChange={(e) =>
+                setContactValue(
+                  e.target.value.replace(/\D/g, '').slice(0, country.digits),
+                )
+              }
+              maxLength={country.digits}
+              placeholder={'•'.repeat(country.digits)}
               className="flex-1 min-w-0 rounded-r-xl bg-white/85 backdrop-blur-sm border border-gray-200 px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue focus:shadow-sm transition-all"
             />
           </div>

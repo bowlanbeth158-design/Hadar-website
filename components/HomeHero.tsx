@@ -429,7 +429,17 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                   {(selected === 'telephone' || selected === 'whatsapp') && (
                     <>
                       <input type="hidden" name="dial" value={country.dial} />
-                      <CountryCodeSelector value={country} onChange={setCountry} />
+                      <CountryCodeSelector
+                        value={country}
+                        onChange={(c) => {
+                          setCountry(c);
+                          // Truncate input if it now exceeds the new
+                          // country's expected digit length.
+                          if (inputValue.length > c.digits) {
+                            setInputValue(inputValue.slice(0, c.digits));
+                          }
+                        }}
+                      />
                     </>
                   )}
                   <input
@@ -437,10 +447,31 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                     inputMode={selected === 'telephone' || selected === 'whatsapp' ? 'numeric' : undefined}
                     name="q"
                     value={inputValue}
-                    onChange={handleInputChange}
+                    onChange={(e) => {
+                      if (selected === 'telephone' || selected === 'whatsapp') {
+                        // Phone inputs: digits only, capped at the
+                        // selected country's expected NSN length.
+                        const next = e.target.value
+                          .replace(/\D/g, '')
+                          .slice(0, country.digits);
+                        // Reuse the existing handler so submitted
+                        // state and validation stay in sync.
+                        handleInputChange({
+                          ...e,
+                          target: { ...e.target, value: next },
+                        } as typeof e);
+                        return;
+                      }
+                      handleInputChange(e);
+                    }}
+                    maxLength={
+                      selected === 'telephone' || selected === 'whatsapp'
+                        ? country.digits
+                        : undefined
+                    }
                     placeholder={
                       selected === 'telephone' || selected === 'whatsapp'
-                        ? '6 12 34 56 78'
+                        ? '•'.repeat(country.digits)
                         : activePlaceholder
                     }
                     aria-label={t('home.hero.search.aria', { label: activeLabel.toLowerCase() })}

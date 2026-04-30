@@ -1324,6 +1324,20 @@ const fr: Dict = {
   'form.description.suggestions.label': 'Suggestions — cliquez pour préremplir',
   'form.description.placeholder':
     'Décrivez brièvement la situation (informations factuelles uniquement)',
+  // Public phrase — locked, picked from a curated list, shown on Recent Reports
+  'form.publicPhrase.label': 'Phrase publique',
+  'form.publicPhrase.helper': '— affichée publiquement',
+  'form.publicPhrase.empty': 'Choisissez d’abord un type de problème à l’étape précédente.',
+  'form.publicPhrase.note':
+    'Phrases pré-rédigées pour éviter tout risque juridique. Choisissez celle qui correspond le mieux à votre situation.',
+  // Admin notes — free text, never published, only the moderation team sees it
+  'form.adminNotes.label': 'Notes pour la modération',
+  'form.adminNotes.optional': '(facultatif, non public)',
+  'form.adminNotes.placeholder':
+    'Ajoutez tout détail utile à l’équipe de modération (contexte, preuves complémentaires, etc.)',
+  'form.adminNotes.hint':
+    'Visible uniquement par notre équipe de modération. N’apparaît jamais publiquement.',
+  'form.adminNotes.recapHelper': '— privé, modération uniquement',
   'form.description.hint':
     'Merci de décrire la situation de manière factuelle. Évitez les jugements ou accusations.',
   'form.description.detected.singular': 'Mot détecté :',
@@ -2805,6 +2819,20 @@ const en: Dict = {
   'form.description.suggestions.label': 'Suggestions — click to prefill',
   'form.description.placeholder':
     'Briefly describe the situation (factual information only)',
+  // Public phrase — locked, picked from a curated list, shown on Recent Reports
+  'form.publicPhrase.label': 'Public phrase',
+  'form.publicPhrase.helper': '— displayed publicly',
+  'form.publicPhrase.empty': 'Pick a problem type on the previous step first.',
+  'form.publicPhrase.note':
+    'Pre-written phrases to avoid any legal risk. Pick the one that best matches your situation.',
+  // Admin notes — free text, never published, only the moderation team sees it
+  'form.adminNotes.label': 'Notes for moderation',
+  'form.adminNotes.optional': '(optional, not public)',
+  'form.adminNotes.placeholder':
+    'Add any detail useful to the moderation team (context, extra evidence, etc.)',
+  'form.adminNotes.hint':
+    'Only visible to our moderation team. Never appears publicly.',
+  'form.adminNotes.recapHelper': '— private, moderation only',
   'form.description.hint':
     'Please describe the situation factually. Avoid judgments or accusations.',
   'form.description.detected.singular': 'Detected word:',
@@ -4282,6 +4310,20 @@ const ar: Dict = {
   'form.description.label': 'الوصف',
   'form.description.suggestions.label': 'اقتراحات — انقر للملء التلقائي',
   'form.description.placeholder': 'صف الوضع باختصار (معلومات واقعية فقط)',
+  // Public phrase — locked, picked from a curated list, shown on Recent Reports
+  'form.publicPhrase.label': 'العبارة العامة',
+  'form.publicPhrase.helper': '— تُعرض للجمهور',
+  'form.publicPhrase.empty': 'اختر أولاً نوع المشكلة في الخطوة السابقة.',
+  'form.publicPhrase.note':
+    'عبارات معدّة مسبقًا لتفادي أي خطر قانوني. اختر العبارة الأقرب إلى وضعك.',
+  // Admin notes — free text, never published, only the moderation team sees it
+  'form.adminNotes.label': 'ملاحظات للإدارة',
+  'form.adminNotes.optional': '(اختياري، غير عامة)',
+  'form.adminNotes.placeholder':
+    'أضف أي تفاصيل قد تفيد فريق الإدارة (سياق، أدلة إضافية، إلخ.)',
+  'form.adminNotes.hint':
+    'مرئية فقط لفريق الإدارة. لا تظهر علنًا أبدًا.',
+  'form.adminNotes.recapHelper': '— خاصة، للإدارة فقط',
   'form.description.hint':
     'الرجاء وصف الوضع بشكل واقعي. تجنّب الأحكام أو الاتهامات.',
   'form.description.detected.singular': 'الكلمة المرصودة :',

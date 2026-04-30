@@ -34,6 +34,7 @@ import {
   VenetianMask,
   Wallet as WalletIcon,
   Pencil,
+  Lock,
   Paperclip,
   CheckCircle2,
   Heart,
@@ -291,16 +292,25 @@ export function ReportForm() {
   const [amount, setAmount] = useState('');
   const [accepted, setAccepted] = useState(false);
   const [description, setDescription] = useState('');
+  // Free-text notes intended for the moderation team only — never
+  // displayed publicly. Public listings (Recent reports) only show
+  // the curated `description` phrase picked from the suggestion
+  // list; this field gives the user room to add context for admins
+  // without exposing potentially defamatory wording.
+  const [adminNotes, setAdminNotes] = useState('');
   const [evidenceFiles, setEvidenceFiles] = useState<File[]>([]);
   const [phase, setPhase] = useState<Phase>('idle');
 
   const activeContact = CONTACT_TYPES.find((c) => c.id === contactType) ?? CONTACT_TYPES[0]!;
   const activeProblem = PROBLEM_TYPES.find((p) => p.id === problemType);
 
-  // Live content moderation on the description. Recomputed on every
-  // keystroke; cheap (single regex scan per forbidden lemma over a
-  // <=300-char string).
-  const moderation = useMemo(() => detectUnsafeContent(description), [description]);
+  // Live content moderation on the admin notes. The public
+  // `description` field is now picked from a curated suggestion list
+  // (see lib/descriptionSuggestions.ts) so it doesn't need filtering.
+  // The admin-only free-text field still does — it's never published
+  // but we don't want platform-policy violations sitting in our
+  // moderation queue either.
+  const moderation = useMemo(() => detectUnsafeContent(adminNotes), [adminNotes]);
 
   const stepValid: Record<Step, boolean> = {
     1: contactValue.trim() !== '',
@@ -351,6 +361,7 @@ export function ReportForm() {
     setAmount('');
     setAccepted(false);
     setDescription('');
+    setAdminNotes('');
     setEvidenceFiles([]);
     setPhase('idle');
     scrollToTop();
@@ -542,44 +553,41 @@ export function ReportForm() {
       )}
 
       {step === 3 && (
-      <div className="animate-fade-in-down">
-        <label
-          htmlFor="description"
-          className="inline-flex items-center gap-2 text-sm font-semibold text-brand-navy mb-2"
-        >
-          <span
-            aria-hidden
-            className="inline-flex h-7 w-7 items-center justify-center rounded-pill bg-violet-500/10 text-violet-500 ring-1 ring-violet-500/20"
-          >
-            <Pencil className="h-3.5 w-3.5 animate-sparkle-pop" />
-          </span>
-          {t('form.description.label')} <span className="text-red-500">*</span>{' '}
-          <span className="text-gray-400 font-normal tabular-nums">
-            ({description.length}/500)
-          </span>
-        </label>
+      <div className="space-y-6 animate-fade-in-down">
+        {/* SECTION A — Public phrase, picked from a curated list.
+            This is the only text that gets published in the Recent
+            Reports feed, so it's locked to the suggestion list to
+            avoid defamatory or legally risky wording. */}
+        <div>
+          <label className="inline-flex items-center gap-2 text-sm font-semibold text-brand-navy mb-2">
+            <span
+              aria-hidden
+              className="inline-flex h-7 w-7 items-center justify-center rounded-pill bg-violet-500/10 text-violet-500 ring-1 ring-violet-500/20"
+            >
+              <Pencil className="h-3.5 w-3.5 animate-sparkle-pop" />
+            </span>
+            {t('form.publicPhrase.label')} <span className="text-red-500">*</span>{' '}
+            <span className="text-gray-400 font-normal">
+              {t('form.publicPhrase.helper')}
+            </span>
+          </label>
 
-        {/* Pre-made phrase suggestions — pulled from
-            descriptionSuggestions.ts in the active locale, with the
-            user's typed amount + currency substituted in. Clicking a
-            chip prefills the textarea so the user starts from a
-            sensible sentence and can keep typing more details
-            below. Only rendered once a problem type is picked
-            (otherwise we'd have nothing to suggest from). */}
-        {(() => {
-          const suggestions = getDescriptionSuggestions(
-            problemType as ProblemId | null,
-            locale,
-            amount,
-            currencySymbol,
-          );
-          if (suggestions.length === 0) return null;
-          return (
-            <div className="mb-3">
-              <p className="text-[11px] font-semibold text-brand-navy/70 mb-1.5 uppercase tracking-wide">
-                {t('form.description.suggestions.label')}
-              </p>
-              <div className="flex flex-wrap gap-1.5">
+          {(() => {
+            const suggestions = getDescriptionSuggestions(
+              problemType as ProblemId | null,
+              locale,
+              amount,
+              currencySymbol,
+            );
+            if (suggestions.length === 0) {
+              return (
+                <p className="rounded-xl bg-white/60 border border-dashed border-gray-200 px-4 py-3 text-xs text-gray-500">
+                  {t('form.publicPhrase.empty')}
+                </p>
+              );
+            }
+            return (
+              <div className="space-y-1.5">
                 {suggestions.map((s) => {
                   const isActive = description === s;
                   return (
@@ -590,63 +598,97 @@ export function ReportForm() {
                       aria-pressed={isActive}
                       className={
                         isActive
-                          ? 'rounded-pill bg-violet-500 text-white border border-violet-500 px-3 py-1.5 text-[11px] font-medium shadow-sm transition-all'
-                          : 'rounded-pill bg-white/80 backdrop-blur-sm border border-violet-500/30 text-brand-navy hover:border-violet-500 hover:bg-violet-500/5 hover:-translate-y-0.5 hover:shadow-sm px-3 py-1.5 text-[11px] font-medium transition-all text-start'
+                          ? 'group w-full flex items-start gap-2 rounded-xl bg-violet-500 text-white border border-violet-500 px-3 py-2.5 text-sm font-medium shadow-glow-soft text-start transition-all'
+                          : 'group w-full flex items-start gap-2 rounded-xl bg-white/85 backdrop-blur-sm border border-gray-200 text-brand-navy hover:border-violet-500 hover:bg-violet-500/5 hover:-translate-y-px hover:shadow-sm px-3 py-2.5 text-sm font-medium text-start transition-all'
                       }
                     >
-                      {s}
+                      <span
+                        aria-hidden
+                        className={
+                          isActive
+                            ? 'mt-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full bg-white text-violet-500 shrink-0'
+                            : 'mt-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full border-2 border-gray-300 group-hover:border-violet-500 shrink-0'
+                        }
+                      >
+                        {isActive && <CheckCircle2 className="h-4 w-4" />}
+                      </span>
+                      <span className="flex-1 leading-snug">{s}</span>
                     </button>
                   );
                 })}
               </div>
-            </div>
-          );
-        })()}
+            );
+          })()}
 
-        <textarea
-          id="description"
-          name="description"
-          rows={6}
-          maxLength={500}
-          required
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder={t('form.description.placeholder')}
-          aria-invalid={moderation.blocked}
-          aria-describedby={moderation.blocked ? 'description-moderation' : 'description-hint'}
-          className={
-            moderation.blocked
-              ? 'w-full rounded-xl bg-white/85 backdrop-blur-sm border border-red-500 ring-2 ring-red-500/20 px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-red-500 focus:shadow-sm transition-all resize-y'
-              : 'w-full rounded-xl bg-white/85 backdrop-blur-sm border border-gray-200 px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue focus:shadow-sm transition-all resize-y'
-          }
-        />
-        {moderation.blocked ? (
-          <div
-            id="description-moderation"
-            role="alert"
-            className="mt-2 rounded-xl border border-red-500/30 bg-red-50 px-3 py-2.5 text-xs text-red-700 space-y-1.5"
-          >
-            <p className="font-semibold flex items-start gap-1.5">
-              <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-px" aria-hidden />
-              {moderation.message}
-            </p>
-            <p className="text-red-700/80">{MODERATION_HINT}</p>
-            <p className="text-red-700/60">
-              {t(
-                moderation.matchedWords.length > 1
-                  ? 'form.description.detected.plural'
-                  : 'form.description.detected.singular',
-              )}{' '}
-              <span className="font-mono font-semibold">
-                {moderation.matchedWords.join(', ')}
-              </span>
-            </p>
-          </div>
-        ) : (
-          <p id="description-hint" className="mt-2 text-xs text-red-500">
-            {t('form.description.hint')}
+          <p className="mt-2 text-[11px] text-gray-500">
+            {t('form.publicPhrase.note')}
           </p>
-        )}
+        </div>
+
+        {/* SECTION B — Admin-only free text. Never published. */}
+        <div>
+          <label
+            htmlFor="adminNotes"
+            className="inline-flex items-center gap-2 text-sm font-semibold text-brand-navy mb-2"
+          >
+            <span
+              aria-hidden
+              className="inline-flex h-7 w-7 items-center justify-center rounded-pill bg-brand-navy/10 text-brand-navy ring-1 ring-brand-navy/20"
+            >
+              <Lock className="h-3.5 w-3.5 animate-sparkle-pop" />
+            </span>
+            {t('form.adminNotes.label')}{' '}
+            <span className="text-gray-400 font-normal">
+              {t('form.adminNotes.optional')}
+            </span>
+            <span className="text-gray-400 font-normal tabular-nums ml-auto">
+              ({adminNotes.length}/500)
+            </span>
+          </label>
+          <textarea
+            id="adminNotes"
+            name="adminNotes"
+            rows={5}
+            maxLength={500}
+            value={adminNotes}
+            onChange={(e) => setAdminNotes(e.target.value)}
+            placeholder={t('form.adminNotes.placeholder')}
+            aria-invalid={moderation.blocked}
+            aria-describedby={moderation.blocked ? 'admin-notes-moderation' : 'admin-notes-hint'}
+            className={
+              moderation.blocked
+                ? 'w-full rounded-xl bg-white/85 backdrop-blur-sm border border-red-500 ring-2 ring-red-500/20 px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-red-500 focus:shadow-sm transition-all resize-y'
+                : 'w-full rounded-xl bg-white/85 backdrop-blur-sm border border-gray-200 px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue focus:shadow-sm transition-all resize-y'
+            }
+          />
+          {moderation.blocked ? (
+            <div
+              id="admin-notes-moderation"
+              role="alert"
+              className="mt-2 rounded-xl border border-red-500/30 bg-red-50 px-3 py-2.5 text-xs text-red-700 space-y-1.5"
+            >
+              <p className="font-semibold flex items-start gap-1.5">
+                <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-px" aria-hidden />
+                {moderation.message}
+              </p>
+              <p className="text-red-700/80">{MODERATION_HINT}</p>
+              <p className="text-red-700/60">
+                {t(
+                  moderation.matchedWords.length > 1
+                    ? 'form.description.detected.plural'
+                    : 'form.description.detected.singular',
+                )}{' '}
+                <span className="font-mono font-semibold">
+                  {moderation.matchedWords.join(', ')}
+                </span>
+              </p>
+            </div>
+          ) : (
+            <p id="admin-notes-hint" className="mt-2 text-[11px] text-gray-500">
+              {t('form.adminNotes.hint')}
+            </p>
+          )}
+        </div>
       </div>
       )}
 
@@ -780,13 +822,32 @@ export function ReportForm() {
             </span>
             <div className="min-w-0 flex-1">
               <dt className="text-xs font-semibold text-gray-500">
-                {t('form.description.label')}
+                {t('form.publicPhrase.label')}
               </dt>
               <dd className="text-brand-navy whitespace-pre-wrap break-words">
                 {description || <span className="text-gray-400">—</span>}
               </dd>
             </div>
           </div>
+
+          {adminNotes.trim() !== '' && (
+            <div className="flex items-start gap-3">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-pill bg-brand-navy/10 text-brand-navy ring-1 ring-brand-navy/20 shrink-0">
+                <Lock className="h-4 w-4" aria-hidden />
+              </span>
+              <div className="min-w-0 flex-1">
+                <dt className="text-xs font-semibold text-gray-500">
+                  {t('form.adminNotes.label')}{' '}
+                  <span className="font-normal text-gray-400">
+                    {t('form.adminNotes.recapHelper')}
+                  </span>
+                </dt>
+                <dd className="text-brand-navy whitespace-pre-wrap break-words">
+                  {adminNotes}
+                </dd>
+              </div>
+            </div>
+          )}
 
           <div className="flex items-start gap-3">
             <span className="inline-flex h-8 w-8 items-center justify-center rounded-pill bg-sky-400/15 text-sky-400 ring-1 ring-sky-400/30 shrink-0">

@@ -446,6 +446,21 @@ export function ReportForm() {
       className="space-y-7 rounded-3xl bg-gradient-to-br from-brand-sky/30 via-white to-brand-sky/35 backdrop-blur-sm border border-white/70 p-6 md:p-8 shadow-glow-soft"
       onSubmit={handleSubmit}
     >
+      {/* Small "Change language" link — lets the user reopen step 0
+          if they realise they're filling the form in the wrong
+          locale. We don't reset the entered values; they remain
+          intact across the language change. */}
+      <div className="flex justify-end -mt-2 -mr-2">
+        <button
+          type="button"
+          onClick={() => setLanguageConfirmed(false)}
+          className="inline-flex items-center gap-1.5 rounded-pill text-xs font-medium text-brand-blue hover:text-brand-navy hover:bg-brand-blue/5 px-2.5 py-1 transition-colors"
+        >
+          <Globe className="h-3.5 w-3.5" aria-hidden />
+          {t('form.languagePicker.change')}
+        </button>
+      </div>
+
       <Stepper step={step} />
 
       {step === 1 && (

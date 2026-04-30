@@ -1383,6 +1383,7 @@ const fr: Dict = {
   'form.languagePicker.title': 'Choisissez votre langue',
   'form.languagePicker.subtitle':
     'Pour commencer, sélectionnez la langue dans laquelle vous souhaitez remplir le formulaire.',
+  'form.languagePicker.change': 'Changer la langue',
 
   // ===== /mes-alertes =====
   'mesAlertes.filter.all': 'Tous',
@@ -2892,6 +2893,7 @@ const en: Dict = {
   'form.languagePicker.title': 'Choose your language',
   'form.languagePicker.subtitle':
     'To get started, pick the language you want to fill the form in.',
+  'form.languagePicker.change': 'Change language',
 
   // ===== /mes-alertes =====
   'mesAlertes.filter.all': 'All',
@@ -4399,6 +4401,7 @@ const ar: Dict = {
   'form.languagePicker.title': 'اختر لغتك',
   'form.languagePicker.subtitle':
     'للبدء، اختر اللغة التي ترغب في تعبئة النموذج بها.',
+  'form.languagePicker.change': 'تغيير اللغة',
 
   // ===== /mes-alertes =====
   'mesAlertes.filter.all': 'الكل',

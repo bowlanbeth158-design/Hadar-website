@@ -129,24 +129,25 @@ function ConfettiRain() {
 
 type Step = 1 | 2 | 3 | 4 | 5;
 const TOTAL_STEPS = 5;
-const STEP_TITLES: Record<Step, string> = {
-  1: 'Type de contact',
-  2: 'Type de problème',
-  3: 'Description',
-  4: 'Preuves',
-  5: 'Confirmation et envoi',
+const STEP_TITLE_KEYS: Record<Step, string> = {
+  1: 'form.step.title.1',
+  2: 'form.step.title.2',
+  3: 'form.step.title.3',
+  4: 'form.step.title.4',
+  5: 'form.step.title.5',
 };
 
 function Stepper({ step }: { step: Step }) {
+  const { t } = useI18n();
   const pct = ((step - 1) / (TOTAL_STEPS - 1)) * 100;
   return (
     <div className="mb-7">
       <div className="flex items-center justify-between mb-3">
         <span className="text-xs font-semibold text-brand-blue tabular-nums">
-          Étape {step} sur {TOTAL_STEPS}
+          {t('form.step.counter', { step, total: TOTAL_STEPS })}
         </span>
         <span className="text-xs font-semibold text-brand-navy">
-          {STEP_TITLES[step]}
+          {t(STEP_TITLE_KEYS[step])}
         </span>
       </div>
       <div className="relative">
@@ -279,7 +280,13 @@ function SuccessCelebration({ onAgain }: { onAgain: () => void }) {
 }
 
 export function ReportForm() {
-  const { t, locale } = useI18n();
+  const { t, locale, setLocale } = useI18n();
+  // Step 0 — language picker shown before the actual questionnaire.
+  // Mobile users can't easily reach the language switcher (it's
+  // tucked inside the hamburger drawer), so we surface a one-tap
+  // language confirmation up front. Once the user clicks a flag,
+  // the locale is applied site-wide and the form jumps to step 1.
+  const [languageConfirmed, setLanguageConfirmed] = useState(false);
   // Active currency drives the Montant input's placeholder and suffix
   // so the user always types in the unit they're seeing across the
   // rest of the site (header switcher, Montant signalé KPI, etc.).
@@ -380,6 +387,55 @@ export function ReportForm() {
 
   if (phase === 'success') {
     return <SuccessCelebration onAgain={reset} />;
+  }
+
+  // Step 0 — language picker (mobile-friendly entry point so users
+  // who can't see the header switcher can still pick FR / EN / AR
+  // before starting the questionnaire).
+  if (!languageConfirmed) {
+    const LANGUAGES: { id: typeof locale; flag: string; label: string; native: string }[] = [
+      { id: 'fr', flag: '🇫🇷', label: 'Français', native: 'Français' },
+      { id: 'en', flag: '🇬🇧', label: 'English',  native: 'English'  },
+      { id: 'ar', flag: '🇲🇦', label: 'العربية',  native: 'العربية'  },
+    ];
+    return (
+      <div className="space-y-6 rounded-3xl bg-gradient-to-br from-brand-sky/30 via-white to-brand-sky/35 backdrop-blur-sm border border-white/70 p-6 md:p-8 shadow-glow-soft animate-fade-in-down">
+        <div className="text-center">
+          <h2 className="text-xl md:text-2xl font-bold text-brand-navy mb-2">
+            {t('form.languagePicker.title')}
+          </h2>
+          <p className="text-sm text-gray-500">
+            {t('form.languagePicker.subtitle')}
+          </p>
+        </div>
+        <div className="grid gap-2.5 max-w-sm mx-auto">
+          {LANGUAGES.map((l) => {
+            const isActive = l.id === locale;
+            return (
+              <button
+                key={l.id}
+                type="button"
+                onClick={() => {
+                  setLocale(l.id);
+                  setLanguageConfirmed(true);
+                }}
+                className={
+                  isActive
+                    ? 'group flex items-center gap-3 rounded-2xl bg-brand-navy text-white border border-brand-navy px-4 py-3 text-base font-semibold shadow-glow-navy transition-all'
+                    : 'group flex items-center gap-3 rounded-2xl bg-white/85 backdrop-blur-sm border border-gray-200 text-brand-navy hover:border-brand-blue hover:bg-brand-blue/5 hover:-translate-y-px hover:shadow-sm px-4 py-3 text-base font-semibold transition-all'
+                }
+              >
+                <span aria-hidden className="text-2xl leading-none">
+                  {l.flag}
+                </span>
+                <span className="flex-1 text-start">{l.native}</span>
+                {isActive && <CheckCircle2 className="h-5 w-5" aria-hidden />}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -566,10 +622,7 @@ export function ReportForm() {
             >
               <Pencil className="h-3.5 w-3.5 animate-sparkle-pop" />
             </span>
-            {t('form.publicPhrase.label')} <span className="text-red-500">*</span>{' '}
-            <span className="text-gray-400 font-normal">
-              {t('form.publicPhrase.helper')}
-            </span>
+            {t('form.publicPhrase.label')} <span className="text-red-500">*</span>
           </label>
 
           {(() => {
@@ -637,10 +690,7 @@ export function ReportForm() {
             >
               <Lock className="h-3.5 w-3.5 animate-sparkle-pop" />
             </span>
-            {t('form.adminNotes.label')}{' '}
-            <span className="text-gray-400 font-normal">
-              {t('form.adminNotes.optional')}
-            </span>
+            {t('form.adminNotes.label')}
             <span className="text-gray-400 font-normal tabular-nums ml-auto">
               ({adminNotes.length}/500)
             </span>
@@ -758,7 +808,7 @@ export function ReportForm() {
       {step === 5 && (
       <div className="space-y-5 animate-fade-in-down">
         <h3 className="text-base font-bold text-brand-navy">
-          Vérifiez votre signalement
+          {t('form.recap.title')}
         </h3>
 
         <dl className="grid gap-3 rounded-2xl bg-white/70 border border-white/80 p-4 text-sm">
@@ -908,7 +958,7 @@ export function ReportForm() {
             className="inline-flex items-center justify-center gap-2 rounded-pill bg-white/85 hover:bg-white border border-white/80 hover:border-brand-blue/40 text-brand-navy px-5 py-2.5 text-sm font-semibold shadow-sm transition-all"
           >
             <ChevronLeft className="h-4 w-4" aria-hidden />
-            Précédent
+            {t('form.nav.prev')}
           </button>
         ) : (
           <span className="hidden sm:block" />
@@ -921,7 +971,7 @@ export function ReportForm() {
             disabled={!stepValid[step]}
             className="inline-flex items-center justify-center gap-2 rounded-pill bg-brand-navy enabled:hover:bg-brand-blue text-white px-6 py-3 text-sm font-semibold shadow-glow-navy enabled:hover:shadow-glow-blue enabled:hover:scale-[1.02] disabled:opacity-60 disabled:cursor-not-allowed transition-all"
           >
-            Suivant
+            {t('form.nav.next')}
             <ChevronRight className="h-4 w-4" aria-hidden />
           </button>
         ) : (

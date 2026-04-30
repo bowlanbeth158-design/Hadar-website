@@ -1292,7 +1292,7 @@ const fr: Dict = {
   'signalerPage.brandPill': 'Signalement protégé · 100% anonyme',
   'signalerPage.title': 'Partager une expérience',
   'signalerPage.subtitle':
-    'Partagez votre expérience concernant un contact, un site ou un moyen de paiement. Votre contribution aide la communauté à prendre de meilleures décisions.',
+    'Partagez votre expérience sur un contact, un site ou un paiement pour aider la communauté.',
   'signalerPage.trust.protected.title': 'Protégé',
   'signalerPage.trust.protected.desc': '100% anonyme',
   'signalerPage.trust.encrypted.title': 'Chiffré',
@@ -1367,6 +1367,18 @@ const fr: Dict = {
   'form.success.stat.thanks': 'merci à vous',
   'form.success.again': 'Faire un autre signalement',
   'form.success.home': "Retour à l'accueil",
+  'form.nav.prev': 'Précédent',
+  'form.nav.next': 'Suivant',
+  'form.step.counter': 'Étape {step} sur {total}',
+  'form.step.title.1': 'Type de contact',
+  'form.step.title.2': 'Type de problème',
+  'form.step.title.3': 'Description',
+  'form.step.title.4': 'Preuves',
+  'form.step.title.5': 'Confirmation et envoi',
+  'form.recap.title': 'Vérifiez votre signalement',
+  'form.languagePicker.title': 'Choisissez votre langue',
+  'form.languagePicker.subtitle':
+    'Pour commencer, sélectionnez la langue dans laquelle vous souhaitez remplir le formulaire.',
 
   // ===== /mes-alertes =====
   'mesAlertes.filter.all': 'Tous',
@@ -2786,7 +2798,7 @@ const en: Dict = {
   'signalerPage.brandPill': 'Protected report · 100% anonymous',
   'signalerPage.title': 'Share an experience',
   'signalerPage.subtitle':
-    'Share your experience about a contact, a website or a payment method. Your contribution helps the community make better decisions.',
+    'Share your experience about a contact, a website or a payment to help the community.',
   'signalerPage.trust.protected.title': 'Protected',
   'signalerPage.trust.protected.desc': '100% anonymous',
   'signalerPage.trust.encrypted.title': 'Encrypted',
@@ -2860,6 +2872,18 @@ const en: Dict = {
   'form.success.stat.thanks': 'thanks to you',
   'form.success.again': 'Submit another report',
   'form.success.home': 'Back to home',
+  'form.nav.prev': 'Previous',
+  'form.nav.next': 'Next',
+  'form.step.counter': 'Step {step} of {total}',
+  'form.step.title.1': 'Contact type',
+  'form.step.title.2': 'Problem type',
+  'form.step.title.3': 'Description',
+  'form.step.title.4': 'Evidence',
+  'form.step.title.5': 'Confirm and submit',
+  'form.recap.title': 'Review your report',
+  'form.languagePicker.title': 'Choose your language',
+  'form.languagePicker.subtitle':
+    'To get started, pick the language you want to fill the form in.',
 
   // ===== /mes-alertes =====
   'mesAlertes.filter.all': 'All',
@@ -3819,7 +3843,7 @@ const ar: Dict = {
   'chatbot.help.verification.q2': 'لماذا لا تظهر أي مشاركات ؟',
   'chatbot.help.verification.q3': 'هل النتائج محدّثة في الوقت الفعلي ؟',
   'chatbot.help.verification.q4': 'ما أنواع جهات الاتصال التي يمكن التحقق منها ؟',
-  'chatbot.help.signalement.q1': 'كيف أشارك تجربة ؟',
+  'chatbot.help.signalement.q1': 'كيف أساهم بتجربتي ؟',
   'chatbot.help.signalement.q2': 'ماذا يحدث للمشاركة بعد إرساله ؟',
   'chatbot.help.signalement.q3': 'هل يمكنني تعديل مشاركة ؟',
   'chatbot.help.signalement.q4': 'كم تستغرق المراجعة ؟',
@@ -3863,7 +3887,7 @@ const ar: Dict = {
   'home.banner.bullet4': '100% سرية',
   'home.banner.statsCaption': 'عمليات تحقق مفيدة خلال آخر 30 يوماً.',
   'home.banner.cta.verify': 'تحقّق الآن',
-  'home.banner.cta.share': 'شارك تجربة',
+  'home.banner.cta.share': 'ساهم بتجربتك',
   'home.banner.tagline.noSignup': 'بدون تسجيل',
   'home.banner.tagline.anonymous': 'خصوصية تامة',
   'home.banner.tagline.morocco': 'منصة مغربية 🇲🇦',
@@ -4129,7 +4153,7 @@ const ar: Dict = {
   'howPage.subtitle': 'إجراءان بسيطان لاتخاذ قرارات أفضل.',
   'howPage.card1.title': 'تحقّق من جهة اتصال',
   'howPage.card1.description': 'اطّلع على المعلومات المتوفرة قبل أي معاملة.',
-  'howPage.card2.title': 'شارك تجربة',
+  'howPage.card2.title': 'ساهم بتجربتك',
   'howPage.card2.description': 'ساعد المجتمع بملاحظة واقعية ومفيدة.',
   'howPage.cta.watch': 'مشاهدة الفيديو',
   'howPage.cta.comingSoon': 'الفيديو قادم قريباً',
@@ -4166,7 +4190,7 @@ const ar: Dict = {
   'statsPage.evolution.vsPrevious': '+{pct}% مقارنة بالفترة السابقة',
   'statsPage.evolution.today': '+45% اليوم',
   'statsPage.cta.verify': 'تحقّق الآن',
-  'statsPage.cta.share': 'شارك تجربة',
+  'statsPage.cta.share': 'ساهم بتجربتك',
 
   // ===== User space — page-level headings + demo banner =====
   'userPages.alerts.title': 'تنبيهاتي',
@@ -4278,9 +4302,9 @@ const ar: Dict = {
 
   // ===== /signaler page =====
   'signalerPage.brandPill': 'مشاركة محمي · 100% مجهول الهوية',
-  'signalerPage.title': 'شارك تجربة',
+  'signalerPage.title': 'ساهم بتجربتك',
   'signalerPage.subtitle':
-    'شارك تجربتك بخصوص جهة اتصال أو موقع أو وسيلة دفع. مساهمتك تساعد المجتمع على اتخاذ قرارات أفضل.',
+    'شارك تجربتك بخصوص جهة اتصال أو موقع أو دفع لمساعدة المجتمع.',
   'signalerPage.trust.protected.title': 'محمي',
   'signalerPage.trust.protected.desc': '100% مجهول الهوية',
   'signalerPage.trust.encrypted.title': 'مشفّر',
@@ -4343,14 +4367,26 @@ const ar: Dict = {
   'form.success.thanks': 'شكراً',
   'form.success.received': 'تم استلام مساهمتك.',
   'form.success.community':
-    'أنت تساعد مجتمع Hadar على البقاء يقظاً والتحقق بثقة.',
-  'form.success.eta': 'سيراجع فريقنا مشاركتك خلال {duration}.',
+    'أنت تساعد مستخدمي Hadar على البقاء يقظين والتحقق بثقة.',
+  'form.success.eta': 'سيقوم فريقنا بمراجعة مشاركتك خلال {duration}.',
   'form.success.eta.duration': '48 ساعة عمل',
   'form.success.stat.users': 'مستخدمون استُفيد لهم',
   'form.success.stat.contacts': 'جهات اتصال تم التحقق منها',
   'form.success.stat.thanks': 'شكراً لك',
   'form.success.again': 'إرسال مشاركة آخر',
   'form.success.home': 'العودة إلى الصفحة الرئيسية',
+  'form.nav.prev': 'السابق',
+  'form.nav.next': 'التالي',
+  'form.step.counter': 'الخطوة {step} من {total}',
+  'form.step.title.1': 'نوع جهة الاتصال',
+  'form.step.title.2': 'نوع المشكلة',
+  'form.step.title.3': 'الوصف',
+  'form.step.title.4': 'الأدلة',
+  'form.step.title.5': 'التأكيد والإرسال',
+  'form.recap.title': 'راجع مشاركتك',
+  'form.languagePicker.title': 'اختر لغتك',
+  'form.languagePicker.subtitle':
+    'للبدء، اختر اللغة التي ترغب في تعبئة النموذج بها.',
 
   // ===== /mes-alertes =====
   'mesAlertes.filter.all': 'الكل',

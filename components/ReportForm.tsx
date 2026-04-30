@@ -1,10 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  detectUnsafeContent,
-  MODERATION_HINT,
-} from '@/lib/moderationWords';
+import { detectUnsafeContent } from '@/lib/moderationWords';
 import { useCurrency } from '@/lib/currency/provider';
 import { useI18n } from '@/lib/i18n/provider';
 import {
@@ -725,9 +722,9 @@ export function ReportForm() {
             >
               <p className="font-semibold flex items-start gap-1.5">
                 <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-px" aria-hidden />
-                {moderation.message}
+                {t('form.moderation.message')}
               </p>
-              <p className="text-red-700/80">{MODERATION_HINT}</p>
+              <p className="text-red-700/80">{t('form.moderation.hint')}</p>
               <p className="text-red-700/60">
                 {t(
                   moderation.matchedWords.length > 1

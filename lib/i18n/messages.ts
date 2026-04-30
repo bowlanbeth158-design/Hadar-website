@@ -1342,6 +1342,10 @@ const fr: Dict = {
     'Merci de décrire la situation de manière factuelle. Évitez les jugements ou accusations.',
   'form.description.detected.singular': 'Mot détecté :',
   'form.description.detected.plural': 'Mots détectés :',
+  'form.moderation.message':
+    "Merci d'éviter les accusations directes. Décrivez uniquement les faits observés.",
+  'form.moderation.hint':
+    'Exemple : Paiement effectué le 12/04, produit non reçu, plus de réponse.',
   'form.evidence.label': 'Preuves',
   'form.evidence.cta': 'Choisir un fichier ou glisser ici',
   'form.evidence.hint': '(capture, reçu, conversation…)',
@@ -2849,6 +2853,10 @@ const en: Dict = {
     'Please describe the situation factually. Avoid judgments or accusations.',
   'form.description.detected.singular': 'Detected word:',
   'form.description.detected.plural': 'Detected words:',
+  'form.moderation.message':
+    'Please avoid direct accusations. Only describe the observed facts.',
+  'form.moderation.hint':
+    'Example: Payment made on 12/04, product not received, no further reply.',
   'form.evidence.label': 'Evidence',
   'form.evidence.cta': 'Choose a file or drag here',
   'form.evidence.hint': '(screenshot, receipt, conversation…)',
@@ -4352,6 +4360,10 @@ const ar: Dict = {
     'الرجاء وصف الوضع بشكل واقعي. تجنّب الأحكام أو الاتهامات.',
   'form.description.detected.singular': 'الكلمة المرصودة :',
   'form.description.detected.plural': 'الكلمات المرصودة :',
+  'form.moderation.message':
+    'يرجى تجنّب الاتهامات المباشرة. صف فقط الوقائع الملاحَظة.',
+  'form.moderation.hint':
+    'مثال: تمّ الدفع بتاريخ 12/04، لم يتم استلام المنتج، ولا يوجد أي رد.',
   'form.evidence.label': 'الأدلة',
   'form.evidence.cta': 'اختر ملفاً أو اسحبه إلى هنا',
   'form.evidence.hint': '(لقطة شاشة، إيصال، محادثة…)',

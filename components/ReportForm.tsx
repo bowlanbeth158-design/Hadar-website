@@ -445,7 +445,7 @@ export function ReportForm() {
                 )
               }
               maxLength={country.digits}
-              placeholder={'•'.repeat(country.digits)}
+              placeholder={country.example}
               className="flex-1 min-w-0 rounded-r-xl bg-white/85 backdrop-blur-sm border border-gray-200 px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue focus:shadow-sm transition-all"
             />
           </div>

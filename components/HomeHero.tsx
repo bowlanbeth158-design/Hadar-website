@@ -471,7 +471,7 @@ export function HomeHero({ initialType, initialQuery = '' }: Props) {
                     }
                     placeholder={
                       selected === 'telephone' || selected === 'whatsapp'
-                        ? '•'.repeat(country.digits)
+                        ? country.example
                         : activePlaceholder
                     }
                     aria-label={t('home.hero.search.aria', { label: activeLabel.toLowerCase() })}

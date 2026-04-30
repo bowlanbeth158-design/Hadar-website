@@ -111,7 +111,7 @@ function MobileNavMenu() {
       {open && (
         <div
           role="menu"
-          className="absolute start-0 top-full mt-2 w-64 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0b1220] shadow-glow-soft p-2 animate-fade-in-down z-50"
+          className="absolute start-0 top-full mt-2 w-64 rounded-2xl border border-gray-200 dark:border-white/10 bg-[#ffffff] dark:bg-[#0b1220] shadow-glow-soft p-2 animate-fade-in-down z-50"
         >
           <ul className="flex flex-col">
             {items.map(({ href, labelKey, Icon }) => {
@@ -151,8 +151,8 @@ function MobileNavMenu() {
               {t('header.preferences')}
             </p>
             <div className="flex items-center justify-around gap-1 px-2 py-1">
-              <LanguageSwitcher />
-              <CurrencySwitcher />
+              <LanguageSwitcher align="start" />
+              <CurrencySwitcher align="start" />
               <ThemeSwitcher />
             </div>
           </div>

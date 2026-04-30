@@ -10,7 +10,11 @@ import { CURRENCIES, useCurrency, type Currency } from '@/lib/currency/provider'
 // component, so picking a currency now ACTUALLY swaps every amount
 // across the site (Montant signalé KPI, signaler form input suffix,
 // future report cards, etc.).
-export function CurrencySwitcher() {
+type Props = {
+  align?: 'start' | 'end';
+};
+
+export function CurrencySwitcher({ align = 'end' }: Props = {}) {
   const { currency, setCurrency } = useCurrency();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -58,7 +62,7 @@ export function CurrencySwitcher() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-full mt-2 w-60 rounded-xl bg-white border border-gray-200 shadow-lg overflow-hidden z-50 py-1 animate-fade-in-down"
+          className={`absolute ${align === 'start' ? 'start-0' : 'end-0'} top-full mt-2 w-60 rounded-xl bg-[#ffffff] dark:bg-[#0b1220] border border-gray-200 dark:border-white/10 shadow-lg overflow-hidden z-50 py-1 animate-fade-in-down`}
         >
           {CURRENCIES.map((c) => {
             const active = c.id === currency;

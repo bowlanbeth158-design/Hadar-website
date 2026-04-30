@@ -11,7 +11,16 @@ const LANGUAGES: { id: Locale; native: string; flag: string }[] = [
   { id: 'en', native: 'English', flag: '🇬🇧' },
 ];
 
-export function LanguageSwitcher() {
+type Props = {
+  // 'end' (default) anchors the popover to the inline-end edge of the
+  // trigger — fits the desktop header where the switcher sits on the
+  // right. 'start' anchors to the inline-start edge so the popover
+  // extends inward when the switcher is placed on the left side of a
+  // container (e.g. the mobile hamburger drawer).
+  align?: 'start' | 'end';
+};
+
+export function LanguageSwitcher({ align = 'end' }: Props = {}) {
   // Single source of truth for the active locale: the i18n provider
   // (mounted in app/layout.tsx). Removes the previous local-only
   // `hadar:lang` localStorage flag that was orphaned from the
@@ -67,7 +76,7 @@ export function LanguageSwitcher() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-full mt-2 w-44 rounded-xl bg-white border border-gray-200 shadow-lg overflow-hidden z-50 py-1 animate-fade-in-down"
+          className={`absolute ${align === 'start' ? 'start-0' : 'end-0'} top-full mt-2 w-44 rounded-xl bg-[#ffffff] dark:bg-[#0b1220] border border-gray-200 dark:border-white/10 shadow-lg overflow-hidden z-50 py-1 animate-fade-in-down`}
         >
           {LANGUAGES.map((l) => {
             const active = l.id === locale;

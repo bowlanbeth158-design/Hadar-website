@@ -131,9 +131,9 @@ export function SignalerPageBody() {
           {PROCESS.map((p) => (
             <div
               key={p.n}
-              className="group relative rounded-2xl bg-gradient-to-br from-brand-sky/30 via-white to-brand-sky/35 backdrop-blur-sm border border-white/70 p-5 shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1 transition-all duration-300 ease-out overflow-hidden"
+              className="group relative rounded-2xl bg-gradient-to-br from-brand-sky/30 via-white to-brand-sky/35 backdrop-blur-sm border border-white/70 p-5 shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1 transition-all duration-300 ease-out overflow-hidden text-center sm:text-start"
             >
-              <div className="flex items-center gap-3 mb-2">
+              <div className="flex items-center gap-3 mb-2 max-sm:justify-center">
                 <span
                   className={`inline-flex items-center justify-center h-9 w-9 rounded-xl ring-1 ${p.ring} ${p.chip} transition-transform group-hover:scale-110`}
                   aria-hidden

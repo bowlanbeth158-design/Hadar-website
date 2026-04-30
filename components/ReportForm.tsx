@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   detectUnsafeContent,
   MODERATION_HINT,
@@ -186,10 +186,13 @@ function Stepper({ step }: { step: Step }) {
 
 function SuccessCelebration({ onAgain }: { onAgain: () => void }) {
   const { t } = useI18n();
+  const cardRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    // Centre the thank-you card in the viewport so the user sees the
+    // confirmation immediately without manual scrolling. scrollIntoView
+    // with block:'center' is supported across all modern browsers and
+    // respects the user's prefers-reduced-motion setting.
+    cardRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, []);
 
   // Split the localised "Notre équipe examinera votre signalement sous
@@ -200,7 +203,10 @@ function SuccessCelebration({ onAgain }: { onAgain: () => void }) {
   const [etaBefore = '', etaAfter = ''] = etaTpl.split('__DURATION__');
 
   return (
-    <div className="relative rounded-3xl bg-gradient-to-br from-green-100/60 via-white to-brand-sky/40 backdrop-blur-sm border border-white/70 shadow-glow-green overflow-hidden animate-modal-pop scroll-mt-20">
+    <div
+      ref={cardRef}
+      className="relative rounded-3xl bg-gradient-to-br from-green-100/60 via-white to-brand-sky/40 backdrop-blur-sm border border-white/70 shadow-glow-green overflow-hidden animate-modal-pop scroll-mt-20"
+    >
       <ConfettiRain />
 
       <div className="relative px-6 md:px-10 py-12 md:py-16 text-center">

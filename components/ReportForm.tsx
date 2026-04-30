@@ -12,6 +12,11 @@ import {
   DEFAULT_COUNTRY,
   type Country,
 } from './CountryCodeSelector';
+import { CurrencySwitcher } from './CurrencySwitcher';
+import {
+  getDescriptionSuggestions,
+  type ProblemId,
+} from '@/lib/descriptionSuggestions';
 import {
   Megaphone,
   UploadCloud,
@@ -273,7 +278,7 @@ function SuccessCelebration({ onAgain }: { onAgain: () => void }) {
 }
 
 export function ReportForm() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   // Active currency drives the Montant input's placeholder and suffix
   // so the user always types in the unit they're seeing across the
   // rest of the site (header switcher, Montant signalé KPI, etc.).
@@ -513,12 +518,12 @@ export function ReportForm() {
           {t('form.amount.label')}{' '}
           <span className="text-gray-400 font-normal">{t('form.amount.optional')}</span>
         </label>
-        {/* Currency-aware amount input — the placeholder example and
-            the right-side suffix both follow the active currency
-            (MAD / € / $) selected from the header switcher, so the
-            user types in the same unit they see displayed elsewhere
-            on the site. */}
-        <div className="relative">
+        {/* Currency-aware amount input — placeholder example follows
+            the active currency. The right-side currency selector lets
+            the user pick MAD / EUR / USD inline (it writes through to
+            the global CurrencyProvider so the recap step + every
+            other amount on the site stay in the chosen unit). */}
+        <div className="flex">
           <input
             id="amount"
             name="amount"
@@ -526,14 +531,11 @@ export function ReportForm() {
             value={amount}
             onChange={(e) => setAmount(e.target.value)}
             placeholder={`Ex : ${placeholderAmount}`}
-            className="w-full rounded-xl bg-white/85 backdrop-blur-sm border border-gray-200 px-4 py-2.5 pr-16 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue focus:shadow-sm transition-all"
+            className="flex-1 min-w-0 rounded-l-xl bg-white/85 backdrop-blur-sm border border-r-0 border-gray-200 px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue focus:shadow-sm transition-all"
           />
-          <span
-            aria-hidden
-            className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 inline-flex items-center rounded-pill bg-green-500/10 text-green-700 px-2.5 py-0.5 text-xs font-semibold ring-1 ring-green-500/20"
-          >
-            {currencySymbol}
-          </span>
+          <div className="inline-flex items-center rounded-r-xl bg-white/85 backdrop-blur-sm border border-gray-200 px-2">
+            <CurrencySwitcher align="end" />
+          </div>
         </div>
       </div>
       </div>
@@ -553,14 +555,59 @@ export function ReportForm() {
           </span>
           {t('form.description.label')} <span className="text-red-500">*</span>{' '}
           <span className="text-gray-400 font-normal tabular-nums">
-            ({description.length}/300)
+            ({description.length}/500)
           </span>
         </label>
+
+        {/* Pre-made phrase suggestions — pulled from
+            descriptionSuggestions.ts in the active locale, with the
+            user's typed amount + currency substituted in. Clicking a
+            chip prefills the textarea so the user starts from a
+            sensible sentence and can keep typing more details
+            below. Only rendered once a problem type is picked
+            (otherwise we'd have nothing to suggest from). */}
+        {(() => {
+          const suggestions = getDescriptionSuggestions(
+            problemType as ProblemId | null,
+            locale,
+            amount,
+            currencySymbol,
+          );
+          if (suggestions.length === 0) return null;
+          return (
+            <div className="mb-3">
+              <p className="text-[11px] font-semibold text-brand-navy/70 mb-1.5 uppercase tracking-wide">
+                {t('form.description.suggestions.label')}
+              </p>
+              <div className="flex flex-wrap gap-1.5">
+                {suggestions.map((s) => {
+                  const isActive = description === s;
+                  return (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setDescription(s)}
+                      aria-pressed={isActive}
+                      className={
+                        isActive
+                          ? 'rounded-pill bg-violet-500 text-white border border-violet-500 px-3 py-1.5 text-[11px] font-medium shadow-sm transition-all'
+                          : 'rounded-pill bg-white/80 backdrop-blur-sm border border-violet-500/30 text-brand-navy hover:border-violet-500 hover:bg-violet-500/5 hover:-translate-y-0.5 hover:shadow-sm px-3 py-1.5 text-[11px] font-medium transition-all text-start'
+                      }
+                    >
+                      {s}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
+
         <textarea
           id="description"
           name="description"
-          rows={4}
-          maxLength={300}
+          rows={6}
+          maxLength={500}
           required
           value={description}
           onChange={(e) => setDescription(e.target.value)}

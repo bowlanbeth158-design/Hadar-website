@@ -1321,6 +1321,7 @@ const fr: Dict = {
   'form.amount.label': 'Montant estimé',
   'form.amount.optional': '(optionnel)',
   'form.description.label': 'Description',
+  'form.description.suggestions.label': 'Suggestions — cliquez pour préremplir',
   'form.description.placeholder':
     'Décrivez brièvement la situation (informations factuelles uniquement)',
   'form.description.hint':
@@ -2801,6 +2802,7 @@ const en: Dict = {
   'form.amount.label': 'Estimated amount',
   'form.amount.optional': '(optional)',
   'form.description.label': 'Description',
+  'form.description.suggestions.label': 'Suggestions — click to prefill',
   'form.description.placeholder':
     'Briefly describe the situation (factual information only)',
   'form.description.hint':
@@ -4278,6 +4280,7 @@ const ar: Dict = {
   'form.amount.label': 'المبلغ المُقدَّر',
   'form.amount.optional': '(اختياري)',
   'form.description.label': 'الوصف',
+  'form.description.suggestions.label': 'اقتراحات — انقر للملء التلقائي',
   'form.description.placeholder': 'صف الوضع باختصار (معلومات واقعية فقط)',
   'form.description.hint':
     'الرجاء وصف الوضع بشكل واقعي. تجنّب الأحكام أو الاتهامات.',

@@ -27,7 +27,12 @@ export function PageHeading({
 
   const titleClass =
     accent === 'red'
-      ? 'text-red-500'
+      ? // Red brand gradient + bg-clip-text — same recipe as the
+        // navy/blue/sky variant, paired with a CSS rule in
+        // globals.css that animates the gradient position. Used by
+        // the Signaler page so the "Partager une expérience" title
+        // shimmers in red instead of the default brand blue.
+        'bg-gradient-to-r from-red-700 via-red-500 to-red-100 bg-clip-text text-transparent'
       : accent === 'gradient'
         ? // Brand-vibrant gradient — same recipe as the home
           // banner H1 highlight (navy → brand-blue → sky-400)

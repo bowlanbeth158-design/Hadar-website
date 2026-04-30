@@ -145,6 +145,40 @@ html.dark .logo-wordmark {
   animation: title-gradient-flow 4s ease-in-out infinite;
 }
 
+/* Red variant of the animated gradient title — used by accent='red'
+   on PageHeading (Signaler / "Partager une expérience"). Same flow
+   keyframe as the brand version, just with red anchors so the
+   shimmer reads as urgent without leaving the brand palette. */
+h1.bg-clip-text.from-red-700,
+h2.bg-clip-text.from-red-700,
+h3.bg-clip-text.from-red-700 {
+  background-image: linear-gradient(
+    to right,
+    #C0272D 0%,
+    #EE4444 25%,
+    #F8B8B8 50%,
+    #EE4444 75%,
+    #C0272D 100%
+  );
+  background-size: 200% auto;
+  animation: title-gradient-flow 4s ease-in-out infinite;
+}
+
+html.dark h1.bg-clip-text.from-red-700,
+html.dark h2.bg-clip-text.from-red-700,
+html.dark h3.bg-clip-text.from-red-700 {
+  background-image: linear-gradient(
+    to right,
+    #ffffff 0%,
+    #FBE9E9 25%,
+    #EE4444 50%,
+    #FBE9E9 75%,
+    #ffffff 100%
+  );
+  background-size: 200% auto;
+  animation: title-gradient-flow 4s ease-in-out infinite;
+}
+
 /* Tailwind typography plugin — `prose-headings:text-brand-navy` and
    `prose-strong:text-brand-navy` set the colour via descendant
    selectors, not via .text-brand-navy on the element itself, so the

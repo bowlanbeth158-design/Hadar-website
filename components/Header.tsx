@@ -111,7 +111,7 @@ function MobileNavMenu() {
       {open && (
         <div
           role="menu"
-          className="absolute start-0 top-full mt-2 w-60 rounded-2xl border border-gray-200 bg-white shadow-glow-soft p-2 animate-fade-in-down z-50"
+          className="absolute start-0 top-full mt-2 w-64 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0b1220] shadow-glow-soft p-2 animate-fade-in-down z-50"
         >
           <ul className="flex flex-col">
             {items.map(({ href, labelKey, Icon }) => {
@@ -141,6 +141,21 @@ function MobileNavMenu() {
               );
             })}
           </ul>
+
+          {/* Preferences row — language / currency / theme switchers,
+              same pattern Stripe / Linear / Vercel / GitHub use on
+              mobile (drawer footer after a divider) so phone users
+              can change language and theme without leaving the menu. */}
+          <div className="mt-2 pt-2 border-t border-gray-200 dark:border-white/10">
+            <p className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-wide text-gray-400">
+              {t('header.preferences')}
+            </p>
+            <div className="flex items-center justify-around gap-1 px-2 py-1">
+              <LanguageSwitcher />
+              <CurrencySwitcher />
+              <ThemeSwitcher />
+            </div>
+          </div>
         </div>
       )}
     </div>

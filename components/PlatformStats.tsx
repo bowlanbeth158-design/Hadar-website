@@ -166,7 +166,7 @@ export function PlatformStats() {
         {t('home.platformStats.subtitle')}
       </p>
 
-      <ul className="mt-8 grid grid-cols-2 gap-4 lg:grid-cols-3">
+      <ul className="stats-kpi-grid mt-8 grid grid-cols-2 gap-4 lg:grid-cols-3">
         {stats.map((s, i) => (
           <li
             key={s.labelKey}

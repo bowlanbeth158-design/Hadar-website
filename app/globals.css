@@ -201,6 +201,23 @@ html.dark textarea::placeholder {
   color: rgba(229, 231, 235, 0.45);
 }
 
+/* PlatformStats — focus-on-hover behaviour --------------------------------- *
+ * The KPI grid on the homepage uses a 9 s ripple where each card lights up
+ * one after another. When the user hovers a specific card we want to:
+ *   1. lock the spotlight on the hovered card (full opacity, no cycle)
+ *   2. pause + hide the rotating spotlight on the other cards
+ * As soon as the cursor leaves the grid the animation resumes its normal
+ * cycle for everyone. Uses :has() (supported in all modern browsers).
+ * --------------------------------------------------------------------------- */
+.stats-kpi-grid:has(> li:hover) > li:not(:hover) .animate-card-spotlight {
+  animation-play-state: paused;
+  opacity: 0;
+}
+.stats-kpi-grid > li:hover .animate-card-spotlight {
+  animation: none;
+  opacity: 1;
+}
+
 /* Respect user's reduced-motion preference */
 @media (prefers-reduced-motion: reduce) {
   *,

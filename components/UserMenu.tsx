@@ -42,7 +42,7 @@ export function UserMenu() {
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="true"
         aria-expanded={open}
-        className="inline-flex items-center gap-2 rounded-pill border border-gray-200 bg-white text-brand-navy px-5 py-2 text-sm font-semibold hover:border-brand-blue hover:shadow-glow-soft hover:-translate-y-px transition-all duration-200 ease-out"
+        className="inline-flex items-center gap-2 rounded-pill border border-gray-200 dark:border-white/10 bg-[#ffffff] dark:bg-[#0b1220] text-brand-navy px-5 py-2 text-sm font-semibold hover:border-brand-blue hover:shadow-glow-soft hover:-translate-y-px transition-all duration-200 ease-out"
       >
         <UserCircle2 className="h-5 w-5 text-gray-400" aria-hidden />
         <span className="hidden md:inline">{t('userMenu.account')}</span>
@@ -55,7 +55,7 @@ export function UserMenu() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-full mt-2 w-60 rounded-xl bg-white border border-gray-200 shadow-lg overflow-hidden z-50 py-1 animate-fade-in-down"
+          className="absolute end-0 top-full mt-2 w-60 rounded-xl bg-[#ffffff] dark:bg-[#0b1220] border border-gray-200 dark:border-white/10 shadow-lg overflow-hidden z-50 py-1 animate-fade-in-down"
         >
           {ITEMS.map(({ href, labelKey, Icon, mobileHidden }) => (
             <Link
@@ -64,7 +64,7 @@ export function UserMenu() {
               role="menuitem"
               onClick={() => setOpen(false)}
               className={`group relative flex items-center gap-3 px-4 py-2.5 text-sm text-brand-navy
-                         hover:bg-gray-50 transition-colors duration-200
+                         hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-200
                          before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2
                          before:h-0 before:w-[3px] before:rounded-r-full
                          before:bg-gradient-to-b before:from-brand-navy before:via-brand-blue before:to-brand-sky
@@ -86,13 +86,13 @@ export function UserMenu() {
               </span>
             </Link>
           ))}
-          <div className="my-1 border-t border-gray-100" />
+          <div className="my-1 border-t border-gray-100 dark:border-white/10" />
           <Link
             href="/connexion"
             role="menuitem"
             onClick={() => setOpen(false)}
             className="group relative flex items-center gap-3 px-4 py-2.5 text-sm text-red-500
-                       hover:bg-red-50 transition-colors duration-200
+                       hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors duration-200
                        before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2
                        before:h-0 before:w-[3px] before:rounded-r-full before:bg-red-500
                        before:transition-all before:duration-300 hover:before:h-2/3"

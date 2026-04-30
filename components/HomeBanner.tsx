@@ -14,6 +14,7 @@ import { VerifiedBadge } from './VerifiedBadge';
 import { CountUp } from './CountUp';
 import { OFFICIAL_LOGO_URL } from './Logo';
 import { VerifyNowCta } from './VerifyNowCta';
+import { AlertLevelsInfo } from './AlertLevelsInfo';
 import { useI18n } from '@/lib/i18n/provider';
 
 // URL postimg de la photo ambassadeur Hadar.
@@ -368,9 +369,10 @@ export function HomeBanner() {
                       className="h-3 w-3 text-brand-blue animate-sparkle-pop"
                       aria-hidden
                     />
-                    <span className="text-[9px] font-semibold text-gray-400 uppercase tracking-wide">
+                    <span className="flex-1 text-[9px] font-semibold text-gray-400 uppercase tracking-wide">
                       {t('home.banner.card3.title')}
                     </span>
+                    <AlertLevelsInfo size="sm" />
                   </div>
                   <ul className="mt-1.5 space-y-1.5 text-[10px]">
                     <li className="flex items-center justify-between">
@@ -565,9 +567,10 @@ export function HomeBanner() {
                     className="h-4 w-4 text-brand-blue animate-sparkle-pop"
                     aria-hidden
                   />
-                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                  <span className="flex-1 text-xs font-semibold text-gray-400 uppercase tracking-wide">
                     {t('home.banner.card3.title')}
                   </span>
+                  <AlertLevelsInfo size="md" />
                 </div>
                 <ul className="mt-2.5 space-y-2.5 text-xs">
                   <li className="flex items-center justify-between">

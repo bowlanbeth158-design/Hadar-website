@@ -876,6 +876,18 @@ const fr: Dict = {
   'home.banner.alert.vigilance': 'Vigilance',
   'home.banner.alert.moderee': 'Modérée',
   'home.banner.alert.elevee': 'Élevée',
+  'home.banner.card3.help.label': "Comprendre les niveaux d'alerte",
+  'home.banner.card3.help.title': "Niveaux d'alerte",
+  'home.banner.card3.help.close': 'Fermer',
+  'home.banner.card3.help.vigilance.title': 'Vigilance',
+  'home.banner.card3.help.vigilance.desc':
+    'Quelques signalements. Soyez attentif avant toute transaction.',
+  'home.banner.card3.help.moderee.title': 'Modérée',
+  'home.banner.card3.help.moderee.desc':
+    'Plusieurs signalements confirmés. Risque réel, redoublez de prudence.',
+  'home.banner.card3.help.elevee.title': 'Élevée',
+  'home.banner.card3.help.elevee.desc':
+    'Nombreux signalements. Évitez tout contact ou paiement.',
 
   // Hero search section
   'home.hero.statsPill.thirtyDays': '30 derniers jours',
@@ -2362,6 +2374,18 @@ const en: Dict = {
   'home.banner.alert.vigilance': 'Watch',
   'home.banner.alert.moderee': 'Moderate',
   'home.banner.alert.elevee': 'High',
+  'home.banner.card3.help.label': 'Understand alert levels',
+  'home.banner.card3.help.title': 'Alert levels',
+  'home.banner.card3.help.close': 'Close',
+  'home.banner.card3.help.vigilance.title': 'Watch',
+  'home.banner.card3.help.vigilance.desc':
+    'A few reports. Stay alert before any transaction.',
+  'home.banner.card3.help.moderee.title': 'Moderate',
+  'home.banner.card3.help.moderee.desc':
+    'Several confirmed reports. Real risk — be extra careful.',
+  'home.banner.card3.help.elevee.title': 'High',
+  'home.banner.card3.help.elevee.desc':
+    'Many reports. Avoid any contact or payment.',
 
   'home.hero.statsPill.thirtyDays': 'last 30 days',
   'home.hero.spotlightPill': 'Morocco’s #1 verification platform',
@@ -3822,6 +3846,18 @@ const ar: Dict = {
   'home.banner.alert.vigilance': 'مراقبة',
   'home.banner.alert.moderee': 'متوسطة',
   'home.banner.alert.elevee': 'مرتفعة',
+  'home.banner.card3.help.label': 'فهم مستويات التنبيه',
+  'home.banner.card3.help.title': 'مستويات التنبيه',
+  'home.banner.card3.help.close': 'إغلاق',
+  'home.banner.card3.help.vigilance.title': 'مراقبة',
+  'home.banner.card3.help.vigilance.desc':
+    'بعض البلاغات. كن حذرًا قبل أي معاملة.',
+  'home.banner.card3.help.moderee.title': 'متوسطة',
+  'home.banner.card3.help.moderee.desc':
+    'عدة بلاغات مؤكدة. خطر حقيقي — توخَّ المزيد من الحذر.',
+  'home.banner.card3.help.elevee.title': 'مرتفعة',
+  'home.banner.card3.help.elevee.desc':
+    'بلاغات كثيرة. تجنّب أي اتصال أو دفع.',
 
   'home.hero.statsPill.thirtyDays': 'آخر 30 يوماً',
   'home.hero.spotlightPill': 'أول منصة للتحقق في المغرب',

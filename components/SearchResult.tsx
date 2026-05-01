@@ -527,17 +527,17 @@ export function SearchResult({ query, contactType, onAgain }: Props) {
         <p className="inline-flex items-center gap-3 text-[11px] text-gray-500">
           <span className="inline-flex items-center gap-1">
             <ShieldCheck className="h-3 w-3 text-green-600 animate-sparkle-pop" aria-hidden />
+            {t('home.searchResult.trust.secure')}
+          </span>
+          <span aria-hidden className="text-gray-300">·</span>
+          <span className="inline-flex items-center gap-1">
+            <Bell className="h-3 w-3 text-orange-500 animate-sparkle-pop" aria-hidden />
             {t('home.searchResult.trust.encrypted')}
           </span>
           <span aria-hidden className="text-gray-300">·</span>
           <span className="inline-flex items-center gap-1">
             <Sparkles className="h-3 w-3 text-brand-blue animate-sparkle-pop" aria-hidden />
             {t('home.searchResult.trust.live')}
-          </span>
-          <span aria-hidden className="text-gray-300">·</span>
-          <span className="inline-flex items-center gap-1">
-            <Bell className="h-3 w-3 text-orange-500 animate-sparkle-pop" aria-hidden />
-            {t('home.searchResult.trust.alerts')}
           </span>
         </p>
       </div>

@@ -946,9 +946,9 @@ const fr: Dict = {
 
   // Recent Reports
   'home.recentReports.pill': 'Mis à jour en direct',
-  'home.recentReports.title': 'Signalements récents de la communauté',
-  'home.recentReports.subtitle': 'Les 6 derniers signalements publiés par la communauté',
-  'home.recentReports.demoTitle': 'Signalement avec éléments fournis',
+  'home.recentReports.title': 'Expériences récentes de la communauté',
+  'home.recentReports.subtitle': 'Les 6 dernières expériences partagées par les utilisateurs',
+  'home.recentReports.demoTitle': 'Expérience avec éléments fournis',
   'home.recentReports.demo1.description':
     'Ce contact demande un paiement via PayPal puis cesse de répondre après réception.',
   'home.recentReports.demo2.description':
@@ -977,15 +977,15 @@ const fr: Dict = {
     'Les contenus sont examinés avant publication et peuvent être modifiés ou supprimés s’ils ne respectent pas nos règles.',
 
   // Process Steps
-  'home.processSteps.title': 'Processus de vérification des partages',
+  'home.processSteps.title': 'Processus de vérification des expériences',
   'home.processSteps.step.label': 'Étape',
   'home.processSteps.step1.title': 'Partage',
   'home.processSteps.step1.description': 'L’utilisateur partage une expérience.',
   'home.processSteps.step2.title': 'Vérification',
   'home.processSteps.step2.description':
     'Le contenu est examiné selon les règles de la plateforme.',
-  'home.processSteps.step3.title': 'Modération',
-  'home.processSteps.step3.description': 'Le contenu peut être ajusté ou non validé si nécessaire.',
+  'home.processSteps.step3.title': 'Traitement',
+  'home.processSteps.step3.description': 'Le contenu peut être ajusté ou non retenu si nécessaire.',
   'home.processSteps.step4.title': 'Publication',
   'home.processSteps.step4.description': 'Le contenu conforme est publié sur la plateforme.',
   'home.processSteps.sla.label': 'Délai moyen de vérification :',
@@ -2473,9 +2473,9 @@ const en: Dict = {
     'The information shown is based on user reports and experiences, verified when possible, and provided for guidance only.',
 
   'home.recentReports.pill': 'Live updates',
-  'home.recentReports.title': 'Recent community reports',
-  'home.recentReports.subtitle': 'The 6 latest reports published by the community',
-  'home.recentReports.demoTitle': 'Report with supporting evidence',
+  'home.recentReports.title': 'Recent community experiences',
+  'home.recentReports.subtitle': 'The 6 most recent experiences shared by users',
+  'home.recentReports.demoTitle': 'Experience with provided details',
   'home.recentReports.demo1.description':
     'This contact requests payment via PayPal then stops responding once received.',
   'home.recentReports.demo2.description':
@@ -2503,17 +2503,17 @@ const en: Dict = {
   'home.recentReports.disclaimer':
     'Contents are reviewed before publication and may be edited or removed if they don’t comply with our rules.',
 
-  'home.processSteps.title': 'Verification Process for Shared Reports',
+  'home.processSteps.title': 'Verification process for shared experiences',
   'home.processSteps.step.label': 'Step',
   'home.processSteps.step1.title': 'Sharing',
   'home.processSteps.step1.description': 'The user shares an experience.',
-  'home.processSteps.step2.title': 'Verification',
-  'home.processSteps.step2.description': 'The content is reviewed according to the platform rules.',
-  'home.processSteps.step3.title': 'Moderation',
-  'home.processSteps.step3.description': 'The content may be adjusted or not approved if necessary.',
+  'home.processSteps.step2.title': 'Review',
+  'home.processSteps.step2.description': 'The content is reviewed according to the platform guidelines.',
+  'home.processSteps.step3.title': 'Processing',
+  'home.processSteps.step3.description': 'The content may be adjusted or not retained if necessary.',
   'home.processSteps.step4.title': 'Publication',
-  'home.processSteps.step4.description': 'Compliant content is published on the platform.',
-  'home.processSteps.sla.label': 'Average verification time:',
+  'home.processSteps.step4.description': 'Approved content is published on the platform.',
+  'home.processSteps.sla.label': 'Average review time:',
   'home.processSteps.sla.value': '48 business hours',
 
   'home.searchResult.aria': 'Search result',
@@ -3983,9 +3983,9 @@ const ar: Dict = {
     'المعلومات المعروضة تستند إلى مشاركات وتجارب المستخدمين، ويتم التحقق منها عند الإمكان، وتُعرض لأغراض استرشادية فقط.',
 
   'home.recentReports.pill': 'تحديث مباشر',
-  'home.recentReports.title': 'مشاركات حديثة من المستخدمين',
-  'home.recentReports.subtitle': 'آخر 6 مشاركات من المجتمع',
-  'home.recentReports.demoTitle': 'مشاركة مع مرفقات',
+  'home.recentReports.title': 'تجارب حديثة من المستخدمين',
+  'home.recentReports.subtitle': 'آخر 6 تجارب شاركها المستخدمون',
+  'home.recentReports.demoTitle': 'تجربة مع تفاصيل مرفقة',
   'home.recentReports.demo1.description':
     'هذه الجهة تطلب الدفع عبر PayPal ثم تتوقف عن الرد بعد التسلّم.',
   'home.recentReports.demo2.description':
@@ -4013,17 +4013,17 @@ const ar: Dict = {
   'home.recentReports.disclaimer':
     'تُراجَع المحتويات قبل النشر وقد تُعدَّل أو تُحذَف إذا لم تحترم قواعدنا.',
 
-  'home.processSteps.title': 'آلية التحقق من المشاركات',
-  'home.processSteps.step.label': 'مرحلة',
+  'home.processSteps.title': 'آلية التحقق من التجارب',
+  'home.processSteps.step.label': 'الخطوة',
   'home.processSteps.step1.title': 'المشاركة',
-  'home.processSteps.step1.description': 'يشارك المستخدم تجربة.',
-  'home.processSteps.step2.title': 'المراجعة',
-  'home.processSteps.step2.description': 'يتم مراجعة المحتوى وفق قواعد المنصة.',
+  'home.processSteps.step1.description': 'يقوم المستخدم بمشاركة تجربة.',
+  'home.processSteps.step2.title': 'التحقق',
+  'home.processSteps.step2.description': 'يتم فحص المحتوى وفق قواعد المنصة.',
   'home.processSteps.step3.title': 'المعالجة',
   'home.processSteps.step3.description': 'قد يتم تعديل المحتوى أو عدم اعتماده عند الحاجة.',
   'home.processSteps.step4.title': 'النشر',
-  'home.processSteps.step4.description': 'يُنشر المحتوى المطابق على المنصة.',
-  'home.processSteps.sla.label': 'متوسط مدة المراجعة :',
+  'home.processSteps.step4.description': 'يتم نشر المحتوى المطابق على المنصة.',
+  'home.processSteps.sla.label': 'متوسط مدة التحقق:',
   'home.processSteps.sla.value': '48 ساعة عمل',
 
   'home.searchResult.aria': 'نتيجة البحث',

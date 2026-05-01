@@ -932,17 +932,17 @@ const fr: Dict = {
   'home.platformStats.pill': 'La plateforme en chiffres',
   'home.platformStats.title': 'Statistiques de la plateforme',
   'home.platformStats.subtitle':
-    'Mises à jour en temps réel à partir des contributions de la communauté Hadar.',
+    'Mises à jour en temps réel à partir des expériences partagées par les utilisateurs Hadar.',
   'home.platformStats.kpi.usersActive': 'Utilisateurs actifs',
-  'home.platformStats.kpi.reportsLogged': 'Signalements enregistrés',
-  'home.platformStats.kpi.contactsReported': 'Contacts signalés',
+  'home.platformStats.kpi.reportsLogged': 'Expériences partagées',
+  'home.platformStats.kpi.contactsReported': 'Contacts vérifiés',
   'home.platformStats.kpi.verifications': 'Vérifications réalisées',
-  'home.platformStats.kpi.amountReported': 'Montant signalé',
-  'home.platformStats.kpi.lastReport': 'Dernier signalement',
+  'home.platformStats.kpi.amountReported': 'Montant mentionné',
+  'home.platformStats.kpi.lastReport': 'Dernière expérience',
   'home.platformStats.lastReport.value': 'il y a 2h',
   'home.platformStats.viewMore': 'Voir plus',
   'home.platformStats.disclaimer':
-    'Les informations affichées sont basées sur les signalements et les expériences des utilisateurs, vérifiées lorsque cela est possible, et fournies à titre indicatif uniquement.',
+    'Les informations affichées sont basées sur les expériences et contributions des utilisateurs, vérifiées lorsque cela est possible, et fournies à titre indicatif.',
 
   // Recent Reports
   'home.recentReports.pill': 'Mis à jour en direct',
@@ -2460,17 +2460,17 @@ const en: Dict = {
   'home.platformStats.pill': 'The platform in numbers',
   'home.platformStats.title': 'Platform statistics',
   'home.platformStats.subtitle':
-    'Updated in real time from the contributions of the Hadar community.',
+    'Updated in real time based on user-shared experiences.',
   'home.platformStats.kpi.usersActive': 'Active users',
-  'home.platformStats.kpi.reportsLogged': 'Reports logged',
-  'home.platformStats.kpi.contactsReported': 'Contacts reported',
-  'home.platformStats.kpi.verifications': 'Verifications run',
-  'home.platformStats.kpi.amountReported': 'Amount reported',
-  'home.platformStats.kpi.lastReport': 'Last report',
+  'home.platformStats.kpi.reportsLogged': 'Shared experiences',
+  'home.platformStats.kpi.contactsReported': 'Verified contacts',
+  'home.platformStats.kpi.verifications': 'Completed verifications',
+  'home.platformStats.kpi.amountReported': 'Reported amount',
+  'home.platformStats.kpi.lastReport': 'Latest experience',
   'home.platformStats.lastReport.value': '2h ago',
   'home.platformStats.viewMore': 'View more',
   'home.platformStats.disclaimer':
-    'The information shown is based on user reports and experiences, verified when possible, and provided for guidance only.',
+    'The displayed information is based on user experiences and contributions, verified when possible, and provided for informational purposes only.',
 
   'home.recentReports.pill': 'Live updates',
   'home.recentReports.title': 'Recent community experiences',
@@ -3964,23 +3964,23 @@ const ar: Dict = {
   'home.platformStats.pill': 'المنصة بالأرقام',
   'home.platformStats.title': 'إحصائيات المنصة',
   'home.platformStats.subtitle':
-    'تُحدَّث مباشرة من مساهمات مجتمع Hadar.',
-  'home.platformStats.kpi.usersActive': 'المستخدمون النشطون',
-  'home.platformStats.kpi.reportsLogged': 'المشاركات المسجّلة',
-  'home.platformStats.kpi.contactsReported': 'جهات الاتصال المتحقَّق منها',
-  'home.platformStats.kpi.verifications': 'عمليات التحقق المنجزة',
-  'home.platformStats.kpi.amountReported': 'المبلغ المُبلَّغ عنه',
-  // For AR the natural phrasing is "آخر مشاركة منذ ساعتين"
-  // (last report from 2 hours ago). The card renders the value
+    'تحديثات فورية اعتماداً على تجارب المستخدمين.',
+  'home.platformStats.kpi.usersActive': 'مستخدمون نشطون',
+  'home.platformStats.kpi.reportsLogged': 'تجارب مشتركة',
+  'home.platformStats.kpi.contactsReported': 'حسابات تم التحقق منها',
+  'home.platformStats.kpi.verifications': 'عمليات تحقق مكتملة',
+  'home.platformStats.kpi.amountReported': 'المبلغ المذكور',
+  // For AR the natural phrasing is "آخر تجربة منذ ساعتين"
+  // (last experience from 2 hours ago). The card renders the value
   // big on top and the label small underneath, so we put the
-  // label "آخر مشاركة" in the value slot and the time "منذ ساعتين"
+  // label "آخر تجربة" in the value slot and the time "منذ ساعتين"
   // in the label slot — visually the user reads top-to-bottom
   // exactly as the validated phrasing.
   'home.platformStats.kpi.lastReport': 'منذ ساعتين',
-  'home.platformStats.lastReport.value': 'آخر مشاركة',
+  'home.platformStats.lastReport.value': 'آخر تجربة',
   'home.platformStats.viewMore': 'عرض المزيد من الإحصائيات',
   'home.platformStats.disclaimer':
-    'المعلومات المعروضة تستند إلى مشاركات وتجارب المستخدمين، ويتم التحقق منها عند الإمكان، وتُعرض لأغراض استرشادية فقط.',
+    'المعلومات المعروضة مبنية على تجارب ومساهمات المستخدمين، ويتم التحقق منها قدر الإمكان، وهي مقدمة لأغراض إرشادية فقط.',
 
   'home.recentReports.pill': 'تحديث مباشر',
   'home.recentReports.title': 'تجارب حديثة من المستخدمين',

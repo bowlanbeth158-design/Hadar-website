@@ -14,17 +14,14 @@ const LEVELS = [
   {
     key: 'vigilance',
     dot: 'bg-yellow-300 ring-2 ring-yellow-100',
-    range: '1–2',
   },
   {
     key: 'moderee',
     dot: 'bg-orange-500 ring-2 ring-orange-100',
-    range: '3–4',
   },
   {
     key: 'elevee',
     dot: 'bg-red-500 ring-2 ring-red-100',
-    range: '≥ 5',
   },
 ] as const;
 
@@ -124,9 +121,6 @@ export function AlertLevelsInfo({ size = 'md' }: Props) {
                 <div className="min-w-0">
                   <p className="font-semibold text-brand-navy">
                     {t(`home.banner.card3.help.${lvl.key}.title`)}
-                    <span className="ml-1.5 text-gray-400 font-normal tabular-nums">
-                      ({lvl.range})
-                    </span>
                   </p>
                   <p className="text-gray-500">
                     {t(`home.banner.card3.help.${lvl.key}.desc`)}

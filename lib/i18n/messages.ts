@@ -1925,7 +1925,7 @@ const en: Dict = {
   'stats.deltaFormat': '{pct}% vs previous period',
 
   'stats.risk.intensity': 'Avg. reports per contact',
-  'stats.risk.vigilance': 'Vigilance (1 to 2)',
+  'stats.risk.vigilance': 'Low (1 to 2)',
   'stats.risk.moderate': 'Moderate (3 to 4)',
   'stats.risk.high': 'High (≥ 5)',
 
@@ -2313,7 +2313,7 @@ const en: Dict = {
   'chatbot.home.popular.q2.body':
     'Each report goes through: Submitted → Under review → Decision (Published, Needs correction, or Rejected). Our team verifies the evidence within 48 h. You are notified at every step.',
   'chatbot.home.popular.q3.body':
-    '🟢 Low — no reports. 🟡 Watch — 1-2 reports. 🟠 Moderate — 3-4 reports. 🔴 High — 5 or more. The level is computed in real time.',
+    '🟢 Safe — no reports. 🟡 Low — 1-2 reports. 🟠 Moderate — 3-4 reports. 🔴 High — 5 or more. The level is computed in real time.',
   'chatbot.home.popular.q4.body':
     'Go to My profile → Activate identity verification (free). 3 steps: ID front/back photo, face match, manual review within 24 h.',
   'chatbot.article.fallback':
@@ -2483,7 +2483,7 @@ const en: Dict = {
   'home.recentReports.demo6.description':
     'IBAN shared in a Telegram group to receive payments, then the contact disappeared.',
   'home.recentReports.user.anonymous': 'Anonymous user',
-  'home.recentReports.risk.vigilance': 'Watch',
+  'home.recentReports.risk.vigilance': 'Low',
   'home.recentReports.risk.modere': 'Moderate',
   'home.recentReports.risk.eleve': 'High',
   'home.recentReports.similar': 'similar',
@@ -2516,7 +2516,7 @@ const en: Dict = {
   'home.searchResult.risk.faible.pill': 'No experience found',
   'home.searchResult.risk.faible.message':
     'No experience found. Take a moment to verify before proceeding.',
-  'home.searchResult.risk.vigilance.label': 'Watch',
+  'home.searchResult.risk.vigilance.label': 'Low',
   'home.searchResult.risk.vigilance.pill': 'An experience has been shared',
   'home.searchResult.risk.vigilance.message':
     'An experience has been shared. Verify before proceeding.',
@@ -2675,7 +2675,7 @@ const en: Dict = {
   'statsPage.channel.socialMedia': 'Social media',
   'statsPage.channel.website': 'Website',
   'statsPage.activity.faible': 'Low',
-  'statsPage.activity.vigilance': 'Watch',
+  'statsPage.activity.vigilance': 'Low',
   'statsPage.activity.modere': 'Moderate',
   'statsPage.activity.eleve': 'High',
   'statsPage.status.submitted': 'Submitted reports',
@@ -2968,7 +2968,7 @@ const en: Dict = {
   'mock.alert.a1.message': 'A new report has been published.',
   'mock.alert.a1.date': '2h ago',
   'mock.alert.a1.lastReport': '2 hours ago',
-  'mock.alert.a2.summary': 'Watch: 1 new "non-compliant product" report.',
+  'mock.alert.a2.summary': 'Low: 1 new "non-compliant product" report.',
   'mock.alert.a2.message': 'A new report has been published.',
   'mock.alert.a2.date': '5h ago',
   'mock.alert.a2.lastReport': '5 hours ago',

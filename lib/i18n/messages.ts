@@ -1261,12 +1261,12 @@ const fr: Dict = {
   // DeleteAccountSection
   'profile.dangerZone.title': 'Zone dangereuse',
   'profile.dangerZone.body':
-    'La suppression de votre compte est irréversible après 30 jours. Les signalements publiés seront conservés en mode anonyme.',
+    'La suppression de votre compte est irréversible après 30 jours. Les expériences publiées seront conservées en mode anonyme.',
   'profile.dangerZone.cta': 'Supprimer mon compte',
   'profile.dangerZone.close': 'Fermer',
   'profile.dangerZone.ask.title': 'Nous sommes tristes de vous voir partir 💔',
   'profile.dangerZone.ask.body':
-    'Êtes-vous sûr de vouloir supprimer votre compte ? Vos signalements publiés resteront anonymes pour protéger la communauté, mais votre profil disparaîtra sous 30 jours.',
+    'Êtes-vous sûr de vouloir supprimer votre compte ? Vos expériences publiées resteront anonymes pour protéger la communauté, mais votre profil disparaîtra sous 30 jours.',
   'profile.dangerZone.ask.confirmDelete': 'Oui, supprimer',
   'profile.dangerZone.ask.stay': 'Non, je reste !',
   'profile.dangerZone.deleting.title': 'Suppression en cours…',
@@ -2774,12 +2774,12 @@ const en: Dict = {
   // DeleteAccountSection
   'profile.dangerZone.title': 'Danger zone',
   'profile.dangerZone.body':
-    'Deleting your account is irreversible after 30 days. Published reports are kept anonymously.',
+    'Deleting your account is irreversible after 30 days. Published experiences are kept anonymously.',
   'profile.dangerZone.cta': 'Delete my account',
   'profile.dangerZone.close': 'Close',
   'profile.dangerZone.ask.title': 'We’re sad to see you leave 💔',
   'profile.dangerZone.ask.body':
-    'Are you sure you want to delete your account? Your published reports will stay anonymous to protect the community, but your profile will disappear within 30 days.',
+    'Are you sure you want to delete your account? Your published experiences will stay anonymous to protect the community, but your profile will disappear within 30 days.',
   'profile.dangerZone.ask.confirmDelete': 'Yes, delete',
   'profile.dangerZone.ask.stay': 'No, I’ll stay!',
   'profile.dangerZone.deleting.title': 'Deleting…',
@@ -4282,12 +4282,12 @@ const ar: Dict = {
   // DeleteAccountSection
   'profile.dangerZone.title': 'منطقة الخطر',
   'profile.dangerZone.body':
-    'حذف حسابك لا رجعة فيه بعد 30 يوماً. يتم الاحتفاظ بالمشاركات المنشورة بشكل مجهول الهوية.',
+    'حذف حسابك لا رجعة فيه بعد 30 يوماً. يتم الاحتفاظ بالتجارب المنشورة بشكل مجهول الهوية.',
   'profile.dangerZone.cta': 'حذف حسابي',
   'profile.dangerZone.close': 'إغلاق',
   'profile.dangerZone.ask.title': 'يحزننا رحيلك 💔',
   'profile.dangerZone.ask.body':
-    'هل أنت متأكد من حذف حسابك ؟ ستبقى مشاركاتك المنشورة مجهولة الهوية لحماية المجتمع، لكن ملفك سيختفي خلال 30 يوماً.',
+    'هل أنت متأكد من حذف حسابك ؟ ستبقى تجاربك المنشورة مجهولة الهوية لحماية المجتمع، لكن ملفك سيختفي خلال 30 يوماً.',
   'profile.dangerZone.ask.confirmDelete': 'نعم، احذف',
   'profile.dangerZone.ask.stay': 'لا، سأبقى !',
   'profile.dangerZone.deleting.title': 'جارٍ الحذف…',

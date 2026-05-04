@@ -566,7 +566,7 @@ const fr: Dict = {
   'admin.maintenance.page.home': 'Accueil',
   'admin.maintenance.page.signaler': 'Signaler',
   'admin.maintenance.page.mesAlertes': 'Mes alertes',
-  'admin.maintenance.page.mesSignalements': 'Mes signalements',
+  'admin.maintenance.page.mesSignalements': 'Mes expériences',
   'admin.maintenance.page.monProfil': 'Mon profil',
   'admin.maintenance.page.publicStatistiques': 'Statistiques (public)',
   'admin.maintenance.page.commentCaMarche': 'Comment ça marche',
@@ -1171,11 +1171,11 @@ const fr: Dict = {
   'statsPage.cta.share': 'Partager une expérience',
 
   // ===== User space — page-level headings + demo banner =====
-  'userPages.alerts.title': 'Mes alertes',
+  'userPages.alerts.title': 'Mes suivis',
   'userPages.alerts.subtitle': 'Suivez les contacts et recevez les mises à jour.',
-  'userPages.alerts.stats': '{active} alertes actives · {newNotifs} nouvelles notifications',
-  'userPages.reports.title': 'Mes signalements',
-  'userPages.reports.subtitle': 'Suivez l’état de vos signalements en temps réel.',
+  'userPages.alerts.stats': '{active} suivis actifs · {newNotifs} nouvelles notifications',
+  'userPages.reports.title': 'Mes expériences',
+  'userPages.reports.subtitle': 'Suivez l’état de vos expériences en temps réel.',
   'userPages.profile.title': 'Mon profil',
   'userPages.profile.subtitle': 'Gérez vos informations personnelles et votre sécurité.',
   'userPages.demoBanner.label': 'Aperçu',
@@ -1433,9 +1433,9 @@ const fr: Dict = {
   'mesSignalements.viewMore.singular': 'Voir {n} expérience de plus',
   'mesSignalements.viewMore.plural': 'Voir {n} expériences de plus',
   'mesSignalements.confidentiality.title':
-    'Vos signalements sont traités de manière confidentielle',
+    'Vos expériences sont traitées de manière confidentielle',
   'mesSignalements.confidentiality.body':
-    'Seuls vous et nos équipes ont accès à vos signalements.',
+    'Seuls vous et nos équipes ont accès à vos expériences.',
 
   // ===== Notification settings modal =====
   'notifModal.trigger': 'Gérer les notifications',
@@ -1518,9 +1518,9 @@ const fr: Dict = {
   'publishedCelebration.cta': 'Signaler un autre cas',
 
   // ===== /mes-signalements/[id] page =====
-  'reportDetail.title': 'Détail du signalement',
-  'reportDetail.id': 'Signalement #{id}',
-  'reportDetail.subtitle': '{channel} — soumis le {date}',
+  'reportDetail.title': 'Détail de l’expérience',
+  'reportDetail.id': 'Expérience #{id}',
+  'reportDetail.subtitle': '{channel} — partagée le {date}',
   'reportDetail.timeline': 'Timeline',
   'reportDetail.moderatorMessage': 'Message du modérateur',
   'reportDetail.description': 'Description',
@@ -1532,7 +1532,7 @@ const fr: Dict = {
   'reportDetail.info.status': 'Statut',
   'reportDetail.btn.edit': 'Modifier',
   'reportDetail.btn.delete': 'Supprimer',
-  'reportDetail.backLabel': 'Mes signalements',
+  'reportDetail.backLabel': 'Mes expériences',
 };
 
 const en: Dict = {
@@ -2091,7 +2091,7 @@ const en: Dict = {
   'admin.maintenance.page.home': 'Home',
   'admin.maintenance.page.signaler': 'Report',
   'admin.maintenance.page.mesAlertes': 'My alerts',
-  'admin.maintenance.page.mesSignalements': 'My reports',
+  'admin.maintenance.page.mesSignalements': 'My experiences',
   'admin.maintenance.page.monProfil': 'My profile',
   'admin.maintenance.page.publicStatistiques': 'Statistics (public)',
   'admin.maintenance.page.commentCaMarche': 'How it works',
@@ -2687,11 +2687,11 @@ const en: Dict = {
   'statsPage.cta.share': 'Share an experience',
 
   // ===== User space — page-level headings + demo banner =====
-  'userPages.alerts.title': 'My alerts',
+  'userPages.alerts.title': 'My follow-ups',
   'userPages.alerts.subtitle': 'Follow contacts and receive updates.',
-  'userPages.alerts.stats': '{active} active alerts · {newNotifs} new notifications',
-  'userPages.reports.title': 'My reports',
-  'userPages.reports.subtitle': 'Track your reports in real time.',
+  'userPages.alerts.stats': '{active} active follow-ups · {newNotifs} new notifications',
+  'userPages.reports.title': 'My experiences',
+  'userPages.reports.subtitle': 'Track your experiences in real time.',
   'userPages.profile.title': 'My profile',
   'userPages.profile.subtitle': 'Manage your personal info and security.',
   'userPages.demoBanner.label': 'Preview',
@@ -2939,8 +2939,8 @@ const en: Dict = {
   'mesSignalements.viewDetails': 'View details',
   'mesSignalements.viewMore.singular': 'See {n} more experience',
   'mesSignalements.viewMore.plural': 'See {n} more experiences',
-  'mesSignalements.confidentiality.title': 'Your reports are handled confidentially',
-  'mesSignalements.confidentiality.body': 'Only you and our team can access your reports.',
+  'mesSignalements.confidentiality.title': 'Your experiences are handled confidentially',
+  'mesSignalements.confidentiality.body': 'Only you and our team can access your experiences.',
 
   // ===== Notification settings modal =====
   'notifModal.trigger': 'Manage notifications',
@@ -3020,9 +3020,9 @@ const en: Dict = {
   'publishedCelebration.cta': 'Report another case',
 
   // ===== /mes-signalements/[id] page =====
-  'reportDetail.title': 'Report details',
-  'reportDetail.id': 'Report #{id}',
-  'reportDetail.subtitle': '{channel} — submitted on {date}',
+  'reportDetail.title': 'Experience details',
+  'reportDetail.id': 'Experience #{id}',
+  'reportDetail.subtitle': '{channel} — shared on {date}',
   'reportDetail.timeline': 'Timeline',
   'reportDetail.moderatorMessage': 'Moderator note',
   'reportDetail.description': 'Description',
@@ -3034,7 +3034,7 @@ const en: Dict = {
   'reportDetail.info.status': 'Status',
   'reportDetail.btn.edit': 'Edit',
   'reportDetail.btn.delete': 'Delete',
-  'reportDetail.backLabel': 'My reports',
+  'reportDetail.backLabel': 'My experiences',
 };
 
 const ar: Dict = {
@@ -3593,7 +3593,7 @@ const ar: Dict = {
   'admin.maintenance.page.home': 'الرئيسية',
   'admin.maintenance.page.signaler': 'الإمشاركة',
   'admin.maintenance.page.mesAlertes': 'تنبيهاتي',
-  'admin.maintenance.page.mesSignalements': 'مشاركاتي',
+  'admin.maintenance.page.mesSignalements': 'تجاربي',
   'admin.maintenance.page.monProfil': 'ملفي الشخصي',
   'admin.maintenance.page.publicStatistiques': 'الإحصائيات (عامة)',
   'admin.maintenance.page.commentCaMarche': 'كيف يعمل',
@@ -4195,11 +4195,11 @@ const ar: Dict = {
   'statsPage.cta.share': 'ساهم بتجربتك',
 
   // ===== User space — page-level headings + demo banner =====
-  'userPages.alerts.title': 'تنبيهاتي',
+  'userPages.alerts.title': 'متابعاتي',
   'userPages.alerts.subtitle': 'تابع جهات الاتصال واستقبل التحديثات.',
-  'userPages.alerts.stats': '{active} تنبيهات نشطة · {newNotifs} إشعارات جديدة',
-  'userPages.reports.title': 'مشاركاتي',
-  'userPages.reports.subtitle': 'تابع حالة مشاركاتك في الوقت الفعلي.',
+  'userPages.alerts.stats': '{active} متابعات نشطة · {newNotifs} إشعارات جديدة',
+  'userPages.reports.title': 'تجاربي',
+  'userPages.reports.subtitle': 'تابع حالة تجاربك في الوقت الفعلي.',
   'userPages.profile.title': 'ملفي الشخصي',
   'userPages.profile.subtitle': 'أدر معلوماتك الشخصية والأمان.',
   'userPages.demoBanner.label': 'معاينة',
@@ -4444,8 +4444,8 @@ const ar: Dict = {
   'mesSignalements.viewDetails': 'عرض التفاصيل',
   'mesSignalements.viewMore.singular': 'عرض {n} تجربة إضافية',
   'mesSignalements.viewMore.plural': 'عرض {n} تجارب إضافية',
-  'mesSignalements.confidentiality.title': 'مشاركاتك تُعالَج بسرية',
-  'mesSignalements.confidentiality.body': 'أنت وفريقنا فقط من يمكنهم الوصول إلى مشاركاتك.',
+  'mesSignalements.confidentiality.title': 'تجاربك تُعالَج بسرية',
+  'mesSignalements.confidentiality.body': 'أنت وفريقنا فقط من يمكنهم الوصول إلى تجاربك.',
 
   // ===== Notification settings modal =====
   'notifModal.trigger': 'إدارة الإشعارات',
@@ -4523,9 +4523,9 @@ const ar: Dict = {
   'publishedCelebration.cta': 'الإمشاركة عن حالة أخرى',
 
   // ===== /mes-signalements/[id] page =====
-  'reportDetail.title': 'تفاصيل المشاركة',
-  'reportDetail.id': 'مشاركة #{id}',
-  'reportDetail.subtitle': '{channel} — أُرسل بتاريخ {date}',
+  'reportDetail.title': 'تفاصيل التجربة',
+  'reportDetail.id': 'تجربة #{id}',
+  'reportDetail.subtitle': '{channel} — تمّت المشاركة بتاريخ {date}',
   'reportDetail.timeline': 'الجدول الزمني',
   'reportDetail.moderatorMessage': 'ملاحظة المُراجِع',
   'reportDetail.description': 'الوصف',
@@ -4537,7 +4537,7 @@ const ar: Dict = {
   'reportDetail.info.status': 'الحالة',
   'reportDetail.btn.edit': 'تعديل',
   'reportDetail.btn.delete': 'حذف',
-  'reportDetail.backLabel': 'مشاركاتي',
+  'reportDetail.backLabel': 'تجاربي',
 };
 
 export const MESSAGES: Record<Locale, Dict> = { fr, en, ar };

@@ -6,8 +6,8 @@ import { DemoBanner } from '@/components/DemoBanner';
 import { MesSignalementsList } from '@/components/MesSignalementsList';
 
 export const metadata: Metadata = {
-  title: 'Mes signalements',
-  description: 'Consultez et gérez les signalements que vous avez soumis.',
+  title: 'Mes expériences',
+  description: 'Consultez et gérez les expériences que vous avez partagées.',
 };
 
 export default function Page() {

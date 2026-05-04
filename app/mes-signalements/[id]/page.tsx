@@ -7,8 +7,8 @@ import { ReportDetailBody } from '@/components/ReportDetailBody';
 import { USER_REPORTS } from '@/lib/mock/user-reports';
 
 export const metadata: Metadata = {
-  title: 'Détail du signalement',
-  description: 'Consultez le détail complet de votre signalement et son évolution.',
+  title: 'Détail de l’expérience',
+  description: 'Consultez le détail complet de votre expérience et son évolution.',
 };
 
 type PageProps = { params: { id: string } };

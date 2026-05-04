@@ -1109,11 +1109,11 @@ const fr: Dict = {
   'auth.forgot.backToLogin': '← Retour à la connexion',
 
   // ===== AlertsPopover (Header dropdown) =====
-  'alerts.label': 'Mes notifications',
-  'alerts.aria.button': 'Voir mes notifications',
-  'alerts.aria.count': '{n} nouvelles notifications',
-  'alerts.manage': 'Gérer mes notifications',
-  'alerts.empty.title': 'Aucune notification pour le moment',
+  'alerts.label': 'Mes suivis',
+  'alerts.aria.button': 'Voir mes suivis',
+  'alerts.aria.count': '{n} nouveaux suivis',
+  'alerts.manage': 'Gérer mes suivis',
+  'alerts.empty.title': 'Aucun suivi pour le moment',
   'alerts.empty.subtitle':
     'Suivez un contact après une recherche pour recevoir les nouvelles mises à jour.',
   'alerts.viewDetails': 'Voir les détails',
@@ -1175,7 +1175,7 @@ const fr: Dict = {
   'userPages.alerts.subtitle': 'Suivez les contacts et recevez les mises à jour.',
   'userPages.alerts.stats': '{active} suivis actifs · {newNotifs} nouvelles notifications',
   'userPages.reports.title': 'Mes expériences',
-  'userPages.reports.subtitle': 'Suivez l’état de vos expériences en temps réel.',
+  'userPages.reports.subtitle': 'Suivez le traitement de vos expériences en temps réel.',
   'userPages.profile.title': 'Mon profil',
   'userPages.profile.subtitle': 'Gérez vos informations personnelles et votre sécurité.',
   'userPages.demoBanner.label': 'Aperçu',
@@ -1400,8 +1400,8 @@ const fr: Dict = {
   'mesAlertes.action.restore': 'Restaurer',
   'mesAlertes.action.delete': 'Supprimer',
   'mesAlertes.similar.label': '{n} expériences similaires · {date}',
-  'mesAlertes.detail.reports.singular': '{n} expérience enregistrée',
-  'mesAlertes.detail.reports.plural': '{n} expériences enregistrées',
+  'mesAlertes.detail.reports.singular': '{n} expérience partagée',
+  'mesAlertes.detail.reports.plural': '{n} expériences partagées',
   'mesAlertes.detail.lastReport': 'Dernière expérience : {time}',
   'mesAlertes.kpi.nonDelivery': 'Non livraison',
   'mesAlertes.kpi.blockedAfterPayment': 'Bloqué après paiement',
@@ -1410,7 +1410,7 @@ const fr: Dict = {
   'mesAlertes.viewMore.singular': 'Voir {n} suivi de plus',
   'mesAlertes.viewMore.plural': 'Voir {n} suivis de plus',
   'mesAlertes.disclaimer':
-    'Les informations affichées sont basées sur les expériences et contributions des utilisateurs, vérifiées lorsque cela est possible, et fournies à titre indicatif.',
+    'Les informations affichées sont basées sur les contributions des utilisateurs et sont fournies à titre indicatif.',
 
   // ===== /mes-signalements =====
   'mesSignalements.filter.all': 'Tous',
@@ -2628,11 +2628,11 @@ const en: Dict = {
   'auth.forgot.backToLogin': '← Back to sign in',
 
   // ===== AlertsPopover =====
-  'alerts.label': 'My notifications',
-  'alerts.aria.button': 'View my notifications',
-  'alerts.aria.count': '{n} new notifications',
-  'alerts.manage': 'Manage my notifications',
-  'alerts.empty.title': 'No notifications for now',
+  'alerts.label': 'My follow-ups',
+  'alerts.aria.button': 'View my follow-ups',
+  'alerts.aria.count': '{n} new follow-ups',
+  'alerts.manage': 'Manage my follow-ups',
+  'alerts.empty.title': 'No follow-ups for now',
   'alerts.empty.subtitle': 'Follow a contact after a search to receive updates.',
   'alerts.viewDetails': 'View details',
   'alerts.viewAll': 'View all details',
@@ -2691,7 +2691,7 @@ const en: Dict = {
   'userPages.alerts.subtitle': 'Follow contacts and receive updates.',
   'userPages.alerts.stats': '{active} active follow-ups · {newNotifs} new notifications',
   'userPages.reports.title': 'My experiences',
-  'userPages.reports.subtitle': 'Track your experiences in real time.',
+  'userPages.reports.subtitle': 'Track the progress of your experiences in real time.',
   'userPages.profile.title': 'My profile',
   'userPages.profile.subtitle': 'Manage your personal info and security.',
   'userPages.demoBanner.label': 'Preview',
@@ -2907,8 +2907,8 @@ const en: Dict = {
   'mesAlertes.action.restore': 'Restore',
   'mesAlertes.action.delete': 'Delete',
   'mesAlertes.similar.label': '{n} similar experiences · {date}',
-  'mesAlertes.detail.reports.singular': '{n} experience logged',
-  'mesAlertes.detail.reports.plural': '{n} experiences logged',
+  'mesAlertes.detail.reports.singular': '{n} experience shared',
+  'mesAlertes.detail.reports.plural': '{n} experiences shared',
   'mesAlertes.detail.lastReport': 'Latest experience: {time}',
   'mesAlertes.kpi.nonDelivery': 'Non-delivery',
   'mesAlertes.kpi.blockedAfterPayment': 'Blocked after payment',
@@ -2917,7 +2917,7 @@ const en: Dict = {
   'mesAlertes.viewMore.singular': 'See {n} more follow-up',
   'mesAlertes.viewMore.plural': 'See {n} more follow-ups',
   'mesAlertes.disclaimer':
-    'The displayed information is based on user experiences and contributions, verified when possible, and provided for informational purposes only.',
+    'The information displayed is based on user contributions and is provided for informational purposes only.',
 
   // ===== /mes-signalements =====
   'mesSignalements.filter.all': 'All',
@@ -4136,11 +4136,11 @@ const ar: Dict = {
   'auth.forgot.backToLogin': '→ العودة إلى تسجيل الدخول',
 
   // ===== AlertsPopover =====
-  'alerts.label': 'إشعاراتي',
-  'alerts.aria.button': 'عرض إشعاراتي',
-  'alerts.aria.count': '{n} إشعارات جديدة',
-  'alerts.manage': 'إدارة إشعاراتي',
-  'alerts.empty.title': 'لا توجد إشعارات حالياً',
+  'alerts.label': 'متابعاتي',
+  'alerts.aria.button': 'عرض متابعاتي',
+  'alerts.aria.count': '{n} متابعات جديدة',
+  'alerts.manage': 'إدارة متابعاتي',
+  'alerts.empty.title': 'لا توجد متابعات حالياً',
   'alerts.empty.subtitle': 'تابع جهة اتصال بعد البحث لتلقي التحديثات الجديدة.',
   'alerts.viewDetails': 'عرض التفاصيل',
   'alerts.viewAll': 'عرض كل التفاصيل',
@@ -4199,7 +4199,7 @@ const ar: Dict = {
   'userPages.alerts.subtitle': 'تابع جهات الاتصال واستقبل التحديثات.',
   'userPages.alerts.stats': '{active} متابعات نشطة · {newNotifs} إشعارات جديدة',
   'userPages.reports.title': 'تجاربي',
-  'userPages.reports.subtitle': 'تابع حالة تجاربك في الوقت الفعلي.',
+  'userPages.reports.subtitle': 'تابع معالجة تجاربك في الوقت الفعلي.',
   'userPages.profile.title': 'ملفي الشخصي',
   'userPages.profile.subtitle': 'أدر معلوماتك الشخصية والأمان.',
   'userPages.demoBanner.label': 'معاينة',
@@ -4412,8 +4412,8 @@ const ar: Dict = {
   'mesAlertes.action.restore': 'استعادة',
   'mesAlertes.action.delete': 'حذف',
   'mesAlertes.similar.label': '{n} تجارب مشابهة · {date}',
-  'mesAlertes.detail.reports.singular': '{n} تجربة مسجَّلة',
-  'mesAlertes.detail.reports.plural': '{n} تجارب مسجَّلة',
+  'mesAlertes.detail.reports.singular': '{n} تجربة مشتركة',
+  'mesAlertes.detail.reports.plural': '{n} تجارب مشتركة',
   'mesAlertes.detail.lastReport': 'آخر تجربة : {time}',
   'mesAlertes.kpi.nonDelivery': 'عدم التسليم',
   'mesAlertes.kpi.blockedAfterPayment': 'انقطاع بعد الدفع',
@@ -4422,7 +4422,7 @@ const ar: Dict = {
   'mesAlertes.viewMore.singular': 'عرض {n} متابعة إضافية',
   'mesAlertes.viewMore.plural': 'عرض {n} متابعات إضافية',
   'mesAlertes.disclaimer':
-    'المعلومات المعروضة مبنية على تجارب ومساهمات المستخدمين، ويتم التحقق منها قدر الإمكان، وهي مقدمة لأغراض إرشادية فقط.',
+    'المعلومات المعروضة تعتمد على مساهمات المستخدمين وتُقدم لأغراض إرشادية فقط.',
 
   // ===== /mes-signalements =====
   'mesSignalements.filter.all': 'الكل',

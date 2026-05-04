@@ -1127,11 +1127,11 @@ const fr: Dict = {
 
   // ----- "Comment ça marche ?" page -----
   'howPage.title': 'Comment ça marche ?',
-  'howPage.subtitle': 'Deux actions simples pour prendre de meilleures décisions.',
+  'howPage.subtitle': 'Deux actions simples pour mieux s’informer avant toute décision.',
   'howPage.card1.title': 'Vérifier un contact',
-  'howPage.card1.description': 'Consultez les expériences partagées avant toute transaction.',
+  'howPage.card1.description': 'Consultez les expériences associées à un contact avant toute interaction.',
   'howPage.card2.title': 'Partager une expérience',
-  'howPage.card2.description': 'Aidez la communauté avec un retour factuel et utile.',
+  'howPage.card2.description': 'Partagez votre expérience pour aider la communauté à mieux s’informer.',
   'howPage.cta.watch': 'Voir la vidéo',
   'howPage.cta.comingSoon': 'Vidéo à venir',
 
@@ -2644,11 +2644,11 @@ const en: Dict = {
 
   // ----- "How it works" page -----
   'howPage.title': 'How it works?',
-  'howPage.subtitle': 'Two simple actions to make better decisions.',
+  'howPage.subtitle': 'Two simple actions to better inform your decisions.',
   'howPage.card1.title': 'Verify a contact',
-  'howPage.card1.description': 'Check shared experiences before any transaction.',
+  'howPage.card1.description': 'View experiences associated with a contact before any interaction.',
   'howPage.card2.title': 'Share an experience',
-  'howPage.card2.description': 'Help the community with a factual and useful feedback.',
+  'howPage.card2.description': 'Share your experience to help the community stay informed.',
   'howPage.cta.watch': 'Watch the video',
   'howPage.cta.comingSoon': 'Video coming soon',
 
@@ -4152,11 +4152,11 @@ const ar: Dict = {
 
   // ----- "How it works" page -----
   'howPage.title': 'كيف يعمل ؟',
-  'howPage.subtitle': 'إجراءان بسيطان لاتخاذ قرارات أفضل.',
+  'howPage.subtitle': 'خطوتان بسيطتان للحصول على معلومات أفضل قبل اتخاذ أي قرار.',
   'howPage.card1.title': 'تحقّق من جهة اتصال',
-  'howPage.card1.description': 'اطّلع على التجارب المشتركة قبل أي معاملة.',
+  'howPage.card1.description': 'اطّلع على التجارب المرتبطة ببيانات تواصل قبل أي تفاعل.',
   'howPage.card2.title': 'ساهم بتجربتك',
-  'howPage.card2.description': 'ساعد المجتمع بملاحظة واقعية ومفيدة.',
+  'howPage.card2.description': 'شارك تجربتك لمساعدة المستخدمين على اتخاذ قرارات أكثر وعياً.',
   'howPage.cta.watch': 'مشاهدة الفيديو',
   'howPage.cta.comingSoon': 'الفيديو قادم قريباً',
 

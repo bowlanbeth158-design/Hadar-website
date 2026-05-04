@@ -5,41 +5,34 @@
 > Format UI : chaque question est une **pill cliquable** (accordion ou liste statique). La 1ʳᵉ question est visuellement mise en avant en rouge, les autres en bleu clair.
 
 ## Qu'est-ce que HADAR ?
-HADAR est une plateforme de partage d'expériences entre utilisateurs, permettant de consulter des informations avant une transaction en ligne.
+HADAR est une plateforme de partage d'expériences entre utilisateurs, permettant de consulter des retours d'expérience avant une transaction en ligne.
 
 ## Les informations sont-elles vérifiées ?
 Les informations publiées sont issues des utilisateurs et reflètent leurs expériences personnelles.
 
-Elles sont fournies à titre informatif uniquement.
+Elles sont fournies à titre informatif uniquement et ne font pas l'objet d'une vérification systématique.
 
-## HADAR est-il un organisme officiel ?
-Non. HADAR n'est pas un organisme d'enquête ni une autorité de contrôle.
+## HADAR porte-t-il un jugement sur les contenus ?
+La plateforme ne porte aucun jugement et n'émet aucune évaluation.
 
-La plateforme ne porte aucun jugement.
+## Faut-il un compte pour publier une expérience ?
+La création d'un compte est nécessaire pour publier une expérience.
 
-## Pourquoi créer un compte ?
-La création d'un compte est nécessaire pour publier un signalement.
+Cela permet de favoriser des contributions basées sur des expériences personnelles.
 
-Cela permet de favoriser des contributions basées sur des expériences réelles.
-
-## Comment publier un signalement ?
+## Comment publier une expérience ?
 Il suffit de remplir le formulaire dédié en décrivant une expérience de manière factuelle et en respectant les règles de publication.
 
-## Que se passe-t-il après un signalement ?
-Le contenu peut être examiné selon les règles de la plateforme.
+## Comment sont traités les contenus publiés ?
+Le contenu peut être examiné ou modéré selon les règles de la plateforme.
 
-S'il est conforme, il est publié.
+S'il respecte les règles de la plateforme, il peut être publié.
 
-## Peut-on modifier ou supprimer un signalement ?
-Oui. Un signalement peut être modifié ou supprimé s'il ne respecte pas les règles ou sur demande.
+## Une expérience peut-elle être modifiée ou supprimée ?
+Une expérience peut être modifiée ou supprimée si elle ne respecte pas les règles ou sur demande.
 
-## Je suis concerné par un signalement, que faire ?
+## Comment demander une modification ou une suppression ?
 Vous pouvez demander une révision, une modification ou une suppression en contactant le support.
 
-## Les informations sont-elles garanties ?
-Non. HADAR ne garantit pas l'exactitude des informations publiées.
-
-## Comment contacter HADAR ?
-Vous pouvez nous contacter à :
-
-- support@hadar.ma
+## HADAR garantit-il l'exactitude des informations ?
+HADAR ne garantit pas l'exactitude ni l'exhaustivité des informations publiées.

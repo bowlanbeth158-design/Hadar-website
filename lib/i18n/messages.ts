@@ -4148,7 +4148,7 @@ const ar: Dict = {
   // ===== Static info pages =====
   'aboutPage.title': 'من نحن ؟',
   'faqPage.title': 'الأسئلة الشائعة',
-  'faqPage.subtitle': 'إجابات على الأسئلة الأكثر شيوعاً حول Hadar.',
+  'faqPage.subtitle': 'إجابات على أكثر الأسئلة شيوعًا حول Hadar.',
 
   // ----- "How it works" page -----
   'howPage.title': 'كيف يعمل ؟',

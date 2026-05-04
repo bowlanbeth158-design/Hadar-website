@@ -4,41 +4,34 @@
 > Slug: `/faq`
 
 ## What is HADAR?
-HADAR is a platform for sharing experiences between users, letting you consult information before an online transaction.
+HADAR is a platform for sharing experiences between users, allowing access to user feedback before an online transaction.
 
-## Is the information verified?
+## Are the information verified?
 The information published comes from users and reflects their personal experiences.
 
-It is provided for information purposes only.
+It is provided for informational purposes only and is not subject to systematic verification.
 
-## Is HADAR an official body?
-No. HADAR is not an investigation body nor a regulatory authority.
+## Does HADAR make judgments about content?
+The platform does not make any judgments and does not provide any evaluation.
 
-The platform does not pass judgment.
+## Do I need an account to publish an experience?
+Creating an account is required to publish an experience.
 
-## Why create an account?
-Creating an account is required to publish a report.
+This helps encourage contributions based on personal experiences.
 
-This encourages contributions based on real experiences.
+## How can I publish an experience?
+Simply fill out the dedicated form by describing your experience in a factual way and in accordance with the publication guidelines.
 
-## How do I publish a report?
-Just fill in the dedicated form, describe an experience factually and follow the publishing rules.
+## How is content processed?
+Content may be reviewed or moderated according to the platform's rules.
 
-## What happens after a report?
-The content may be reviewed against the platform rules.
+If it complies with the platform's rules, it may be published.
 
-If it complies, it is published.
+## Can an experience be modified or removed?
+An experience may be modified or removed if it does not comply with the rules or upon request.
 
-## Can a report be edited or deleted?
-Yes. A report can be edited or deleted if it doesn't comply with the rules, or upon request.
+## How can I request a modification or removal?
+You can request a review, modification, or removal by contacting support.
 
-## I'm concerned by a report — what can I do?
-You can request a review, an edit or a deletion by contacting support.
-
-## Is the information guaranteed?
-No. HADAR does not guarantee the accuracy of the information published.
-
-## How do I contact HADAR?
-You can reach us at:
-
-- support@hadar.ma
+## Does HADAR guarantee the accuracy of the information?
+HADAR does not guarantee the accuracy or completeness of the published information.

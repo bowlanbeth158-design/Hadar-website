@@ -1117,7 +1117,7 @@ const fr: Dict = {
   'alerts.empty.subtitle':
     'Suivez un contact après une recherche pour recevoir les nouvelles mises à jour.',
   'alerts.viewDetails': 'Voir les détails',
-  'alerts.viewAll': 'Voir tous les détails',
+  'alerts.viewAll': 'Voir tous les suivis',
 
   // ===== Static info pages (page H1 + subtitle only — markdown body
   //       remains in French for now, will be localised in pass 4) =====
@@ -1463,15 +1463,15 @@ const fr: Dict = {
 
   // ===== Mock data — alerts (DEMO_ALERTS) =====
   'mock.alert.a1.summary': '2 nouvelles expériences sur ce numéro cette semaine.',
-  'mock.alert.a1.message': 'Une nouvelle expérience a été publiée.',
+  'mock.alert.a1.message': 'Nouvelle expérience associée à ce contact.',
   'mock.alert.a1.date': 'il y a 2h',
   'mock.alert.a1.lastReport': 'il y a 2 heures',
   'mock.alert.a2.summary': 'Vigilance : 1 nouvelle expérience « Produit non conforme ».',
-  'mock.alert.a2.message': 'Une nouvelle expérience a été publiée.',
+  'mock.alert.a2.message': 'Nouvelle expérience associée à ce contact.',
   'mock.alert.a2.date': 'il y a 5h',
   'mock.alert.a2.lastReport': 'il y a 5 heures',
   'mock.alert.a3.summary': 'Expérience « Bloqué après paiement » ajoutée hier.',
-  'mock.alert.a3.message': 'Une nouvelle expérience a été publiée.',
+  'mock.alert.a3.message': 'Nouvelle expérience associée à ce contact.',
   'mock.alert.a3.date': 'hier',
   'mock.alert.a3.lastReport': 'hier',
 
@@ -2635,7 +2635,7 @@ const en: Dict = {
   'alerts.empty.title': 'No follow-ups for now',
   'alerts.empty.subtitle': 'Follow a contact after a search to receive updates.',
   'alerts.viewDetails': 'View details',
-  'alerts.viewAll': 'View all details',
+  'alerts.viewAll': 'View all follow-ups',
 
   // ===== Static info pages =====
   'aboutPage.title': 'About us',
@@ -2965,15 +2965,15 @@ const en: Dict = {
 
   // ===== Mock data — alerts =====
   'mock.alert.a1.summary': '2 new experiences on this number this week.',
-  'mock.alert.a1.message': 'A new experience has been published.',
+  'mock.alert.a1.message': 'New experience linked to this contact.',
   'mock.alert.a1.date': '2h ago',
   'mock.alert.a1.lastReport': '2 hours ago',
   'mock.alert.a2.summary': 'Low: 1 new "product not as described" experience.',
-  'mock.alert.a2.message': 'A new experience has been published.',
+  'mock.alert.a2.message': 'New experience linked to this contact.',
   'mock.alert.a2.date': '5h ago',
   'mock.alert.a2.lastReport': '5 hours ago',
   'mock.alert.a3.summary': '"Blocked after payment" experience added yesterday.',
-  'mock.alert.a3.message': 'A new experience has been published.',
+  'mock.alert.a3.message': 'New experience linked to this contact.',
   'mock.alert.a3.date': 'yesterday',
   'mock.alert.a3.lastReport': 'yesterday',
 
@@ -4143,7 +4143,7 @@ const ar: Dict = {
   'alerts.empty.title': 'لا توجد متابعات حالياً',
   'alerts.empty.subtitle': 'تابع جهة اتصال بعد البحث لتلقي التحديثات الجديدة.',
   'alerts.viewDetails': 'عرض التفاصيل',
-  'alerts.viewAll': 'عرض كل التفاصيل',
+  'alerts.viewAll': 'عرض كل المتابعات',
 
   // ===== Static info pages =====
   'aboutPage.title': 'من نحن ؟',
@@ -4468,15 +4468,15 @@ const ar: Dict = {
 
   // ===== Mock data — alerts =====
   'mock.alert.a1.summary': 'تجربتان جديدتان على هذا الرقم خلال هذا الأسبوع.',
-  'mock.alert.a1.message': 'تم نشر تجربة جديدة.',
+  'mock.alert.a1.message': 'تجربة جديدة مرتبطة بهذه الجهة.',
   'mock.alert.a1.date': 'منذ ساعتين',
   'mock.alert.a1.lastReport': 'منذ ساعتين',
   'mock.alert.a2.summary': 'انتباه : تجربة جديدة «منتج غير مطابق».',
-  'mock.alert.a2.message': 'تم نشر تجربة جديدة.',
+  'mock.alert.a2.message': 'تجربة جديدة مرتبطة بهذه الجهة.',
   'mock.alert.a2.date': 'منذ 5 ساعات',
   'mock.alert.a2.lastReport': 'منذ 5 ساعات',
   'mock.alert.a3.summary': 'تجربة «الحجب بعد الدفع» أُضيفت أمس.',
-  'mock.alert.a3.message': 'تم نشر تجربة جديدة.',
+  'mock.alert.a3.message': 'تجربة جديدة مرتبطة بهذه الجهة.',
   'mock.alert.a3.date': 'أمس',
   'mock.alert.a3.lastReport': 'أمس',
 

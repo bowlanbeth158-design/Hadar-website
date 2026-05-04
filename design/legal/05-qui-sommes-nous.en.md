@@ -4,7 +4,7 @@
 > Slug: `/qui-sommes-nous`
 
 ## Mission
-**HADAR** is a platform dedicated to sharing experiences between users, helping everyone better inform themselves before an online transaction.
+**HADAR** is a platform dedicated to sharing experiences between users, enabling everyone to better inform themselves before an online transaction.
 
 ## Our role
 **HADAR** is not an investigation body, nor a regulatory authority.
@@ -15,7 +15,7 @@ The platform works as a space for sharing experiences, where users consult feedb
 
 Our role is to:
 
-- give visibility to the experiences shared by the community
+- make available the experiences shared by the community
 
 ## Platform neutrality
 **HADAR** is a neutral and independent platform.
@@ -28,7 +28,7 @@ Our role is to:
 <!-- PROCESS_STEPS -->
 
 ## Responsibility
-We work to keep this space responsible by:
+We put measures in place to keep this space responsible by:
 
 - Framing publications with clear rules
 - Allowing content to be edited or removed

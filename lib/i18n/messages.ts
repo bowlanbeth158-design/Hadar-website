@@ -1503,19 +1503,19 @@ const fr: Dict = {
     'Preuves insuffisantes pour confirmer l’usurpation. Merci d’apporter des éléments supplémentaires.',
 
   // ===== Timeline (mes-signalements/[id]) =====
-  'timeline.sent': 'Signalement envoyé',
+  'timeline.sent': 'Expérience envoyée',
   'timeline.reviewing': 'En cours d’examen',
   'timeline.decision': 'Décision',
-  'timeline.published': 'Publié',
+  'timeline.published': 'Publiée',
   'timeline.toFix': 'À corriger',
-  'timeline.rejected': 'Refusé',
+  'timeline.rejected': 'Refusée',
   'timeline.pending': 'En attente',
 
   // PublishedCelebration banner (top of /mes-signalements/[id] when published)
-  'publishedCelebration.title': 'Félicitations ! Votre signalement est publié.',
+  'publishedCelebration.title': 'Félicitations ! Votre expérience est publiée.',
   'publishedCelebration.body':
-    'Merci d\'aider la communauté Hadar à rester vigilante. Continuez à signaler — chaque signalement compte.',
-  'publishedCelebration.cta': 'Signaler un autre cas',
+    'Merci d\'aider la communauté Hadar à rester vigilante. Continuez à partager — chaque expérience compte.',
+  'publishedCelebration.cta': 'Partager une autre expérience',
 
   // ===== /mes-signalements/[id] page =====
   'reportDetail.title': 'Détail de l’expérience',
@@ -3005,7 +3005,7 @@ const en: Dict = {
     'Insufficient evidence to confirm impersonation. Please provide additional elements.',
 
   // ===== Timeline =====
-  'timeline.sent': 'Report submitted',
+  'timeline.sent': 'Experience submitted',
   'timeline.reviewing': 'Under review',
   'timeline.decision': 'Decision',
   'timeline.published': 'Published',
@@ -3014,10 +3014,10 @@ const en: Dict = {
   'timeline.pending': 'Pending',
 
   // PublishedCelebration banner
-  'publishedCelebration.title': 'Congratulations! Your report is published.',
+  'publishedCelebration.title': 'Congratulations! Your experience is published.',
   'publishedCelebration.body':
-    'Thanks for helping the Hadar community stay alert. Keep reporting — every report matters.',
-  'publishedCelebration.cta': 'Report another case',
+    'Thanks for helping the Hadar community stay alert. Keep sharing — every experience matters.',
+  'publishedCelebration.cta': 'Share another experience',
 
   // ===== /mes-signalements/[id] page =====
   'reportDetail.title': 'Experience details',
@@ -4508,19 +4508,19 @@ const ar: Dict = {
     'الأدلة غير كافية لتأكيد الانتحال. يرجى تقديم عناصر إضافية.',
 
   // ===== Timeline =====
-  'timeline.sent': 'تم إرسال المشاركة',
+  'timeline.sent': 'تم إرسال التجربة',
   'timeline.reviewing': 'قيد المراجعة',
   'timeline.decision': 'القرار',
-  'timeline.published': 'منشور',
+  'timeline.published': 'منشورة',
   'timeline.toFix': 'بحاجة إلى تصحيح',
-  'timeline.rejected': 'مرفوض',
+  'timeline.rejected': 'مرفوضة',
   'timeline.pending': 'قيد الانتظار',
 
   // PublishedCelebration banner
-  'publishedCelebration.title': 'تهانينا! تم نشر مشاركتك.',
+  'publishedCelebration.title': 'تهانينا! تم نشر تجربتك.',
   'publishedCelebration.body':
-    'شكراً لمساعدة مجتمع حذار على البقاء يقظاً. استمر في الإمشاركة — كل مشاركة يهم.',
-  'publishedCelebration.cta': 'الإمشاركة عن حالة أخرى',
+    'شكراً لمساعدة مجتمع Hadar على البقاء يقظاً. استمر في المشاركة — كل تجربة تهم.',
+  'publishedCelebration.cta': 'مشاركة تجربة أخرى',
 
   // ===== /mes-signalements/[id] page =====
   'reportDetail.title': 'تفاصيل التجربة',

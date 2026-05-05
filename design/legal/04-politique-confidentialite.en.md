@@ -4,59 +4,62 @@
 > Slug: `/politique-confidentialite`
 
 ## Introduction
-This privacy policy aims to inform users of the **HADAR** platform about how their personal data is collected, used and protected.
+This Privacy Policy aims to inform users of the HADAR platform about how their personal data is collected, used, and protected.
 
 ## Data collected
-While using the platform, HADAR may collect the following data:
+As part of using the platform, HADAR may collect the following data:
 
-- **information provided when creating an account** (email, identifier, etc.)
-- **information related to published reports**
-- **technical data** (IP address, browsing, cookies)
+- information provided during account creation (email, username, etc.)
+- information related to content published by users
+- technical data (IP address, browsing data, cookies)
 
-## Use of the data
-The data collected is used to:
+## Use of data
+The collected data is used to:
 
-- run the platform
+- ensure the proper functioning of the platform
 - manage user accounts
-- publish and display reports
-- improve the user experience
-- guarantee security and content moderation
+- publish and display shared content
+- improve user experience
+- ensure security and content moderation
 
 ## Data sharing
-Data may be made public as part of reports published by users.
+Some data may be made public only within the content published by users and according to the information they choose to share.
 
-**HADAR** does not sell personal data to third parties.
+HADAR does not sell personal data to third parties.
 
-Certain data may be shared with the competent authorities when required by law.
+Certain data may be disclosed to competent authorities if required by law.
 
 ## Data protection
-**HADAR** puts technical and organisational measures in place to protect personal data against unauthorised access, loss or disclosure.
+HADAR implements appropriate technical and organizational measures to protect personal data against unauthorized access, loss, or disclosure.
 
 ## Data retention
-Data is retained for as long as necessary for the platform to operate and to comply with legal obligations.
+Data is retained for as long as necessary for the operation of the platform and compliance with legal obligations.
 
 ## User rights
-Under applicable regulations, the user has the following rights:
+In accordance with applicable regulations, users have the following rights:
 
-- **access to their data**
-- **rectification**
-- **deletion**
-- **objection to processing**
+- access to their data
+- rectification
+- deletion
+- restriction of processing
+- objection to processing
 
-Any request may be sent via the contact details below.
+Any request can be sent using the contact details provided below.
 
 ## Cookies
 The platform uses cookies to:
 
 - improve navigation
-- analyse site usage
+- measure audience and analyze site usage
 
-The user can configure their browser to refuse cookies.
+Users can configure their browser to refuse cookies.
 
-## Changes to the policy
-**HADAR** reserves the right to amend this policy at any time.
+## Policy changes
+HADAR reserves the right to modify this policy at any time.
+
+Users are encouraged to review it regularly.
 
 ## Contact
-For any question about this policy or your personal data, you can contact us at:
+For any questions regarding this policy or your personal data, you can contact us at:
 
 - support@hadar.ma

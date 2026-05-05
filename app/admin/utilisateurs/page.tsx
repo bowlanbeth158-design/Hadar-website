@@ -25,6 +25,7 @@ import { ExportButton } from '@/components/admin/ExportButton';
 import { VerificationRequestsTab } from '@/components/admin/VerificationRequestsTab';
 import { StarManagementTab } from '@/components/admin/StarManagementTab';
 import { ShieldCheck, Star } from 'lucide-react';
+import { tierFromCount } from '@/lib/contributorTiers';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { INITIAL_USERS, STATUS_STYLE, type Status, type User } from '@/lib/mock/utilisateurs';
 import {
@@ -946,6 +947,8 @@ export default function Page() {
                 <th className="px-4 py-3 text-left font-semibold">{t('users.col.signup')}</th>
                 <th className="px-4 py-3 text-left font-semibold">{t('users.col.lastSeen')}</th>
                 <th className="px-4 py-3 text-left font-semibold">{t('users.col.status')}</th>
+                <th className="px-4 py-3 text-left font-semibold">{t('users.col.verified')}</th>
+                <th className="px-4 py-3 text-left font-semibold">{t('users.col.tier')}</th>
                 <th className="px-4 py-3 text-right font-semibold">{t('users.col.action')}</th>
               </tr>
             </thead>
@@ -1003,6 +1006,41 @@ export default function Page() {
                         >
                           {translateUserStatus(t, u.status)}
                         </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        {u.verified ? (
+                          <span className="inline-flex items-center gap-1 rounded-pill bg-brand-blue/10 text-brand-blue px-2.5 py-0.5 text-xs font-semibold">
+                            <ShieldCheck className="h-3 w-3" aria-hidden />
+                            {t('users.verified.yes')}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center rounded-pill bg-gray-100 text-gray-500 px-2.5 py-0.5 text-xs font-medium">
+                            {t('users.verified.no')}
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        {(() => {
+                          const tier = tierFromCount(u.reportsPublished);
+                          return (
+                            <span className="inline-flex items-center gap-1 text-xs font-medium text-brand-navy">
+                              <span className="inline-flex items-center gap-0.5">
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className={`h-3 w-3 ${
+                                      i < tier.stars
+                                        ? 'text-yellow-400 fill-yellow-400'
+                                        : 'text-gray-200'
+                                    }`}
+                                    aria-hidden
+                                  />
+                                ))}
+                              </span>
+                              <span className="text-gray-600">{t(tier.labelKey)}</span>
+                            </span>
+                          );
+                        })()}
                       </td>
                       <td className="px-4 py-3 text-right">
                         <UserActionsDropdown

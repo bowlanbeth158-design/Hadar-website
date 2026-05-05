@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { OFFICIAL_LOGO_URL } from '../Logo';
 import { REPORTS } from '@/lib/mock/signalements';
+import { INITIAL_VERIFICATIONS } from '@/lib/mock/verifications';
 import { useI18n } from '@/lib/i18n/provider';
 import { PLATFORM_CONFIG_EVENT, PLATFORM_CONFIG_KEY } from '@/lib/admin-config';
 
@@ -71,13 +72,14 @@ function SidebarBrand() {
 type NavItem = { href: string; labelKey: string; Icon: LucideIcon; badge?: number };
 
 const PENDING_REPORTS = REPORTS.filter((r) => r.status === 'en_cours').length;
+const PENDING_VERIFICATIONS = INITIAL_VERIFICATIONS.filter((v) => v.status === 'pending').length;
 const UNREAD_TICKETS = 3;
 
 const MAIN_NAV: NavItem[] = [
   { href: '/admin', labelKey: 'sidebar.dashboard', Icon: LayoutDashboard },
   { href: '/admin/signalements', labelKey: 'sidebar.signalements', Icon: Siren, badge: PENDING_REPORTS },
   { href: '/admin/membres', labelKey: 'sidebar.membres', Icon: Users },
-  { href: '/admin/utilisateurs', labelKey: 'sidebar.utilisateurs', Icon: UserPlus },
+  { href: '/admin/utilisateurs', labelKey: 'sidebar.utilisateurs', Icon: UserPlus, badge: PENDING_VERIFICATIONS },
   { href: '/admin/statistiques', labelKey: 'sidebar.statistiques', Icon: BarChart3 },
   { href: '/admin/annonces', labelKey: 'sidebar.annonces', Icon: Megaphone },
   { href: '/admin/assistant', labelKey: 'sidebar.assistant', Icon: MessageCircle, badge: UNREAD_TICKETS },

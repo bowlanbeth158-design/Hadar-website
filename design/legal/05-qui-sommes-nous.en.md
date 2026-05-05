@@ -4,35 +4,33 @@
 > Slug: `/qui-sommes-nous`
 
 ## Mission
-**HADAR** is a platform dedicated to sharing experiences between users, enabling everyone to better inform themselves before an online transaction.
+**HADAR** is a platform dedicated to sharing user experiences, allowing individuals to better inform themselves before any online transaction.
 
 ## Our role
-**HADAR** is not an investigation body, nor a regulatory authority.
+**HADAR** is neither an official organization nor a decision-making authority, and does not resolve situations.
 
-- **HADAR is neither an official body nor a decision-making authority.**
-
-The platform works as a space for sharing experiences, where users consult feedback published by the community.
+The platform operates as a space for sharing experiences, where users can access feedback shared by others.
 
 Our role is to:
 
-- make available the experiences shared by the community
+- make user-shared experiences available
 
 ## Platform neutrality
 **HADAR** is a neutral and independent platform.
 
 - We do not validate or guarantee the information published
-- We do not pass judgment on the persons, contacts or entities mentioned
+- We do not make judgments about individuals, contacts or entities mentioned
 
-- Content represents only the experiences of its authors.
+- Content reflects only the experiences of its authors.
 
 <!-- PROCESS_STEPS -->
 
 ## Responsibility
-We put measures in place to keep this space responsible by:
+We implement measures to maintain a responsible environment by:
 
-- Framing publications with clear rules
-- Allowing content to be edited or removed
-- Letting any person concerned contest a piece of content
+- Establishing clear publication rules
+- Allowing modification or removal of content
+- Providing the possibility for concerned parties to contest content
 
 ## Vision
-We believe that simple access to shared experiences lets everyone better inform themselves before any online transaction.
+We believe that easy access to shared experiences helps individuals make more informed decisions before any online transaction.

@@ -7,9 +7,7 @@
 **HADAR** est une plateforme dédiée au partage d'expériences entre utilisateurs, pour permettre à chacun de mieux s'informer avant une transaction en ligne.
 
 ## Notre rôle
-**HADAR** n'est pas un organisme d'enquête, ni une autorité de contrôle.
-
-- **HADAR n'est ni un organisme officiel ni une autorité de décision.**
+**HADAR** n'est ni un organisme officiel ni une autorité de décision, et ne tranche pas dans les situations.
 
 La plateforme fonctionne comme un espace de partage d'expériences, où les utilisateurs consultent des retours publiés par la communauté.
 

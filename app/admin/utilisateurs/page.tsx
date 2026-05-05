@@ -22,6 +22,9 @@ import { UserReasonModal, type ReasonAction } from '@/components/admin/UserReaso
 import { UserGroupsModal } from '@/components/admin/UserGroupsModal';
 import { RefreshButton } from '@/components/admin/RefreshButton';
 import { ExportButton } from '@/components/admin/ExportButton';
+import { VerificationRequestsTab } from '@/components/admin/VerificationRequestsTab';
+import { StarManagementTab } from '@/components/admin/StarManagementTab';
+import { ShieldCheck, Star } from 'lucide-react';
 import { AnimatedCounter } from '@/components/AnimatedCounter';
 import { INITIAL_USERS, STATUS_STYLE, type Status, type User } from '@/lib/mock/utilisateurs';
 import {
@@ -60,8 +63,11 @@ function writeJson<T>(key: string, value: T) {
   window.localStorage.setItem(key, JSON.stringify(value));
 }
 
+type AdminUsersTab = 'list' | 'verifications' | 'stars';
+
 export default function Page() {
   const { t } = useI18n();
+  const [activeTab, setActiveTab] = useState<AdminUsersTab>('list');
   const [refreshKey, setRefreshKey] = useState(0);
   const [statusOverrides, setStatusOverrides] = useState<StatusStore>({});
   const [reasons, setReasons] = useState<ReasonStore>({});
@@ -500,6 +506,41 @@ export default function Page() {
         </div>
       </div>
 
+      {/* Tabs — list / verifications / stars */}
+      <div className="flex flex-wrap gap-1 mb-5 border-b border-gray-200">
+        {(
+          [
+            { id: 'list',          icon: UsersIcon,    labelKey: 'admin.users.tab.list'   },
+            { id: 'verifications', icon: ShieldCheck,  labelKey: 'admin.users.tab.verif'  },
+            { id: 'stars',         icon: Star,         labelKey: 'admin.users.tab.stars'  },
+          ] as const
+        ).map((tab) => {
+          const isActive = activeTab === tab.id;
+          const Icon = tab.icon;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setActiveTab(tab.id)}
+              aria-pressed={isActive}
+              className={
+                isActive
+                  ? 'inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-brand-blue border-b-2 border-brand-blue -mb-px transition-colors'
+                  : 'inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-500 hover:text-brand-navy border-b-2 border-transparent -mb-px transition-colors'
+              }
+            >
+              <Icon className="h-4 w-4" aria-hidden />
+              {t(tab.labelKey)}
+            </button>
+          );
+        })}
+      </div>
+
+      {activeTab === 'verifications' && <VerificationRequestsTab />}
+      {activeTab === 'stars' && <StarManagementTab />}
+
+      {activeTab === 'list' && (
+      <>
       {flash && (
         <div
           role="status"
@@ -1043,6 +1084,8 @@ export default function Page() {
         onDelete={deleteGroup}
         onAddToGroup={addToGroup}
       />
+      </>
+      )}
     </div>
   );
 }

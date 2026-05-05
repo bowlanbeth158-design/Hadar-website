@@ -9,7 +9,7 @@
 ## Our role
 **HADAR** is not an investigation body, nor a regulatory authority.
 
-- **We are not a judge.**
+- **HADAR is neither an official body nor a decision-making authority.**
 
 The platform works as a space for sharing experiences, where users consult feedback published by the community.
 

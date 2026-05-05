@@ -11,21 +11,21 @@ Ces données sont fournies directement par l'utilisateur ou collectées automati
 ## Types de données collectées
 Les données pouvant être collectées incluent :
 
-- **informations liées au compte** (email, identifiant)
-- **informations partagées dans le cadre des signalements**
-- **données techniques** (adresse IP, type de navigateur, pages consultées)
+- informations liées au compte (email, identifiant)
+- informations partagées dans le cadre des contenus publiés
+- données techniques (adresse IP, type de navigateur, pages consultées)
 
 ## Utilisation des données
 Les données personnelles sont utilisées pour :
 
 - assurer le fonctionnement de la plateforme
 - permettre la gestion des comptes utilisateurs
-- publier les signalements
+- publier et afficher les contenus partagés
 - améliorer l'expérience utilisateur
 - garantir la sécurité et la modération
 
 ## Protection des données
-HADAR met en œuvre des mesures adaptées pour protéger les données personnelles contre tout accès non autorisé, perte ou utilisation abusive.
+HADAR met en œuvre des mesures techniques et organisationnelles appropriées pour protéger les données personnelles contre tout accès non autorisé, perte ou utilisation abusive.
 
 ## Conservation
 Les données sont conservées pendant la durée nécessaire à leur utilisation et conformément aux obligations légales.
@@ -34,7 +34,7 @@ Les données sont conservées pendant la durée nécessaire à leur utilisation 
 La plateforme utilise des cookies afin de :
 
 - faciliter la navigation
-- mesurer l'audience
+- mesurer l'audience et analyser l'utilisation du site
 - améliorer les services proposés
 
 ## Gestion des cookies
@@ -44,7 +44,7 @@ L'utilisateur peut à tout moment :
 - configurer son navigateur pour limiter leur utilisation
 
 ## Important
-L'utilisation de la plateforme implique l'acceptation de l'utilisation des cookies dans les conditions décrites ci-dessus.
+L'utilisation des cookies peut être acceptée ou refusée par l'utilisateur selon les paramètres de son navigateur ou les choix proposés sur la plateforme.
 
 ## Contact
 Pour toute question concernant les données personnelles ou les cookies :

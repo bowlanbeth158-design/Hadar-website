@@ -4,49 +4,49 @@
 > Slug: `/donnees-personnelles-cookies`
 
 ## Personal data
-While using the HADAR platform, certain personal data may be collected.
+When using the HADAR platform, certain personal data may be collected.
 
-This data is either provided directly by the user or collected automatically during browsing.
+This data is provided directly by the user or collected automatically during browsing.
 
 ## Types of data collected
 The data that may be collected includes:
 
-- **account-related information** (email, identifier)
-- **information shared as part of reports**
-- **technical data** (IP address, browser type, pages visited)
+- account-related information (email, username)
+- information shared within user-published content
+- technical data (IP address, browser type, pages visited)
 
-## Use of the data
+## Use of data
 Personal data is used to:
 
-- run the platform
+- ensure the proper functioning of the platform
 - manage user accounts
-- publish reports
-- improve the user experience
-- guarantee security and moderation
+- publish and display shared content
+- improve user experience
+- ensure security and moderation
 
 ## Data protection
-HADAR puts appropriate measures in place to protect personal data against unauthorised access, loss or misuse.
+HADAR implements appropriate technical and organizational measures to protect personal data against unauthorized access, loss, or misuse.
 
-## Retention
-Data is kept for as long as necessary for its purpose and in line with legal obligations.
+## Data retention
+Data is retained for as long as necessary for its use and in accordance with legal obligations.
 
 ## Cookies
 The platform uses cookies to:
 
-- improve navigation
-- measure audience
-- improve the services offered
+- facilitate navigation
+- measure audience and analyze site usage
+- improve the services provided
 
 ## Cookie management
-At any time the user can:
+Users can at any time:
 
 - accept or refuse cookies
-- configure their browser to restrict their use
+- configure their browser to limit their use
 
 ## Important
-Using the platform implies acceptance of cookies under the conditions described above.
+The use of cookies can be accepted or refused by the user through browser settings or platform options.
 
 ## Contact
-For any question about personal data or cookies:
+For any questions regarding personal data or cookies:
 
 - support@hadar.ma

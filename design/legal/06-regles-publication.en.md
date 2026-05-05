@@ -1,52 +1,53 @@
-# Publishing rules
+# Publication guidelines
 
 > Source: maquette provided by the owner.
 > Slug: `/regles-publication`
 
 ## Purpose
-**HADAR** is a space for sharing experiences between users.
-These rules aim to keep publications responsible, factual and respectful.
+HADAR is a platform for sharing experiences between users.
+
+These guidelines aim to ensure responsible, factual, and respectful content.
 
 ## What is allowed
-Users can publish reports as long as the information:
+Users may publish experiences provided that the information:
 
-- is based on a real personal experience
-- is factual and verifiable
-- is written in a clear and objective way
-- concerns a contact, a profile or a payment method
+- is based on a personal experience
+- is written in a factual manner and in good faith
+- is presented clearly
+- relates to a contact, profile, or payment method
 
-## What is prohibited
-The following content is not allowed:
+## What is not allowed
+The following content is not permitted:
 
-- direct accusations or unverifiable claims
-- defamatory, insulting or offensive remarks
+- direct accusations or statements presented as certain
+- defamatory, abusive, or offensive content
 - value judgments or personal attacks
-- false, misleading or exaggerated information
-- publication of sensitive data unrelated to the experience
-- content unrelated to a real experience
+- false, misleading, or exaggerated information
+- publication of sensitive personal data without a direct link to the experience
+- content not related to a personal experience
 
-## Writing rules
-To be published, a report must:
+## Writing guidelines
+To be published, content must:
 
 - describe a situation factually
 - avoid judgments and interpretations
-- stick to what was observed
-- keep a neutral tone
+- be limited to observed elements
+- remain neutral in tone
 
-**Recommended example**:
+## Recommended example
 > "Payment made, no response after receipt"
 
 ## Moderation
-Any person concerned by a report can:
+Any person concerned by content may:
 
-- ask for a review
-- ask for an edit or removal
+- request a review
+- request modification or removal
 
-Requests are reviewed against the platform rules.
+Requests are reviewed according to the platform's rules.
 
 ## Responsibility
 Published content:
 
 - is provided by users
 - reflects their personal experiences
-- is distributed for information purposes only
+- is shared for informational purposes only

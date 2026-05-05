@@ -286,17 +286,22 @@ const fr: Dict = {
   'admin.verif.close':           'Fermer',
   'admin.verif.empty':           'Aucune demande dans cette catégorie.',
 
-  // ===== /admin/utilisateurs → Étoiles tab =====
-  'admin.stars.searchPlaceholder':   'Rechercher un utilisateur…',
-  'admin.stars.filter.all':          'Tous',
-  'admin.stars.col.user':            'Utilisateur',
-  'admin.stars.col.email':           'Email',
-  'admin.stars.col.reportsPublished': 'Expériences publiées',
-  'admin.stars.col.currentTier':     'Palier actuel',
-  'admin.stars.col.setTier':         'Modifier',
-  'admin.stars.starsAria':           'étoiles',
-  'admin.stars.empty':               'Aucun utilisateur ne correspond à ces critères.',
-  'admin.stars.note':                'Chaque modification est tracée dans le journal d’audit. Le palier s’affiche immédiatement sur le profil public de l’utilisateur.',
+  // ===== /admin/utilisateurs → Étoiles tab (per-tier thresholds) =====
+  'admin.stars.tier.title':         'Paliers de contributeur',
+  'admin.stars.tier.subtitle':      'Définissez le nombre minimum de contributions publiées pour atteindre chaque palier. Les changements s’appliquent immédiatement à tous les profils.',
+  'admin.stars.tier.col.tier':      'Palier',
+  'admin.stars.tier.col.stars':     'Étoiles',
+  'admin.stars.tier.col.range':     'Plage actuelle',
+  'admin.stars.tier.col.min':       'Min. (contributions publiées)',
+  'admin.stars.tier.dirty':         'Modifications non enregistrées.',
+  'admin.stars.tier.clean':         'Aucune modification en attente.',
+  'admin.stars.tier.save':          'Enregistrer',
+  'admin.stars.tier.cancel':        'Annuler',
+  'admin.stars.tier.resetDefaults': 'Valeurs par défaut',
+  'admin.stars.tier.note':          'Chaque enregistrement est tracé dans le journal d’audit. Les paliers et fourchettes apparaissent automatiquement sur le profil public des utilisateurs (modale "Niveaux de contributeur").',
+  'admin.stars.error.visiteurFixed':   'Le palier Visiteur reste fixé à 0.',
+  'admin.stars.error.invalidNumber':   'Valeur invalide.',
+  'admin.stars.error.notIncreasing':   'Doit être > {prevMin} ({prev}).',
 
   // Reputation tier names — 1★ → 5★
   'starTier.bronze':   'Bronze',
@@ -304,6 +309,27 @@ const fr: Dict = {
   'starTier.gold':     'Or',
   'starTier.platinum': 'Platine',
   'starTier.diamond':  'Diamant',
+
+  // Contributor tiers — 6 levels (0★ → 5★) used by BadgesCriteriaModal
+  // and the admin Étoiles tab.
+  'tier.visiteur': 'Visiteur',
+  'tier.nouveau':  'Nouveau membre',
+  'tier.actif':    'Membre actif',
+  'tier.regulier': 'Contributeur régulier',
+  'tier.avance':   'Contributeur avancé',
+  'tier.expert':   'Contributeur expert',
+
+  // Tier range templates used in BadgesCriteriaModal + admin preview
+  'tier.range.none':    'Aucune contribution publiée',
+  'tier.range.plus':    '{n} contributions publiées et plus',
+  'tier.range.between': '{min} à {max} contributions publiées',
+
+  // BadgesCriteriaModal copy (modal opened from /mon-profil)
+  'badgesModal.title':    'Niveaux de contributeur',
+  'badgesModal.subtitle': 'Plus vous partagez d’expériences de manière claire, plus votre niveau évolue.',
+  'badgesModal.you':      'Vous',
+  'badgesModal.note':     'Le taux de publication = contributions publiées ÷ contributions soumises.',
+  'badgesModal.close':    'Fermer',
   'users.groups': 'Groupes',
   'users.filter.status.actif': 'Actifs',
   'users.filter.status.inactif': 'Inactifs',
@@ -1866,17 +1892,22 @@ const en: Dict = {
   'admin.verif.close':           'Close',
   'admin.verif.empty':           'No request in this category.',
 
-  // ===== /admin/utilisateurs → Stars tab =====
-  'admin.stars.searchPlaceholder':   'Search a user…',
-  'admin.stars.filter.all':          'All',
-  'admin.stars.col.user':            'User',
-  'admin.stars.col.email':           'Email',
-  'admin.stars.col.reportsPublished': 'Published experiences',
-  'admin.stars.col.currentTier':     'Current tier',
-  'admin.stars.col.setTier':         'Change',
-  'admin.stars.starsAria':           'stars',
-  'admin.stars.empty':               'No user matches these criteria.',
-  'admin.stars.note':                'Every change is logged in the audit log. The tier is reflected immediately on the user’s public profile.',
+  // ===== /admin/utilisateurs → Stars tab (per-tier thresholds) =====
+  'admin.stars.tier.title':         'Contributor tiers',
+  'admin.stars.tier.subtitle':      'Set the minimum number of published contributions required to reach each tier. Changes apply immediately to every profile.',
+  'admin.stars.tier.col.tier':      'Tier',
+  'admin.stars.tier.col.stars':     'Stars',
+  'admin.stars.tier.col.range':     'Current range',
+  'admin.stars.tier.col.min':       'Min. (published contributions)',
+  'admin.stars.tier.dirty':         'Unsaved changes.',
+  'admin.stars.tier.clean':         'No pending changes.',
+  'admin.stars.tier.save':          'Save',
+  'admin.stars.tier.cancel':        'Cancel',
+  'admin.stars.tier.resetDefaults': 'Defaults',
+  'admin.stars.tier.note':          'Every save is logged in the audit log. Tiers and ranges propagate to user profiles immediately ("Contributor levels" modal).',
+  'admin.stars.error.visiteurFixed':   'The Visitor tier stays fixed at 0.',
+  'admin.stars.error.invalidNumber':   'Invalid number.',
+  'admin.stars.error.notIncreasing':   'Must be > {prevMin} ({prev}).',
 
   // Reputation tier names — 1★ → 5★
   'starTier.bronze':   'Bronze',
@@ -1884,6 +1915,26 @@ const en: Dict = {
   'starTier.gold':     'Gold',
   'starTier.platinum': 'Platinum',
   'starTier.diamond':  'Diamond',
+
+  // Contributor tiers — 6 levels (0★ → 5★)
+  'tier.visiteur': 'Visitor',
+  'tier.nouveau':  'New member',
+  'tier.actif':    'Active member',
+  'tier.regulier': 'Regular contributor',
+  'tier.avance':   'Advanced contributor',
+  'tier.expert':   'Expert contributor',
+
+  // Tier range templates
+  'tier.range.none':    'No published contributions',
+  'tier.range.plus':    '{n}+ published contributions',
+  'tier.range.between': '{min} to {max} published contributions',
+
+  // BadgesCriteriaModal copy
+  'badgesModal.title':    'Contributor levels',
+  'badgesModal.subtitle': 'The more clearly you share your experiences, the higher your level rises.',
+  'badgesModal.you':      'You',
+  'badgesModal.note':     'Publication rate = published contributions ÷ submitted contributions.',
+  'badgesModal.close':    'Close',
   'users.filter.status.actif': 'Active',
   'users.filter.status.inactif': 'Inactive',
   'users.filter.status.bloque': 'Blocked',
@@ -3422,17 +3473,22 @@ const ar: Dict = {
   'admin.verif.close':           'إغلاق',
   'admin.verif.empty':           'لا يوجد طلب في هذه الفئة.',
 
-  // ===== /admin/utilisateurs → Stars tab =====
-  'admin.stars.searchPlaceholder':   'ابحث عن مستخدم…',
-  'admin.stars.filter.all':          'الكل',
-  'admin.stars.col.user':            'المستخدم',
-  'admin.stars.col.email':           'البريد الإلكتروني',
-  'admin.stars.col.reportsPublished': 'تجارب منشورة',
-  'admin.stars.col.currentTier':     'الفئة الحالية',
-  'admin.stars.col.setTier':         'تعديل',
-  'admin.stars.starsAria':           'نجوم',
-  'admin.stars.empty':               'لا يوجد مستخدم يطابق هذه المعايير.',
-  'admin.stars.note':                'يتم تسجيل كل تعديل في سجل التدقيق. تظهر الفئة فوراً على الملف الشخصي العام للمستخدم.',
+  // ===== /admin/utilisateurs → Stars tab (per-tier thresholds) =====
+  'admin.stars.tier.title':         'مستويات المساهمين',
+  'admin.stars.tier.subtitle':      'حدد الحد الأدنى من المساهمات المنشورة المطلوبة للوصول إلى كل مستوى. تنطبق التعديلات فوراً على جميع الملفات الشخصية.',
+  'admin.stars.tier.col.tier':      'المستوى',
+  'admin.stars.tier.col.stars':     'النجوم',
+  'admin.stars.tier.col.range':     'النطاق الحالي',
+  'admin.stars.tier.col.min':       'الحد الأدنى (مساهمات منشورة)',
+  'admin.stars.tier.dirty':         'تعديلات غير محفوظة.',
+  'admin.stars.tier.clean':         'لا توجد تعديلات معلقة.',
+  'admin.stars.tier.save':          'حفظ',
+  'admin.stars.tier.cancel':        'إلغاء',
+  'admin.stars.tier.resetDefaults': 'القيم الافتراضية',
+  'admin.stars.tier.note':          'يتم تسجيل كل حفظ في سجل التدقيق. تظهر المستويات والنطاقات فوراً في الملف الشخصي العام للمستخدمين (نافذة "مستويات المساهمين").',
+  'admin.stars.error.visiteurFixed':   'يبقى مستوى الزائر ثابتاً عند 0.',
+  'admin.stars.error.invalidNumber':   'قيمة غير صالحة.',
+  'admin.stars.error.notIncreasing':   'يجب أن يكون أكبر من {prevMin} ({prev}).',
 
   // Reputation tier names — 1★ → 5★
   'starTier.bronze':   'برونزي',
@@ -3440,6 +3496,26 @@ const ar: Dict = {
   'starTier.gold':     'ذهبي',
   'starTier.platinum': 'بلاتيني',
   'starTier.diamond':  'ماسي',
+
+  // Contributor tiers — 6 levels (0★ → 5★)
+  'tier.visiteur': 'زائر',
+  'tier.nouveau':  'عضو جديد',
+  'tier.actif':    'عضو نشط',
+  'tier.regulier': 'مساهم منتظم',
+  'tier.avance':   'مساهم متقدم',
+  'tier.expert':   'مساهم خبير',
+
+  // Tier range templates
+  'tier.range.none':    'لا توجد مساهمات منشورة',
+  'tier.range.plus':    '{n} مساهمة منشورة أو أكثر',
+  'tier.range.between': 'من {min} إلى {max} مساهمات منشورة',
+
+  // BadgesCriteriaModal copy
+  'badgesModal.title':    'مستويات المساهمين',
+  'badgesModal.subtitle': 'كلما شاركت تجاربك بشكل واضح، كلما ارتفع مستواك.',
+  'badgesModal.you':      'أنت',
+  'badgesModal.note':     'معدل النشر = المساهمات المنشورة ÷ المساهمات المقدمة.',
+  'badgesModal.close':    'إغلاق',
   'users.filter.status.actif': 'نشطون',
   'users.filter.status.inactif': 'غير نشطين',
   'users.filter.status.bloque': 'محظورون',

@@ -36,7 +36,14 @@ generator client {
 
 datasource db {
   provider   = "postgresql"
+  // url      : endpoint POOLER (pgbouncer) — utilisé par le client
+  //            Prisma à l'exécution de l'app. Avec pgbouncer=true.
   url        = env("DATABASE_URL")
+  // directUrl: endpoint DIRECT (sans pooler) — utilisé exclusivement
+  //            par `prisma migrate` qui a besoin de prepared
+  //            statements + advisory locks (incompatibles avec
+  //            pgbouncer en transaction mode).
+  directUrl  = env("DIRECT_URL")
   // citext   : type texte case-insensitive — utilisé pour les emails
   //            afin qu'on ne puisse pas créer "user@x.com" et
   //            "USER@x.com" comme deux comptes différents.

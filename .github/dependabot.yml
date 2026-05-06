@@ -1,0 +1,44 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Dependabot — alerte + PR automatiques pour les MAJ de dépendances.
+#
+# Stratégie :
+#   - npm : weekly, groupe "minor + patch" pour minimiser le bruit,
+#     sécurité = immédiat.
+#   - github-actions : weekly aussi.
+#   - docker : monthly (image base node:22-alpine).
+# ─────────────────────────────────────────────────────────────────────────────
+
+version: 2
+updates:
+  - package-ecosystem: 'npm'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+      time: '06:00'
+      timezone: 'Africa/Casablanca'
+    open-pull-requests-limit: 5
+    groups:
+      minor-and-patch:
+        update-types: ['minor', 'patch']
+    labels:
+      - 'dependencies'
+      - 'automerge-candidate'
+    # Sécurité : les CVEs sont remontées immédiatement, indépendamment
+    # de cette configuration (Dependabot Security Updates).
+
+  - package-ecosystem: 'github-actions'
+    directory: '/'
+    schedule:
+      interval: 'weekly'
+      day: 'monday'
+    open-pull-requests-limit: 3
+    labels:
+      - 'ci'
+
+  - package-ecosystem: 'docker'
+    directory: '/'
+    schedule:
+      interval: 'monthly'
+    labels:
+      - 'docker'

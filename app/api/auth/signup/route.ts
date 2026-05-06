@@ -49,6 +49,7 @@ import { setAuthCookies } from '@/lib/auth/cookies';
 import { appendAudit } from '@/lib/audit';
 import { checkRateLimit, RATE_LIMITS } from '@/lib/rate-limit';
 import { sendEmail } from '@/lib/email';
+import { verifyTurnstile } from '@/lib/security/turnstile';
 
 const bodySchema = z.object({
   email: emailSchema,
@@ -57,6 +58,9 @@ const bodySchema = z.object({
   lastName: nameSchema,
   locale: localeSchema.default('fr'),
   currency: currencySchema.default('MAD'),
+  // Token Cloudflare Turnstile — optionnel en dev (TURNSTILE_SECRET
+  // non posé → fail-open), obligatoire en prod.
+  turnstileToken: z.string().optional(),
 });
 
 const EMAIL_VERIFICATION_TTL_HOURS = 24;
@@ -92,7 +96,13 @@ export async function POST(req: NextRequest) {
     if (!parsed.success) {
       return jsonZodError(parsed.error);
     }
-    const { email, password, firstName, lastName, locale, currency } = parsed.data;
+    const { email, password, firstName, lastName, locale, currency, turnstileToken } = parsed.data;
+
+    // ── 2b. Vérification Turnstile (CAPTCHA) — anti bot mass-signup ──
+    const captcha = await verifyTurnstile(turnstileToken, ip);
+    if (!captcha.ok) {
+      return jsonError('FORBIDDEN', 'Échec du contrôle anti-robot. Réessaye.');
+    }
 
     // ── 3a. Vérification HIBP — refuse les mots de passe déjà fuités ──
     const hibp = await checkHibp(password);

@@ -28,6 +28,7 @@ import {
 } from '@/lib/api/response';
 import { sha256 } from '@/lib/crypto/hash';
 import { hashPassword } from '@/lib/auth/password';
+import { checkHibp } from '@/lib/auth/hibp';
 import { revokeAllSessions } from '@/lib/auth/session';
 import { hmacIp, hmacUserAgent } from '@/lib/crypto/hmac';
 import { getClientIp, getUserAgent } from '@/lib/api/request';
@@ -65,6 +66,15 @@ export async function POST(req: NextRequest) {
       return jsonError(
         'UNPROCESSABLE',
         'Lien invalide ou expiré. Refais une demande.',
+      );
+    }
+
+    // HIBP — refuse un mot de passe déjà fuité.
+    const hibp = await checkHibp(parsed.data.newPassword);
+    if (hibp.pwned) {
+      return jsonError(
+        'UNPROCESSABLE',
+        `Ce mot de passe a été retrouvé dans ${hibp.occurrences.toLocaleString('fr')} fuites de données. Choisis-en un autre.`,
       );
     }
 

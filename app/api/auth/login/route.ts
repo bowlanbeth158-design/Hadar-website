@@ -35,6 +35,7 @@ import {
 } from '@/lib/api/response';
 import { getClientIp, getUserAgent } from '@/lib/api/request';
 import { verifyPassword, needsRehash, hashPassword } from '@/lib/auth/password';
+import { verifyTotp } from '@/lib/auth/totp';
 import { hmacIp, hmacUserAgent, hmacEmail } from '@/lib/crypto/hmac';
 import { createSession } from '@/lib/auth/session';
 import { setAuthCookies } from '@/lib/auth/cookies';
@@ -320,20 +321,34 @@ async function handleMemberLogin(p: MemberLoginParams) {
   }
 
   // Pour les members, le TOTP est OBLIGATOIRE (cf. décision sécu).
-  // Si le password est OK mais pas de totpCode → MFA_REQUIRED.
-  // Si totpCode présent : valider (sera implémenté en batch 2 — pour
-  // l'instant, on accepte si le secret est "PENDING_ENROLLMENT" pour
-  // débloquer le bootstrap super-admin).
+  // Cas spécial bootstrap : super-admin créé par le seed n'a pas
+  // encore enrôlé son TOTP → on autorise le login pour qu'il fasse
+  // l'enrôlement, mais le guard requireMember refusera toute action
+  // sensible tant que totpEnabledAt n'est pas dans le futur d'epoch.
   const isPendingEnrollment =
     cred.totpSecretEncrypted === 'PENDING_ENROLLMENT';
 
-  if (!isPendingEnrollment && !p.totpCode) {
-    return jsonError(
-      'MFA_REQUIRED',
-      "Code 2FA requis. Entre le code à 6 chiffres de ton authenticator.",
-    );
+  if (!isPendingEnrollment) {
+    if (!p.totpCode) {
+      return jsonError(
+        'MFA_REQUIRED',
+        "Code 2FA requis. Entre le code à 6 chiffres de ton authenticator.",
+      );
+    }
+    const totpOk = verifyTotp(p.totpCode, cred.totpSecretEncrypted);
+    if (!totpOk) {
+      // Compte ce code comme un échec login (rate limiting + lockout).
+      const newAttempts = cred.failedAttempts + 1;
+      await prisma.memberCredential.update({
+        where: { memberId: p.memberId },
+        data: {
+          failedAttempts: newAttempts,
+          lockedUntil: computeLockUntil(newAttempts),
+        },
+      });
+      return jsonError('UNAUTHORIZED', 'Code 2FA invalide.');
+    }
   }
-  // (Vraie validation TOTP arrive en batch 2.)
 
   // Reset + session.
   const member = await prisma.member.findUnique({

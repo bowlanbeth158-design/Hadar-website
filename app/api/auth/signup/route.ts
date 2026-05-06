@@ -41,6 +41,7 @@ import {
 } from '@/lib/api/response';
 import { getClientIp, getUserAgent } from '@/lib/api/request';
 import { hashPassword } from '@/lib/auth/password';
+import { checkHibp } from '@/lib/auth/hibp';
 import { hmacIp, hmacUserAgent } from '@/lib/crypto/hmac';
 import { generateRandomToken, sha256 } from '@/lib/crypto/hash';
 import { createSession } from '@/lib/auth/session';
@@ -93,7 +94,16 @@ export async function POST(req: NextRequest) {
     }
     const { email, password, firstName, lastName, locale, currency } = parsed.data;
 
-    // ── 3. Hash password (avant d'ouvrir la transaction → ~250 ms en
+    // ── 3a. Vérification HIBP — refuse les mots de passe déjà fuités ──
+    const hibp = await checkHibp(password);
+    if (hibp.pwned) {
+      return jsonError(
+        'UNPROCESSABLE',
+        `Ce mot de passe a été retrouvé dans ${hibp.occurrences.toLocaleString('fr')} fuites de données connues. Choisis-en un autre.`,
+      );
+    }
+
+    // ── 3b. Hash password (avant d'ouvrir la transaction → ~250 ms en
     //       dehors du lock) ──
     const passwordHash = await hashPassword(password);
 

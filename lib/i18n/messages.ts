@@ -1166,10 +1166,16 @@ const fr: Dict = {
   'auth.login.continueWithGoogle': 'Continuer avec Google',
   'auth.login.passwordPlaceholder': '••••••••••••',
   'auth.login.submit': 'Se connecter',
+  'auth.login.submitting': 'Connexion…',
   'auth.login.disabled': 'Authentification activée prochainement.',
+  'auth.login.errorGeneric': 'Connexion impossible. Réessaye dans un instant.',
+  'auth.login.totpLabel': 'Code 2FA',
+  'auth.login.totpHint': 'Code à 6 chiffres de ton authenticator.',
   'auth.login.notRegistered': 'Pas encore de compte ?',
   'auth.login.signupLink': 'S’inscrire',
   'auth.login.forgotPassword': 'Mot de passe oublié ?',
+
+  'auth.password.hint': 'Au moins 12 caractères, avec lettres, chiffres et symboles.',
 
   'auth.signup.title': 'Créer un compte',
   'auth.signup.googleButton': 'S’inscrire avec Google',
@@ -1181,7 +1187,9 @@ const fr: Dict = {
   'auth.signup.acceptAnd': 'et la',
   'auth.signup.acceptPrivacy': 'politique de confidentialité',
   'auth.signup.submit': 'Créer mon compte',
+  'auth.signup.submitting': 'Création…',
   'auth.signup.disabled': 'Inscription activée prochainement.',
+  'auth.signup.errorGeneric': 'Impossible de créer le compte. Réessaye plus tard.',
   'auth.signup.alreadyAccount': 'Déjà un compte ?',
   'auth.signup.loginLink': 'Se connecter',
 
@@ -1189,7 +1197,11 @@ const fr: Dict = {
   'auth.forgot.intro':
     'Entrez votre email. Si un compte existe, vous recevrez un lien de réinitialisation.',
   'auth.forgot.submit': 'Envoyer le lien',
+  'auth.forgot.submitting': 'Envoi…',
   'auth.forgot.disabled': 'Envoi activé prochainement.',
+  'auth.forgot.errorGeneric': 'Impossible d’envoyer la demande.',
+  'auth.forgot.successTitle': 'Vérifie ta boîte mail.',
+  'auth.forgot.successBody': 'Si un compte est associé à cet email, un lien de réinitialisation vient d’être envoyé.',
   'auth.forgot.backToLogin': '← Retour à la connexion',
 
   // ===== AlertsPopover (Header dropdown) =====
@@ -2774,10 +2786,16 @@ const en: Dict = {
   'auth.login.continueWithGoogle': 'Continue with Google',
   'auth.login.passwordPlaceholder': '••••••••••••',
   'auth.login.submit': 'Sign in',
+  'auth.login.submitting': 'Signing in…',
   'auth.login.disabled': 'Authentication enabled soon.',
+  'auth.login.errorGeneric': 'Unable to sign in. Please try again.',
+  'auth.login.totpLabel': '2FA code',
+  'auth.login.totpHint': 'Six-digit code from your authenticator.',
   'auth.login.notRegistered': 'No account yet?',
   'auth.login.signupLink': 'Sign up',
   'auth.login.forgotPassword': 'Forgot your password?',
+
+  'auth.password.hint': 'At least 12 characters with letters, digits and symbols.',
 
   'auth.signup.title': 'Create an account',
   'auth.signup.googleButton': 'Sign up with Google',
@@ -2789,7 +2807,9 @@ const en: Dict = {
   'auth.signup.acceptAnd': 'and the',
   'auth.signup.acceptPrivacy': 'privacy policy',
   'auth.signup.submit': 'Create my account',
+  'auth.signup.submitting': 'Creating…',
   'auth.signup.disabled': 'Sign-up enabled soon.',
+  'auth.signup.errorGeneric': 'Could not create the account. Please try again.',
   'auth.signup.alreadyAccount': 'Already have an account?',
   'auth.signup.loginLink': 'Sign in',
 
@@ -2797,7 +2817,11 @@ const en: Dict = {
   'auth.forgot.intro':
     'Enter your email. If an account exists you’ll receive a reset link.',
   'auth.forgot.submit': 'Send the link',
+  'auth.forgot.submitting': 'Sending…',
   'auth.forgot.disabled': 'Sending enabled soon.',
+  'auth.forgot.errorGeneric': 'Unable to send the request.',
+  'auth.forgot.successTitle': 'Check your inbox.',
+  'auth.forgot.successBody': 'If an account is associated with this email, a reset link has been sent.',
   'auth.forgot.backToLogin': '← Back to sign in',
 
   // ===== AlertsPopover =====
@@ -4372,10 +4396,16 @@ const ar: Dict = {
   'auth.login.continueWithGoogle': 'المتابعة باستخدام Google',
   'auth.login.passwordPlaceholder': '••••••••••••',
   'auth.login.submit': 'تسجيل الدخول',
+  'auth.login.submitting': 'جارٍ تسجيل الدخول…',
   'auth.login.disabled': 'سيتم تفعيل المصادقة قريباً.',
+  'auth.login.errorGeneric': 'تعذّر تسجيل الدخول. حاول مرة أخرى.',
+  'auth.login.totpLabel': 'رمز التحقّق الثنائي',
+  'auth.login.totpHint': 'الرمز المكوّن من 6 أرقام من تطبيق المصادقة.',
   'auth.login.notRegistered': 'ليس لديك حساب بعد ؟',
   'auth.login.signupLink': 'سجّل الآن',
   'auth.login.forgotPassword': 'نسيت كلمة المرور ؟',
+
+  'auth.password.hint': '12 حرفاً على الأقل، تحتوي على حروف وأرقام ورموز.',
 
   'auth.signup.title': 'إنشاء حساب',
   'auth.signup.googleButton': 'التسجيل باستخدام Google',
@@ -4387,7 +4417,9 @@ const ar: Dict = {
   'auth.signup.acceptAnd': 'وعلى',
   'auth.signup.acceptPrivacy': 'سياسة الخصوصية',
   'auth.signup.submit': 'إنشاء حسابي',
+  'auth.signup.submitting': 'جارٍ الإنشاء…',
   'auth.signup.disabled': 'سيتم تفعيل التسجيل قريباً.',
+  'auth.signup.errorGeneric': 'تعذّر إنشاء الحساب. حاول مرة أخرى.',
   'auth.signup.alreadyAccount': 'لديك حساب بالفعل ؟',
   'auth.signup.loginLink': 'تسجيل الدخول',
 
@@ -4395,7 +4427,11 @@ const ar: Dict = {
   'auth.forgot.intro':
     'أدخل بريدك الإلكتروني. إذا كان لديك حساب فستصلك رسالة بإعادة التعيين.',
   'auth.forgot.submit': 'إرسال الرابط',
+  'auth.forgot.submitting': 'جارٍ الإرسال…',
   'auth.forgot.disabled': 'سيتم تفعيل الإرسال قريباً.',
+  'auth.forgot.errorGeneric': 'تعذّر إرسال الطلب.',
+  'auth.forgot.successTitle': 'تحقّق من بريدك الإلكتروني.',
+  'auth.forgot.successBody': 'إذا كان حسابك مرتبطاً بهذا البريد، فسيصلك رابط إعادة التعيين.',
   'auth.forgot.backToLogin': '→ العودة إلى تسجيل الدخول',
 
   // ===== AlertsPopover =====

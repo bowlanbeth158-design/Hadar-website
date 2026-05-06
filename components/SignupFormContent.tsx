@@ -1,19 +1,69 @@
 'use client';
 
+import { useState, type FormEvent } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Loader2, AlertTriangle } from 'lucide-react';
 import { GoogleIcon } from './GoogleIcon';
 import { useI18n } from '@/lib/i18n/provider';
+import { useAuth } from '@/lib/auth/AuthProvider';
+import { ApiClientError } from '@/lib/api/client';
 
 // Body of /inscription pulled into a client component so it can use
 // the i18n provider (the page itself stays a Server Component for
 // the metadata export).
 export function SignupFormContent() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
+  const router = useRouter();
+  const { signup } = useAuth();
+
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [accept, setAccept] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const canSubmit =
+    firstName.trim() &&
+    lastName.trim() &&
+    email.trim() &&
+    password.length >= 12 &&
+    accept &&
+    !submitting;
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!canSubmit) return;
+    setError(null);
+    setSubmitting(true);
+    try {
+      await signup({
+        email: email.trim(),
+        password,
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+        locale,
+      });
+      router.push('/mon-profil');
+    } catch (err) {
+      if (err instanceof ApiClientError) {
+        setError(err.userMessage);
+      } else {
+        setError(t('auth.signup.errorGeneric'));
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <>
       <button
         type="button"
-        className="w-full rounded-pill border border-gray-200 bg-white text-brand-navy px-5 py-2.5 text-sm font-semibold hover:border-brand-blue transition-colors flex items-center justify-center gap-2"
+        disabled
+        className="w-full rounded-pill border border-gray-200 bg-white text-brand-navy px-5 py-2.5 text-sm font-semibold hover:border-brand-blue transition-colors flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
       >
         <GoogleIcon className="h-4 w-4" />
         {t('auth.signup.googleButton')}
@@ -25,7 +75,7 @@ export function SignupFormContent() {
         <span className="flex-1 h-px bg-gray-200" />
       </div>
 
-      <form className="space-y-4">
+      <form className="space-y-4" onSubmit={handleSubmit} noValidate>
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label htmlFor="firstName" className="block text-xs font-semibold text-brand-navy mb-1">
@@ -35,6 +85,9 @@ export function SignupFormContent() {
               id="firstName"
               name="firstName"
               type="text"
+              required
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
               className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-brand-navy focus:outline-none focus:border-brand-blue"
             />
           </div>
@@ -46,6 +99,9 @@ export function SignupFormContent() {
               id="lastName"
               name="lastName"
               type="text"
+              required
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
               className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-brand-navy focus:outline-none focus:border-brand-blue"
             />
           </div>
@@ -59,6 +115,9 @@ export function SignupFormContent() {
             id="email"
             name="email"
             type="email"
+            required
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             placeholder={t('auth.email.placeholder')}
             className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue"
           />
@@ -72,13 +131,26 @@ export function SignupFormContent() {
             id="password"
             name="password"
             type="password"
+            required
+            minLength={12}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
             placeholder={t('auth.signup.passwordPlaceholder')}
             className="w-full rounded-xl border border-gray-200 px-4 py-2.5 text-sm text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue"
           />
+          <p className="mt-1 text-[11px] text-gray-500">
+            {t('auth.password.hint')}
+          </p>
         </div>
 
         <div className="flex items-start gap-2 text-xs text-gray-600">
-          <input type="checkbox" id="accept" className="mt-1" />
+          <input
+            type="checkbox"
+            id="accept"
+            checked={accept}
+            onChange={(e) => setAccept(e.target.checked)}
+            className="mt-1"
+          />
           <label htmlFor="accept">
             {t('auth.signup.acceptIntro')}{' '}
             <Link href="/conditions-generales" className="text-brand-blue hover:underline">
@@ -92,15 +164,30 @@ export function SignupFormContent() {
           </label>
         </div>
 
+        {error && (
+          <div
+            role="alert"
+            className="flex items-start gap-2 rounded-xl border border-red-300 bg-red-50 px-3 py-2 text-xs text-red-700"
+          >
+            <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" aria-hidden />
+            <span>{error}</span>
+          </div>
+        )}
+
         <button
           type="submit"
-          disabled
-          className="w-full rounded-pill bg-brand-blue text-white px-5 py-2.5 text-sm font-semibold shadow-glow-blue disabled:opacity-60 disabled:cursor-not-allowed"
+          disabled={!canSubmit}
+          className="w-full inline-flex items-center justify-center gap-2 rounded-pill bg-brand-blue text-white px-5 py-2.5 text-sm font-semibold shadow-glow-blue hover:bg-brand-navy disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
         >
-          {t('auth.signup.submit')}
+          {submitting ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              {t('auth.signup.submitting')}
+            </>
+          ) : (
+            t('auth.signup.submit')
+          )}
         </button>
-
-        <p className="text-xs text-gray-400 text-center">{t('auth.signup.disabled')}</p>
       </form>
     </>
   );

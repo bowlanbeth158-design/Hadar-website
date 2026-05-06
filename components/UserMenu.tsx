@@ -2,8 +2,10 @@
 
 import { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ChevronDown, LogOut, Siren, UserCircle2, UserRound } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/provider';
+import { useAuth } from '@/lib/auth/AuthProvider';
 
 // Profile dropdown items. "Mes signalements" is also in the mobile
 // hamburger drawer, so we hide that line on phone via mobileHidden
@@ -16,8 +18,16 @@ const ITEMS: { href: string; labelKey: string; Icon: typeof UserRound; mobileHid
 
 export function UserMenu() {
   const { t } = useI18n();
+  const router = useRouter();
+  const { logout } = useAuth();
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
+
+  const handleLogout = async () => {
+    setOpen(false);
+    await logout();
+    router.push('/connexion');
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -87,15 +97,15 @@ export function UserMenu() {
             </Link>
           ))}
           <div className="my-1 border-t border-gray-100 dark:border-white/10" />
-          <Link
-            href="/connexion"
+          <button
+            type="button"
             role="menuitem"
-            onClick={() => setOpen(false)}
-            className="group relative flex items-center gap-3 px-4 py-2.5 text-sm text-red-500
+            onClick={handleLogout}
+            className="group relative w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500
                        hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors duration-200
                        before:content-[''] before:absolute before:left-0 before:top-1/2 before:-translate-y-1/2
                        before:h-0 before:w-[3px] before:rounded-r-full before:bg-red-500
-                       before:transition-all before:duration-300 hover:before:h-2/3"
+                       before:transition-all before:duration-300 hover:before:h-2/3 text-start"
           >
             <LogOut
               className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5"
@@ -104,7 +114,7 @@ export function UserMenu() {
             <span className="transition-transform duration-200 group-hover:translate-x-0.5">
               {t('userMenu.logout')}
             </span>
-          </Link>
+          </button>
         </div>
       )}
     </div>

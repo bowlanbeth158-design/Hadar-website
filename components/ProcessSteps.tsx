@@ -196,11 +196,19 @@ export function ProcessSteps() {
 
                 {/* Coloured progress bar at the bottom of the card —
                     flips to a soft translucent-white track on hover so
-                    it keeps its accent role on the flooded background. */}
+                    it keeps its accent role on the flooded background.
+                    Inner span is a bright comet sliding across the bar
+                    on a 3 s loop, staggered per card so the four
+                    lines light up 1 → 2 → 3 → 4 instead of in unison. */}
                 <span
                   aria-hidden
-                  className={`pointer-events-none absolute bottom-3 left-6 right-6 h-1 rounded-full ${s.bottomBar} group-hover:bg-white/35 group-hover:bg-none transition-colors duration-300`}
-                />
+                  className={`pointer-events-none absolute bottom-3 left-6 right-6 h-1 rounded-full overflow-hidden ${s.bottomBar} group-hover:bg-white/35 group-hover:bg-none transition-colors duration-300`}
+                >
+                  <span
+                    className="absolute inset-y-0 left-0 w-1/2 rounded-full bg-gradient-to-r from-transparent via-white to-transparent animate-line-sweep"
+                    style={{ animationDelay: `${i * 0.6}s` }}
+                  />
+                </span>
 
                 {/* Connector to the next card — the travelling dot uses
                     a per-segment keyframe (travel-1-to-2 / 2-to-3 /

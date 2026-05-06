@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useEffect, useRef, useState } from 'react';
 import {
   Users,
   Siren,
@@ -143,8 +144,43 @@ export function PlatformStats() {
       ? { ...s, value: format(MONTANT_SIGNALE_MAD) }
       : s,
   );
+
+  // Trigger the mobile-only 3D card entrance the first time this
+  // section scrolls into view. The cards land tilted, then settle
+  // flat with a per-card delay; afterwards the existing card-
+  // spotlight ripple takes over. On desktop the entrance is a no-op
+  // (the cards keep their normal `animate-fade-in-down` reveal).
+  const sectionRef = useRef<HTMLElement>(null);
+  const [entered3d, setEntered3d] = useState(false);
+  useEffect(() => {
+    if (typeof window === 'undefined' || entered3d) return;
+    // Bypass the effect on desktop — only mobile gets the 3D drop.
+    if (window.matchMedia('(min-width: 768px)').matches) {
+      setEntered3d(true);
+      return;
+    }
+    const node = sectionRef.current;
+    if (!node) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) {
+          if (e.isIntersecting) {
+            setEntered3d(true);
+            observer.disconnect();
+            break;
+          }
+        }
+      },
+      { threshold: 0.15 },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [entered3d]);
+
   return (
-    <section className="mx-auto max-w-[1440px] px-4 md:px-6 py-12 md:py-16">
+    <section
+      ref={sectionRef}
+      className="mx-auto max-w-[1440px] px-4 md:px-6 py-12 md:py-16">
       {/* "Live update" pill — matches the same recipe used by the
           RecentReports section so the home page reads as one cohesive
           surface rather than a stack of independent components. */}
@@ -170,12 +206,18 @@ export function PlatformStats() {
         {stats.map((s, i) => (
           <li
             key={s.labelKey}
-            // Stagger the entrance so the row reveals card-by-card from
-            // top-left to bottom-right (≈90 ms between cards). animationFillMode
-            // 'both' holds the start frame until the delay fires, so cards
-            // stay invisible instead of flashing in place.
-            className="relative animate-fade-in-down"
-            style={{ animationDelay: `${i * 90}ms`, animationFillMode: 'both' }}
+            // Mobile (<md): start invisible, then on scroll-into-view
+            // run the 3D landing animation with a per-card stagger so
+            // the row plays like a deck being dealt.
+            // Desktop (md+): keep the original soft fade-in-down.
+            // animationFillMode: 'both' freezes the start frame until
+            // the delay fires so cards never flash in place.
+            className={
+              entered3d
+                ? 'relative max-md:animate-card-3d-enter md:animate-fade-in-down'
+                : 'relative md:animate-fade-in-down max-md:opacity-0'
+            }
+            style={{ animationDelay: `${i * 140}ms`, animationFillMode: 'both' }}
           >
             {/* Spotlight overlay — sibling of the article so its outer
                 box-shadow halo is NOT clipped by the article's

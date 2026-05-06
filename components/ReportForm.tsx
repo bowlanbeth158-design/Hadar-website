@@ -571,8 +571,21 @@ export function ReportForm() {
           {t('form.contactValue.label')} <span className="text-red-500">*</span>
         </label>
         {contactType === 'telephone' || contactType === 'whatsapp' ? (
-          <div className="flex">
+          // Unified search-style frame: a single rounded-pill border
+          // wraps both the country picker and the input so the field
+          // reads as one component instead of two adjacent boxes.
+          // CountryCodeSelector is rendered in `flat` mode so its
+          // own border disappears and only an internal divider
+          // separates the dial code from the digits.
+          <div
+            className={
+              contactValue.trim() !== '' && !contactValidation.valid
+                ? 'flex items-center rounded-pill bg-white/85 backdrop-blur-sm border-2 border-red-500 ring-2 ring-red-500/20 ps-1 pe-2 py-1 transition-all'
+                : 'flex items-center rounded-pill bg-white/85 backdrop-blur-sm border-2 border-gray-200 hover:border-brand-blue/50 focus-within:border-brand-blue focus-within:ring-4 focus-within:ring-brand-blue/15 ps-1 pe-2 py-1 transition-all'
+            }
+          >
             <CountryCodeSelector
+              flat
               value={country}
               onChange={(c) => {
                 setCountry(c);
@@ -595,7 +608,7 @@ export function ReportForm() {
               }
               maxLength={country.digits}
               placeholder={country.example}
-              className="flex-1 min-w-0 rounded-r-xl bg-white/85 backdrop-blur-sm border border-gray-200 px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue focus:shadow-sm transition-all"
+              className="flex-1 min-w-0 bg-transparent border-0 ps-3 pe-2 py-1.5 text-brand-navy placeholder:text-gray-400 focus:outline-none"
             />
           </div>
         ) : (

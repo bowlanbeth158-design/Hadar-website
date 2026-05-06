@@ -208,9 +208,15 @@ const POPOVER_GAP = 8;
 type Props = {
   value: Country;
   onChange: (c: Country) => void;
+  // When true, render the trigger as a flat inline pill (no own
+  // border, transparent background) so it can sit inside a unified
+  // search-style frame alongside the input. Defaults to false to
+  // preserve the existing two-piece "rounded-l-xl + border-r-0"
+  // layout used everywhere else.
+  flat?: boolean;
 };
 
-export function CountryCodeSelector({ value, onChange }: Props) {
+export function CountryCodeSelector({ value, onChange, flat = false }: Props) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
@@ -356,7 +362,11 @@ export function CountryCodeSelector({ value, onChange }: Props) {
         aria-haspopup="listbox"
         aria-expanded={open}
         aria-label={`Indicatif pays — ${value.name} ${value.dial}`}
-        className="inline-flex items-center gap-1.5 h-full rounded-l-xl bg-white/85 backdrop-blur-sm border border-r-0 border-gray-200 px-3 text-sm font-semibold text-brand-navy hover:border-brand-blue hover:text-brand-blue focus:outline-none focus:border-brand-blue transition-colors shrink-0"
+        className={
+          flat
+            ? 'inline-flex items-center gap-1.5 h-full rounded-pill bg-transparent border-0 ps-3 pe-2 text-sm font-semibold text-brand-navy hover:text-brand-blue focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-blue/40 transition-colors shrink-0 border-e border-gray-200'
+            : 'inline-flex items-center gap-1.5 h-full rounded-l-xl bg-white/85 backdrop-blur-sm border border-r-0 border-gray-200 px-3 text-sm font-semibold text-brand-navy hover:border-brand-blue hover:text-brand-blue focus:outline-none focus:border-brand-blue transition-colors shrink-0'
+        }
       >
         <span aria-hidden className="text-base leading-none">
           {value.flag}

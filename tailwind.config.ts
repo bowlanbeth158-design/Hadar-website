@@ -242,6 +242,28 @@ const config: Config = {
           '60%':  { transform: 'translateX(220%)' },
           '100%': { transform: 'translateX(220%)' },
         },
+        // 3D landing animation used on the homepage PlatformStats
+        // cards (mobile only). Cards start tilted back and shifted
+        // down, then settle flat into their final position. Each
+        // card gets a per-index animation-delay so the row reads
+        // like a deck of cards being dealt one at a time.
+        'card-3d-enter': {
+          '0%': {
+            opacity: '0',
+            transform:
+              'perspective(900px) rotateX(35deg) rotateY(-12deg) translateY(60px) scale(0.82)',
+          },
+          '60%': {
+            opacity: '1',
+            transform:
+              'perspective(900px) rotateX(-6deg) rotateY(2deg) translateY(-4px) scale(1.02)',
+          },
+          '100%': {
+            opacity: '1',
+            transform:
+              'perspective(900px) rotateX(0deg) rotateY(0deg) translateY(0) scale(1)',
+          },
+        },
         // Soft, recurring "tick" wiggle for the homepage SLA Clock
         // icon. Calm at rest, then a quick double-tick to draw
         // attention to the 48 h commitment without being noisy.
@@ -344,6 +366,8 @@ const config: Config = {
         'card-spotlight': 'card-spotlight 9s ease-in-out infinite',
         'line-sweep': 'line-sweep 3s ease-in-out infinite',
         'clock-tick': 'clock-tick 5s ease-in-out infinite',
+        'card-3d-enter':
+          'card-3d-enter 900ms cubic-bezier(0.16, 1, 0.3, 1) both',
         // Slow breathing halo for the SearchResult aura — opacity +
         // scale couple on a 6 s ease-in-out loop so the colour wash
         // behind the result pulses gently instead of being a static

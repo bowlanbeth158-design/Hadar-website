@@ -1,21 +1,59 @@
-// Hadar.ma — Prisma schema (initial)
-// Product decisions locked in design/design-notes.md and design/admin-notes.md.
+// ─────────────────────────────────────────────────────────────────────────────
+// Hadar.ma — Schéma Prisma
+// ─────────────────────────────────────────────────────────────────────────────
+//
+// Plateforme marocaine de prévention des fraudes. Ce fichier décrit la
+// structure complète de la base de données : 22 tables organisées en
+// 10 sections, avec toutes les décisions sécurité actées pendant la
+// phase d'architecture (séparation PII / Credential, audit log à chaîne
+// de hash, chiffrement champ-par-champ pour T1, hash peppered pour
+// recherche, etc.).
+//
+// Tous les commentaires `///` sont publiés dans le client Prisma généré ;
+// les commentaires `//` restent ici comme documentation interne.
+//
+// Conventions :
+//   - id    : cuid (sortable, 25 chars, non énumérable)
+//   - PII   : isolée dans `*PII`, jamais dans la table principale
+//   - T1    : champs annotés "// 🔒 KMS" → chiffrés au niveau application
+//             via lib/crypto avec une clé DigitalOcean KMS
+//   - Hash  : tout token / mot de passe / code OTP est stocké HASHÉ
+//             jamais en clair (argon2id pour mots de passe, SHA-256
+//             pour les tokens à durée courte)
+//   - PII tierces (contact signalé) : double-stockage hash + chiffré
+// ─────────────────────────────────────────────────────────────────────────────
 
 generator client {
-  provider      = "prisma-client-js"
-  binaryTargets = ["native", "debian-openssl-3.0.x"]
+  provider        = "prisma-client-js"
+  binaryTargets   = ["native", "debian-openssl-3.0.x"]
+  // postgresqlExtensions : permet de gérer citext / pg_trgm / pgcrypto
+  // directement depuis schema.prisma plutôt que dans des migrations
+  // SQL séparées.
+  // fullTextSearch : nécessaire pour les recherches floues sur la
+  // description des signalements (cf. dashboard admin).
+  previewFeatures = ["postgresqlExtensions", "fullTextSearch"]
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  // citext   : type texte case-insensitive — utilisé pour les emails
+  //            afin qu'on ne puisse pas créer "user@x.com" et
+  //            "USER@x.com" comme deux comptes différents.
+  // pg_trgm  : indexation par trigrammes — recherche partielle rapide
+  //            sur le numéro de téléphone signalé / l'URL signalée.
+  //            Indispensable pour la cible "< 200 ms" de la recherche
+  //            publique en charge.
+  // pgcrypto : fonctions de hashing / random natives — aussi utilisé
+  //            pour générer des UUID si on bascule plus tard.
+  extensions = [citext, pg_trgm, pgcrypto]
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Enums
-// ─────────────────────────────────────────────────────────────────────────────
+// ╔═══════════════════════════════════════════════════════════════════════════╗
+// ║                              SECTION B — ENUMS                             ║
+// ╚═══════════════════════════════════════════════════════════════════════════╝
 
-/// End-user account statuses (admin-notes.md §Écran 6 Utilisateurs)
+/// Statut compte d'un utilisateur final (admin-notes.md §Écran 6).
 enum UserStatus {
   ACTIVE
   INACTIVE
@@ -23,7 +61,8 @@ enum UserStatus {
   DELETED
 }
 
-/// Team member roles (admin-notes.md §Rôles & permissions)
+/// Rôles internes de l'équipe Hadar (admin-notes.md §Rôles & permissions).
+/// Ordre = hiérarchie (SUPER_ADMIN > ADMIN > MODERATOR > SUPPORT).
 enum MemberRole {
   SUPER_ADMIN
   ADMIN
@@ -31,13 +70,14 @@ enum MemberRole {
   SUPPORT
 }
 
+/// Statut compte d'un membre de l'équipe.
 enum MemberStatus {
   ACTIVE
   INACTIVE
   SUSPENDED
 }
 
-/// Report lifecycle (design-notes.md §Statuts d'un signalement)
+/// Cycle de vie d'un signalement (design-notes.md §Statuts).
 enum ReportStatus {
   SUBMITTED
   UNDER_REVIEW
@@ -47,7 +87,7 @@ enum ReportStatus {
   ARCHIVED
 }
 
-/// Channel where the suspicious contact was encountered
+/// Canal sur lequel le contact suspect a été rencontré.
 enum ReportChannel {
   TELEPHONE
   WHATSAPP
@@ -60,7 +100,7 @@ enum ReportChannel {
   CIN
 }
 
-/// Categories of issues users can report
+/// Catégorie de problème rapporté.
 enum ProblemType {
   NON_LIVRAISON
   BLOQUE_APRES_PAIEMENT
@@ -68,7 +108,13 @@ enum ProblemType {
   USURPATION_IDENTITE
 }
 
-/// 4-tier risk level derived from cumulative report count per contact
+/// Niveau de risque agrégé (design-notes.md §Niveaux de risque).
+/// Calculé à partir du nombre de signalements distincts sur un même
+/// (contactValueHash, channel) :
+///   FAIBLE     = 0          🟢
+///   VIGILANCE  = 1-2        🟡
+///   MODERE     = 3-4        🟠
+///   ELEVE      = 5+         🔴
 enum RiskLevel {
   FAIBLE
   VIGILANCE
@@ -76,125 +122,518 @@ enum RiskLevel {
   ELEVE
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// End users (people who submit/verify reports)
-// ─────────────────────────────────────────────────────────────────────────────
+/// Statut d'une demande de vérification d'identité (CIN + selfie).
+enum VerificationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
 
+/// Statut d'une contestation déposée par une personne signalée.
+enum ContestationStatus {
+  RECEIVED
+  UNDER_REVIEW
+  ACCEPTED
+  REJECTED
+}
+
+/// Priorité d'un ticket de support (admin-notes.md §SLA).
+enum TicketPriority {
+  URGENTE
+  HAUTE
+  MOYENNE
+  BASSE
+}
+
+/// Statut d'un ticket de support.
+enum TicketStatus {
+  OPEN
+  ASSIGNED
+  WAITING_USER
+  RESOLVED
+  CLOSED
+}
+
+/// Type d'acteur dans une ligne d'audit log.
+enum AuditActorType {
+  USER
+  MEMBER
+  SYSTEM
+  ANONYMOUS
+}
+
+/// Type de jeton à durée courte hashé en base.
+enum ShortLivedTokenKind {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+  PHONE_VERIFICATION
+}
+
+// ╔═══════════════════════════════════════════════════════════════════════════╗
+// ║              SECTION C — UTILISATEURS FINAUX (3 tables)                    ║
+// ║                                                                            ║
+// ║  Séparation T1/T2 : User reste mince et public-readable, UserPII et       ║
+// ║  Credential sont isolées et accédées seulement quand strictement          ║
+// ║  nécessaire. Un dev qui fait `SELECT * FROM users` n'aspire AUCUNE PII.   ║
+// ╚═══════════════════════════════════════════════════════════════════════════╝
+
+/// Squelette d'un compte utilisateur final. Aucune PII ici — juste les
+/// informations de cycle de vie, de rôle implicite "user", et les
+/// préférences non-sensibles. Joins vers UserPII et Credential
+/// uniquement quand l'opération en a vraiment besoin.
 model User {
-  id                String     @id @default(cuid())
-  email             String     @unique
-  phone             String?    @unique
-  firstName         String
-  lastName          String
-  passwordHash      String
-  emailVerifiedAt   DateTime?
-  phoneVerifiedAt   DateTime?
-  status            UserStatus @default(ACTIVE)
-  preferredLanguage String     @default("fr")
-  preferredCurrency String     @default("MAD")
-  // Auto-flag Inactif after N days of inactivity (see admin-notes.md open Qs)
-  lastActivityAt    DateTime?
-  // Soft-delete: admin can restore; see admin-notes.md §Spec suppression
-  deletedAt         DateTime?
-  // Sanction reason (for audit + user email when blocked/deleted)
-  sanctionReason    String?
-  createdAt         DateTime   @default(now())
-  updatedAt         DateTime   @updatedAt
+  id                    String     @id @default(cuid())
+  status                UserStatus @default(ACTIVE)
+  preferredLanguage     String     @default("fr") // fr / en / ar
+  preferredCurrency     String     @default("MAD") // MAD / EUR / USD
+  /// Profil identité validé par l'équipe (CIN + selfie). Lie à
+  /// IdentityVerification.id pour traçabilité ; null tant que l'user
+  /// n'a pas vérifié.
+  verifiedIdentityId    String?    @unique
+  /// Pour calculer "Inactif depuis X jours". Mis à jour à chaque
+  /// requête authentifiée (job léger, non bloquant).
+  lastActivityAt        DateTime?
+  /// Compteur pré-calculé du nombre de signalements PUBLISHED de cet
+  /// user — alimente les 6 niveaux contributeur (Visiteur → Expert)
+  /// sans avoir à faire COUNT(*) à chaque affichage de profil.
+  publishedReportsCount Int        @default(0)
+  /// Soft-delete : la ligne reste pour préserver l'intégrité des
+  /// signalements publiés et de l'audit log. Les PII sont
+  /// simultanément anonymisées dans UserPII (email remplacé,
+  /// phone vidé). Une purge complète (hard delete) suit après
+  /// 1 an de rétention légale.
+  deletedAt             DateTime?
+  /// Motif de sanction renseigné par l'admin (obligatoire à
+  /// "Bloquer" et "Supprimer"). Notifié à l'user par email.
+  sanctionReason        String?
+  createdAt             DateTime   @default(now())
+  updatedAt             DateTime   @updatedAt
 
-  reports        Report[]
-  reportRatings  ReportRating[]
+  // Relations 1:1 (PII et credentials isolées)
+  pii              UserPII?
+  credential       UserCredential?
+  verifiedIdentity IdentityVerification? @relation("VerifiedBy", fields: [verifiedIdentityId], references: [id])
+
+  // Relations 1:N
+  reports               Report[]
+  reportRatings         ReportRating[]
+  alerts                Alert[]
+  identityVerifications IdentityVerification[] @relation("UserSubmissions")
+  sessions              Session[]
+  loginAttempts         LoginAttempt[]
+  shortLivedTokens      ShortLivedToken[]
+  tickets               Ticket[]
 
   @@index([status])
   @@index([lastActivityAt])
+  @@index([deletedAt])
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Internal team members
-// ─────────────────────────────────────────────────────────────────────────────
-
-model Member {
-  id              String       @id @default(cuid())
-  email           String       @unique
-  phone           String?
+/// PII des utilisateurs finaux (Tier 2). Email et phone sont en clair
+/// (besoin de matching / login / notifications) mais firstName /
+/// lastName / dateOfBirth peuvent être stockés chiffrés selon la
+/// politique de sensibilité retenue. La table elle-même est
+/// accessible uniquement par le service auth + les endpoints qui
+/// affichent explicitement le profil.
+model UserPII {
+  userId          String    @id
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// citext : "user@x.com" et "USER@x.com" sont considérés identiques
+  /// — empêche la création de doublons par changement de casse.
+  email           String    @unique @db.Citext
+  phone           String?   @unique
   firstName       String
   lastName        String
-  passwordHash    String
-  role            MemberRole   @default(MODERATOR)
-  status          MemberStatus @default(ACTIVE)
-  twoFactorSecret String?
-  lastLoginAt     DateTime?
-  createdAt       DateTime     @default(now())
-  updatedAt       DateTime     @updatedAt
+  /// Date de naissance — utile pour vérification d'âge (majeur
+  /// requis pour signaler) et pour matcher avec la CIN.
+  dateOfBirth     DateTime? @db.Date
+  /// Vérifications de canaux de contact (jeton confirmé).
+  emailVerifiedAt DateTime?
+  phoneVerifiedAt DateTime?
+  updatedAt       DateTime  @updatedAt
 
-  moderatedReports Report[] @relation("ReportModerator")
-
-  @@index([role, status])
+  @@index([phone])
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Reports (central entity)
-// ─────────────────────────────────────────────────────────────────────────────
+/// Credentials d'authentification d'un utilisateur. Isolée pour qu'un
+/// développeur ne puisse pas accidentellement lire des hashes / TOTP
+/// secrets dans une query exploratoire.
+model UserCredential {
+  userId                 String    @id
+  user                   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// argon2id (m=64MB, t=3, p=4) + pepper KMS. Une fuite SQL seule
+  /// ne suffit pas à cracker les mots de passe.
+  passwordHash           String
+  /// 🔒 KMS : secret TOTP chiffré au niveau application (clé DO KMS).
+  totpSecretEncrypted    String?
+  /// Date d'activation du 2FA TOTP. null = 2FA pas encore activé.
+  totpEnabledAt          DateTime?
+  /// 🔒 KMS : 8 codes de récupération (un seul usage chacun)
+  /// chiffrés en bloc. Utilisés si l'user perd son authenticator.
+  recoveryCodesEncrypted String?
+  /// Compteur d'échecs consécutifs sur le mot de passe — feed le
+  /// lockout. Reset à 0 sur login réussi.
+  failedAttempts         Int       @default(0)
+  /// Si !null et > now() → compte verrouillé jusqu'à cette date.
+  /// Backoff exponentiel : 1ère sanction 15 min, 2ème 1h, 3ème 24h.
+  lockedUntil            DateTime?
+  passwordChangedAt      DateTime?
+  /// Force le user à re-changer son mot de passe au prochain login
+  /// (utilisé si on détecte une fuite / réutilisation HIBP).
+  mustResetPassword      Boolean   @default(false)
+  updatedAt              DateTime  @updatedAt
+
+  // Relations
+  webauthnCredentials WebauthnCredential[]
+}
+
+// ╔═══════════════════════════════════════════════════════════════════════════╗
+// ║              SECTION D — MEMBRES DE L'ÉQUIPE (3 tables)                    ║
+// ║                                                                            ║
+// ║  Même séparation User/PII/Credential mais pour le staff. Les Members      ║
+// ║  ont des rôles élevés (MOD/Admin/Super-admin) donc 2FA TOTP est           ║
+// ║  obligatoire dès le jour 1 (enforced en code, pas en schéma).             ║
+// ╚═══════════════════════════════════════════════════════════════════════════╝
+
+model Member {
+  id          String       @id @default(cuid())
+  role        MemberRole   @default(MODERATOR)
+  status      MemberStatus @default(ACTIVE)
+  /// Soft-delete (un membre qui part de l'équipe). On garde la ligne
+  /// pour préserver les références dans les reports modérés et
+  /// l'audit log. Anonymisation simultanée dans MemberPII.
+  deletedAt   DateTime?
+  lastLoginAt DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  pii                  MemberPII?
+  credential           MemberCredential?
+  moderatedReports     Report[]               @relation("ReportModerator")
+  decidedVerifications IdentityVerification[] @relation("VerificationReviewer")
+  decidedContestations ReportContestation[]   @relation("ContestationReviewer")
+  assignedTickets      Ticket[]               @relation("TicketAssignee")
+  ticketMessages       TicketMessage[]        @relation("MemberMessages")
+  announcements        Announcement[]
+  configChanges        PlatformConfig[]       @relation("ConfigUpdatedBy")
+  sessions             Session[]              @relation("MemberSession")
+
+  @@index([role, status])
+  @@index([deletedAt])
+}
+
+model MemberPII {
+  memberId  String   @id
+  member    Member   @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  email     String   @unique @db.Citext
+  phone     String?
+  firstName String
+  lastName  String
+  updatedAt DateTime @updatedAt
+}
+
+model MemberCredential {
+  memberId               String    @id
+  member                 Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  passwordHash           String
+  /// 🔒 KMS — 2FA TOTP obligatoire pour tout member dès l'activation.
+  totpSecretEncrypted    String
+  totpEnabledAt          DateTime
+  recoveryCodesEncrypted String
+  failedAttempts         Int       @default(0)
+  lockedUntil            DateTime?
+  passwordChangedAt      DateTime?
+  mustResetPassword      Boolean   @default(false)
+  updatedAt              DateTime  @updatedAt
+
+  webauthnCredentials WebauthnCredential[] @relation("MemberWebauthn")
+}
+
+// ╔═══════════════════════════════════════════════════════════════════════════╗
+// ║       SECTION E — SESSIONS / TOKENS / RATE LIMITING (5 tables)            ║
+// ║                                                                            ║
+// ║  Toute auth est server-side. Les JWT access tokens sont volatils          ║
+// ║  (15 min, pas en DB) ; les refresh tokens sont en DB pour permettre       ║
+// ║  rotation + révocation instantanée + détection de réutilisation.          ║
+// ╚═══════════════════════════════════════════════════════════════════════════╝
+
+/// Une session active = un refresh token qui n'a pas encore été utilisé
+/// ou qui a été utilisé avec succès puis tourné. La détection de
+/// réutilisation (utiliser deux fois le même refresh token) déclenche
+/// la révocation de TOUTES les sessions de l'user.
+model Session {
+  id               String    @id @default(cuid())
+  userId           String?
+  user             User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  memberId         String?
+  member           Member?   @relation(fields: [memberId], references: [id], onDelete: Cascade, name: "MemberSession")
+  /// SHA-256 du refresh token. Le token clair n'existe que dans le
+  /// cookie HttpOnly du client.
+  refreshTokenHash String    @unique
+  /// Pour chaîner les rotations : quand le client présente un
+  /// refresh token, on vérifie qu'il pointe vers la session
+  /// courante. Si rotatedFromId pointe sur une session déjà
+  /// "consumée", c'est une réutilisation → on révoque tout.
+  rotatedFromId    String?   @unique
+  /// IP + userAgent stockés HASHÉS (SHA-256, sans pepper) pour
+  /// détecter un changement (= signal de hijack) sans révéler
+  /// l'IP ou l'UA brut au support qui consulte l'audit.
+  ipHash           String
+  userAgentHash    String
+  /// Nom convivial donné par l'user à la session (ex : "iPhone de
+  /// Mohammed"). Optionnel.
+  label            String?
+  expiresAt        DateTime
+  lastUsedAt       DateTime  @default(now())
+  /// Si !null, la session a été révoquée (logout, lockout, rotation
+  /// échouée). On garde la ligne ~30 j pour audit puis purge.
+  revokedAt        DateTime?
+  revokedReason    String?
+  createdAt        DateTime  @default(now())
+
+  @@index([userId])
+  @@index([memberId])
+  @@index([expiresAt])
+  @@index([revokedAt])
+}
+
+/// Tentatives de connexion (success ou échec) pour rate limiting et
+/// détection d'attaque par credential stuffing. Purge auto à 30 j.
+model LoginAttempt {
+  id          String   @id @default(cuid())
+  /// Email tapé (non pas userId — on logue aussi les tentatives
+  /// sur des comptes inexistants pour repérer les énumérations).
+  /// Hashé pour ne pas conserver l'historique en clair.
+  emailHash   String
+  /// userId si l'email correspond à un compte (pour grouper
+  /// les tentatives sur un même compte).
+  userId      String?
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  /// IP brute hashée — on n'a pas besoin de l'IP en clair pour
+  /// faire du rate limit, juste de pouvoir grouper.
+  ipHash      String
+  success     Boolean
+  /// Raison de l'échec (BAD_PASSWORD, ACCOUNT_LOCKED, NO_ACCOUNT,
+  /// MFA_FAILED, RATE_LIMITED, …) — utile pour les heatmaps
+  /// d'attaque.
+  failureKind String?
+  attemptedAt DateTime @default(now())
+
+  @@index([emailHash, attemptedAt])
+  @@index([ipHash, attemptedAt])
+  @@index([userId, attemptedAt])
+}
+
+/// Tokens à durée courte (vérification email, reset password,
+/// vérification téléphone). Toujours stockés HASHÉS — le token clair
+/// n'existe que dans l'email/SMS envoyé.
+model ShortLivedToken {
+  id        String              @id @default(cuid())
+  kind      ShortLivedTokenKind
+  userId    String
+  user      User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// SHA-256 du token / code OTP.
+  tokenHash String              @unique
+  /// Compteur de tentatives (pour OTP SMS — bloque après 5 essais).
+  attempts  Int                 @default(0)
+  expiresAt DateTime
+  /// !null = déjà consommé (un token ne sert qu'une fois).
+  usedAt    DateTime?
+  ipHash    String?
+  createdAt DateTime            @default(now())
+
+  @@index([userId, kind])
+  @@index([expiresAt])
+}
+
+/// Identifiants WebAuthn / Passkeys. Permet l'authentification
+/// hardware pour les Super-admins (élimine le phishing).
+model WebauthnCredential {
+  id                 String            @id @default(cuid())
+  userCredentialId   String?
+  userCredential     UserCredential?   @relation(fields: [userCredentialId], references: [userId], onDelete: Cascade)
+  memberCredentialId String?
+  memberCredential   MemberCredential? @relation(fields: [memberCredentialId], references: [memberId], onDelete: Cascade, name: "MemberWebauthn")
+  /// CredentialID renvoyé par l'authenticator (base64url).
+  credentialId       String            @unique
+  /// Clé publique COSE en base64.
+  publicKey          String
+  /// Compteur anti-clonage (chaque utilisation incrémente).
+  signCount          Int               @default(0)
+  /// AAGUID de l'authenticator (Yubikey, Touch ID, etc.).
+  aaguid             String?
+  label              String?
+  lastUsedAt         DateTime?
+  createdAt          DateTime          @default(now())
+
+  @@index([userCredentialId])
+  @@index([memberCredentialId])
+}
+
+// ╔═══════════════════════════════════════════════════════════════════════════╗
+// ║         SECTION F — VÉRIFICATION D'IDENTITÉ (CIN + selfie)                 ║
+// ║                                                                            ║
+// ║  Données ultra-sensibles (T1). Auto-purge à J+30 si APPROVED, J+7 si      ║
+// ║  REJECTED. Le hash perceptuel du selfie reste pour anti-doublon.          ║
+// ╚═══════════════════════════════════════════════════════════════════════════╝
+
+model IdentityVerification {
+  id                       String             @id @default(cuid())
+  userId                   String
+  user                     User               @relation("UserSubmissions", fields: [userId], references: [id], onDelete: Cascade)
+  status                   VerificationStatus @default(PENDING)
+  /// 🔒 KMS — clé de l'objet CIN dans Spaces. Chiffrée pour qu'un
+  /// dump SQL ne révèle pas l'URL des images.
+  cinObjectKeyEncrypted    String
+  /// 🔒 KMS — idem pour le selfie.
+  selfieObjectKeyEncrypted String
+  /// Hash perceptuel (pHash) du selfie — permet de détecter qu'un
+  /// même visage tente de créer plusieurs comptes. Reste après
+  /// purge des images originales.
+  selfiePerceptualHash     String
+  submittedAt              DateTime           @default(now())
+  reviewedAt               DateTime?
+  reviewerId               String?
+  reviewer                 Member?            @relation("VerificationReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  rejectionReason          String?
+  /// Date après laquelle le job de purge supprimera cinObjectKey
+  /// et selfieObjectKey de Spaces (mais conserve la ligne, le
+  /// pHash, et le statut pour traçabilité). Calculée à
+  /// reviewedAt + 30 j (APPROVED) ou + 7 j (REJECTED).
+  autoDeleteAt             DateTime?
+  /// !null après que le job ait effectivement purgé les fichiers.
+  filesDeletedAt           DateTime?
+  updatedAt                DateTime           @updatedAt
+
+  // Relation inverse — quand approuvée, l'user.verifiedIdentityId
+  // pointe ici pour identifier la vérification "courante".
+  verifiedUser User? @relation("VerifiedBy")
+
+  @@index([status, submittedAt])
+  @@index([userId])
+  @@index([selfiePerceptualHash])
+  @@index([autoDeleteAt])
+}
+
+// ╔═══════════════════════════════════════════════════════════════════════════╗
+// ║                SECTION G — SIGNALEMENTS (4 tables)                         ║
+// ║                                                                            ║
+// ║  Cœur métier. contactValue stocké TROIS fois pour concilier sécurité      ║
+// ║  ET recherche : hash peppered (lookup exact + agrégation), chiffré        ║
+// ║  (affichage), normalized (recherche partielle pg_trgm — accepté          ║
+// ║  comme moins protégé car nécessaire au produit).                          ║
+// ╚═══════════════════════════════════════════════════════════════════════════╝
 
 model Report {
-  id               String         @id @default(cuid())
-  authorId         String
-  author           User           @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Restrict)
 
-  // The suspicious contact being reported
-  channel          ReportChannel
-  contactValue     String         // raw value as entered
-  contactNormalized String        // normalized form (lowercased, digits-only for phones, etc.) used for search
-  problemType      ProblemType
-  estimatedAmount  Int?           // in minor currency units (centimes)
-  currency         String         @default("MAD")
-  description      String?        @db.Text
+  // ── Contact signalé (3 colonnes pour 1 même valeur logique) ──
+  channel                ReportChannel
+  /// HMAC-SHA256(value, pepper) — pepper en KMS séparée du DB.
+  /// Indexé pour les lookups exacts et les agrégats. Une fuite SQL
+  /// seule ne permet pas de retrouver les valeurs originales.
+  contactValueHash       String
+  /// 🔒 KMS — valeur en clair chiffrée AES-GCM. Déchiffrée
+  /// uniquement quand on doit afficher le contact à un user
+  /// authentifié (recherche de risque) ou à un modérateur.
+  contactValueEncrypted  String
+  /// Forme normalisée (lowercase, espaces / tirets retirés)
+  /// indexée par pg_trgm pour la recherche partielle. Stockage
+  /// en clair accepté car indispensable au produit (sinon on ne
+  /// peut pas faire de "fuzzy search").
+  contactValueNormalized String
 
-  // Moderation
-  status           ReportStatus   @default(SUBMITTED)
+  problemType         ProblemType
+  /// Montant en plus petites unités (centimes pour MAD/EUR/USD).
+  /// null = "—" affiché côté UI (signalements sans transaction).
+  amountCents         Int?
+  currency            String      @default("MAD")
+  /// Phrase publique CURÉE choisie depuis la liste prédéfinie
+  /// (lib/descriptionSuggestions.ts). C'est ce qui s'affiche dans
+  /// le feed public — verrouillé pour éviter les phrases
+  /// diffamatoires.
+  descriptionPublic   String      @db.Text
+  /// 🔒 KMS — notes libres destinées à l'équipe modération
+  /// uniquement. Jamais affichées publiquement.
+  adminNotesEncrypted String?
+
+  // ── Modération ──
+  status           ReportStatus @default(SUBMITTED)
   moderatorId      String?
-  moderator        Member?        @relation("ReportModerator", fields: [moderatorId], references: [id])
-  moderationReason String?        @db.Text
-  moderatedAt      DateTime?
+  moderator        Member?      @relation("ReportModerator", fields: [moderatorId], references: [id], onDelete: SetNull)
+  /// Motif obligatoire à "Non retenu" (sélection dans
+  /// ModerationReasonTemplate ou texte libre).
+  moderationReason String?      @db.Text
+  reviewedAt       DateTime?
+  publishedAt      DateTime?
+  archivedAt       DateTime?
 
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  // ── Rétention ──
+  /// Date après laquelle les évidences seront purgées (90 j après
+  /// publication). Calculée à publishedAt + 90 j.
+  evidenceAutoPurgeAt DateTime?
+  evidencesPurgedAt   DateTime?
 
-  evidences ReportEvidence[]
-  rating    ReportRating?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  // Uniqueness rule (admin-notes.md §Écran 9): one user cannot report the
-  // same (value, channel) tuple twice. Same value on two different channels
-  // is allowed (phone as WhatsApp + as RIB is two distinct reports).
-  @@unique([authorId, contactNormalized, channel])
-  @@index([contactNormalized, channel])
-  @@index([status, createdAt])
+  evidences     ReportEvidence[]
+  rating        ReportRating?
+  contestations ReportContestation[]
+
+  /// Règle d'unicité (CLAUDE.md §Règle d'unicité signalement) :
+  /// un même user ne peut signaler qu'une fois le même tuple
+  /// (contact, canal). La même valeur sur 2 canaux différents =
+  /// 2 signalements distincts (un téléphone signalé "WhatsApp"
+  /// et "RIB" est traité comme 2 signalements).
+  @@unique([userId, contactValueHash, channel])
+  // Indexes critiques pour les performances
+  @@index([contactValueHash, channel]) // recherche + agrégation
+  @@index([status, createdAt]) // file de modération
+  @@index([userId, status]) // "Mes expériences"
   @@index([problemType])
+  @@index([publishedAt])
+  @@index([evidenceAutoPurgeAt]) // job de purge
 }
 
 model ReportEvidence {
-  id          String   @id @default(cuid())
+  id          String    @id @default(cuid())
   reportId    String
-  report      Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
-  storageKey  String   // object storage key (DigitalOcean Spaces)
+  report      Report    @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  /// Clé objet dans DigitalOcean Spaces. Filename = UUID, jamais
+  /// celui de l'user (anti enumeration + anti exfil). Server-side
+  /// encryption AES-256 via Spaces.
+  objectKey   String
+  /// MIME validé par magic bytes (pas par extension).
   mimeType    String
   sizeBytes   Int
-  originalName String?
-  createdAt   DateTime @default(now())
+  /// SHA-256 du contenu — détection de duplications, vérification
+  /// d'intégrité au téléchargement, dédup d'évidences.
+  sha256      String
+  /// Renseigné si l'image a été ré-encodée par sharp (kills
+  /// polyglot files + EXIF stripping).
+  reencodedAt DateTime?
+  /// !null = passé par ClamAV avant stockage.
+  scannedAt   DateTime?
+  uploadedAt  DateTime  @default(now())
+  /// !null = fichier physique purgé de Spaces (mais ligne gardée
+  /// pour audit).
+  deletedAt   DateTime?
 
   @@index([reportId])
+  @@index([sha256])
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Satisfaction rating widget (design-notes.md §Widget de rating)
-// ─────────────────────────────────────────────────────────────────────────────
-
+/// Note de satisfaction 1-5 ⭐ (design-notes.md §Widget de rating).
 model ReportRating {
   id        String   @id @default(cuid())
   reportId  String   @unique
   report    Report   @relation(fields: [reportId], references: [id], onDelete: Cascade)
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  score     Int      // 1..5
+  score     Int // 1..5
   comment   String?  @db.Text
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -202,24 +641,260 @@ model ReportRating {
   @@index([score])
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Append-only audit log (admin-notes.md security sections)
-// ─────────────────────────────────────────────────────────────────────────────
+/// Une personne signalée peut contester via un formulaire public
+/// (sans création de compte). Statut "contesté" temporaire affecté
+/// au signalement pendant l'examen.
+model ReportContestation {
+  id                          String             @id @default(cuid())
+  reportId                    String
+  report                      Report             @relation(fields: [reportId], references: [id], onDelete: Cascade)
+  /// Email de la personne qui conteste — vérifié par token avant
+  /// que la contestation ne soit traitée.
+  contesterEmail              String
+  contesterEmailVerifiedAt    DateTime?
+  contesterReason             String             @db.Text
+  /// 🔒 KMS — preuves jointes par la personne signalée (PDF, image).
+  evidenceObjectKeysEncrypted String?
+  status                      ContestationStatus @default(RECEIVED)
+  reviewerId                  String?
+  reviewer                    Member?            @relation("ContestationReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  reviewerNotes               String?            @db.Text
+  decidedAt                   DateTime?
+  createdAt                   DateTime           @default(now())
+  updatedAt                   DateTime           @updatedAt
+
+  @@index([reportId])
+  @@index([status])
+}
+
+// ╔═══════════════════════════════════════════════════════════════════════════╗
+// ║          SECTION H — RECHERCHE & ALERTES (2 tables)                        ║
+// ║                                                                            ║
+// ║  ContactAggregate est précalculé par job/trigger pour que la recherche    ║
+// ║  publique ne fasse jamais de COUNT(*) à chaud (cible < 200 ms).           ║
+// ╚═══════════════════════════════════════════════════════════════════════════╝
+
+/// Agrégat précalculé pour la recherche publique. Une ligne par
+/// (contactValueHash, channel). Mis à jour par trigger Postgres ou
+/// job léger à chaque PUBLISHED / unPUBLISHED d'un signalement.
+model ContactAggregate {
+  contactValueHash       String
+  channel                ReportChannel
+  /// Forme normalisée pour l'index pg_trgm (recherche partielle).
+  contactValueNormalized String
+  totalReports           Int           @default(0)
+  /// Nombre d'auteurs distincts (anti-spam : un seul user qui signale
+  /// 5 fois ne fait pas passer à ELEVE).
+  distinctReporters      Int           @default(0)
+  riskLevel              RiskLevel     @default(FAIBLE)
+  firstReportAt          DateTime?
+  lastReportAt           DateTime?
+  updatedAt              DateTime      @updatedAt
+
+  alerts Alert[]
+
+  @@id([contactValueHash, channel])
+  @@index([channel, riskLevel])
+  @@index([contactValueNormalized])
+  @@index([lastReportAt])
+}
+
+/// "Mes suivis" : un user peut s'abonner aux mises à jour d'un
+/// contact. Notifié par email quand le risque évolue.
+model Alert {
+  id               String           @id @default(cuid())
+  userId           String
+  user             User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contactValueHash String
+  channel          ReportChannel
+  aggregate        ContactAggregate @relation(fields: [contactValueHash, channel], references: [contactValueHash, channel])
+  /// Niveau de risque connu de l'user au moment de la souscription.
+  /// Diff vs aggregate.riskLevel = a-t-on quelque chose à notifier ?
+  knownRiskLevel   RiskLevel
+  lastNotifiedAt   DateTime?
+  createdAt        DateTime         @default(now())
+
+  @@unique([userId, contactValueHash, channel])
+  @@index([contactValueHash, channel])
+}
+
+// ╔═══════════════════════════════════════════════════════════════════════════╗
+// ║                  SECTION I — SUPPORT (3 tables)                            ║
+// ╚═══════════════════════════════════════════════════════════════════════════╝
+
+model Ticket {
+  id           String         @id @default(cuid())
+  userId       String?
+  user         User?          @relation(fields: [userId], references: [id], onDelete: SetNull)
+  subject      String
+  /// Pour les tickets sans compte (formulaire public).
+  guestEmail   String?
+  priority     TicketPriority @default(MOYENNE)
+  status       TicketStatus   @default(OPEN)
+  assignedToId String?
+  assignedTo   Member?        @relation("TicketAssignee", fields: [assignedToId], references: [id], onDelete: SetNull)
+  /// SLA : computed at creation as createdAt + delay(priority).
+  /// Urgente 1h / Haute 4h / Moyenne 24h / Basse 72h.
+  slaDeadline  DateTime
+  resolvedAt   DateTime?
+  closedAt     DateTime?
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  messages TicketMessage[]
+
+  @@index([status, priority, slaDeadline])
+  @@index([userId])
+  @@index([assignedToId])
+}
+
+model TicketMessage {
+  id                   String         @id @default(cuid())
+  ticketId             String
+  ticket               Ticket         @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorType           AuditActorType
+  /// userId ou memberId selon authorType. Garde-fou applicatif.
+  userAuthorId         String?
+  memberAuthorId       String?
+  memberAuthor         Member?        @relation("MemberMessages", fields: [memberAuthorId], references: [id], onDelete: SetNull)
+  body                 String         @db.Text
+  /// Pour les pièces jointes (rares en support).
+  attachmentObjectKeys String[]
+  createdAt            DateTime       @default(now())
+
+  @@index([ticketId, createdAt])
+}
+
+/// Annonces poussées (banner top du site, email blast, channel
+/// Telegram). Gérées depuis /admin/annonces.
+model Announcement {
+  id          String    @id @default(cuid())
+  authorId    String
+  author      Member    @relation(fields: [authorId], references: [id], onDelete: Restrict)
+  title       String
+  body        String    @db.Text
+  /// 'all' | 'verified' | 'staff' | 'beta' …
+  audience    String    @default("all")
+  publishedAt DateTime?
+  expiresAt   DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([publishedAt, expiresAt])
+}
+
+// ╔═══════════════════════════════════════════════════════════════════════════╗
+// ║          SECTION J — CONFIGURATION PLATEFORME (3 tables)                   ║
+// ╚═══════════════════════════════════════════════════════════════════════════╝
+
+/// Réglages plateforme éditables depuis /admin/parametres.
+/// Singleton key/value JSON (siteName, brandLogo, contactInfo, etc.)
+/// — actuellement géré côté UI dans localStorage, à migrer en DB.
+model PlatformConfig {
+  key         String   @id
+  value       Json
+  updatedById String?
+  updatedBy   Member?  @relation("ConfigUpdatedBy", fields: [updatedById], references: [id], onDelete: SetNull)
+  updatedAt   DateTime @updatedAt
+}
+
+/// Seuils des 6 niveaux de contributeur (Visiteur → Expert).
+/// Singleton (un seul row, id = 'default'). Édité depuis
+/// /admin/utilisateurs > Étoiles.
+model ContributorTierThreshold {
+  id          String   @id @default("default")
+  visiteur    Int      @default(0)
+  nouveau     Int      @default(1)
+  actif       Int      @default(4)
+  regulier    Int      @default(7)
+  avance      Int      @default(12)
+  expert      Int      @default(17)
+  updatedById String?
+  updatedAt   DateTime @updatedAt
+}
+
+/// Motifs prédéfinis pour les actions de modération
+/// ("Non retenu" sur un signalement, "Bloquer" un user, etc.).
+/// Permet à l'admin d'enrichir la liste sans déployer de code.
+model ModerationReasonTemplate {
+  id            String   @id @default(cuid())
+  /// 'report.reject' | 'user.block' | 'user.delete' | …
+  scope         String
+  label         String
+  /// Template avec placeholders pour le mail envoyé à l'user.
+  emailTemplate String?  @db.Text
+  /// Ordre d'affichage dans le menu déroulant.
+  displayOrder  Int      @default(0)
+  active        Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([scope, active, displayOrder])
+}
+
+// ╔═══════════════════════════════════════════════════════════════════════════╗
+// ║          SECTION K — AUDIT LOG (1 table critique)                          ║
+// ║                                                                            ║
+// ║  Append-only avec chaîne de hash. Une ligne contient le hash de la        ║
+// ║  ligne précédente, donc supprimer ou modifier une ligne historique        ║
+// ║  invaliderait tout le chaînage à partir de là (détectable par job         ║
+// ║  d'intégrité). Les UPDATE/DELETE sur cette table doivent être             ║
+// ║  bloqués au niveau Postgres par un trigger (ajouté en migration SQL).     ║
+// ╚═══════════════════════════════════════════════════════════════════════════╝
 
 model AuditLog {
-  id           String   @id @default(cuid())
-  actorType    String   // 'user' | 'member' | 'system'
-  actorId      String?
-  action       String   // e.g. 'report.moderate', 'user.block', 'member.changeRole'
-  targetType   String?  // 'report' | 'user' | 'member' | ...
-  targetId     String?
-  reason       String?  @db.Text
-  metadata     Json?
-  ipAddress    String?
-  userAgent    String?
-  createdAt    DateTime @default(now())
+  id               String         @id @default(cuid())
+  /// Auteur de l'action (USER | MEMBER | SYSTEM | ANONYMOUS).
+  actorType        AuditActorType
+  actorId          String?
+  /// Verbe.objet — ex 'report.publish', 'user.block',
+  /// 'member.role.change', 'verification.approve'.
+  action           String
+  /// 'report' | 'user' | 'member' | 'verification' | …
+  targetType       String?
+  targetId         String?
+  /// IP hashée (mêmes raisons que dans Session).
+  ipHash           String?
+  userAgentHash    String?
+  /// 🔒 KMS — payload JSON avec les détails de l'action (avant /
+  /// après sur les changements, motif, etc.). Chiffré car peut
+  /// contenir des PII.
+  payloadEncrypted String?        @db.Text
+  /// Hash de la ligne précédente (chaîne anti-tampering).
+  /// Pour la première ligne = SHA-256("hadar.audit.genesis").
+  prevHash         String
+  /// SHA-256(actorType || actorId || action || targetType ||
+  /// targetId || createdAt || prevHash). Vérifié périodiquement
+  /// par un job d'intégrité.
+  hash             String         @unique
+  createdAt        DateTime       @default(now())
 
   @@index([actorType, actorId])
   @@index([action, createdAt])
   @@index([targetType, targetId])
+  @@index([createdAt])
+}
+
+// ╔═══════════════════════════════════════════════════════════════════════════╗
+// ║          SECTION L — RÉTENTION (1 table)                                   ║
+// ╚═══════════════════════════════════════════════════════════════════════════╝
+
+/// Trace des purges automatiques effectuées par les jobs cron
+/// (évidences > 90 j, vérifications > 30 j, sessions expirées,
+/// LoginAttempt > 30 j, ShortLivedToken expirés). Permet de prouver
+/// la bonne foi RGPD/CNDP en cas de contrôle ("voilà la preuve que
+/// nous purgeons réellement aux dates annoncées").
+model DataRetentionJob {
+  id           String    @id @default(cuid())
+  /// 'report.evidences' | 'verification.files' | 'session.expired' | …
+  jobKind      String
+  startedAt    DateTime
+  finishedAt   DateTime?
+  itemsScanned Int       @default(0)
+  itemsPurged  Int       @default(0)
+  itemsErrored Int       @default(0)
+  /// Détail JSON optionnel (ex : liste des id purgés).
+  details      Json?
+
+  @@index([jobKind, startedAt])
 }

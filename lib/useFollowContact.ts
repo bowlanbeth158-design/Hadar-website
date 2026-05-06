@@ -1,12 +1,24 @@
 'use client';
 
+// ─────────────────────────────────────────────────────────────────────────────
+// useFollowContact — toggle de suivi d'un contact.
+//
+// Quand l'utilisateur est connecté → POST /api/alerts ou DELETE
+// /api/alerts/[id] côté serveur. Pour les visiteurs anonymes, on
+// conserve le legacy localStorage pour ne pas casser l'UX (la liste
+// "Mes suivis" reste accessible sans compte).
+// ─────────────────────────────────────────────────────────────────────────────
+
 import { useEffect, useState } from 'react';
+import { apiCall, ApiClientError } from './api/client';
 
 const STORAGE_KEY = 'hadar:follows';
 
 type FollowedContact = {
   contactValue: string;
   contactType: string;
+  /// Présent si la souscription est synchronisée serveur (alertId).
+  alertId?: string;
 };
 
 function readAll(): FollowedContact[] {
@@ -32,13 +44,17 @@ function writeAll(list: FollowedContact[]) {
   }
 }
 
-/**
- * Per-(contact, type) follow state with localStorage persistence.
- * Keeps the popover / list / search-result UI consistent on demo:
- * the same contact key is followed across views, and the toggle
- * survives page reloads. Replace with /api/follows once the
- * backend lands.
- */
+const CHANNEL_UI_TO_API: Record<string, string> = {
+  telephone: 'TELEPHONE',
+  whatsapp: 'WHATSAPP',
+  email: 'EMAIL',
+  rib: 'RIB',
+  site_web: 'SITE_WEB',
+  reseaux_sociaux: 'RESEAUX_SOCIAUX',
+  paypal: 'PAYPAL',
+  binance: 'BINANCE',
+};
+
 export function useFollowContact(contactValue: string, contactType: string) {
   const [followed, setFollowed] = useState(false);
   const [hydrated, setHydrated] = useState(false);
@@ -54,19 +70,52 @@ export function useFollowContact(contactValue: string, contactType: string) {
     setHydrated(true);
   }, [contactValue, contactType]);
 
-  const toggle = () => {
+  const toggle = async () => {
     if (!contactValue) return;
     const list = readAll();
-    const exists = list.some(
+    const idx = list.findIndex(
       (x) => x.contactValue === contactValue && x.contactType === contactType,
     );
-    const next = exists
-      ? list.filter(
-          (x) => !(x.contactValue === contactValue && x.contactType === contactType),
-        )
-      : [...list, { contactValue, contactType }];
+    const channel = CHANNEL_UI_TO_API[contactType];
+
+    if (idx >= 0) {
+      // Désabonnement
+      const existing = list[idx]!;
+      if (existing.alertId) {
+        try {
+          await apiCall(`/api/alerts/${existing.alertId}`, { method: 'DELETE' });
+        } catch (err) {
+          // Si on n'est pas authed, on supprime quand même localement.
+          if (!(err instanceof ApiClientError) || err.code !== 'UNAUTHORIZED') {
+            // Erreur autre → on tente quand même de garder cohérent côté UI.
+          }
+        }
+      }
+      const next = list.filter((_, i) => i !== idx);
+      writeAll(next);
+      setFollowed(false);
+      return;
+    }
+
+    // Abonnement
+    let alertId: string | undefined;
+    if (channel) {
+      try {
+        const res = await apiCall<{ alertId: string }>('/api/alerts', {
+          method: 'POST',
+          body: { channel, contactValue },
+        });
+        alertId = res.alertId;
+      } catch {
+        // Pas authed ou erreur réseau : on stocke en localStorage seul.
+      }
+    }
+    const next: FollowedContact[] = [
+      ...list,
+      { contactValue, contactType, alertId },
+    ];
     writeAll(next);
-    setFollowed(!exists);
+    setFollowed(true);
   };
 
   return { followed, toggle, hydrated };

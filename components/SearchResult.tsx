@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useMemo, useState } from 'react';
 import {
   CheckCircle2,
   AlertCircle,
@@ -17,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useI18n } from '@/lib/i18n/provider';
 import { useFollowContact } from '@/lib/useFollowContact';
+import { apiCall } from '@/lib/api/client';
 
 type Props = {
   query: string;
@@ -219,10 +221,86 @@ function useFormatRelativeTime() {
   };
 }
 
+// Mapping risk API → ui local id.
+const RISK_API_TO_UI: Record<string, RiskLevel> = {
+  FAIBLE: 'faible',
+  VIGILANCE: 'vigilance',
+  MODERE: 'modere',
+  ELEVE: 'eleve',
+};
+
+// Mapping contactType ui id → channel API enum.
+const CHANNEL_UI_TO_API: Record<string, string> = {
+  telephone: 'TELEPHONE',
+  whatsapp: 'WHATSAPP',
+  email: 'EMAIL',
+  rib: 'RIB',
+  site_web: 'SITE_WEB',
+  reseaux_sociaux: 'RESEAUX_SOCIAUX',
+  paypal: 'PAYPAL',
+  binance: 'BINANCE',
+};
+
+interface ApiSearchResponse {
+  match: 'exact' | 'none';
+  result: {
+    contactValueMasked: string;
+    channel: string;
+    totalReports: number;
+    distinctReporters: number;
+    riskLevel: string;
+    firstReportAt: string | null;
+    lastReportAt: string | null;
+  } | null;
+}
+
 export function SearchResult({ query, contactType, onAgain }: Props) {
   const { t } = useI18n();
   const formatRelativeTime = useFormatRelativeTime();
-  const demo = getDemo(query);
+  const [apiData, setApiData] = useState<ApiSearchResponse | null>(null);
+
+  // Live API call quand la query change. On garde le getDemo() en
+  // fallback quand l'API n'a pas de match (= contact inconnu) → ça
+  // permet de tester l'UI avec les emails demo "mushtarik" sans DB.
+  useEffect(() => {
+    let cancelled = false;
+    const channel = CHANNEL_UI_TO_API[contactType];
+    if (!channel || !query.trim()) {
+      setApiData(null);
+      return;
+    }
+    apiCall<ApiSearchResponse>(
+      `/api/search?channel=${encodeURIComponent(channel)}&q=${encodeURIComponent(query)}`,
+    )
+      .then((r) => {
+        if (!cancelled) setApiData(r);
+      })
+      .catch(() => {
+        if (!cancelled) setApiData(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [query, contactType]);
+
+  const demo = useMemo<DemoData>(() => {
+    if (apiData?.match === 'exact' && apiData.result) {
+      const r = apiData.result;
+      const lastHours = r.lastReportAt
+        ? Math.floor(
+            (Date.now() - new Date(r.lastReportAt).getTime()) / (60 * 60 * 1000),
+          )
+        : null;
+      return {
+        risk: RISK_API_TO_UI[r.riskLevel] ?? 'faible',
+        reports: r.totalReports,
+        kpis: [0, 0, 0, 0], // pas de breakdown problemType dans /api/search
+        lastReportedHoursAgo: lastHours,
+      };
+    }
+    // Pas de match API ou erreur → fallback sur les emails demo.
+    return getDemo(query);
+  }, [apiData, query]);
   const cfg = RISK_CONFIG[demo.risk];
   const Icon = cfg.Icon;
   // Per-contact follow state — persisted in localStorage via the

@@ -128,7 +128,7 @@ export function SignalerPageBody() {
           {t('signalerPage.process.heading')}
         </h2>
         <div className="grid gap-4 sm:grid-cols-3">
-          {PROCESS.map((p) => (
+          {PROCESS.map((p, i) => (
             <div
               key={p.n}
               className="group relative rounded-2xl bg-gradient-to-br from-brand-sky/30 via-white to-brand-sky/35 backdrop-blur-sm border border-white/70 p-5 shadow-glow-soft hover:shadow-glow-blue hover:-translate-y-1 transition-all duration-300 ease-out overflow-hidden text-center sm:text-start"
@@ -148,8 +148,16 @@ export function SignalerPageBody() {
               <p className="mt-1 text-xs text-gray-500 leading-relaxed">{t(p.descKey)}</p>
               <span
                 aria-hidden
-                className={`pointer-events-none absolute bottom-2 left-5 right-5 h-1 rounded-full ${p.bar}`}
-              />
+                className={`pointer-events-none absolute bottom-2 left-5 right-5 h-1 rounded-full overflow-hidden ${p.bar}`}
+              >
+                {/* Bright comet sliding from start to end of the bar
+                    on a 3 s loop, staggered per card so the three
+                    lines light up 1 → 2 → 3 instead of in unison. */}
+                <span
+                  className="absolute inset-y-0 left-0 w-1/2 rounded-full bg-gradient-to-r from-transparent via-white to-transparent animate-line-sweep"
+                  style={{ animationDelay: `${i * 0.6}s` }}
+                />
+              </span>
             </div>
           ))}
         </div>

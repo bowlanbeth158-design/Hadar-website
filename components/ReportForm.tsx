@@ -76,6 +76,54 @@ const PROBLEM_TYPES: ProblemType[] = [
 
 type Phase = 'idle' | 'sending' | 'success';
 
+// Per-channel format validation. The phone / WhatsApp paths already
+// enforce digits-only + country.digits length on input, so they only
+// need a length check here. Every other channel runs a regex picked
+// to match the placeholder example shown in step 1 — the user can't
+// move to step 2 until the typed value matches the chosen channel,
+// mirroring the verification flow's strict format rules.
+function validateContact(
+  type: string,
+  value: string,
+  countryDigits: number,
+): { valid: boolean; errorKey?: string } {
+  const v = value.trim();
+  if (!v) return { valid: false };
+  switch (type) {
+    case 'telephone':
+    case 'whatsapp':
+      return v.length === countryDigits
+        ? { valid: true }
+        : { valid: false, errorKey: 'form.contactValue.error.phone' };
+    case 'email':
+    case 'paypal':
+      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v)
+        ? { valid: true }
+        : { valid: false, errorKey: 'form.contactValue.error.email' };
+    case 'rib':
+      // IBAN-like: 2 letters then 13–32 alphanumerics (spaces allowed).
+      return /^[A-Z]{2}[A-Z0-9](?:[ ]?[A-Z0-9]){12,30}$/i.test(v)
+        ? { valid: true }
+        : { valid: false, errorKey: 'form.contactValue.error.rib' };
+    case 'site_web':
+      return /^(?:https?:\/\/)?(?:www\.)?[a-z0-9-]+(?:\.[a-z0-9-]+)+(?:\/[\w\-./?%&=#]*)?$/i.test(v)
+        ? { valid: true }
+        : { valid: false, errorKey: 'form.contactValue.error.site' };
+    case 'reseaux_sociaux':
+      return /^@?[a-zA-Z0-9._-]{2,30}$/.test(v)
+        ? { valid: true }
+        : { valid: false, errorKey: 'form.contactValue.error.social' };
+    case 'binance':
+      // Accept hex (0x..., 26+ chars), Tron (T + 33 base58), or any
+      // other 26+ alphanumeric chain string.
+      return /^(0x[a-fA-F0-9]{20,})$|^T[1-9A-HJ-NP-Za-km-z]{33}$|^[a-zA-Z0-9]{26,}$/.test(v)
+        ? { valid: true }
+        : { valid: false, errorKey: 'form.contactValue.error.crypto' };
+    default:
+      return { valid: true };
+  }
+}
+
 const MAX_EVIDENCE = 5;
 const ACCEPTED_TYPES = '.jpg,.jpeg,.png,.webp,.mp4,.webm,.mov';
 
@@ -322,8 +370,13 @@ export function ReportForm() {
   // moderation queue either.
   const moderation = useMemo(() => detectUnsafeContent(adminNotes), [adminNotes]);
 
+  const contactValidation = useMemo(
+    () => validateContact(contactType, contactValue, country.digits),
+    [contactType, contactValue, country.digits],
+  );
+
   const stepValid: Record<Step, boolean> = {
-    1: contactValue.trim() !== '',
+    1: contactValidation.valid,
     2: problemType !== null,
     3: description.trim() !== '' && !moderation.blocked,
     4: evidenceFiles.length > 0,
@@ -483,7 +536,13 @@ export function ReportForm() {
                 key={c.id}
                 type="button"
                 aria-pressed={isActive}
-                onClick={() => setContactType(c.id)}
+                onClick={() => {
+                  setContactType(c.id);
+                  // Clear the typed value when switching channel so
+                  // the user doesn't carry e.g. a phone number into
+                  // an email field where the format would be invalid.
+                  setContactValue('');
+                }}
                 className={
                   isActive
                     ? 'w-full inline-flex items-center justify-center gap-2 rounded-pill bg-brand-navy text-white px-3 py-2 text-sm font-medium shadow-glow-navy scale-[1.02] transition-all'
@@ -547,9 +606,27 @@ export function ReportForm() {
             value={contactValue}
             onChange={(e) => setContactValue(e.target.value)}
             placeholder={t(activeContact.placeholderKey)}
-            className="w-full rounded-xl bg-white/85 backdrop-blur-sm border border-gray-200 px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue focus:shadow-sm transition-all"
+            aria-invalid={
+              contactValue.trim() !== '' && !contactValidation.valid
+            }
+            className={
+              contactValue.trim() !== '' && !contactValidation.valid
+                ? 'w-full rounded-xl bg-white/85 backdrop-blur-sm border border-red-500 ring-2 ring-red-500/20 px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-red-500 focus:shadow-sm transition-all'
+                : 'w-full rounded-xl bg-white/85 backdrop-blur-sm border border-gray-200 px-4 py-2.5 text-brand-navy placeholder:text-gray-400 focus:outline-none focus:border-brand-blue focus:shadow-sm transition-all'
+            }
           />
         )}
+        {contactValue.trim() !== '' &&
+          !contactValidation.valid &&
+          contactValidation.errorKey && (
+            <p
+              role="alert"
+              className="mt-1.5 inline-flex items-start gap-1.5 text-[11px] text-red-600"
+            >
+              <AlertTriangle className="h-3 w-3 shrink-0 mt-0.5" aria-hidden />
+              {t(contactValidation.errorKey)}
+            </p>
+          )}
       </div>
       </div>
       )}

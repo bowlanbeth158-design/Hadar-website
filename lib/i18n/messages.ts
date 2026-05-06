@@ -1370,7 +1370,7 @@ const fr: Dict = {
   'profile.demo.lastName': 'MOUSSAOUI',
 
   // ===== /signaler page (Partager une expérience) =====
-  'signalerPage.brandPill': 'Signalement protégé · 100% anonyme',
+  'signalerPage.brandPill': 'Partagez en toute confiance',
   'signalerPage.title': 'Partager une expérience',
   'signalerPage.subtitle':
     'Partagez votre expérience sur un contact, un site ou un paiement pour aider la communauté.',
@@ -1393,7 +1393,13 @@ const fr: Dict = {
 
   // ===== ReportForm =====
   'form.contactType.label': 'Type de contact',
-  'form.contactValue.label': 'Information à signaler',
+  'form.contactValue.label': 'Contact concerné',
+  'form.contactValue.error.phone': 'Numéro incomplet pour ce pays.',
+  'form.contactValue.error.email': 'Adresse email invalide (ex : nom@exemple.com).',
+  'form.contactValue.error.rib': 'RIB / IBAN invalide. Vérifiez le format.',
+  'form.contactValue.error.site': 'Adresse de site invalide (ex : exemple.ma).',
+  'form.contactValue.error.social': 'Identifiant invalide (ex : @nom_compte).',
+  'form.contactValue.error.crypto': 'Adresse crypto invalide.',
   'form.problemType.label': 'Type de problème',
   'form.problem.nonDelivery': 'Non livraison',
   'form.problem.blockedAfterPayment': 'Bloqué après paiement',
@@ -2962,7 +2968,7 @@ const en: Dict = {
   'profile.demo.lastName': 'MOUSSAOUI',
 
   // ===== /signaler page =====
-  'signalerPage.brandPill': 'Protected report · 100% anonymous',
+  'signalerPage.brandPill': 'Share with confidence',
   'signalerPage.title': 'Share an experience',
   'signalerPage.subtitle':
     'Share your experience about a contact, a website or a payment to help the community.',
@@ -2986,7 +2992,13 @@ const en: Dict = {
 
   // ===== ReportForm =====
   'form.contactType.label': 'Contact type',
-  'form.contactValue.label': 'Information to report',
+  'form.contactValue.label': 'Contact details',
+  'form.contactValue.error.phone': 'Number is incomplete for this country.',
+  'form.contactValue.error.email': 'Invalid email address (e.g. name@example.com).',
+  'form.contactValue.error.rib': 'Invalid IBAN / bank account number.',
+  'form.contactValue.error.site': 'Invalid website address (e.g. example.com).',
+  'form.contactValue.error.social': 'Invalid handle (e.g. @account_name).',
+  'form.contactValue.error.crypto': 'Invalid crypto address.',
   'form.problemType.label': 'Problem type',
   'form.problem.nonDelivery': 'Non-delivery',
   'form.problem.blockedAfterPayment': 'Blocked after payment',
@@ -4554,7 +4566,7 @@ const ar: Dict = {
   'profile.demo.lastName': 'المساوي',
 
   // ===== /signaler page =====
-  'signalerPage.brandPill': 'مشاركة محمي · 100% مجهول الهوية',
+  'signalerPage.brandPill': 'شارك بثقة',
   'signalerPage.title': 'ساهم بتجربتك',
   'signalerPage.subtitle':
     'شارك تجربتك بخصوص جهة اتصال أو موقع أو دفع لمساعدة المجتمع.',
@@ -4576,7 +4588,13 @@ const ar: Dict = {
 
   // ===== ReportForm =====
   'form.contactType.label': 'نوع جهة الاتصال',
-  'form.contactValue.label': 'المعلومة المُبلَّغ عنها',
+  'form.contactValue.label': 'بيانات الاتصال',
+  'form.contactValue.error.phone': 'الرقم غير مكتمل بالنسبة لهذا البلد.',
+  'form.contactValue.error.email': 'بريد إلكتروني غير صالح (مثال : nom@exemple.com).',
+  'form.contactValue.error.rib': 'RIB / IBAN غير صالح.',
+  'form.contactValue.error.site': 'عنوان موقع غير صالح (مثال : exemple.ma).',
+  'form.contactValue.error.social': 'معرّف غير صالح (مثال : @nom_compte).',
+  'form.contactValue.error.crypto': 'عنوان عملة رقمية غير صالح.',
   'form.problemType.label': 'نوع المشكلة',
   'form.problem.nonDelivery': 'عدم التسليم',
   'form.problem.blockedAfterPayment': 'عدم الاستجابة بعد الدفع',

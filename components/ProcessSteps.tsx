@@ -263,9 +263,9 @@ export function ProcessSteps() {
         <p className="mt-8 md:mt-10 flex items-center justify-center gap-2 text-sm text-gray-500">
           <span
             aria-hidden
-            className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-brand-blue/10 text-brand-blue ring-1 ring-brand-blue/20"
+            className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-brand-blue/10 text-brand-blue ring-1 ring-brand-blue/20 animate-pulse-blue"
           >
-            <Clock className="h-3.5 w-3.5" />
+            <Clock className="h-3.5 w-3.5 animate-clock-tick" />
           </span>
           <span>
             <span className="font-semibold text-brand-navy">{t('home.processSteps.sla.label')}</span>{' '}

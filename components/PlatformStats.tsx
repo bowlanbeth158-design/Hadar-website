@@ -197,19 +197,17 @@ export function PlatformStats() {
               }}
             />
 
-            {/* Mobile-only second halo — the 9 s spotlight cycle is
-                too subtle to register on a phone (each card lit ~22%
-                of the cycle). This always-on coloured ring + glow
-                pulses softly so the lighting effect is unmistakable
-                on phone. Hidden md+ so desktop keeps the original
-                clean spotlight ripple unchanged. */}
+            {/* Mobile-only second halo — uses the same staggered
+                card-spotlight animation as desktop so the highlight
+                ripples through the grid one card at a time on phone
+                too. Slightly more pronounced glow than desktop so the
+                effect remains visible on small viewports. */}
             <span
               aria-hidden
-              className="pointer-events-none absolute inset-0 rounded-2xl md:hidden animate-pulse"
+              className="pointer-events-none absolute inset-0 rounded-2xl md:hidden animate-card-spotlight"
               style={{
-                animationDelay: `${i * 600}ms`,
-                animationDuration: '3s',
-                boxShadow: `0 0 0 1px ${s.spotlight.ring}, 0 0 20px 4px ${s.spotlight.glow}`,
+                animationDelay: `${i * 1500}ms`,
+                boxShadow: `0 0 0 1px ${s.spotlight.ring}, 0 0 24px 6px ${s.spotlight.glow}`,
               }}
             />
 

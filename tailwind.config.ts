@@ -227,10 +227,29 @@ const config: Config = {
         // stays visible for ~2.7 s with a peak around 1.26 s in.
         'card-spotlight': {
           '0%, 100%': { opacity: '0' },
-          '8%': { opacity: '0.6' },
-          '14%': { opacity: '1' },
-          '22%': { opacity: '0.6' },
-          '30%': { opacity: '0' },
+          '2%': { opacity: '0.4' },
+          '6%': { opacity: '1' },
+          '10%': { opacity: '0.5' },
+          '14%': { opacity: '0' },
+        },
+        // Bright "comet" sliding once across the bar at the bottom of
+        // each /signaler process card. The bar's parent uses
+        // overflow-hidden, so as the inner span translates from -100%
+        // to 320% it reads as a glow that lights the line from start
+        // to end and disappears, then loops.
+        'line-sweep': {
+          '0%':   { transform: 'translateX(-110%)' },
+          '60%':  { transform: 'translateX(220%)' },
+          '100%': { transform: 'translateX(220%)' },
+        },
+        // Soft, recurring "tick" wiggle for the homepage SLA Clock
+        // icon. Calm at rest, then a quick double-tick to draw
+        // attention to the 48 h commitment without being noisy.
+        'clock-tick': {
+          '0%, 80%, 100%': { transform: 'rotate(0deg)' },
+          '85%':           { transform: 'rotate(-12deg)' },
+          '90%':           { transform: 'rotate(12deg)' },
+          '95%':           { transform: 'rotate(-6deg)' },
         },
         // Yellow drop-shadow burst on the whole row, fired AFTER the 5
         // stars have popped in (peak ~1.2 s into the 4 s cycle).
@@ -323,6 +342,8 @@ const config: Config = {
         // 9 s loop matches `cards * 1500ms` stagger so the highlight
         // visits every card exactly once per cycle in a smooth ripple.
         'card-spotlight': 'card-spotlight 9s ease-in-out infinite',
+        'line-sweep': 'line-sweep 3s ease-in-out infinite',
+        'clock-tick': 'clock-tick 5s ease-in-out infinite',
         // Slow breathing halo for the SearchResult aura — opacity +
         // scale couple on a 6 s ease-in-out loop so the colour wash
         // behind the result pulses gently instead of being a static

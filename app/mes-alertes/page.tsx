@@ -4,7 +4,7 @@ import { BackButton } from '@/components/BackButton';
 import { PageHeading } from '@/components/PageHeading';
 import { DemoBanner } from '@/components/DemoBanner';
 import { NotificationSettingsModal } from '@/components/NotificationSettingsModal';
-import { MesAlertesList } from '@/components/MesAlertesList';
+import { MesAlertesListLive } from '@/components/MesAlertesListLive';
 import { MesAlertesStatLine } from '@/components/MesAlertesStatLine';
 
 export const metadata: Metadata = {
@@ -38,7 +38,7 @@ export default function Page({ searchParams }: PageProps) {
         <NotificationSettingsModal defaultOpen={settingsOpen} />
       </div>
 
-      <MesAlertesList initialExpandId={initialExpandId} />
+      <MesAlertesListLive initialExpandId={initialExpandId} />
     </PageLayout>
   );
 }

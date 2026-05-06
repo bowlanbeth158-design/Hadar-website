@@ -66,9 +66,15 @@ const FILTERS: { key: FilterKey; labelKey: string; Icon: typeof Layers }[] = [
 // stays scannable even if the user follows many contacts.
 const INITIAL_VISIBLE = 4;
 
-export function MesAlertesList({ initialExpandId }: { initialExpandId?: string | null }) {
+export function MesAlertesList({
+  initialExpandId,
+  initialAlerts,
+}: {
+  initialExpandId?: string | null;
+  initialAlerts?: Alert[];
+}) {
   const { t } = useI18n();
-  const [alerts, setAlerts] = useState<Alert[]>(DEMO_ALERTS);
+  const [alerts, setAlerts] = useState<Alert[]>(initialAlerts ?? DEMO_ALERTS);
   const [filter, setFilter] = useState<FilterKey>('active');
   const [expanded, setExpanded] = useState<Set<string>>(
     initialExpandId ? new Set([initialExpandId]) : new Set()

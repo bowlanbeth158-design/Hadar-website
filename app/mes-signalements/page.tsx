@@ -3,7 +3,7 @@ import { PageLayout } from '@/components/PageLayout';
 import { BackButton } from '@/components/BackButton';
 import { PageHeading } from '@/components/PageHeading';
 import { DemoBanner } from '@/components/DemoBanner';
-import { MesSignalementsList } from '@/components/MesSignalementsList';
+import { MesSignalementsListLive } from '@/components/MesSignalementsListLive';
 
 export const metadata: Metadata = {
   title: 'Mes expériences',
@@ -23,7 +23,7 @@ export default function Page() {
       />
       <DemoBanner />
 
-      <MesSignalementsList />
+      <MesSignalementsListLive />
     </PageLayout>
   );
 }

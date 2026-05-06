@@ -139,9 +139,13 @@ export function MesSignalementsList({ reports = USER_REPORTS }: { reports?: Repo
                       </span>
                     </div>
                     <p className="mt-2 font-semibold text-brand-navy">{r.contact}</p>
-                    <p className="mt-1 text-sm text-gray-500 line-clamp-2">{t(r.descriptionKey)}</p>
+                    <p className="mt-1 text-sm text-gray-500 line-clamp-2">
+                      {r.descriptionText ?? (r.descriptionKey ? t(r.descriptionKey) : '')}
+                    </p>
                     <p className="mt-2 text-xs text-gray-400">
-                      {t('mesSignalements.submitted', { date: t(r.dateKey) })}
+                      {t('mesSignalements.submitted', {
+                        date: r.dateText ?? (r.dateKey ? t(r.dateKey) : ''),
+                      })}
                     </p>
                   </div>
                   <Link

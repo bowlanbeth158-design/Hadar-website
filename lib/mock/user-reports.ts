@@ -15,17 +15,25 @@ export type Report = {
   contact: string;
   /** Type-safe problem kind — resolved through PROBLEM_KIND_LABEL_KEY at render. */
   problemKind: ProblemKind;
-  /** i18n keys for the long free-text fields of the report. */
-  descriptionKey: string;
-  dateKey: string;
-  submittedDateKey: string;
+  /** i18n keys for the long free-text fields of the report (mock data). */
+  descriptionKey?: string;
+  dateKey?: string;
+  submittedDateKey?: string;
   reviewedDateKey?: string;
   finalDateKey?: string;
+  /** Plain-text alternatives for live API data (no i18n indirection). */
+  descriptionText?: string;
+  dateText?: string;
+  submittedDateText?: string;
+  reviewedDateText?: string;
+  finalDateText?: string;
   amount?: string;
   status: ReportStatus;
   proofs: string[];
   /** Optional moderation reason — i18n key — set when status is 'a_corriger' or 'refuse'. */
   moderationNoteKey?: string;
+  /** Plain-text moderation reason for live API data. */
+  moderationNoteText?: string;
 };
 
 export const REPORT_CHANNEL_ICON: Record<ReportChannel, LucideIcon> = {
@@ -157,7 +165,7 @@ export type TimelineStep = {
 export function timelineFor(report: Report): TimelineStep[] {
   const sent: TimelineStep = {
     labelKey: 'timeline.sent',
-    dateKey: report.submittedDateKey,
+    dateKey: report.submittedDateKey ?? 'timeline.pending',
     color: 'bg-yellow-500',
     done: true,
   };

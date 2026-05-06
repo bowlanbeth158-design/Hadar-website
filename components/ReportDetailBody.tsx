@@ -70,7 +70,9 @@ export function ReportDetailBody({ report }: { report: Report }) {
       <p className="mt-2 text-sm text-gray-500">
         {t('reportDetail.subtitle', {
           channel: t(REPORT_CHANNEL_LABEL_KEY[report.channel]),
-          date: t(report.submittedDateKey),
+          date:
+            report.submittedDateText ??
+            (report.submittedDateKey ? t(report.submittedDateKey) : ''),
         })}
       </p>
 
@@ -145,7 +147,10 @@ export function ReportDetailBody({ report }: { report: Report }) {
             <h2 className="text-lg font-bold text-brand-navy mb-3">
               {t('reportDetail.description')}
             </h2>
-            <p className="text-sm text-gray-600 leading-relaxed">{t(report.descriptionKey)}</p>
+            <p className="text-sm text-gray-600 leading-relaxed">
+              {report.descriptionText ??
+                (report.descriptionKey ? t(report.descriptionKey) : '')}
+            </p>
           </section>
 
           <section className="rounded-2xl bg-white border border-gray-200 p-6 shadow-glow-soft">

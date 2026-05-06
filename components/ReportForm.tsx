@@ -430,15 +430,66 @@ export function ReportForm() {
     scrollToTop();
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (step < TOTAL_STEPS) {
       goNext();
       return;
     }
     if (!canSubmit) return;
+    setSubmitError(null);
     setPhase('sending');
-    setTimeout(() => setPhase('success'), 1200);
+    // Mappe les ids UI → enums Prisma. Channel + problem types alignés
+    // sur ReportChannel / ProblemType côté DB.
+    const channelMap: Record<string, string> = {
+      telephone: 'TELEPHONE',
+      whatsapp: 'WHATSAPP',
+      email: 'EMAIL',
+      rib: 'RIB',
+      site_web: 'SITE_WEB',
+      reseaux_sociaux: 'RESEAUX_SOCIAUX',
+      paypal: 'PAYPAL',
+      binance: 'BINANCE',
+    };
+    const problemMap: Record<string, string> = {
+      non_livraison: 'NON_LIVRAISON',
+      bloque_apres_paiement: 'BLOQUE_APRES_PAIEMENT',
+      produit_non_conforme: 'PRODUIT_NON_CONFORME',
+      usurpation_identite: 'USURPATION_IDENTITE',
+    };
+    // Compose le contactValue final (avec dial code pour téléphone).
+    const finalContact =
+      contactType === 'telephone' || contactType === 'whatsapp'
+        ? `${country.dial}${contactValue}`
+        : contactValue;
+    const amountInt = amount.trim() ? parseInt(amount.trim(), 10) : null;
+    try {
+      const { apiCall } = await import('@/lib/api/client');
+      await apiCall<{ reportId: string }>('/api/reports', {
+        method: 'POST',
+        body: {
+          channel: channelMap[contactType] ?? 'TELEPHONE',
+          contactValue: finalContact,
+          problemType: problemMap[problemType ?? ''] ?? 'NON_LIVRAISON',
+          amountCents:
+            amountInt !== null && Number.isFinite(amountInt) ? amountInt : undefined,
+          currency: currencySymbol === '€' ? 'EUR' : currencySymbol === '$' ? 'USD' : 'MAD',
+          descriptionPublic: description,
+          adminNotes: adminNotes.trim() || undefined,
+        },
+      });
+      setPhase('success');
+    } catch (err) {
+      setPhase('idle');
+      const { ApiClientError } = await import('@/lib/api/client');
+      if (err instanceof ApiClientError) {
+        setSubmitError(err.userMessage);
+      } else {
+        setSubmitError(t('form.submit.errorGeneric'));
+      }
+    }
   };
 
   if (phase === 'success') {
@@ -1103,8 +1154,13 @@ export function ReportForm() {
         )}
       </div>
 
-      {step === TOTAL_STEPS && (
-        <p className="text-xs text-gray-400 text-center">{t('form.disabledNote')}</p>
+      {step === TOTAL_STEPS && submitError && (
+        <div
+          role="alert"
+          className="rounded-xl border border-red-300 bg-red-50 px-3 py-2 text-xs text-red-700 text-center"
+        >
+          {submitError}
+        </div>
       )}
     </form>
   );

@@ -1455,6 +1455,7 @@ const fr: Dict = {
   'form.consent.suffix': 'et que mon témoignage est factuel.',
   'form.submit': 'Envoyer le signalement',
   'form.submit.sending': 'Envoi en cours…',
+  'form.submit.errorGeneric': 'Impossible d’envoyer ton expérience. Réessaye dans un instant.',
   'form.disabledNote':
     'Authentification, upload sécurisé des preuves et soumission seront activés prochainement.',
   // Success celebration
@@ -3066,6 +3067,7 @@ const en: Dict = {
   'form.consent.suffix': 'and that my testimony is factual.',
   'form.submit': 'Send the report',
   'form.submit.sending': 'Sending…',
+  'form.submit.errorGeneric': 'Could not submit your experience. Please try again.',
   'form.disabledNote':
     'Authentication, secure evidence upload and submission will be enabled soon.',
   'form.success.thanks': 'Thank you',
@@ -4673,6 +4675,7 @@ const ar: Dict = {
   'form.consent.suffix': 'وأن شهادتي واقعية.',
   'form.submit': 'إرسال المشاركة',
   'form.submit.sending': 'جارٍ الإرسال…',
+  'form.submit.errorGeneric': 'تعذّر إرسال تجربتك. حاول مرة أخرى.',
   'form.disabledNote':
     'سيتم تفعيل المصادقة والرفع الآمن للأدلة وإرسال المشاركة قريباً.',
   'form.success.thanks': 'شكراً لك',

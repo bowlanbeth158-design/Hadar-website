@@ -1,0 +1,54 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Hadar.ma — docker-compose pour LE DROPLET DE PROD.
+#
+# Postgres et Redis sont des services MANAGÉS DigitalOcean (pas dans
+# ce compose). Ce fichier ne lance QUE l'app, derrière Cloudflare.
+#
+# À déployer sur /opt/hadar/docker-compose.prod.yml. Le workflow
+# GitHub Actions deploy.yml fait `docker compose pull && up -d`.
+#
+# .env.production sur le serveur contient les vrais secrets prod
+# (DATABASE_URL pointant vers le Postgres managé, secrets crypto
+# rotatés, KMS, etc.). NEVER commit .env.production.
+# ─────────────────────────────────────────────────────────────────────────────
+
+version: '3.9'
+
+services:
+  app:
+    image: registry.digitalocean.com/hadar/hadar:latest
+    restart: always
+    env_file:
+      - /opt/hadar/.env.production
+    environment:
+      NODE_ENV: production
+    ports:
+      # On expose 127.0.0.1:3000 → l'origin n'est pas accessible
+      # depuis internet directement. Cloudflare s'y connecte via
+      # un Cloudflare Tunnel (ou via une règle "origin pull" si
+      # on accepte que l'IP du droplet soit publique mais
+      # n'accepte que le trafic Cloudflare via firewall).
+      - '127.0.0.1:3000:3000'
+    deploy:
+      resources:
+        limits:
+          memory: 1.5G
+        reservations:
+          memory: 512M
+    logging:
+      driver: 'json-file'
+      options:
+        max-size: '10m'
+        max-file: '3'
+
+  # Cloudflare Tunnel — connecte le droplet à Cloudflare sans
+  # exposer son IP. Le tunnel vit dans le compose pour qu'il
+  # redémarre automatiquement avec l'app.
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    restart: always
+    command: tunnel --no-autoupdate run
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARED_TUNNEL_TOKEN}
+    depends_on:
+      - app

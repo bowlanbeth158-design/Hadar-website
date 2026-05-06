@@ -1,0 +1,32 @@
+# Hadar.ma — fichiers exclus de l'image Docker
+
+# Code source non nécessaire (généré ou lourd)
+node_modules
+.next
+.git
+.github
+.vscode
+.idea
+
+# Tests
+**/*.test.ts
+**/*.test.tsx
+**/__tests__
+
+# Secrets — JAMAIS dans l'image
+.env
+.env.local
+.env.development
+.env.production
+.env.test
+
+# Docs
+docs
+*.md
+!CLAUDE.md
+README*.md
+
+# Dev artifacts
+prisma/dev.db*
+*.log
+coverage

@@ -1,0 +1,72 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# Hadar.ma — docker-compose pour DEV LOCAL.
+#
+# Lance Postgres + Redis + l'app Next sur ta machine.
+# En prod : on utilise les services managés DigitalOcean (Postgres/Redis)
+# et l'app tourne dans une seule image sur un Droplet.
+#
+# Usage :
+#   docker compose up -d            # démarre les services
+#   docker compose logs -f app      # suit les logs de l'app
+#   docker compose down             # stoppe tout
+#   docker compose down -v          # stoppe + supprime les volumes (⚠ data perdue)
+# ─────────────────────────────────────────────────────────────────────────────
+
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: hadar
+      POSTGRES_PASSWORD: hadar_dev_password
+      POSTGRES_DB: hadar
+    ports:
+      - '5432:5432'
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U hadar']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --requirepass hadar_dev_password --maxmemory 256mb --maxmemory-policy allkeys-lru
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ['CMD', 'redis-cli', '-a', 'hadar_dev_password', 'ping']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    env_file:
+      - .env.local
+    environment:
+      # Override les URLs pour pointer sur les services Docker.
+      DATABASE_URL: postgresql://hadar:hadar_dev_password@postgres:5432/hadar?schema=public
+      DIRECT_URL: postgresql://hadar:hadar_dev_password@postgres:5432/hadar?schema=public
+      REDIS_URL: redis://:hadar_dev_password@redis:6379
+      NODE_ENV: production
+    ports:
+      - '3000:3000'
+
+volumes:
+  postgres-data:
+  redis-data:

@@ -33,6 +33,9 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
+  // Production : output minimal pour Docker. Embarque uniquement les
+  // node_modules nécessaires + le code Next.
+  output: 'standalone',
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [

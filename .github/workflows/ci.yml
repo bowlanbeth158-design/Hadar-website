@@ -1,0 +1,102 @@
+# ─────────────────────────────────────────────────────────────────────────────
+# CI — typecheck + lint + tests + build à chaque PR / push main.
+#
+# Pas de déploiement ici : voir .github/workflows/deploy.yml pour ça
+# (déclenché uniquement sur tag v*).
+# ─────────────────────────────────────────────────────────────────────────────
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Typecheck + lint + tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Generate Prisma client
+        env:
+          DATABASE_URL: postgresql://placeholder@localhost:5432/placeholder
+          DIRECT_URL: postgresql://placeholder@localhost:5432/placeholder
+        run: npx prisma generate
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Tests
+        run: npm test
+
+  build:
+    name: Build production
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install
+        run: npm ci --no-audit --no-fund
+
+      - name: Generate Prisma client
+        env:
+          DATABASE_URL: postgresql://placeholder@localhost:5432/placeholder
+          DIRECT_URL: postgresql://placeholder@localhost:5432/placeholder
+        run: npx prisma generate
+
+      - name: Build
+        env:
+          # Variables nécessaires au boot ; valeurs factices pour le build.
+          DATABASE_URL: postgresql://placeholder@localhost:5432/placeholder
+          DIRECT_URL: postgresql://placeholder@localhost:5432/placeholder
+          AUTH_JWT_SECRET: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          AUTH_REFRESH_SECRET: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          ENCRYPTION_KEY: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          CONTACT_HASH_PEPPER: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          IP_HASH_PEPPER: aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+          REDIS_URL: redis://localhost:6379
+        run: npm run build
+
+  security-audit:
+    name: Audit dépendances
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    continue-on-error: true # warning, pas blocker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install
+        run: npm ci --no-audit --no-fund
+      - name: npm audit (high+)
+        run: npm audit --production --audit-level=high

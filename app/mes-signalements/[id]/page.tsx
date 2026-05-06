@@ -1,10 +1,8 @@
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
 import { PageLayout } from '@/components/PageLayout';
 import { BackButton } from '@/components/BackButton';
 import { DemoBanner } from '@/components/DemoBanner';
-import { ReportDetailBody } from '@/components/ReportDetailBody';
-import { USER_REPORTS } from '@/lib/mock/user-reports';
+import { ReportDetailBodyLive } from '@/components/ReportDetailBodyLive';
 
 export const metadata: Metadata = {
   title: 'Détail de l’expérience',
@@ -14,16 +12,13 @@ export const metadata: Metadata = {
 type PageProps = { params: { id: string } };
 
 export default function Page({ params }: PageProps) {
-  const report = USER_REPORTS.find((r) => r.id === params.id);
-  if (!report) notFound();
-
   return (
     <PageLayout narrow>
       <div className="mb-8">
         <BackButton href="/mes-signalements" labelKey="reportDetail.backLabel" />
       </div>
       <DemoBanner />
-      <ReportDetailBody report={report} />
+      <ReportDetailBodyLive id={params.id} />
     </PageLayout>
   );
 }

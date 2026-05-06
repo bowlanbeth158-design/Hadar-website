@@ -1380,14 +1380,14 @@ const fr: Dict = {
   'signalerPage.trust.encrypted.desc': 'Données protégées',
   'signalerPage.trust.verified.title': 'Vérifié',
   'signalerPage.trust.verified.desc': 'Examiné avant publication',
-  'signalerPage.process.heading': 'Que se passe-t-il après votre signalement ?',
-  'signalerPage.process.step1.title': 'Vous signalez',
-  'signalerPage.process.step1.desc': 'Vous décrivez la situation et joignez vos preuves.',
+  'signalerPage.process.heading': 'Que se passe-t-il après votre contribution ?',
+  'signalerPage.process.step1.title': 'Vous partagez',
+  'signalerPage.process.step1.desc': 'Vous décrivez la situation et ajoutez des éléments utiles.',
   'signalerPage.process.step2.title': 'Nous examinons',
-  'signalerPage.process.step2.desc': 'Notre équipe vérifie le contenu sous 48 h ouvrées.',
-  'signalerPage.process.step3.title': 'C’est publié',
+  'signalerPage.process.step2.desc': 'Le contenu est examiné selon les règles de la plateforme.',
+  'signalerPage.process.step3.title': 'Publication',
   'signalerPage.process.step3.desc':
-    'Si conforme, le signalement protège la communauté.',
+    'Le contenu conforme peut être publié sur la plateforme.',
   'signalerPage.sla.label': 'Délai d’examen moyen :',
   'signalerPage.sla.value': '48 heures ouvrées',
 
@@ -1406,7 +1406,7 @@ const fr: Dict = {
   'form.description.placeholder':
     'Décrivez brièvement la situation (informations factuelles uniquement)',
   // Public phrase — locked, picked from a curated list, shown on Recent Reports
-  'form.publicPhrase.label': 'Phrase publique',
+  'form.publicPhrase.label': 'Choisissez la phrase qui correspond à votre situation',
   'form.publicPhrase.helper': '— affichée publiquement',
   'form.publicPhrase.empty': 'Choisissez d’abord un type de problème à l’étape précédente.',
   'form.publicPhrase.note':
@@ -1443,14 +1443,14 @@ const fr: Dict = {
   'form.success.thanks': 'Merci',
   'form.success.received': 'Votre contribution a bien été reçue.',
   'form.success.community':
-    'Vous aidez la communauté Hadar à rester vigilante et à vérifier en toute confiance.',
+    'Vous contribuez à enrichir les informations disponibles sur la plateforme Hadar.',
   'form.success.eta':
-    'Notre équipe examinera votre signalement sous {duration}.',
+    'Notre équipe examinera votre contribution dans un délai indicatif de {duration}.',
   'form.success.eta.duration': '48 heures ouvrées',
-  'form.success.stat.users': 'utilisateurs aidés',
-  'form.success.stat.contacts': 'contacts vérifiés',
-  'form.success.stat.thanks': 'merci à vous',
-  'form.success.again': 'Faire un autre signalement',
+  'form.success.stat.users': 'utilisateurs accompagnés',
+  'form.success.stat.contacts': 'contacts consultés',
+  'form.success.stat.thanks': 'grâce à vos contributions',
+  'form.success.again': 'Partager une autre expérience',
   'form.success.home': "Retour à l'accueil",
   'form.nav.prev': 'Précédent',
   'form.nav.next': 'Suivant',
@@ -1561,24 +1561,24 @@ const fr: Dict = {
 
   // ===== Mock data — user reports =====
   'mock.report.r1.description':
-    'Commande effectuée le 1er avril, vendeur n’a jamais livré le produit et ne répond plus à mes messages depuis 3 semaines malgré plusieurs relances.',
+    'Aucune livraison n’a été constatée après le paiement de 3000 MAD.',
   'mock.report.r1.date': 'il y a 3 jours',
   'mock.report.r1.submitted': '20 avril 2026',
   'mock.report.r1.reviewed': '21 avril 2026',
   'mock.report.r1.final': '22 avril 2026',
   'mock.report.r2.description':
-    'Contact bloqué dès que le paiement a été reçu. Aucune réponse depuis ce jour-là, plusieurs tentatives de relance restées sans suite.',
+    'Le contact a interrompu les échanges après le paiement de 5000 MAD.',
   'mock.report.r2.date': 'hier',
   'mock.report.r2.submitted': '23 avril 2026',
   'mock.report.r3.description':
-    'Produit reçu ne correspond pas du tout à la description sur le site. Différence majeure de couleur, taille et matériau.',
+    'Le produit livré est différent de ce qui était annoncé.',
   'mock.report.r3.date': 'il y a 5 jours',
   'mock.report.r3.submitted': '18 avril 2026',
   'mock.report.r3.reviewed': '19 avril 2026',
   'mock.report.r3.moderationNote':
     'Merci d’ajouter une preuve d’achat (facture ou reçu) pour finaliser la publication.',
   'mock.report.r4.description':
-    'Se fait passer pour un marchand officiel pour soutirer des informations bancaires.',
+    'Le compte semble se faire passer pour une autre personne ou organisation.',
   'mock.report.r4.date': 'il y a 2 semaines',
   'mock.report.r4.submitted': '11 avril 2026',
   'mock.report.r4.reviewed': '12 avril 2026',
@@ -2972,15 +2972,15 @@ const en: Dict = {
   'signalerPage.trust.encrypted.desc': 'Data protected',
   'signalerPage.trust.verified.title': 'Verified',
   'signalerPage.trust.verified.desc': 'Reviewed before publication',
-  'signalerPage.process.heading': 'What happens after your report?',
-  'signalerPage.process.step1.title': 'You report',
-  'signalerPage.process.step1.desc': 'You describe the situation and attach your evidence.',
+  'signalerPage.process.heading': 'What happens after your submission?',
+  'signalerPage.process.step1.title': 'You share',
+  'signalerPage.process.step1.desc': 'You describe the situation and add relevant details.',
   'signalerPage.process.step2.title': 'We review',
   'signalerPage.process.step2.desc':
-    'Our team checks the content within 48 working hours.',
-  'signalerPage.process.step3.title': 'It’s published',
+    'The content is reviewed according to platform guidelines.',
+  'signalerPage.process.step3.title': 'Publication',
   'signalerPage.process.step3.desc':
-    'If compliant, the report protects the community.',
+    'Compliant content may be published on the platform.',
   'signalerPage.sla.label': 'Average review time:',
   'signalerPage.sla.value': '48 working hours',
 
@@ -2999,7 +2999,7 @@ const en: Dict = {
   'form.description.placeholder':
     'Briefly describe the situation (factual information only)',
   // Public phrase — locked, picked from a curated list, shown on Recent Reports
-  'form.publicPhrase.label': 'Public phrase',
+  'form.publicPhrase.label': 'Choose the sentence that matches your situation',
   'form.publicPhrase.helper': '— displayed publicly',
   'form.publicPhrase.empty': 'Pick a problem type on the previous step first.',
   'form.publicPhrase.note':
@@ -3033,15 +3033,16 @@ const en: Dict = {
   'form.disabledNote':
     'Authentication, secure evidence upload and submission will be enabled soon.',
   'form.success.thanks': 'Thank you',
-  'form.success.received': 'Your contribution has been received.',
+  'form.success.received': 'Your contribution has been successfully received.',
   'form.success.community':
-    'You are helping the Hadar community stay vigilant and verify with confidence.',
-  'form.success.eta': 'Our team will review your report within {duration}.',
-  'form.success.eta.duration': '48 working hours',
-  'form.success.stat.users': 'users helped',
-  'form.success.stat.contacts': 'contacts verified',
-  'form.success.stat.thanks': 'thanks to you',
-  'form.success.again': 'Submit another report',
+    'You are helping enrich the information available on the Hadar platform.',
+  'form.success.eta':
+    'Our team will review your contribution within an estimated timeframe of {duration}.',
+  'form.success.eta.duration': '48 business hours',
+  'form.success.stat.users': 'users supported',
+  'form.success.stat.contacts': 'contacts reviewed',
+  'form.success.stat.thanks': 'thanks to your contributions',
+  'form.success.again': 'Share another experience',
   'form.success.home': 'Back to home',
   'form.nav.prev': 'Previous',
   'form.nav.next': 'Next',
@@ -3146,24 +3147,24 @@ const en: Dict = {
 
   // ===== Mock data — user reports =====
   'mock.report.r1.description':
-    'Order placed on April 1st; seller never delivered and has stopped replying to my messages for 3 weeks despite several follow-ups.',
+    'No delivery was observed after the payment of 3000 MAD.',
   'mock.report.r1.date': '3 days ago',
   'mock.report.r1.submitted': '20 April 2026',
   'mock.report.r1.reviewed': '21 April 2026',
   'mock.report.r1.final': '22 April 2026',
   'mock.report.r2.description':
-    'Contact blocked me as soon as payment went through. No reply since, multiple follow-up attempts went unanswered.',
+    'The contact stopped responding after the payment of 5000 MAD.',
   'mock.report.r2.date': 'yesterday',
   'mock.report.r2.submitted': '23 April 2026',
   'mock.report.r3.description':
-    'Item received doesn’t match the description on the site at all. Major difference in colour, size and material.',
+    'The delivered product is different from what was advertised.',
   'mock.report.r3.date': '5 days ago',
   'mock.report.r3.submitted': '18 April 2026',
   'mock.report.r3.reviewed': '19 April 2026',
   'mock.report.r3.moderationNote':
     'Please add a proof of purchase (invoice or receipt) to finalise publication.',
   'mock.report.r4.description':
-    'Impersonates an official merchant to extract banking information.',
+    'The account appears to impersonate another person or organization.',
   'mock.report.r4.date': '2 weeks ago',
   'mock.report.r4.submitted': '11 April 2026',
   'mock.report.r4.reviewed': '12 April 2026',
@@ -4563,13 +4564,13 @@ const ar: Dict = {
   'signalerPage.trust.encrypted.desc': 'بيانات محمية',
   'signalerPage.trust.verified.title': 'تمّت المراجعة',
   'signalerPage.trust.verified.desc': 'يُراجع قبل النشر',
-  'signalerPage.process.heading': 'ماذا يحدث بعد مشاركتك ؟',
-  'signalerPage.process.step1.title': 'تُبلِّغ',
-  'signalerPage.process.step1.desc': 'تصف الوضع وترفق الأدلة.',
-  'signalerPage.process.step2.title': 'نُراجع',
-  'signalerPage.process.step2.desc': 'يتحقق فريقنا من المحتوى خلال 48 ساعة عمل.',
-  'signalerPage.process.step3.title': 'يُنشَر',
-  'signalerPage.process.step3.desc': 'إذا كانت مطابقة، فإن المشاركة تحمي المجتمع.',
+  'signalerPage.process.heading': 'ماذا يحدث بعد مشاركة تجربتك ؟',
+  'signalerPage.process.step1.title': 'تقوم بالمشاركة',
+  'signalerPage.process.step1.desc': 'تصف الحالة وتضيف معلومات مفيدة.',
+  'signalerPage.process.step2.title': 'تتم المراجعة',
+  'signalerPage.process.step2.desc': 'يتم فحص المحتوى وفقاً لقواعد المنصة.',
+  'signalerPage.process.step3.title': 'النشر',
+  'signalerPage.process.step3.desc': 'يمكن نشر المحتوى إذا كان متوافقاً مع القواعد.',
   'signalerPage.sla.label': 'متوسط مدة الفحص :',
   'signalerPage.sla.value': '48 ساعة عمل',
 
@@ -4587,7 +4588,7 @@ const ar: Dict = {
   'form.description.suggestions.label': 'اقتراحات — انقر للملء التلقائي',
   'form.description.placeholder': 'صف الوضع باختصار (معلومات واقعية فقط)',
   // Public phrase — locked, picked from a curated list, shown on Recent Reports
-  'form.publicPhrase.label': 'العبارة العامة',
+  'form.publicPhrase.label': 'اختر الجملة التي تناسب حالتك',
   'form.publicPhrase.helper': '— تُعرض للجمهور',
   'form.publicPhrase.empty': 'اختر أولاً نوع المشكلة في الخطوة السابقة.',
   'form.publicPhrase.note':
@@ -4620,16 +4621,16 @@ const ar: Dict = {
   'form.submit.sending': 'جارٍ الإرسال…',
   'form.disabledNote':
     'سيتم تفعيل المصادقة والرفع الآمن للأدلة وإرسال المشاركة قريباً.',
-  'form.success.thanks': 'شكراً',
-  'form.success.received': 'تم استلام مساهمتك.',
+  'form.success.thanks': 'شكراً لك',
+  'form.success.received': 'تم استلام مساهمتك بنجاح.',
   'form.success.community':
-    'أنت تساعد مستخدمي Hadar على البقاء يقظين والتحقق بثقة.',
-  'form.success.eta': 'سيقوم فريقنا بمراجعة مشاركتك خلال {duration}.',
+    'أنت تساهم في إثراء المعلومات المتاحة على منصة Hadar.',
+  'form.success.eta': 'سيقوم فريقنا بمراجعة مساهمتك خلال مدة تقديرية تبلغ {duration}.',
   'form.success.eta.duration': '48 ساعة عمل',
-  'form.success.stat.users': 'مستخدمون استُفيد لهم',
-  'form.success.stat.contacts': 'جهات اتصال تم التحقق منها',
-  'form.success.stat.thanks': 'شكراً لك',
-  'form.success.again': 'إرسال مشاركة آخر',
+  'form.success.stat.users': 'مستخدم تمّت مساعدته',
+  'form.success.stat.contacts': 'جهة تم الاطلاع عليها',
+  'form.success.stat.thanks': 'بفضل مساهماتكم',
+  'form.success.again': 'مشاركة تجربة أخرى',
   'form.success.home': 'العودة إلى الصفحة الرئيسية',
   'form.nav.prev': 'السابق',
   'form.nav.next': 'التالي',
@@ -4732,24 +4733,24 @@ const ar: Dict = {
 
   // ===== Mock data — user reports =====
   'mock.report.r1.description':
-    'طلب تم بتاريخ 1 أبريل، البائع لم يسلّم المنتج ولم يعد يرد على رسائلي منذ 3 أسابيع رغم عدة محاولات.',
+    'لم يتم تسجيل أي عملية تسليم بعد دفع 3000 درهم.',
   'mock.report.r1.date': 'منذ 3 أيام',
   'mock.report.r1.submitted': '20 أبريل 2026',
   'mock.report.r1.reviewed': '21 أبريل 2026',
   'mock.report.r1.final': '22 أبريل 2026',
   'mock.report.r2.description':
-    'تم حجبي بمجرد استلام الدفع. لا رد منذ ذلك اليوم رغم عدة محاولات تواصل.',
+    'قام هذا الشخص بقطع التواصل بعد دفع 5000 درهم.',
   'mock.report.r2.date': 'أمس',
   'mock.report.r2.submitted': '23 أبريل 2026',
   'mock.report.r3.description':
-    'المنتج المستلم لا يطابق الوصف الموجود على الموقع إطلاقاً. اختلاف كبير في اللون والمقاس والمادة.',
+    'المنتج المُسلَّم مختلف عما تم الإعلان عنه.',
   'mock.report.r3.date': 'منذ 5 أيام',
   'mock.report.r3.submitted': '18 أبريل 2026',
   'mock.report.r3.reviewed': '19 أبريل 2026',
   'mock.report.r3.moderationNote':
     'يرجى إرفاق إثبات شراء (فاتورة أو إيصال) لإتمام النشر.',
   'mock.report.r4.description':
-    'ينتحل صفة تاجر رسمي لانتزاع معلومات بنكية.',
+    'يبدو أن الحساب ينتحل صفة شخص أو جهة أخرى.',
   'mock.report.r4.date': 'منذ أسبوعين',
   'mock.report.r4.submitted': '11 أبريل 2026',
   'mock.report.r4.reviewed': '12 أبريل 2026',

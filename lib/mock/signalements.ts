@@ -32,8 +32,8 @@ export const REPORTS: Report[] = [
     status: 'en_cours',
     userId: '345651',
     description: [
-      'Paiement effectué le 10/04, aucune réponse depuis. Le vendeur ne répond plus à mes messages ni aux appels. Aucune trace d’expédition fournie malgré plusieurs relances.',
-      'J’ai tenté de le contacter via un numéro secondaire, sans succès. Le compte semble avoir été supprimé.',
+      "Le produit n'a pas été livré après le paiement de 500 MAD.",
+      "Aucune livraison n'a été constatée après le paiement de 500 MAD.",
     ],
     proofs: [
       { name: 'screenshot-whatsapp-01.png', kind: 'image' },
@@ -53,7 +53,7 @@ export const REPORTS: Report[] = [
     status: 'en_cours',
     userId: '345612',
     description: [
-      'Virement effectué, le vendeur m’a bloqué immédiatement après réception. Aucune communication possible depuis.',
+      "Le contact n'est plus joignable après le paiement de 1 200 MAD.",
     ],
     proofs: [
       { name: 'rib-fourni.pdf', kind: 'pdf' },
@@ -72,7 +72,7 @@ export const REPORTS: Report[] = [
     status: 'publie',
     userId: '345580',
     description: [
-      'Produit reçu totalement différent de la description. Le vendeur refuse tout remboursement et propose un avoir très inférieur.',
+      'Le produit reçu ne correspond pas à la description.',
     ],
     proofs: [
       { name: 'photo-produit-recu.png', kind: 'image' },
@@ -91,7 +91,7 @@ export const REPORTS: Report[] = [
     status: 'non_retenu',
     userId: '345520',
     description: [
-      'La personne se faisait passer pour un agent bancaire. Après vérification, le numéro ne correspond à aucun employé.',
+      "Le compte semble se faire passer pour une autre personne ou organisation.",
     ],
     proofs: [{ name: 'enregistrement-appel.pdf', kind: 'pdf' }],
   },
@@ -107,7 +107,7 @@ export const REPORTS: Report[] = [
     status: 'a_corriger',
     userId: '345495',
     description: [
-      'Commande passée il y a 3 semaines, toujours pas de livraison. Le site ne répond plus aux emails.',
+      "La commande n'a pas été reçue malgré le paiement de 850 MAD.",
     ],
     proofs: [{ name: 'confirmation-commande.pdf', kind: 'pdf' }],
   },
@@ -122,7 +122,7 @@ export const REPORTS: Report[] = [
     sortKey: 20260412_2055,
     status: 'en_cours',
     userId: '345470',
-    description: ['Article vu en story, reçu cassé sans SAV possible.'],
+    description: ['Le produit livré est différent de ce qui était annoncé.'],
     proofs: [{ name: 'dm-instagram.png', kind: 'image' }],
   },
   {
@@ -136,7 +136,7 @@ export const REPORTS: Report[] = [
     sortKey: 20260412_1714,
     status: 'en_cours',
     userId: '345452',
-    description: ['Transfert USDT, adresse vérifiée à l’avance, mais plus aucune nouvelle.'],
+    description: ['Le contact a interrompu les échanges après le paiement de 4 500 MAD.'],
     proofs: [{ name: 'hash-transaction.pdf', kind: 'pdf' }],
   },
   {
@@ -150,7 +150,7 @@ export const REPORTS: Report[] = [
     sortKey: 20260412_1102,
     status: 'publie',
     userId: '345420',
-    description: ['Avance versée, aucune livraison malgré la promesse de 48 h.'],
+    description: ["La livraison prévue n'a pas eu lieu après le paiement de 220 MAD."],
     proofs: [{ name: 'discussion-wa.png', kind: 'image' }],
   },
   {
@@ -164,7 +164,7 @@ export const REPORTS: Report[] = [
     sortKey: 20260411_2347,
     status: 'publie',
     userId: '345388',
-    description: ['Email usurpant une banque, demande de saisie d’identifiants.'],
+    description: ['Le profil présente des éléments incohérents.'],
     proofs: [
       { name: 'email-original.pdf', kind: 'pdf' },
       { name: 'en-tetes.png', kind: 'image' },
@@ -181,7 +181,7 @@ export const REPORTS: Report[] = [
     sortKey: 20260411_1620,
     status: 'non_retenu',
     userId: '345355',
-    description: ['Le signalement concerne un litige commercial sans fraude avérée.'],
+    description: ['Le produit ne correspond pas aux attentes après réception.'],
     proofs: [{ name: 'facture.pdf', kind: 'pdf' }],
   },
   {
@@ -195,7 +195,7 @@ export const REPORTS: Report[] = [
     sortKey: 20260411_1009,
     status: 'a_corriger',
     userId: '345330',
-    description: ['Manque la preuve de virement : à joindre pour valider le dossier.'],
+    description: ['Le contact ne donne plus de réponse après le paiement de 900 MAD.'],
     proofs: [{ name: 'echange-messages.png', kind: 'image' }],
   },
   {
@@ -209,7 +209,7 @@ export const REPORTS: Report[] = [
     sortKey: 20260410_2144,
     status: 'en_cours',
     userId: '345300',
-    description: ['Appel prétendu d’un ministère demandant des données personnelles.'],
+    description: ["Le compte semble utiliser une identité qui ne lui appartient pas."],
     proofs: [{ name: 'notes-appel.pdf', kind: 'pdf' }],
   },
   {
@@ -223,7 +223,7 @@ export const REPORTS: Report[] = [
     sortKey: 20260410_1358,
     status: 'publie',
     userId: '345275',
-    description: ['Paiement via lien, compte désactivé juste après.'],
+    description: ['La commande n\'a pas été reçue malgré le paiement de 1 600 MAD.'],
     proofs: [
       { name: 'story-promo.png', kind: 'image' },
       { name: 'confirmation-mail.pdf', kind: 'pdf' },
@@ -240,7 +240,7 @@ export const REPORTS: Report[] = [
     sortKey: 20260409_1912,
     status: 'a_corriger',
     userId: '345240',
-    description: ['Photos reçues floues, impossible de valider le défaut.'],
+    description: ['La qualité du produit reçu ne correspond pas à ce qui était prévu.'],
     proofs: [{ name: 'photo-floue.png', kind: 'image' }],
   },
   {
@@ -254,7 +254,7 @@ export const REPORTS: Report[] = [
     sortKey: 20260409_0801,
     status: 'publie',
     userId: '345212',
-    description: ['Faux site clonant un exchange. Lien diffusé par SMS.'],
+    description: ['Une identité similaire à une autre entité a été utilisée.'],
     proofs: [
       { name: 'url-capturee.png', kind: 'image' },
       { name: 'sms-recu.pdf', kind: 'pdf' },

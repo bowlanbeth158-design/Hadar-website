@@ -4,6 +4,7 @@ import './globals.css';
 import { PublicMaintenanceGate } from '@/components/PublicMaintenanceGate';
 import { I18nProvider } from '@/lib/i18n/provider';
 import { CurrencyProvider } from '@/lib/currency/provider';
+import { AuthProvider } from '@/lib/auth/AuthProvider';
 
 const poppins = Poppins({
   subsets: ['latin'],
@@ -75,7 +76,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <I18nProvider>
           <CurrencyProvider>
-            <PublicMaintenanceGate>{children}</PublicMaintenanceGate>
+            <AuthProvider>
+              <PublicMaintenanceGate>{children}</PublicMaintenanceGate>
+            </AuthProvider>
           </CurrencyProvider>
         </I18nProvider>
       </body>

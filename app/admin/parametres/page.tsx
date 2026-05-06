@@ -1,12 +1,17 @@
-import type { Metadata } from 'next';
-import { SettingsTabs } from '@/components/admin/SettingsTabs';
+'use client';
 
-export const metadata: Metadata = { title: 'Paramètres' };
+import { AdminPlatformConfigLive } from '@/components/admin/AdminPlatformConfigLive';
 
 export default function Page() {
   return (
     <div>
-      <SettingsTabs />
+      <div className="mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold text-brand-navy">Paramètres</h1>
+        <p className="mt-1 text-sm text-gray-500">
+          Configuration plateforme (clé / valeur JSON).
+        </p>
+      </div>
+      <AdminPlatformConfigLive />
     </div>
   );
 }

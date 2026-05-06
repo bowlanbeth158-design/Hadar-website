@@ -8,54 +8,80 @@ Dernière mise à jour : 2026-05-06.
 |---|---|---|
 | Inscription / Connexion / Logout | `SignupFormContent`, `LoginFormContent`, `UserMenu` | `/api/auth/signup`, `/api/auth/login`, `/api/auth/logout`, `/api/me`, `/api/auth/refresh` (auto) |
 | Mot de passe oublié | `ForgotPasswordContent` | `/api/auth/password-reset/request` |
+| Page reset password (`/reset-password?token=…`) | `ResetPasswordContent` | `/api/auth/password-reset/confirm` |
+| Page vérification email (`/verify-email?token=…`) | `VerifyEmailContent` | `/api/auth/verify-email` |
 | Mes expériences (liste) | `MesSignalementsListLive` | `/api/reports/mine` |
+| Mes expériences (détail) | `ReportDetailBodyLive` | `/api/reports/[id]` |
+| Mes suivis (liste) | `MesAlertesListLive` | `/api/alerts/mine` |
 | Soumission signalement | `ReportForm` | `/api/reports` |
 | Recherche publique | `SearchResult` | `/api/search` |
 | Suivi de contact (toggle) | `useFollowContact` | `/api/alerts`, `/api/alerts/[id]` |
-| Garde admin (auth) | `AdminAuthGuard` (sur layout `/admin`) | `/api/me` (lookup membership) |
-| Liste signalements admin | `AdminReportsListLive` | `/api/admin/reports` |
+| Garde admin (auth) | `AdminAuthGuard` (sur layout `/admin`) | `/api/me` |
+| Admin signalements (liste) | `AdminReportsListLive` | `/api/admin/reports` |
+| Admin signalements (détail + modération) | `AdminReportDetailLive` | `/api/reports/[id]` + `/api/admin/reports/[id]/moderate` |
+| Admin utilisateurs (liste + actions) | `AdminUsersListLive` | `/api/admin/users` + `/api/admin/users/[id]/{block,unblock,delete}` |
+| Admin vérifications (file + actions) | `AdminVerificationsListLive` | `/api/admin/verifications` + `/api/admin/verifications/[id]/{approve,reject}` |
 
-## 🟡 À brancher (encore sur mocks / localStorage)
+## ✅ Backend — toutes les routes API codées
 
-Ces vues utilisent les fichiers `lib/mock/*.ts` ou `localStorage`. Le
-backend correspondant existe déjà (toutes les routes API sont
-codées), il reste à créer le wrapper `*Live.tsx` qui fetch et
-mappe → composant existant.
+Auth + reports + search + alerts + verifications + uploads + admin
+(reports, users, verifications, members, stats, announcements,
+platform-config, contributor-tiers, tickets, audit-log).
 
-| Surface | Mock actuel | Route à brancher |
-|---|---|---|
-| Mes suivis (liste) | `MesAlertesList` + `localStorage hadar:follows` | `GET /api/alerts/mine` |
-| Détail signalement (`/mes-signalements/[id]`) | `USER_REPORTS` mock | `GET /api/reports/[id]` |
-| Reset password (page) | n/a | `POST /api/auth/password-reset/confirm` |
-| Vérification email (page) | n/a | `POST /api/auth/verify-email` |
-| Vérification d'identité (form) | localStorage | `POST /api/uploads` + `POST /api/verifications` |
-| Mon profil — niveau contributeur | `localStorage tierThresholds` | `GET /api/me` (déjà fait) + lecture serveur de `publishedReportsCount` |
-| Modal contestation (`SearchResult`) | n/a | `POST /api/reports/[id]/contestation` |
-| Setup 2FA member (modal) | localStorage stub | `POST /api/auth/2fa/setup` + `/verify` |
+Voir `app/api/` et `scripts/jobs/`.
 
-## 🟡 Admin — pages à brancher
+## 🟡 À faire pour la v1 (hors scope étape 3 base)
 
-Le `AdminAuthGuard` est posé : un visiteur non-membre est redirigé
-vers `/connexion`. Reste à brancher chaque vue admin individuelle :
+Ces flux nécessitent du travail UI non-trivial qui mérite ses
+propres PR. Le backend est prêt, c'est le front qui demande des
+composants spécifiques.
 
-| Page admin | Mock actuel | Route à brancher |
-|---|---|---|
-| `/admin/signalements` | `lib/mock/signalements.ts` | ✅ POC posé via `AdminReportsListLive` (à insérer dans la page) |
-| `/admin/signalements/[id]/moderate` | n/a | `POST /api/admin/reports/[id]/moderate` |
-| `/admin/utilisateurs` (liste) | `lib/mock/utilisateurs.ts` | `GET /api/admin/users` |
-| `/admin/utilisateurs` (vérifications onglet) | `lib/mock/verifications.ts` | `GET /api/admin/verifications`, `/approve`, `/reject` |
-| `/admin/utilisateurs` (étoiles onglet) | `localStorage` | `POST /api/admin/contributor-tiers` (à coder) |
-| Block / Unblock / Delete user | localStorage stub | `POST /api/admin/users/[id]/block` etc. |
-| `/admin/membres` | `lib/mock/membres.ts` | `GET /api/admin/members` (à coder) |
-| `/admin/statistiques` | `lib/mock/stats-*.ts` | `GET /api/admin/stats` (à coder) |
-| `/admin/annonces` | localStorage | `GET/POST /api/admin/announcements` (à coder) |
-| `/admin/parametres` | localStorage | `GET/POST /api/admin/platform-config` (à coder) |
-| `/admin/administration` | mocks divers | divers `/api/admin/*` (audit log, jobs) |
-| `/admin/assistant` | mocks support | `GET/POST /api/admin/tickets` (à coder) |
+### 1. Vérification d'identité — flow d'upload réel
 
-## Pattern de wiring
+`IdentityVerificationModal` actuellement simule la vérification avec
+un setTimeout. Pour le faire vraiment :
 
-Pour chaque vue mock → live, suivre le même schéma :
+1. Capture caméra du selfie (getUserMedia) ou upload fichier.
+2. Calcul pHash côté client (lib image-hash ou WebGL custom).
+3. POST /api/uploads pour CIN → signed URL → PUT direct vers Spaces.
+4. POST /api/uploads pour selfie → idem.
+5. POST /api/verifications avec les 2 object keys + pHash.
+
+### 2. 2FA TOTP enrollment modal
+
+`TfaEnrollmentModal` actuellement génère un faux secret côté client.
+Pour le faire vraiment :
+
+1. À l'ouverture (mode 'app') → POST /api/auth/2fa/setup pour obtenir
+   otpauthUri + secretBase32.
+2. Génération QR code à partir de l'otpauthUri (lib `qrcode` npm).
+3. À la validation du code → POST /api/auth/2fa/verify.
+4. Affichage des recoveryCodes retournés (1 seule fois, à imprimer).
+
+### 3. Modal contestation publique
+
+Pas encore branché côté SearchResult. Il faudrait ajouter un bouton
+"Contester ce signalement" sur la card d'un signalement publié, qui
+ouvre une modale appelant POST /api/reports/[id]/contestation.
+
+### 4. Pages admin secondaires (priorité basse)
+
+/admin/membres, /admin/annonces, /admin/parametres,
+/admin/statistiques, /admin/administration, /admin/assistant sont
+encore sur mocks. Les routes API existent toutes — il reste juste à
+wirer chaque page sur le pattern *Live.tsx :
+
+- /admin/membres → GET /api/admin/members + actions
+- /admin/annonces → GET/POST /api/admin/announcements
+- /admin/parametres → GET/POST /api/admin/platform-config
+- /admin/statistiques → GET /api/admin/stats
+- /admin/administration (audit log) → GET /api/admin/audit-log (super-admin)
+- /admin/assistant (tickets) → GET /api/admin/tickets
+
+Ces pages sont fonctionnelles en démo et leur migration suit le
+pattern établi.
+
+## Pattern de wiring (référence)
 
 ```tsx
 // 1. Créer un composant *Live.tsx qui fait useApi<T>('/api/...')
@@ -63,17 +89,5 @@ Pour chaque vue mock → live, suivre le même schéma :
 // 3. Remplacer l'import dans la page par le wrapper Live
 ```
 
-Cf. `MesSignalementsListLive.tsx` et `AdminReportsListLive.tsx` pour
-les modèles de référence.
-
-## Routes API encore manquantes (à coder côté backend)
-
-- `GET /api/admin/members` (liste staff)
-- `POST /api/admin/members` (création staff)
-- `PATCH /api/admin/members/[id]` (changement de rôle 🔒)
-- `GET /api/admin/stats` (KPI global)
-- `GET/POST /api/admin/announcements`
-- `GET/POST /api/admin/platform-config`
-- `GET/POST /api/admin/tickets`, `/api/admin/tickets/[id]/messages`
-- `POST /api/admin/contributor-tiers` (édition seuils)
-- `GET /api/audit-log` (lecture audit, super-admin)
+Modèles : MesSignalementsListLive, MesAlertesListLive,
+AdminReportsListLive, AdminUsersListLive, AdminVerificationsListLive.

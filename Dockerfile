@@ -23,11 +23,16 @@
 FROM node:22-alpine AS deps
 WORKDIR /app
 
-# argon2 a besoin de python + build-base pour compiler ses bindings natifs.
-RUN apk add --no-cache libc6-compat python3 make g++
+# argon2 + sharp ont besoin de python + build-base pour compiler leurs
+# bindings natifs sur Alpine musl (pas de prebuilds disponibles).
+RUN apk add --no-cache libc6-compat python3 make g++ vips-dev
 
 COPY package.json package-lock.json* ./
 RUN npm ci --no-audit --no-fund
+# argon2 n'a pas de prebuild musl → on force sa recompilation pour
+# Alpine. Sans ça, "No native build was found for platform=linux
+# libc=musl" au runtime.
+RUN npm rebuild argon2 --build-from-source
 
 # ── Stage 2 : Build ─────────────────────────────────────────────────────────
 FROM node:22-alpine AS builder

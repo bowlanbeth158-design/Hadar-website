@@ -54,31 +54,35 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: SSH deploy
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.DEPLOY_SSH_HOST }}
-          username: ${{ secrets.DEPLOY_SSH_USER }}
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: |
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+          SSH_USER: ${{ secrets.DEPLOY_SSH_USER }}
+          REGISTRY_NAME: ${{ secrets.DO_REGISTRY_NAME }}
+        run: |
+          # Setup SSH directement (plus robuste que les actions tierces
+          # qui ont parfois des problèmes avec ed25519).
+          mkdir -p ~/.ssh
+          echo "$SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts 2>/dev/null
+
+          # Vérifie que la clé est bien parsable avant la connexion.
+          ssh-keygen -y -f ~/.ssh/deploy_key > /dev/null
+
+          # Exécute les commandes de déploiement sur le droplet.
+          # `<<EOF` (sans quotes) → les vars sont substituées CÔTÉ
+          # local avant l'envoi sur le droplet.
+          ssh -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new \
+              "$SSH_USER@$SSH_HOST" bash -s <<EOF
             set -e
             cd /opt/hadar
-
-            # Pull + restart via docker compose. Le compose en prod
-            # ne contient que le service "app" (Postgres et Redis sont
-            # managés DigitalOcean).
-            docker pull ${{ secrets.DO_REGISTRY_NAME }}/hadar:latest
-
-            # Migrate avant de bascule (zero-downtime acceptable car
-            # nos migrations sont backward-compatible jusqu'au prochain
-            # major).
-            docker run --rm \
-              --env-file /opt/hadar/.env.production \
-              ${{ secrets.DO_REGISTRY_NAME }}/hadar:latest \
+            docker pull "$REGISTRY_NAME/hadar:latest" || true
+            docker run --rm \\
+              --env-file /opt/hadar/.env.production \\
+              "$REGISTRY_NAME/hadar:latest" \\
               sh -c "cd /app && npx prisma migrate deploy"
-
-            # Restart app container.
             docker compose -f /opt/hadar/docker-compose.prod.yml pull app
             docker compose -f /opt/hadar/docker-compose.prod.yml up -d app
-
-            # Cleanup vieilles images.
             docker image prune -af --filter "until=168h"
+          EOF

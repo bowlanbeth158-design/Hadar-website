@@ -85,10 +85,13 @@ jobs:
               --username "$REGISTRY_TOKEN" --password-stdin
 
             docker pull "$REGISTRY_NAME/hadar:latest"
+            # Migrate via prisma 5.22 (épinglé) — évite que npx
+            # télécharge la dernière v7.x qui rejette \`url = env(...)\`
+            # dans schema.prisma.
             docker run --rm \\
               --env-file /opt/hadar/.env.production \\
               "$REGISTRY_NAME/hadar:latest" \\
-              sh -c "cd /app && npx prisma migrate deploy"
+              sh -c "cd /app && npx -y prisma@5.22.0 migrate deploy"
             docker compose -f /opt/hadar/docker-compose.prod.yml pull app
             docker compose -f /opt/hadar/docker-compose.prod.yml up -d app
             docker image prune -af --filter "until=168h"

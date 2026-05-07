@@ -28,13 +28,10 @@ WORKDIR /app
 RUN apk add --no-cache libc6-compat python3 make g++ vips-dev
 
 COPY package.json package-lock.json* ./
-# Force npm à installer la variante optional `@img/sharp-linuxmusl-x64`
-# qui est dans le lockfile mais que npm filtre parfois à tort sur
-# Alpine (détection libc=musl peu fiable). Sans ces flags, sharp
-# tombe en build node-gyp (et échoue car node-gyp n'est pas en deps).
-RUN npm ci --no-audit --no-fund \
-    --include=optional \
-    --os=linux --libc=musl --cpu=x64
+# Sur Alpine musl, sharp ne trouve pas son prebuild et tombe en build
+# node-gyp depuis vips-dev. node-gyp est en devDependencies pour que
+# sharp's postinstall le résolve (`require('node-gyp')`).
+RUN npm ci --no-audit --no-fund
 # argon2 n'a pas de prebuild musl → on force sa recompilation pour
 # Alpine. Sans ça, "No native build was found for platform=linux
 # libc=musl" au runtime.

@@ -21,11 +21,11 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { SignJWT, jwtVerify, type JWTPayload } from 'jose';
-import { generateRandomToken } from '../crypto/hash.js';
+import { generateRandomToken } from '../crypto/hash';
 import type {
   AccessTokenPayload,
   FullAccessTokenClaims,
-} from './types.js';
+} from './types';
 
 const ISSUER = 'hadar.ma';
 const AUDIENCE = 'hadar.ma';

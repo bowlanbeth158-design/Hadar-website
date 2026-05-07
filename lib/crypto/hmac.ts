@@ -17,7 +17,7 @@
 
 import { createHmac } from 'node:crypto';
 import type { ReportChannel } from '@prisma/client';
-import { getContactPepper, getIpPepper } from './keys.js';
+import { getContactPepper, getIpPepper } from './keys';
 
 /// Hash d'un (contactValue, channel) pour indexation et déduplication.
 /// On normalise toujours AVANT (lowercase, trim, suppression espaces /

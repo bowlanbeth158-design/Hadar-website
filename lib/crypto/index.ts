@@ -9,7 +9,7 @@ export {
   decrypt,
   encryptNullable,
   decryptNullable,
-} from './aes.js';
+} from './aes';
 
 export {
   hmacContact,
@@ -17,17 +17,17 @@ export {
   hmacIp,
   hmacUserAgent,
   normalizeContactValue,
-} from './hmac.js';
+} from './hmac';
 
 export {
   sha256,
   generateRandomToken,
   generateNumericOTP,
   timingSafeEqualHex,
-} from './hash.js';
+} from './hash';
 
 export {
   generateRecoveryCode,
   generateRecoveryCodes,
   normalizeRecoveryCode,
-} from './codes.js';
+} from './codes';

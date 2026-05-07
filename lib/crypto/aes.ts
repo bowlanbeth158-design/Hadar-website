@@ -19,7 +19,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 import { createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
-import { getEncryptionKey } from './keys.js';
+import { getEncryptionKey } from './keys';
 
 const ALGO = 'aes-256-gcm';
 const IV_LENGTH = 12; // recommandation NIST pour GCM

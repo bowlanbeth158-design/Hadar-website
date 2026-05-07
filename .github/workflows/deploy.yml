@@ -59,6 +59,7 @@ jobs:
           SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
           SSH_USER: ${{ secrets.DEPLOY_SSH_USER }}
           REGISTRY_NAME: ${{ secrets.DO_REGISTRY_NAME }}
+          REGISTRY_TOKEN: ${{ secrets.DO_REGISTRY_TOKEN }}
         run: |
           # Setup SSH directement (plus robuste que les actions tierces
           # qui ont parfois des problèmes avec ed25519).
@@ -77,7 +78,13 @@ jobs:
               "$SSH_USER@$SSH_HOST" bash -s <<EOF
             set -e
             cd /opt/hadar
-            docker pull "$REGISTRY_NAME/hadar:latest" || true
+
+            # Login docker au DigitalOcean Container Registry pour
+            # pouvoir pull les images privées.
+            echo "$REGISTRY_TOKEN" | docker login registry.digitalocean.com \\
+              --username "$REGISTRY_TOKEN" --password-stdin
+
+            docker pull "$REGISTRY_NAME/hadar:latest"
             docker run --rm \\
               --env-file /opt/hadar/.env.production \\
               "$REGISTRY_NAME/hadar:latest" \\

@@ -112,7 +112,7 @@ export function AdminReportsListLive() {
           <div>
             <p className="font-semibold">{error.userMessage}</p>
             {error.code === 'FORBIDDEN' && (
-              <p className="text-xs">Tu n'as pas la permission MODERATOR+.</p>
+              <p className="text-xs">Tu n&apos;as pas la permission MODERATOR+.</p>
             )}
           </div>
         </div>

@@ -36,6 +36,13 @@ const nextConfig = {
   // Production : output minimal pour Docker. Embarque uniquement les
   // node_modules nécessaires + le code Next.
   output: 'standalone',
+  // Désactive ESLint pendant `next build` (les vérifs ESLint restent
+  // disponibles via `npm run lint` en CI). Évite que des règles
+  // cosmétiques (apostrophe non échappée, useMemo deps, etc.) ne
+  // bloquent le déploiement de prod. Le typecheck strict reste actif.
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
   images: {
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [

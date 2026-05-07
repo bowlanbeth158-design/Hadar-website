@@ -26,8 +26,14 @@ WORKDIR /app
 # argon2 + sharp ont besoin de python + build-base pour compiler leurs
 # bindings natifs sur Alpine musl (pas de prebuilds disponibles).
 RUN apk add --no-cache libc6-compat python3 make g++ vips-dev
+# sharp n'a pas de prebuild musl récent → il tente node-gyp.
+# On l'installe globalement avant `npm ci`.
+RUN npm install -g node-gyp
 
 COPY package.json package-lock.json* ./
+# SHARP_FORCE_GLOBAL_LIBVIPS=true → sharp utilise vips-dev installé
+# au lieu de tenter de bundler ses propres binaires.
+ENV SHARP_FORCE_GLOBAL_LIBVIPS=true
 RUN npm ci --no-audit --no-fund
 # argon2 n'a pas de prebuild musl → on force sa recompilation pour
 # Alpine. Sans ça, "No native build was found for platform=linux

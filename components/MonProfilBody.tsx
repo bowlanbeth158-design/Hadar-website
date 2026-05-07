@@ -11,9 +11,9 @@ import { useI18n } from '@/lib/i18n/provider';
 
 const PROFILE = {
   /** Email used at sign-up — read-only. All transactional mails go here. */
-  email: 'mohamedossama.moussaoui@gmail.com',
+  email: 'demo@hadar.ma',
   /** Phone number — verified via WhatsApp 5-digit code. */
-  phone: '212 6 12 34 56 78',
+  phone: '212 6 00 00 00 00',
   badgeKey: 'regulier',
   badgeStars: 4,
   validationRate: 100,

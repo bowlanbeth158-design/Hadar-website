@@ -64,142 +64,51 @@ type Snapshot = {
   processingPct: number;
 };
 
-const LATEST_GLOBAL = 'il y a 12 min';
-const LATEST_YESTERDAY = 'hier, 19:42';
+// Plateforme en pré-lancement : tous les KPI sont à 0 tant que la
+// communauté n'a pas commencé à publier des signalements. Les
+// pourcentages sont à 0 pour que les barres / colonnes s'affichent
+// vides plutôt que d'inventer des proportions.
+const EMPTY_DERNIER = '—';
+
+const EMPTY_SNAPSHOT: Snapshot = {
+  global: {
+    utilisateurs: 0,
+    signalements: 0,
+    contacts: 0,
+    verifications: 0,
+    montant: 0,
+    dernier: EMPTY_DERNIER,
+  },
+  problems: [
+    { count: 0, pct: 0 },
+    { count: 0, pct: 0 },
+    { count: 0, pct: 0 },
+    { count: 0, pct: 0 },
+  ],
+  channels: [
+    { count: 0, pct: 0 },
+    { count: 0, pct: 0 },
+    { count: 0, pct: 0 },
+    { count: 0, pct: 0 },
+  ],
+  activity: [
+    { count: 0, pct: 0 },
+    { count: 0, pct: 0 },
+    { count: 0, pct: 0 },
+    { count: 0, pct: 0 },
+  ],
+  status: [{ count: 0 }, { count: 0 }, { count: 0 }],
+  evolutionPct: 0,
+  evolutionThisCount: 0,
+  evolutionTodayCount: 0,
+  processingPct: 0,
+};
 
 const DATA: Record<Period, Snapshot> = {
-  today: {
-    global: {
-      utilisateurs: 143,
-      signalements: 37,
-      contacts: 12,
-      verifications: 512,
-      montant: 14_200,
-      dernier: LATEST_GLOBAL,
-    },
-    problems: [
-      { count: 18, pct: 49 },
-      { count: 9,  pct: 24 },
-      { count: 6,  pct: 16 },
-      { count: 2,  pct: 5  },
-    ],
-    channels: [
-      { count: 13, pct: 36 },
-      { count: 6,  pct: 16 },
-      { count: 5,  pct: 14 },
-      { count: 3,  pct: 8  },
-    ],
-    activity: [
-      { count: 4,  pct: 11 },
-      { count: 11, pct: 30 },
-      { count: 30, pct: 81 },
-      { count: 17, pct: 46 },
-    ],
-    status: [{ count: 65 }, { count: 22 }, { count: 41 }],
-    evolutionPct: 8,
-    evolutionThisCount: 65,
-    evolutionTodayCount: 12,
-    processingPct: 64,
-  },
-  yesterday: {
-    global: {
-      utilisateurs: 162,
-      signalements: 42,
-      contacts: 14,
-      verifications: 580,
-      montant: 18_400,
-      dernier: LATEST_YESTERDAY,
-    },
-    problems: [
-      { count: 21, pct: 50 },
-      { count: 10, pct: 24 },
-      { count: 6,  pct: 14 },
-      { count: 2,  pct: 5  },
-    ],
-    channels: [
-      { count: 15, pct: 36 },
-      { count: 7,  pct: 17 },
-      { count: 6,  pct: 14 },
-      { count: 3,  pct: 7  },
-    ],
-    activity: [
-      { count: 4,  pct: 10 },
-      { count: 13, pct: 31 },
-      { count: 33, pct: 79 },
-      { count: 19, pct: 45 },
-    ],
-    status: [{ count: 72 }, { count: 25 }, { count: 47 }],
-    evolutionPct: 5,
-    evolutionThisCount: 72,
-    evolutionTodayCount: 14,
-    processingPct: 65,
-  },
-  week: {
-    global: {
-      utilisateurs: 884,
-      signalements: 215,
-      contacts: 78,
-      verifications: 3_120,
-      montant: 95_300,
-      dernier: LATEST_GLOBAL,
-    },
-    problems: [
-      { count: 107, pct: 50 },
-      { count: 54,  pct: 25 },
-      { count: 32,  pct: 15 },
-      { count: 11,  pct: 5  },
-    ],
-    channels: [
-      { count: 75,  pct: 35 },
-      { count: 37,  pct: 17 },
-      { count: 32,  pct: 15 },
-      { count: 15,  pct: 7  },
-    ],
-    activity: [
-      { count: 22, pct: 10 },
-      { count: 65, pct: 30 },
-      { count: 172, pct: 80 },
-      { count: 97, pct: 45 },
-    ],
-    status: [{ count: 410 }, { count: 145 }, { count: 268 }],
-    evolutionPct: 9,
-    evolutionThisCount: 410,
-    evolutionTodayCount: 78,
-    processingPct: 65,
-  },
-  month: {
-    global: {
-      utilisateurs: 2_500,
-      signalements: 1_245,
-      contacts: 346,
-      verifications: 15_000,
-      montant: 420_000,
-      dernier: LATEST_GLOBAL,
-    },
-    problems: [
-      { count: 623, pct: 50 },
-      { count: 311, pct: 25 },
-      { count: 187, pct: 15 },
-      { count: 62,  pct: 5  },
-    ],
-    channels: [
-      { count: 436, pct: 35 },
-      { count: 212, pct: 17 },
-      { count: 187, pct: 15 },
-      { count: 87,  pct: 7  },
-    ],
-    activity: [
-      { count: 125,  pct: 10 },
-      { count: 374,  pct: 30 },
-      { count: 996,  pct: 80 },
-      { count: 560,  pct: 45 },
-    ],
-    status: [{ count: 1_900 }, { count: 655 }, { count: 1_245 }],
-    evolutionPct: 12,
-    evolutionThisCount: 1_900,
-    evolutionTodayCount: 345,
-    processingPct: 65,
-  },
+  today: EMPTY_SNAPSHOT,
+  yesterday: EMPTY_SNAPSHOT,
+  week: EMPTY_SNAPSHOT,
+  month: EMPTY_SNAPSHOT,
 };
 
 const PROBLEM_LABELS: { labelKey: string; Icon: LucideIcon; gradient: string }[] = [

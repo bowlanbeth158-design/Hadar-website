@@ -1020,7 +1020,7 @@ const fr: Dict = {
   'home.platformStats.kpi.verifications': 'Vérifications réalisées',
   'home.platformStats.kpi.amountReported': 'Montant mentionné',
   'home.platformStats.kpi.lastReport': 'Dernière expérience',
-  'home.platformStats.lastReport.value': 'il y a 2h',
+  'home.platformStats.lastReport.value': '—',
   'home.platformStats.viewMore': 'Voir plus',
   'home.platformStats.disclaimer':
     'Les informations affichées sont basées sur les expériences et contributions des utilisateurs, vérifiées lorsque cela est possible, et fournies à titre indicatif.',
@@ -1378,8 +1378,8 @@ const fr: Dict = {
   // name in /mon-profil follows the active language. In production
   // this comes from the user record (firstName/lastName) and would
   // already be stored in the user's preferred script.
-  'profile.demo.firstName': 'Mohamed Ossama',
-  'profile.demo.lastName': 'MOUSSAOUI',
+  'profile.demo.firstName': 'Utilisateur',
+  'profile.demo.lastName': 'DÉMO',
 
   // ===== /signaler page (Partager une expérience) =====
   'signalerPage.brandPill': 'Partagez en toute confiance',
@@ -2647,7 +2647,7 @@ const en: Dict = {
   'home.platformStats.kpi.verifications': 'Completed verifications',
   'home.platformStats.kpi.amountReported': 'Reported amount',
   'home.platformStats.kpi.lastReport': 'Latest experience',
-  'home.platformStats.lastReport.value': '2h ago',
+  'home.platformStats.lastReport.value': '—',
   'home.platformStats.viewMore': 'View more',
   'home.platformStats.disclaimer':
     'The displayed information is based on user experiences and contributions, verified when possible, and provided for informational purposes only.',
@@ -4258,7 +4258,7 @@ const ar: Dict = {
   // in the label slot — visually the user reads top-to-bottom
   // exactly as the validated phrasing.
   'home.platformStats.kpi.lastReport': 'منذ ساعتين',
-  'home.platformStats.lastReport.value': 'آخر تجربة',
+  'home.platformStats.lastReport.value': '—',
   'home.platformStats.viewMore': 'عرض المزيد من الإحصائيات',
   'home.platformStats.disclaimer':
     'المعلومات المعروضة مبنية على تجارب ومساهمات المستخدمين، ويتم التحقق منها قدر الإمكان، وهي مقدمة لأغراض إرشادية فقط.',

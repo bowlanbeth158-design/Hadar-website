@@ -19,14 +19,11 @@ type DemoReport = {
   risk: RiskLevel;
 };
 
-const DEMO_REPORTS: DemoReport[] = [
-  { id: 'd1', descriptionKey: 'home.recentReports.demo1.description', similar: 5,  daysAgo: 1, risk: 'eleve'     },
-  { id: 'd2', descriptionKey: 'home.recentReports.demo2.description', similar: 8,  daysAgo: 2, risk: 'eleve'     },
-  { id: 'd3', descriptionKey: 'home.recentReports.demo3.description', similar: 3,  daysAgo: 3, risk: 'modere'    },
-  { id: 'd4', descriptionKey: 'home.recentReports.demo4.description', similar: 2,  daysAgo: 4, risk: 'vigilance' },
-  { id: 'd5', descriptionKey: 'home.recentReports.demo5.description', similar: 12, daysAgo: 5, risk: 'eleve'     },
-  { id: 'd6', descriptionKey: 'home.recentReports.demo6.description', similar: 4,  daysAgo: 6, risk: 'modere'    },
-];
+// Plateforme en pré-lancement : pas de signalements à afficher tant
+// que la communauté n'a pas commencé à contribuer. La section se
+// masque automatiquement quand le tableau est vide (cf. early return
+// dans le composant).
+const DEMO_REPORTS: DemoReport[] = [];
 
 type RiskStyle = {
   dot: string;
@@ -219,6 +216,8 @@ export function RecentReports() {
 
   const scrollNext = () => scrollByStep(1);
   const scrollPrev = () => scrollByStep(-1);
+
+  if (DEMO_REPORTS.length === 0) return null;
 
   return (
     <section className="mx-auto max-w-[1440px] px-4 md:px-6 py-10 md:py-14">

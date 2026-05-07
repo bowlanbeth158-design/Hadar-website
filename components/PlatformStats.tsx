@@ -21,7 +21,7 @@ import { useI18n } from '@/lib/i18n/provider';
 // The card below renders this through the CurrencyProvider's
 // `format()` helper, so picking EUR / USD in the header swaps the
 // figure live without touching the canonical source value.
-const MONTANT_SIGNALE_MAD = 504_000;
+const MONTANT_SIGNALE_MAD = 0;
 
 type Stat = {
   // i18n key for the metric label (resolved at render time so the
@@ -55,7 +55,7 @@ type Stat = {
 const KPI_STATS: Stat[] = [
   {
     labelKey: 'home.platformStats.kpi.usersActive',
-    value: '12 593',
+    value: '0',
     Icon: Users,
     chip: {
       bg: 'bg-brand-navy/10',
@@ -68,7 +68,7 @@ const KPI_STATS: Stat[] = [
   },
   {
     labelKey: 'home.platformStats.kpi.reportsLogged',
-    value: '19 840',
+    value: '0',
     Icon: Siren,
     chip: {
       bg: 'bg-red-500/10',
@@ -81,7 +81,7 @@ const KPI_STATS: Stat[] = [
   },
   {
     labelKey: 'home.platformStats.kpi.contactsReported',
-    value: '9 594',
+    value: '0',
     Icon: Smartphone,
     chip: {
       bg: 'bg-violet-500/10',
@@ -94,7 +94,7 @@ const KPI_STATS: Stat[] = [
   },
   {
     labelKey: 'home.platformStats.kpi.verifications',
-    value: '18 978',
+    value: '0',
     Icon: ShieldCheck,
     chip: {
       bg: 'bg-sky-500/10',

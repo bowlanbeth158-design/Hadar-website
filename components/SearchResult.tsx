@@ -141,41 +141,18 @@ type DemoData = {
   lastReportedHoursAgo: number | null;
 };
 
-// Demo mapping (until /api/search lands). Counts respect the owner spec:
-//   0 reports     → faible
-//   1-2 reports   → vigilance
-//   3-4 reports   → modéré
-//   5+ reports    → élevé
-const DEMO: Record<string, DemoData> = {
-  'info@mushtarik.com': {
-    risk: 'faible',
-    reports: 0,
-    kpis: [0, 0, 0, 0],
-    lastReportedHoursAgo: null,
-  },
-  'info@mushtarik01.com': {
-    risk: 'vigilance',
-    reports: 2,
-    kpis: [1, 0, 1, 0],
-    lastReportedHoursAgo: 12,
-  },
-  'info@mushtarik02.com': {
-    risk: 'modere',
-    reports: 4,
-    kpis: [2, 1, 1, 0],
-    lastReportedHoursAgo: 24 * 5,
-  },
-  'info@mushtarik03.com': {
-    risk: 'eleve',
-    reports: 12,
-    kpis: [5, 3, 2, 2],
-    lastReportedHoursAgo: 24 * 21,
-  },
+// Plateforme en pré-lancement : aucune base de signalements alimentée
+// pour le moment. Toute recherche retourne donc « Faible — aucun
+// signalement », ce qui reflète la réalité.
+const EMPTY_RESULT: DemoData = {
+  risk: 'faible',
+  reports: 0,
+  kpis: [0, 0, 0, 0],
+  lastReportedHoursAgo: null,
 };
 
-function getDemo(query: string): DemoData {
-  const normalized = query.trim().toLowerCase();
-  return DEMO[normalized] ?? DEMO['info@mushtarik.com']!;
+function getDemo(_query: string): DemoData {
+  return EMPTY_RESULT;
 }
 
 // Owner-spec relative-time formatter:

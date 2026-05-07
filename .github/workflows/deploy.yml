@@ -71,6 +71,13 @@ jobs:
           # Vérifie que la clé est bien parsable avant la connexion.
           ssh-keygen -y -f ~/.ssh/deploy_key > /dev/null
 
+          # Envoie docker-compose.prod.yml sur le droplet (au cas où il
+          # n'y est pas, ou pour le mettre à jour sans avoir à
+          # cloner le repo manuellement).
+          scp -i ~/.ssh/deploy_key -o StrictHostKeyChecking=accept-new \
+              docker-compose.prod.yml \
+              "$SSH_USER@$SSH_HOST:/opt/hadar/docker-compose.prod.yml"
+
           # Exécute les commandes de déploiement sur le droplet.
           # `<<EOF` (sans quotes) → les vars sont substituées CÔTÉ
           # local avant l'envoi sur le droplet.
